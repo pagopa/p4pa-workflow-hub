@@ -1,4 +1,4 @@
-package it.gov.pagopa.debtpositions.config;
+package it.gov.pagopa.pu.workflow.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

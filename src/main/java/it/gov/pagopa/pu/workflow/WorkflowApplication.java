@@ -1,13 +1,13 @@
-package it.gov.pagopa.debtpositions;
+package it.gov.pagopa.pu.workflow;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TemplateApplication {
+public class WorkflowApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TemplateApplication.class, args);
+		SpringApplication.run(WorkflowApplication.class, args);
 	}
 
 }
