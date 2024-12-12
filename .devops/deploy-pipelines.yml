@@ -92,6 +92,7 @@ stages:
               containerRegistry: '$(dockerRegistryServiceConnection)'
               repository: '$(imageRepository)'
               command: 'buildAndPush'
+              arguments: "--build-arg GITHUB_TOKEN=$(GITHUB_PACKAGE_TOKEN)"
               tags: |
                 latest
                 $(Build.SourceVersion)

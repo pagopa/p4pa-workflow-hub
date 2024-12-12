@@ -32,6 +32,8 @@ jobs:
       - name: Build with Gradle
         working-directory: ./
         run: ./gradlew clean build jacocoTestReport
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Sonar Scan
         working-directory: ./
