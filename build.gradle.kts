@@ -39,7 +39,7 @@ repositories {
 val springDocOpenApiVersion = "2.6.0"
 val openApiToolsVersion = "0.2.6"
 val micrometerVersion = "1.4.0"
-val activitiesVersion = "1.7.0"
+val activitiesVersion = "1.12.0"
 val temporalVersion = "1.26.1"
 
 dependencies {
