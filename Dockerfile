@@ -89,8 +89,7 @@ VOLUME /home/${APP_USER}/.gradle
 #
 FROM gradle-setup AS dependencies
 
-ARG GITHUB_TOKEN
-ENV GITHUB_TOKEN=$GITHUB_TOKEN
+
 
 WORKDIR /build
 
@@ -115,6 +114,9 @@ FROM dependencies AS build
 
 # Copy source code
 COPY --chown=${APP_USER}:${APP_GROUP} src src/
+
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=$GITHUB_TOKEN
 
 # Build application
 RUN gradle bootJar --no-daemon
