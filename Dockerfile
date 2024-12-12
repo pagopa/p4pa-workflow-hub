@@ -32,6 +32,9 @@ FROM amazoncorretto:${CORRETTO_VERSION}@sha256:${CORRETTO_SHA} AS base
 ARG APP_USER
 ARG APP_GROUP
 
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=$GITHUB_TOKEN
+
 # Install base packages
 RUN apk add --no-cache \
     wget \
