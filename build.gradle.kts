@@ -64,6 +64,8 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.mockito:mockito-core")
   testImplementation("org.projectlombok:lombok")
+  testImplementation("org.mockito:mockito-junit-jupiter")
+  testImplementation("io.temporal:temporal-testing")
 }
 
 tasks.withType<Test> {
