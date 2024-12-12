@@ -38,7 +38,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
             .build())
         .build());
 
-/*
+
   private final SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity =
     Workflow.newActivityStub(
       SendEmailIngestionFlowActivity.class,
@@ -68,7 +68,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
             .setMaximumAttempts(RETRY_MAXIMUM_ATTEMPTS)
             .build())
         .build());
-*/
+
 
   @Override
   public void ingest(Long fileId) {
@@ -76,8 +76,8 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
 
     PaymentsReportingIngestionFlowFileActivityResult ingestionResult =
       paymentsReportingIngestionFlowFileActivity.processFile(fileId);
- //   sendEmailIngestionFlowActivity.sendEmail("" + fileId, ingestionResult.isSuccess());
- //   updateIngestionFlowStatusActivity.updateStatus(fileId, ingestionResult.isSuccess() ? "OK" : "KO");
+    sendEmailIngestionFlowActivity.sendEmail("" + fileId, ingestionResult.isSuccess());
+    updateIngestionFlowStatusActivity.updateStatus(fileId, ingestionResult.isSuccess() ? "OK" : "KO");
 
     log.info("Ingestion completed for file with ID: " + fileId);
   }
