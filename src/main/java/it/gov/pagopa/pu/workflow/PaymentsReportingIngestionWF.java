@@ -16,5 +16,4 @@ public interface PaymentsReportingIngestionWF {
    * */
   @WorkflowMethod
   public void ingest(Long fileId);
-
 }
