@@ -85,7 +85,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
 
 
   @Override
-  public void ingest(Long fileId) {
+  public void ingest(Long ingestionFlowFileId) {
     log.info("Ingesting file with ID: " + fileId);
 
     PaymentsReportingIngestionFlowFileActivityResult ingestionResult =
