@@ -1,22 +1,16 @@
 // PaymentsReportingIngestionWFImplTest.java
 package it.gov.pagopa.pu.workflow.impl;
 
-import io.temporal.client.WorkflowOptions;
 import io.temporal.testing.TestWorkflowEnvironment;
 import io.temporal.worker.Worker;
-import io.temporal.worker.WorkerFactory;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivity;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
-import it.gov.pagopa.pu.workflow.PaymentsReportingIngestionWF;
+import it.gov.pagopa.pu.workflow.ingestionflow.PaymentsReportingIngestionWF;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
-
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
 
 public class PaymentsReportingIngestionWFImplTest {
 

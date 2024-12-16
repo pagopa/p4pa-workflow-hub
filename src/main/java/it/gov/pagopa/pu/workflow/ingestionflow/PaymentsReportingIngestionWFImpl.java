@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.impl;
+package it.gov.pagopa.pu.workflow.ingestionflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
@@ -8,7 +8,6 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
-import it.gov.pagopa.pu.workflow.PaymentsReportingIngestionWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -25,41 +24,50 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
   @Value("${workflow.queue:PaymentsReportingIngestionWF}")
   private String workflowQueue;
 
-  private static final int START_TO_CLOSE_TIMEOUT_IN_SECONDS = 60;
-  private static final int RETRY_INITIAL_INTERVAL_IN_MILLIS = 1000;
-  private static final double RETRY_BACKOFF_COEFFICIENT = 1.1;
-  private static final int RETRY_MAXIMUM_ATTEMPTS = 10;
+  @Value("${workflow.startToCloseTimeoutInSeconds:60}")
+  private int startToCloseTimeoutInSeconds;
 
-/** Activity stubs */
+  @Value("${workflow.retryInitialIntervalInMillis:1000}")
+  private int retryInitialIntervalInMillis;
+
+  @Value("${workflow.retryBackoffCoefficient:1.1}")
+  private double retryBackoffCoefficient;
+
+  @Value("${workflow.retryMaximumAttempts:10}")
+  private int retryMaximumAttempts;
+
+
+  /**
+   * Activity stubs
+   */
 
   private final PaymentsReportingIngestionFlowFileActivity paymentsReportingIngestionFlowFileActivity =
     Workflow.newActivityStub(
       PaymentsReportingIngestionFlowFileActivity.class,
       ActivityOptions.newBuilder()
-        .setStartToCloseTimeout(Duration.ofSeconds(START_TO_CLOSE_TIMEOUT_IN_SECONDS))
+        .setStartToCloseTimeout(Duration.ofSeconds(startToCloseTimeoutInSeconds))
         .setTaskQueue(workflowQueue)
         .setRetryOptions(
           RetryOptions.newBuilder()
-            .setInitialInterval(Duration.ofMillis(RETRY_INITIAL_INTERVAL_IN_MILLIS))
-            .setBackoffCoefficient(RETRY_BACKOFF_COEFFICIENT)
+            .setInitialInterval(Duration.ofMillis(retryInitialIntervalInMillis))
+            .setBackoffCoefficient(retryBackoffCoefficient)
             .setDoNotRetry(IllegalArgumentException.class.getName())
-            .setMaximumAttempts(RETRY_MAXIMUM_ATTEMPTS)
+            .setMaximumAttempts(retryMaximumAttempts)
             .build())
         .build());
-
 
   private final SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity =
     Workflow.newActivityStub(
       SendEmailIngestionFlowActivity.class,
       ActivityOptions.newBuilder()
-        .setStartToCloseTimeout(Duration.ofSeconds(START_TO_CLOSE_TIMEOUT_IN_SECONDS))
+        .setStartToCloseTimeout(Duration.ofSeconds(startToCloseTimeoutInSeconds))
         .setTaskQueue(workflowQueue)
         .setRetryOptions(
           RetryOptions.newBuilder()
-            .setInitialInterval(Duration.ofMillis(RETRY_INITIAL_INTERVAL_IN_MILLIS))
-            .setBackoffCoefficient(RETRY_BACKOFF_COEFFICIENT)
+            .setInitialInterval(Duration.ofMillis(retryInitialIntervalInMillis))
+            .setBackoffCoefficient(retryBackoffCoefficient)
             .setDoNotRetry(IllegalArgumentException.class.getName())
-            .setMaximumAttempts(RETRY_MAXIMUM_ATTEMPTS)
+            .setMaximumAttempts(retryMaximumAttempts)
             .build())
         .build());
 
@@ -67,14 +75,14 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     Workflow.newActivityStub(
       UpdateIngestionFlowStatusActivity.class,
       ActivityOptions.newBuilder()
-        .setStartToCloseTimeout(Duration.ofSeconds(START_TO_CLOSE_TIMEOUT_IN_SECONDS))
+        .setStartToCloseTimeout(Duration.ofSeconds(startToCloseTimeoutInSeconds))
         .setTaskQueue(workflowQueue)
         .setRetryOptions(
           RetryOptions.newBuilder()
-            .setInitialInterval(Duration.ofMillis(RETRY_INITIAL_INTERVAL_IN_MILLIS))
-            .setBackoffCoefficient(RETRY_BACKOFF_COEFFICIENT)
+            .setInitialInterval(Duration.ofMillis(retryInitialIntervalInMillis))
+            .setBackoffCoefficient(retryBackoffCoefficient)
             .setDoNotRetry(IllegalArgumentException.class.getName())
-            .setMaximumAttempts(RETRY_MAXIMUM_ATTEMPTS)
+            .setMaximumAttempts(retryMaximumAttempts)
             .build())
         .build());
 
@@ -89,11 +97,11 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     log.info("Handling IngestingFlowFileId: " + ingestionFlowFileId);
 
     PaymentsReportingIngestionFlowFileActivityResult ingestionResult =
-      paymentsReportingIngestionFlowFileActivity.processFile(fileId);
-    sendEmailIngestionFlowActivity.sendEmail("" + fileId, ingestionResult.isSuccess());
-    updateIngestionFlowStatusActivity.updateStatus(fileId, ingestionResult.isSuccess() ? "OK" : "KO");
+      paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
+    sendEmailIngestionFlowActivity.sendEmail("" + ingestionFlowFileId, ingestionResult.isSuccess());
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? "OK" : "KO");
 
-    log.info("Ingestion completed for file with ID: " + fileId);
+    log.info("Ingestion completed for file with ID: " + ingestionFlowFileId);
   }
 
 }
