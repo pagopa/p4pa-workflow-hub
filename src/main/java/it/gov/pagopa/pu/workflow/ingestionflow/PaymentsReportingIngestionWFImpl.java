@@ -21,21 +21,24 @@ import java.time.Duration;
 @WorkflowImpl(taskQueues = "PaymentsReportingIngestionWF")
 public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngestionWF {
 
-  @Value("${workflow.queue:PaymentsReportingIngestionWF}")
   private String workflowQueue;
-
-  @Value("${workflow.startToCloseTimeoutInSeconds:60}")
-  private int startToCloseTimeoutInSeconds;
-
-  @Value("${workflow.retryInitialIntervalInMillis:1000}")
+  private int startToCloseTimeoutInSeconds = 0;
   private int retryInitialIntervalInMillis;
-
-  @Value("${workflow.retryBackoffCoefficient:1.1}")
   private double retryBackoffCoefficient;
-
-  @Value("${workflow.retryMaximumAttempts:10}")
   private int retryMaximumAttempts;
 
+  public PaymentsReportingIngestionWFImpl(
+    @Value("${workflow.queue:PaymentsReportingIngestionWF}") String workflowQueue,
+    @Value("${workflow.startToCloseTimeoutInSeconds:60}") int startToCloseTimeoutInSeconds,
+    @Value("${workflow.retryInitialIntervalInMillis:1000}") int retryInitialIntervalInMillis,
+    @Value("${workflow.retryBackoffCoefficient:1.1}") double retryBackoffCoefficient,
+    @Value("${workflow.retryMaximumAttempts:10}") int retryMaximumAttempts) {
+    this.workflowQueue = workflowQueue;
+    this.startToCloseTimeoutInSeconds = startToCloseTimeoutInSeconds;
+    this.retryInitialIntervalInMillis = retryInitialIntervalInMillis;
+    this.retryBackoffCoefficient = retryBackoffCoefficient;
+    this.retryMaximumAttempts = retryMaximumAttempts;
+  }
 
   /**
    * Activity stubs
