@@ -7,7 +7,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Component
+@Getter
+@Setter
 @ActivityImpl
 public class SpringValuesLocalActivityImpl implements SpringValuesLocalActivity {
 
