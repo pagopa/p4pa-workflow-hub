@@ -36,9 +36,9 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     PaymentsReportingIngestionWfConfig wfConfig = applicationContext.getBean(PaymentsReportingIngestionWfConfig.class);
 
-    paymentsReportingIngestionFlowFileActivity = wfConfig.buildGetPaymentsReportingIngestionFlowFileActivityStub();
-    sendEmailIngestionFlowActivity = wfConfig.buildGetSendEmailIngestionFlowActivityStub();
-    updateIngestionFlowStatusActivity = wfConfig.buildGetUpdateIngestionFlowStatusActivityStub();
+    paymentsReportingIngestionFlowFileActivity = wfConfig.buildPaymentsReportingIngestionFlowFileActivityStub();
+    sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
+    updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
   }
 
   @Override
@@ -46,8 +46,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     log.info("Handling IngestingFlowFileId {}", ingestionFlowFileId);
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB");
-    PaymentsReportingIngestionFlowFileActivityResult ingestionResult =
-      paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
+    PaymentsReportingIngestionFlowFileActivityResult ingestionResult = paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, ingestionResult.isSuccess());
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? "OK" : "KO");
 

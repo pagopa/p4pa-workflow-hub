@@ -13,15 +13,15 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "workflow.payments-reporting-ingestion")
 public class PaymentsReportingIngestionWfConfig extends BaseWfConfig {
 
-  public PaymentsReportingIngestionFlowFileActivity buildGetPaymentsReportingIngestionFlowFileActivityStub() {
+  public PaymentsReportingIngestionFlowFileActivity buildPaymentsReportingIngestionFlowFileActivityStub() {
     return Workflow.newActivityStub(PaymentsReportingIngestionFlowFileActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
-  public UpdateIngestionFlowStatusActivity buildGetUpdateIngestionFlowStatusActivityStub() {
+  public UpdateIngestionFlowStatusActivity buildUpdateIngestionFlowStatusActivityStub() {
     return Workflow.newActivityStub(UpdateIngestionFlowStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
-  public SendEmailIngestionFlowActivity buildGetSendEmailIngestionFlowActivityStub() {
+  public SendEmailIngestionFlowActivity buildSendEmailIngestionFlowActivityStub() {
     return Workflow.newActivityStub(SendEmailIngestionFlowActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 }

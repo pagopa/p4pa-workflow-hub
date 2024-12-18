@@ -13,7 +13,6 @@ import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIn
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -22,7 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.mockito.Mockito.*;
 
-@ExtendWith({SpringExtension.class, MockitoExtension.class})
+@ExtendWith({SpringExtension.class})
 @SpringBootTest(classes = WorkflowApplication.class)
 @TestPropertySource(properties = {
   "spring.temporal.test-server.enabled: true",
