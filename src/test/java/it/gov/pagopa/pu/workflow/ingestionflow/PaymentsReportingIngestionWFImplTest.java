@@ -11,6 +11,8 @@ import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReport
 import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.pu.workflow.WorkflowApplication;
+import it.gov.pagopa.pu.workflow.local.SpringValuesLocalActivity;
+import it.gov.pagopa.pu.workflow.local.SpringValuesLocalActivityImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.mockito.Mockito.*;
 
@@ -31,6 +37,7 @@ public class PaymentsReportingIngestionWFImplTest {
   private PaymentsReportingIngestionFlowFileActivity mockFileActivity;
   private SendEmailIngestionFlowActivity mockEmailActivity;
   private UpdateIngestionFlowStatusActivity mockStatusActivity;
+  private SpringValuesLocalActivity mockSpringValuesLocalActivity;
 
   @Value("${workflow.queue:PaymentsReportingIngestionWF}")
   private String workflowQueue;
@@ -48,11 +55,13 @@ public class PaymentsReportingIngestionWFImplTest {
     mockFileActivity = mock(PaymentsReportingIngestionFlowFileActivityImpl.class);
     //  mockEmailActivity = mock(SendEmailIngestionFlowActivity.class);
     mockStatusActivity = mock(UpdateIngestionFlowStatusActivityImpl.class);
+    mockSpringValuesLocalActivity = mock(SpringValuesLocalActivityImpl.class);
 
     worker.registerWorkflowImplementationTypes(PaymentsReportingIngestionWFImpl.class);
     worker.registerActivitiesImplementations(mockFileActivity,
       //mockEmailActivity,
-      mockStatusActivity);
+      mockStatusActivity,
+      mockSpringValuesLocalActivity);
 
     factory.start();
 
@@ -69,6 +78,10 @@ public class PaymentsReportingIngestionWFImplTest {
     testEnv.close();
   }
 
+
+  /**
+   * Test the successful ingestion of a file
+   */
   @Test
   public void testIngestSuccess() {
     PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
@@ -76,12 +89,22 @@ public class PaymentsReportingIngestionWFImplTest {
 
     when(mockFileActivity.processFile(anyLong())).thenReturn(result);
 
+    HashMap<String, String> props = buildProperties();
+
+
+    when(mockSpringValuesLocalActivity.getProperties()).thenReturn(props);
+
     workflow.ingest(1L);
 
     verify(mockFileActivity, times(1)).processFile(1L);
-  //  verify(mockEmailActivity, times(1)).sendEmail(1L, true);
+    //  verify(mockEmailActivity, times(1)).sendEmail(1L, true);
     verify(mockStatusActivity, times(1)).updateStatus(1L, "OK");
   }
+
+
+  /**
+   * Test the ingest method when the file processing fails
+   */
 
   @Test
   public void testIngestFailure() {
@@ -90,11 +113,30 @@ public class PaymentsReportingIngestionWFImplTest {
 
     when(mockFileActivity.processFile(anyLong())).thenReturn(result);
 
+    HashMap<String, String> props = buildProperties();
+    when(mockSpringValuesLocalActivity.getProperties()).thenReturn(props);
+
     workflow.ingest(1L);
 
     verify(mockFileActivity, times(1)).processFile(1L);
-  //  verify(mockEmailActivity, times(1)).sendEmail(1L, false);
+    //  verify(mockEmailActivity, times(1)).sendEmail(1L, false);
     verify(mockStatusActivity, times(1)).updateStatus(1L, "KO");
   }
 
+
+  /**
+   * Helper method to build the properties map
+   *
+   * @return the properties map
+   */
+  private HashMap<String, String> buildProperties() {
+    HashMap<String, String> props = new HashMap<String, String>();
+    props.put("startToCloseTimeoutInSeconds", "1");
+    props.put("retryInitialIntervalInMillis", "1000");
+    props.put("retryBackoffCoefficient", "1.1");
+    props.put("retryMaximumAttempts", "5");
+    props.put("workflowQueue", "PaymentsReportingIngestionWF");
+    return props;
+  }
 }
+
