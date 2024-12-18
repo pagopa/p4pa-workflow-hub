@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.ingestionflow;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
@@ -12,8 +12,8 @@ public interface PaymentsReportingIngestionWF {
 
   /**
    * Workflow method for the Payments Reporting Ingestion Workflow
-   * @param ingestionFlowFileId
+   * @param ingestionFlowFileId the id of the ingestion flow file to ingest
    * */
   @WorkflowMethod
-  public void ingest(Long ingestionFlowFileId);
+  void ingest(Long ingestionFlowFileId);
 }
