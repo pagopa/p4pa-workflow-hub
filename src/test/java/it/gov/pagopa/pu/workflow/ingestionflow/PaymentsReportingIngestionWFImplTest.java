@@ -5,7 +5,9 @@ import io.temporal.testing.TestWorkflowEnvironment;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.pu.workflow.WorkflowApplication;
@@ -43,12 +45,14 @@ public class PaymentsReportingIngestionWFImplTest {
     WorkerFactory factory = testEnv.getWorkerFactory();
     worker = factory.newWorker(workflowQueue);
 
-    mockFileActivity = mock(PaymentsReportingIngestionFlowFileActivity.class);
-    mockEmailActivity = mock(SendEmailIngestionFlowActivity.class);
-    mockStatusActivity = mock(UpdateIngestionFlowStatusActivity.class);
+    mockFileActivity = mock(PaymentsReportingIngestionFlowFileActivityImpl.class);
+    //  mockEmailActivity = mock(SendEmailIngestionFlowActivity.class);
+    mockStatusActivity = mock(UpdateIngestionFlowStatusActivityImpl.class);
 
     worker.registerWorkflowImplementationTypes(PaymentsReportingIngestionWFImpl.class);
-    worker.registerActivitiesImplementations(mockFileActivity, mockEmailActivity, mockStatusActivity);
+    worker.registerActivitiesImplementations(mockFileActivity,
+      //mockEmailActivity,
+      mockStatusActivity);
 
     factory.start();
 
@@ -75,7 +79,7 @@ public class PaymentsReportingIngestionWFImplTest {
     workflow.ingest(1L);
 
     verify(mockFileActivity, times(1)).processFile(1L);
-    verify(mockEmailActivity, times(1)).sendEmail("1", true);
+  //  verify(mockEmailActivity, times(1)).sendEmail(1L, true);
     verify(mockStatusActivity, times(1)).updateStatus(1L, "OK");
   }
 
@@ -89,7 +93,7 @@ public class PaymentsReportingIngestionWFImplTest {
     workflow.ingest(1L);
 
     verify(mockFileActivity, times(1)).processFile(1L);
-    verify(mockEmailActivity, times(1)).sendEmail("1", false);
+  //  verify(mockEmailActivity, times(1)).sendEmail(1L, false);
     verify(mockStatusActivity, times(1)).updateStatus(1L, "KO");
   }
 

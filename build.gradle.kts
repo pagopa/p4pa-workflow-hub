@@ -39,8 +39,8 @@ repositories {
 val springDocOpenApiVersion = "2.6.0"
 val openApiToolsVersion = "0.2.6"
 val micrometerVersion = "1.4.0"
-val activitiesVersion = "1.12.0"
-val temporalVersion = "1.26.1"
+val activitiesVersion = "1.15.1"
+val temporalVersion = "1.27.0"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
