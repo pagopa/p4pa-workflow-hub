@@ -87,12 +87,26 @@ stages:
 
           - task: Docker@2
             condition: and(succeeded(), ${{ parameters.executeBuild }})
-            displayName: 'Build and publish $(imageRepository) image'
+            displayName: 'Build $(imageRepository) image'
             inputs:
               containerRegistry: '$(dockerRegistryServiceConnection)'
               repository: '$(imageRepository)'
-              command: 'buildAndPush'
+              command: 'build'
+              buildContext: '.'
+              Dockerfile: 'Dockerfile'
               arguments: "--build-arg GITHUB_TOKEN=$(GITHUB_PACKAGE_TOKEN)"
+              tags: |
+                latest
+                $(Build.SourceVersion)
+                $(getAppVersion.appVersion)
+
+          - task: Docker@2
+            condition: and(succeeded(), ${{ parameters.executeBuild }})
+            displayName: 'Push $(imageRepository) image'
+            inputs:
+              containerRegistry: '$(dockerRegistryServiceConnection)'
+              repository: '$(imageRepository)'
+              command: 'push'
               tags: |
                 latest
                 $(Build.SourceVersion)
