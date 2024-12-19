@@ -9,6 +9,7 @@ ARG GRADLE_VERSION="8.10.2"
 ARG GRADLE_DOWNLOAD_SHA256="31c55713e40233a8303827ceb42ca48a47267a0ad4bab9177123121e71524c26"
 ARG APPINSIGHTS_VERSION="3.6.2"
 
+
 # 🌍 Timezone Configuration
 ARG TZ="Europe/Rome"
 
@@ -31,6 +32,7 @@ ARG GRADLE_HOME="/opt/gradle"
 FROM amazoncorretto:${CORRETTO_VERSION}@sha256:${CORRETTO_SHA} AS base
 ARG APP_USER
 ARG APP_GROUP
+
 
 # Install base packages
 RUN apk add --no-cache \
@@ -87,6 +89,8 @@ VOLUME /home/${APP_USER}/.gradle
 #
 FROM gradle-setup AS dependencies
 
+
+
 WORKDIR /build
 
 # Copy build configuration
@@ -110,6 +114,9 @@ FROM dependencies AS build
 
 # Copy source code
 COPY --chown=${APP_USER}:${APP_GROUP} src src/
+
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=$GITHUB_TOKEN
 
 # Build application
 RUN gradle bootJar --no-daemon
