@@ -5,8 +5,8 @@ spring:
   jmx.enabled: true
   temporal:
     connection:
-      enable-https: "\${TEMPORAL_SERVER_ENABLE_HTTPS:true}"
-      target: "\${TEMPORAL_SERVER_BASE_URL:api.temporal.internal.dev.p4pa.pagopa.it:443}"
+      enable-https: "\${TEMPORAL_SERVER_ENABLE_HTTPS:false}"
+      target: "\${TEMPORAL_SERVER_HOST:localhost}:\${TEMPORAL_SERVER_PORT:7233}"
       target.namespace: "\${TEMPORAL_SERVER_NAMESPACE:default}"
     workers-auto-discovery:
       packages:
