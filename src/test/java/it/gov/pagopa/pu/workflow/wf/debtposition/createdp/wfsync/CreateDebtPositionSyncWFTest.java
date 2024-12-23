@@ -44,13 +44,16 @@ class CreateDebtPositionSyncWFTest {
 
   @Test
   void givenCreateDPSyncThenSuccess() {
+    // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
 
     Mockito.doNothing().when(sendDebtPositionIONotificationActivityMock)
       .sendMessage(debtPosition);
 
+    // When
     wf.createDPSync(debtPosition);
 
+    // Then
     Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
   }
 }

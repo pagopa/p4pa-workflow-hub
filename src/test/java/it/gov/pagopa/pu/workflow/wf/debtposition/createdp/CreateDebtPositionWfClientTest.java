@@ -37,6 +37,7 @@ class CreateDebtPositionWfClientTest {
 
   @Test
   void whenCreateDPSyncThenSuccess(){
+    // Given
     long id = 1L;
     String expectedWorkflowId = String.valueOf(id);
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
@@ -44,8 +45,10 @@ class CreateDebtPositionWfClientTest {
     Mockito.when(workflowServiceMock.buildWorkflowStub(CreateDebtPositionSyncWF.class, CreateDebtPositionSyncWFImpl.TASK_QUEUE, expectedWorkflowId))
       .thenReturn(wfMock);
 
+    // When
     String workflowId = client.createDPSync(debtPosition);
 
+    // Then
     Assertions.assertEquals(expectedWorkflowId, workflowId);
     Mockito.verify(wfMock).createDPSync(debtPosition);
   }
