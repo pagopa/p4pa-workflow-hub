@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.service;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def.PaymentsReportingIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def.PaymentsReportingIngestionWFImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;

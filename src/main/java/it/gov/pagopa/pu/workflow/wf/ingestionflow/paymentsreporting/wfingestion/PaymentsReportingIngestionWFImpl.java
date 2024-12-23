@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
@@ -11,7 +11,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def.PaymentsReportingIngestionWFImpl.TASK_QUEUE;
+import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE;
 
 /**
  * Workflow implementation for the Payments Reporting Ingestion Workflow
