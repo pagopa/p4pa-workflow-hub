@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;

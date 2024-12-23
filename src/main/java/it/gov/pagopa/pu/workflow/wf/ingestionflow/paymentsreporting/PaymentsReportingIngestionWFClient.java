@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting;
 
 import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def.PaymentsReportingIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.def.PaymentsReportingIngestionWFImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import org.springframework.stereotype.Service;
 
 @Service

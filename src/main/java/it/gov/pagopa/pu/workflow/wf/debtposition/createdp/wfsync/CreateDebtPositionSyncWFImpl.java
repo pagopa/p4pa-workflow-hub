@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.def;
+package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
@@ -9,7 +9,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import static it.gov.pagopa.pu.workflow.wf.debtposition.createdp.def.CreateDebtPositionSyncWFImpl.TASK_QUEUE;
+import static it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWFImpl.TASK_QUEUE;
 
 
 @Slf4j
@@ -27,7 +27,7 @@ public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, A
   }
 
   @Override
-  public void ingest(DebtPositionDTO debtPosition) {
+  public void createDPSync(DebtPositionDTO debtPosition) {
     log.info("Starting workflow for ingesting DebtPosition with ID: {}", debtPosition.getDebtPositionId());
     sendDebtPositionIONotificationActivity.sendMessage(debtPosition);
     log.info("Message to IO sent with payload {}", debtPosition);
