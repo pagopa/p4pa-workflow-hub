@@ -141,11 +141,14 @@ RUN apk upgrade --no-cache && \
     apk add --no-cache \
         tini \
         curl \
+        gcompat \
         # Configure timezone + ENV=TZ
         tzdata && \
     # Create user and group
     addgroup -S ${APP_GROUP} && \
     adduser -S ${APP_USER} -G ${APP_GROUP}
+
+ENV LD_PRELOAD=/lib/libgcompat.so.0
 
 # 📦 Copy Artifacts
 COPY --from=build /build/build/libs/*.jar ${APP_HOME}/app.jar
