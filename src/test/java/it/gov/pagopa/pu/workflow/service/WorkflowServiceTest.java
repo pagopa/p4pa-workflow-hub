@@ -2,8 +2,6 @@ package it.gov.pagopa.pu.workflow.service;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -21,9 +19,7 @@ class WorkflowServiceTest {
   @Mock
   private WorkflowClient workflowClientMock;
   @Mock
-  private PaymentsReportingIngestionWF paymentsReportingIngestionWFMock;
-  @Mock
-  private CreateDebtPositionSyncWF createDebtPositionSyncWFMock;
+  private PaymentsReportingIngestionWF wfMock;
 
   private WorkflowService workflowService;
 
@@ -34,7 +30,7 @@ class WorkflowServiceTest {
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(workflowClientMock, paymentsReportingIngestionWFMock, createDebtPositionSyncWFMock);
+    Mockito.verifyNoMoreInteractions(workflowClientMock, wfMock);
   }
 
   @Test
@@ -49,33 +45,12 @@ class WorkflowServiceTest {
           PaymentsReportingIngestionWFImpl.TASK_QUEUE.equals(options.getTaskQueue()) &&
             workflowId.equals(options.getWorkflowId())
         )))
-      .thenReturn(paymentsReportingIngestionWFMock);
+      .thenReturn(wfMock);
 
     // When
     PaymentsReportingIngestionWF result = workflowService.buildWorkflowStub(PaymentsReportingIngestionWF.class, PaymentsReportingIngestionWFImpl.TASK_QUEUE, workflowId);
 
     // Then
-    Assertions.assertSame(paymentsReportingIngestionWFMock, result);
-  }
-
-  @Test
-  void whenCreateDPSyncThenOk(){
-    // Given
-    long id = 1L;
-    String workflowId = String.valueOf(id);
-
-    Mockito.when(workflowClientMock.newWorkflowStub(
-        Mockito.eq(CreateDebtPositionSyncWF.class),
-        Mockito.<WorkflowOptions>argThat(options ->
-          CreateDebtPositionSyncWFImpl.TASK_QUEUE.equals(options.getTaskQueue()) &&
-            workflowId.equals(options.getWorkflowId())
-        )))
-      .thenReturn(createDebtPositionSyncWFMock);
-
-    // When
-    CreateDebtPositionSyncWF result = workflowService.buildWorkflowStub(CreateDebtPositionSyncWF.class, CreateDebtPositionSyncWFImpl.TASK_QUEUE, workflowId);
-
-    // Then
-    Assertions.assertSame(createDebtPositionSyncWFMock, result);
+    Assertions.assertSame(wfMock, result);
   }
 }
