@@ -20,6 +20,12 @@ public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, A
 
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
 
+  /**
+   * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
+   * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
+   * In {@link it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
+   * Use this as an example to override based on the particular workflow.
+   */
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     CreateDebtPositionWfConfig wfConfig = applicationContext.getBean(CreateDebtPositionWfConfig.class);
