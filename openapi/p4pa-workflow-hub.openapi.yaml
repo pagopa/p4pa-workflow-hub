@@ -2,23 +2,46 @@ openapi: 3.1.0
 info:
   title: p4pa-workflow-hub
   description: Api and Models
-  version: "1.0.0"
+  version: 0.0.1
+servers:
+  - url: "http://localhost:8080/workflowhub"
 paths:
-  /api/v1/greet:
+  /{workflowId}/status:
     get:
-      summary: "Hello World"
-      description: "Sample endpoint that return greetings"
+      tags:
+        - WorkflowHub
+      operationId: getStatus
+      summary: Get Workflow Status
+      description: Retrieve the current status of a Temporal workflow by its ID.
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          description: The unique identifier of the workflow.
+          schema:
+            type: string
       responses:
         '200':
-          description: "Success"
+          description: "Workflow status retrieved successfully"
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  workflowId:
                     type: string
-                    example: "Hello, World!"
+                  status:
+                    type: string
+        '404':
+          description: "Workflow not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Workflow not found"
         '500':
           description: "Internal Server Error"
           content:
