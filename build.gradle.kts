@@ -1,7 +1,7 @@
 plugins {
   java
-  id("org.springframework.boot") version "3.4.0"
-  id("io.spring.dependency-management") version "1.1.6"
+  id("org.springframework.boot") version "3.4.1"
+  id("io.spring.dependency-management") version "1.1.7"
   jacoco
   id("org.sonarqube") version "6.0.1.5171"
   id("com.github.ben-manes.versions") version "0.51.0"
@@ -38,10 +38,10 @@ repositories {
 
 val springDocOpenApiVersion = "2.7.0"
 val openApiToolsVersion = "0.2.6"
-val micrometerVersion = "1.4.0"
+val micrometerVersion = "1.4.1"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
-val activitiesVersion = "1.21.1"
+val activitiesVersion = "1.23.1"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")

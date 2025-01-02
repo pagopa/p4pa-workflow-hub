@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
-import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
 import org.junit.jupiter.api.AfterEach;
