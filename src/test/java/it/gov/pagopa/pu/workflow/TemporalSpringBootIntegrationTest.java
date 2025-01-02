@@ -7,8 +7,8 @@ import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.client.WorkflowClient;
 import io.temporal.internal.client.WorkflowClientHelper;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivityImpl;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
-import it.gov.pagopa.payhub.activities.activity.utility.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import org.junit.jupiter.api.Test;
@@ -39,17 +39,9 @@ class TemporalSpringBootIntegrationTest {
   @MockitoBean("fileActivityMock")
   private PaymentsReportingIngestionFlowFileActivityImpl fileActivityMock;
   @MockitoBean("emailActivityMock")
-  private SendEmailIngestionFlowActivityDummyImpl emailActivityMock;
+  private SendEmailIngestionFlowActivityImpl emailActivityMock;
   @MockitoBean("statusActivityMock")
   private UpdateIngestionFlowStatusActivityImpl statusActivityMock;
-
-  // actually activities library doesn't have an Impl for this Activity
-  public static class SendEmailIngestionFlowActivityDummyImpl implements SendEmailIngestionFlowActivity {
-    @Override
-    public boolean sendEmail(Long ingestionFlowId, boolean success) {
-      return false;
-    }
-  }
 
   @Autowired
   private PaymentsReportingIngestionWFClient workflowClient;
