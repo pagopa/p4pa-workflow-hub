@@ -65,6 +65,9 @@ microservice-chart:
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
 
+    MAIL_USERNAME: mail-username
+    MAIL_PASSWORD: mail-password
+
   # nodeSelector: {}
 
   # tolerations: []
