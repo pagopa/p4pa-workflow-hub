@@ -35,6 +35,8 @@ microservice-chart:
     TEMPORAL_SERVER_HOST: "api.temporal.internal.uat.p4pa.pagopa.it"
     TEMPORAL_SERVER_PORT: "443"
 
+    MAIL_HOST: "smtp.ethereal.email"
+
   keyvault:
     name: "p4pa-u-payhub-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
