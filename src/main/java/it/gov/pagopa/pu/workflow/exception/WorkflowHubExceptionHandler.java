@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.exception;
 
 import it.gov.pagopa.pu.workflow.dto.generated.CreatePaymentIngestionWF500Response;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
