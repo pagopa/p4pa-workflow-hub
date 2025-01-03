@@ -33,7 +33,7 @@ paths:
                 properties:
                   workflowId:
                     type: string
-                    example: "WF12345678"
+                    example: WF12345678
         '429':
           description: Too Many Requests
         '500':
