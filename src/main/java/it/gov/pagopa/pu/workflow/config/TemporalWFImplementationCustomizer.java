@@ -4,6 +4,7 @@ import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.spring.boot.TemporalOptionsCustomizer;
 import io.temporal.worker.WorkflowImplementationOptions;
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,7 @@ public class TemporalWFImplementationCustomizer implements TemporalOptionsCustom
         RetryOptions.newBuilder()
           .setInitialInterval(Duration.ofMillis(baseWfConfig.getRetryInitialIntervalInMillis()))
           .setBackoffCoefficient(baseWfConfig.getRetryBackoffCoefficient())
-          .setDoNotRetry(IllegalArgumentException.class.getName())
+          .setDoNotRetry(IllegalArgumentException.class.getName(), NotRetryableActivityException.class.getName())
           .setMaximumAttempts(baseWfConfig.getRetryMaximumAttempts())
           .build())
       .build();

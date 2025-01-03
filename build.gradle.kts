@@ -41,7 +41,7 @@ val openApiToolsVersion = "0.2.6"
 val micrometerVersion = "1.4.1"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
-val activitiesVersion = "1.23.1"
+val activitiesVersion = "1.23.3"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")

@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,6 +81,121 @@ class TemporalSpringBootIntegrationTest {
     verify(statusActivityMock, times(1)).updateStatus(1L, "KO");
   }
 
+
+  // TESTS FOR NOT RETRYABLE ACTIVITIES
+
+  @Test
+  void testIngestNotRetryableActivityOnInitialUpdateSTatusException() {
+    when(statusActivityMock.updateStatus(1L, "IMPORT_IN_ELAB")).thenThrow(new NotRetryableActivityException("NotRetryableActivityException"));
+
+    String workflowId = workflowClient.ingest(1L);
+    waitUntilWfFailed(workflowId);
+
+    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
+    verify(fileActivityMock, never()).processFile(1L);
+    verify(emailActivityMock, never()).sendEmail(anyLong(), anyBoolean());
+    verify(statusActivityMock, never()).updateStatus(1L, "OK");
+    verify(statusActivityMock, never()).updateStatus(1L, "KO");
+  }
+
+
+  @Test
+  void testIngestNotRetryableActivityOnProcessFileException() {
+
+    PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
+    result.setSuccess(true);
+
+    when(fileActivityMock.processFile(anyLong()))
+      .thenThrow(new NotRetryableActivityException("NotRetryableActivityException"));
+
+    String workflowId = workflowClient.ingest(1L);
+    waitUntilWfFailed(workflowId);
+
+    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
+    verify(fileActivityMock, times(1)).processFile(1L);
+    verify(emailActivityMock, never()).sendEmail(anyLong(), anyBoolean());
+    verify(statusActivityMock, never()).updateStatus(1L, "OK");
+    verify(statusActivityMock, never()).updateStatus(1L, "KO");
+  }
+
+  @Test
+  void testIngestNotRetryableActivityOnEmailSendException() {
+
+    PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
+    result.setSuccess(true);
+
+    when(fileActivityMock.processFile(anyLong())).thenReturn(result);
+
+    doThrow(new NotRetryableActivityException("NotRetryableActivityException"))
+      .when(emailActivityMock).sendEmail(anyLong(), anyBoolean());
+
+    String workflowId = workflowClient.ingest(1L);
+    waitUntilWfFailed(workflowId);
+
+    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
+    verify(fileActivityMock, times(1)).processFile(1L);
+    verify(emailActivityMock, times(1)).sendEmail(anyLong(), anyBoolean());
+    verify(statusActivityMock, never()).updateStatus(1L, "OK");
+    verify(statusActivityMock, never()).updateStatus(1L, "KO");
+  }
+
+
+  @Test
+  void testIngestNotRetryableActivityOnFinalUpdateStatusException() {
+
+    PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
+    result.setSuccess(false);
+    when(fileActivityMock.processFile(anyLong())).thenReturn(result);
+    when(statusActivityMock.updateStatus(1L, "KO"))
+      .thenThrow(new NotRetryableActivityException("NotRetryableActivityException"));
+
+    String workflowId = workflowClient.ingest(1L);
+    waitUntilWfFailed(workflowId);
+
+    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
+    verify(fileActivityMock, times(1)).processFile(1L);
+    verify(emailActivityMock, times(1)).sendEmail(anyLong(), anyBoolean());
+    verify(statusActivityMock, times(1)).updateStatus(1L, "KO");
+  }
+
+  // TESTS FOR RETRYABLE ACTIVITIES
+
+  @Test
+  void testIngestRetryableActivityOnInitialUpdateStatusException() {
+    when(statusActivityMock.updateStatus(1L, "IMPORT_IN_ELAB")).thenThrow(new RuntimeException("RetryableActivityException"));
+
+    String workflowId = workflowClient.ingest(1L);
+    waitUntilWfFailed(workflowId);
+
+    verify(statusActivityMock, atLeast(2)).updateStatus(1L, "IMPORT_IN_ELAB");
+    verify(fileActivityMock, never()).processFile(1L);
+    verify(emailActivityMock, never()).sendEmail(anyLong(), anyBoolean());
+    verify(statusActivityMock, never()).updateStatus(1L, "OK");
+    verify(statusActivityMock, never()).updateStatus(1L, "KO");
+
+  }
+
+  @Test
+  void testIngestRetryableActivityOnProcessFileException() {
+
+    PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
+    result.setSuccess(true);
+
+    when(fileActivityMock.processFile(anyLong()))
+      .thenThrow(new RuntimeException("RetryableActivityException"));
+
+    String workflowId = workflowClient.ingest(1L);
+    waitUntilWfFailed(workflowId);
+
+    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
+    verify(fileActivityMock, atLeast(2)).processFile(1L);
+    verify(emailActivityMock, never()).sendEmail(anyLong(), anyBoolean());
+    verify(statusActivityMock, never()).updateStatus(1L, "OK");
+
+  }
+
+
+  // PRIVATE METHODS
   private void waitUntilWfCompletion(String workflowId) {
     WorkflowExecutionInfo info;
     do {
@@ -87,4 +203,15 @@ class TemporalSpringBootIntegrationTest {
     } while (!WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(info.getStatus()));
   }
 
+
+  private void waitUntilWfFailed(String workflowId) {
+    WorkflowExecutionInfo info;
+    do {
+      info = WorkflowClientHelper.describeWorkflowInstance(temporalClient.getWorkflowServiceStubs(), "default", WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), new NoopScope());
+    } while (!WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_FAILED.equals(info.getStatus()));
+  }
+
+
 }
+
+
