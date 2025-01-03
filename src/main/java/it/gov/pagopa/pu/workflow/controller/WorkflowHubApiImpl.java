@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.controller;
 
 import it.gov.pagopa.pu.workflow.controller.generated.WorkflowHubApi;
-import it.gov.pagopa.pu.workflow.dto.generated.CreatePaymentIngestionWF201Response;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +30,12 @@ public class WorkflowHubApiImpl implements WorkflowHubApi {
    * {@inheritDoc}
    */
   @Override
-  public ResponseEntity<CreatePaymentIngestionWF201Response> createPaymentIngestionWF(@PathVariable("ingestionFileId") Long ingestionFileId) {
+  public ResponseEntity<WorkflowCreatedDTO> createPaymentIngestionWF(@PathVariable("ingestionFileId") Long ingestionFileId) {
     log.info("Creating Payment Ingestion Workflow for ingestionFileId: {}", ingestionFileId);
 
     String workflowId = paymentsReportingIngestionWFClient.ingest(ingestionFileId);
 
-    CreatePaymentIngestionWF201Response response = new CreatePaymentIngestionWF201Response(workflowId);
+    WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
     response.setWorkflowId(workflowId);
 
     log.info("Payment Ingestion Workflow created successfully for ingestionFileId: {}", ingestionFileId);

@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.1
 info:
   title: p4pa-workflow-hub
   description: Api and Models
@@ -29,21 +29,30 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  workflowId:
-                    type: string
-                    example: WF12345678
-        '429':
-          description: Too Many Requests
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                  error_description:
-                    type: string
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+components:
+  schemas:
+    WorkflowCreatedDTO:
+      type: object
+      properties:
+        workflowId:
+          type: string
+    WorkflowErrorDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - WORKFLOW_NOT_FOUND
+            - WORKFLOW_GENERIC_ERROR
+        message:
+          type: string
