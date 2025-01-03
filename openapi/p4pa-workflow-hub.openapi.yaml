@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.1
 info:
   title: p4pa-workflow-hub
   description: Api and Models
@@ -10,14 +10,13 @@ paths:
     get:
       tags:
         - WorkflowHub
-      operationId: getStatus
+      operationId: getWorkflowStatus
       summary: Get Workflow Status
       description: Retrieve the current status of a Temporal workflow by its ID.
       parameters:
         - name: workflowId
           in: path
           required: true
-          description: The unique identifier of the workflow.
           schema:
             type: string
       responses:
@@ -26,29 +25,38 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  workflowId:
-                    type: string
-                  status:
-                    type: string
+                $ref: '#/components/schemas/WorkflowStatusDTO'
         '404':
           description: "Workflow not found"
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Workflow not found"
+                $ref: '#/components/schemas/WorkflowErrorDTO'
         '500':
-          description: "Internal Server Error"
+          description: Server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: "Internal Server Error"
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+components:
+  schemas:
+    WorkflowStatusDTO:
+      type: object
+      properties:
+        workflowId:
+          type: string
+        status:
+          type: string
+    WorkflowErrorDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - WORKFLOW_NOT_FOUND
+            - WORKFLOW_GENERIC_ERROR
+        message:
+          type: string
