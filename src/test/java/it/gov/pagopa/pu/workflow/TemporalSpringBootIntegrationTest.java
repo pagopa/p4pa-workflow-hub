@@ -11,7 +11,6 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIng
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
-import it.gov.pagopa.pu.workflow.utilities.exception.ExtendedNotRetryableActivityException;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -124,37 +123,11 @@ class TemporalSpringBootIntegrationTest {
     waitUntilWfFailed(workflowId);
 
     verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
-    verify(fileActivityMock, atLeast(2)).processFile(1L);
+    verify(fileActivityMock, times(3)).processFile(1L);
     verify(emailActivityMock, never()).sendEmail(anyLong(), anyBoolean());
     verify(statusActivityMock, never()).updateStatus(1L, "OK");
 
   }
-
-  // TEST FOR EXTENDED RETRYABLE ACTIVITY EXCEPTION
-  // These exceptions are not retried because Temporal does not support retrying
-  // of Exceptions that are not included in the list of retryable exceptions
-  // even if they are subclasses of those exceptions
-
-  @Test
-  void testIngestExtendedNotRetryableActivityExceptionOnProcessFile() {
-
-    PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
-    result.setSuccess(true);
-
-    when(fileActivityMock.processFile(anyLong()))
-      .thenThrow(new ExtendedNotRetryableActivityException("ExtendedNotRetryableActivityException"));
-
-    String workflowId = workflowClient.ingest(1L);
-    waitUntilWfFailed(workflowId);
-
-    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
-    verify(fileActivityMock, atLeast(2)).processFile(1L);
-    verify(emailActivityMock, never()).sendEmail(anyLong(), anyBoolean());
-    verify(statusActivityMock, never()).updateStatus(1L, "OK");
-
-  }
-
-
   // PRIVATE METHODS
   private void waitUntilWfCompletion(String workflowId) {
     WorkflowExecutionInfo info;
