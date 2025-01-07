@@ -32,14 +32,14 @@ public class WorkflowHubApiImpl implements IngestionFlowApi {
      */
     @Override
     public ResponseEntity<WorkflowCreatedDTO> ingestPaymentsReportingFile(@PathVariable("ingestionFlowFileId") Long ingestionFlowFileId) {
-        log.info("Creating Payment Ingestion Workflow for ingestionFileId: {}", ingestionFlowFileId);
+        log.info("Creating Payments Reporting Ingestion Workflow for ingestionFlowFileId: {}", ingestionFlowFileId);
 
         String workflowId = paymentsReportingIngestionWFClient.ingest(ingestionFlowFileId);
 
         WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
         response.setWorkflowId(workflowId);
 
-        log.info("Payment Ingestion Workflow {} created successfully for ingestionFileId: {}", workflowId, ingestionFlowFileId);
+        log.info("Payments Reporting Ingestion workflow {} created successfully for ingestionFileId: {}", workflowId, ingestionFlowFileId);
 
         return ResponseEntity.status(201).body(response);
     }
