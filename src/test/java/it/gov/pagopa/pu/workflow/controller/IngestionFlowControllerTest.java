@@ -18,8 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@WebMvcTest(WorkflowHubApiImpl.class)
-class WorkflowHubApiImplTest {
+@WebMvcTest(IngestionFlowControllerImpl.class)
+class IngestionFlowControllerTest {
 
     @Value("${openapi.p4paWorkflowHub.base-path:/workflowhub}")
     private String basePath;

@@ -22,7 +22,7 @@ public class IngestionFlowControllerImpl implements IngestionFlowApi {
 
     private final PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient;
 
-    public WorkflowHubApiImpl(PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient) {
+    public IngestionFlowControllerImpl(PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient) {
         this.paymentsReportingIngestionWFClient = paymentsReportingIngestionWFClient;
     }
 
