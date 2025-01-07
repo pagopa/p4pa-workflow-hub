@@ -6,7 +6,7 @@ info:
 servers:
   - url: "http://localhost:8080/workflowhub"
 paths:
-  /PaymentIngestionWF/{ingestionFileId}:
+  /ingestion-flow/payments-reporting/{ingestionFlowFileId}:
     post:
       tags:
         - WorkflowHub
