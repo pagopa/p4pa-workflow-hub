@@ -39,7 +39,7 @@ class WorkflowControllerTest {
       .thenReturn(workflowStatusDTO);
 
     MvcResult result = mockMvc.perform(
-        get("/workflowhub/workflow-1/status")
+        get("/workflowhub/workflows/workflow-1/status")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .accept(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().is2xxSuccessful())

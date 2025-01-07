@@ -6,10 +6,10 @@ info:
 servers:
   - url: "http://localhost:8080/workflowhub"
 paths:
-  /{workflowId}/status:
+  /workflows/{workflowId}/status:
     get:
       tags:
-        - WorkflowHub
+        - Workflow
       operationId: getWorkflowStatus
       summary: Get Workflow Status
       description: Retrieve the current status of a Temporal workflow by its ID.

@@ -36,7 +36,7 @@ public class WorkflowServiceImpl implements WorkflowService {
   @Override
   public WorkflowStatusDTO getWorkflowStatus(String workflowId) {
     try {
-      log.info("Retrieving workflow status for workflowId: {}", workflowId);
+      log.debug("Retrieving workflow status for workflowId: {}", workflowId);
       WorkflowExecutionInfo info = WorkflowClientHelper.describeWorkflowInstance(
         workflowClient.getWorkflowServiceStubs(),
         "default",
