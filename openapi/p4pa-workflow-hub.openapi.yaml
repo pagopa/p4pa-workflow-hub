@@ -91,6 +91,8 @@ components:
           type: string
     WorkflowStatusDTO:
       type: object
+      required:
+         - workflowId
       properties:
         workflowId:
           type: string
