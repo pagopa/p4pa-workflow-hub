@@ -6,6 +6,36 @@ info:
 servers:
   - url: "http://localhost:8080/workflowhub"
 paths:
+  /ingestion-flow/payments-reporting/{ingestionFlowFileId}:
+    post:
+      tags:
+        - IngestionFlow
+      operationId: ingestPaymentsReportingFile
+      summary: Payments reporting flow file ingestion
+      description: It will start the Payments Reporting flow file ingestion
+        returning its workflowId
+
+      parameters:
+        - name: ingestionFlowFileId
+          in: path
+          required: true
+          description: The unique identifier of the ingestion File.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: "Payment Ingestion Workflow created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflows/{workflowId}/status:
     get:
       tags:
@@ -38,14 +68,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+
 components:
   schemas:
-    WorkflowStatusDTO:
+    WorkflowCreatedDTO:
       type: object
       properties:
         workflowId:
-          type: string
-        status:
           type: string
     WorkflowErrorDTO:
       type: object
@@ -59,4 +88,13 @@ components:
             - WORKFLOW_NOT_FOUND
             - WORKFLOW_GENERIC_ERROR
         message:
+          type: string
+    WorkflowStatusDTO:
+      type: object
+      required:
+         - workflowId
+      properties:
+        workflowId:
+          type: string
+        status:
           type: string
