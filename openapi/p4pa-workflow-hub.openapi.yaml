@@ -9,14 +9,14 @@ paths:
   /ingestion-flow/payments-reporting/{ingestionFlowFileId}:
     post:
       tags:
-        - WorkflowHub
-      operationId: createPaymentIngestionWF
-      summary: Create a Payment Ingestion Workflow
-      description: Create a Payment Ingestion Workflow by its ingestionFileId and
-        return the workflowId
+        - IngestionFlow
+      operationId: ingestPaymentsReportingFile
+      summary: Payments reporting flow file ingestion
+      description: It will start the Payments Reporting flow file ingestion
+        returning its workflowId
 
       parameters:
-        - name: ingestionFileId
+        - name: ingestionFlowFileId
           in: path
           required: true
           description: The unique identifier of the ingestion File.

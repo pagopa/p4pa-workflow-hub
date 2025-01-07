@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller;
 
-import it.gov.pagopa.pu.workflow.controller.generated.WorkflowHubApi;
+import it.gov.pagopa.pu.workflow.controller.generated.IngestionFlowApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import lombok.extern.slf4j.Slf4j;
@@ -14,33 +14,34 @@ import org.springframework.web.bind.annotation.RestController;
  * This class is used to create a Payment Ingestion Workflow
  * by its ingestionFileId and return the workflowId
  *
- * @see WorkflowHubApi
+ * @see IngestionFlowApi
  */
 @Slf4j
 @RestController
-public class WorkflowHubApiImpl implements WorkflowHubApi {
+public class WorkflowHubApiImpl implements IngestionFlowApi {
 
-  private final PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient;
+    private final PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient;
 
-  public WorkflowHubApiImpl(PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient) {
-    this.paymentsReportingIngestionWFClient = paymentsReportingIngestionWFClient;
-  }
+    public WorkflowHubApiImpl(PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient) {
+        this.paymentsReportingIngestionWFClient = paymentsReportingIngestionWFClient;
+    }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public ResponseEntity<WorkflowCreatedDTO> createPaymentIngestionWF(@PathVariable("ingestionFileId") Long ingestionFileId) {
-    log.info("Creating Payment Ingestion Workflow for ingestionFileId: {}", ingestionFileId);
 
-    String workflowId = paymentsReportingIngestionWFClient.ingest(ingestionFileId);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseEntity<WorkflowCreatedDTO> ingestPaymentsReportingFile(@PathVariable("ingestionFlowFileId") Long ingestionFlowFileId) {
+        log.info("Creating Payment Ingestion Workflow for ingestionFileId: {}", ingestionFlowFileId);
 
-    WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    response.setWorkflowId(workflowId);
+        String workflowId = paymentsReportingIngestionWFClient.ingest(ingestionFlowFileId);
 
-    log.info("Payment Ingestion Workflow created successfully for ingestionFileId: {}", ingestionFileId);
-    log.info("WorkflowId: {}", workflowId);
+        WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
+        response.setWorkflowId(workflowId);
 
-    return ResponseEntity.status(201).body(response);
-  }
+        log.info("Payment Ingestion Workflow {} created successfully for ingestionFileId: {}", workflowId, ingestionFlowFileId);
+
+        return ResponseEntity.status(201).body(response);
+    }
+
 }
