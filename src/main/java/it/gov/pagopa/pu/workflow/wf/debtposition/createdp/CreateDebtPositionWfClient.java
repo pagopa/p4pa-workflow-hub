@@ -7,6 +7,8 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPosit
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWFImpl;
 import org.springframework.stereotype.Service;
 
+import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
+
 @Service
 public class CreateDebtPositionWfClient {
   private final WorkflowService workflowService;
@@ -16,7 +18,7 @@ public class CreateDebtPositionWfClient {
   }
 
   public String createDPSync(DebtPositionDTO debtPosition) {
-    String workflowId = String.valueOf(debtPosition.getDebtPositionId());
+    String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), CreateDebtPositionSyncWFImpl.TASK_QUEUE);
     CreateDebtPositionSyncWF workflow = workflowService.buildWorkflowStub(
       CreateDebtPositionSyncWF.class,
       CreateDebtPositionSyncWFImpl.TASK_QUEUE,
