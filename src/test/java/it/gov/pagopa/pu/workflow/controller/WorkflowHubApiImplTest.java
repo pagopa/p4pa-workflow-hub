@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @WebMvcTest(WorkflowHubApiImpl.class)
-public class WorkflowHubApiImplTest {
+class WorkflowHubApiImplTest {
 
     @Value("${openapi.p4paWorkflowHub.base-path:/workflowhub}")
     private String basePath;
@@ -34,7 +34,7 @@ public class WorkflowHubApiImplTest {
     private PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClientMock;
 
     @Test
-    public void testCreatePaymentIngestionWF_Success() throws Exception {
+    void testCreatePaymentIngestionWF_Success() throws Exception {
         Long ingestionFileId = 1L;
         String workflowId = "workflow123";
 
