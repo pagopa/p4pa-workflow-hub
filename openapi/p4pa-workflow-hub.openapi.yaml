@@ -36,6 +36,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflows/{workflowId}/status:
+    get:
+      tags:
+        - Workflow
+      operationId: getWorkflowStatus
+      summary: Get Workflow Status
+      description: Retrieve the current status of a Temporal workflow by its ID.
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Workflow status retrieved successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowStatusDTO'
+        '404':
+          description: "Workflow not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+
 components:
   schemas:
     WorkflowCreatedDTO:
@@ -55,4 +88,11 @@ components:
             - WORKFLOW_NOT_FOUND
             - WORKFLOW_GENERIC_ERROR
         message:
+          type: string
+    WorkflowStatusDTO:
+      type: object
+      properties:
+        workflowId:
+          type: string
+        status:
           type: string

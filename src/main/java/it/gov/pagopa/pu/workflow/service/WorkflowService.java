@@ -1,24 +1,10 @@
 package it.gov.pagopa.pu.workflow.service;
 
-import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowOptions;
-import org.springframework.stereotype.Service;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 
-@Service
-public class WorkflowService {
+public interface WorkflowService {
 
-  private final WorkflowClient workflowClient;
+  <T> T buildWorkflowStub(Class<T> workflowClass, String taskQueue, String workflowId);
 
-  public WorkflowService(WorkflowClient workflowClient) {
-    this.workflowClient = workflowClient;
-  }
-
-  public <T> T buildWorkflowStub(Class<T> workflowClass, String taskQueue, String workflowId){
-    return workflowClient.newWorkflowStub(
-      workflowClass,
-      WorkflowOptions.newBuilder()
-        .setTaskQueue(taskQueue)
-        .setWorkflowId(workflowId)
-        .build());
-  }
+  WorkflowStatusDTO getWorkflowStatus(String workflowId);
 }

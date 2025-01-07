@@ -6,6 +6,8 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import org.springframework.stereotype.Service;
 
+import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
+
 @Service
 public class PaymentsReportingIngestionWFClient {
 
@@ -16,7 +18,7 @@ public class PaymentsReportingIngestionWFClient {
   }
 
   public String ingest(Long ingestionFlowFileId) {
-    String workflowId = String.valueOf(ingestionFlowFileId);
+    String workflowId = generateWorkflowId(ingestionFlowFileId, PaymentsReportingIngestionWFImpl.TASK_QUEUE);
     PaymentsReportingIngestionWF workflow = workflowService.buildWorkflowStub(
       PaymentsReportingIngestionWF.class,
       PaymentsReportingIngestionWFImpl.TASK_QUEUE,
