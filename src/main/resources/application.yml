@@ -3,6 +3,9 @@ spring:
     name: ${artifactId}
     version: ${version}
   jmx.enabled: true
+  threads:
+    virtual:
+      enabled: "\${VIRTUAL_THREADS_ENABLED:true}"
   temporal:
     connection:
       enable-https: "\${TEMPORAL_SERVER_ENABLE_HTTPS:false}"
