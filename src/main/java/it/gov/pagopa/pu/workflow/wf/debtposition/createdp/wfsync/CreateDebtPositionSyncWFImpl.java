@@ -16,7 +16,7 @@ import static it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDe
 @WorkflowImpl(taskQueues = TASK_QUEUE)
 public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE = "CreateDebtPositionWf";
+  public static final String TASK_QUEUE = "CreateDebtPositionSyncWF";
 
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
 
