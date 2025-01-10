@@ -10,7 +10,7 @@ import java.time.ZoneId;
 
 import static it.gov.pagopa.pu.workflow.utils.TestUtils.DATE;
 import static it.gov.pagopa.pu.workflow.utils.TestUtils.OFFSET_DATE_TIME;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
 import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
 
 public class IngestionFlowFileFaker {
@@ -19,7 +19,7 @@ public class IngestionFlowFileFaker {
     return IngestionFlowFileDTO.builder()
       .ingestionFlowFileId(1L)
       .version(1)
-      .org(buildOrganizationDTO())
+      .org(buildOrganization())
       .status("status")
       .numTotalRows(3L)
       .numCorrectlyImportedRows(2L)

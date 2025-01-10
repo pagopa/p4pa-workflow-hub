@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static it.gov.pagopa.pu.workflow.utils.TestUtils.checkNotNullFields;
 import static it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker.buildInstallmentDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker.buildInstallmentRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
 import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker.buildPaymentOptionRequestDTO;
@@ -37,7 +37,7 @@ class PaymentOptionMapperTest {
   void testMapPaymentOptionDTO() {
 
     Mockito.when(organizationMapperMock.map(buildOrganizationRequestDTO()))
-      .thenReturn(buildOrganizationDTO());
+      .thenReturn(buildOrganization());
 
     Mockito.when(paymentOptionTypeMapperMock.map(PaymentOptionTypeRequest.DOWN_PAYMENT)).thenReturn(PaymentOptionType.DOWN_PAYMENT);
 

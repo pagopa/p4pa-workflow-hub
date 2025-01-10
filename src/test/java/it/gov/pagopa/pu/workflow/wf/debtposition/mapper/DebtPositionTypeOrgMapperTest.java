@@ -14,7 +14,7 @@ import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeFaker.buildD
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeFaker.buildDebtPositionTypeRequestDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
 import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,7 +36,7 @@ class DebtPositionTypeOrgMapperTest {
     DebtPositionTypeOrgDTO expected = buildDebtPositionTypeOrgDTO();
 
     Mockito.when((organizationMapperMock.map(buildOrganizationRequestDTO())))
-      .thenReturn(buildOrganizationDTO());
+      .thenReturn(buildOrganization());
     Mockito.when(debtPositionTypeMapperMock.map(buildDebtPositionTypeRequestDTO()))
       .thenReturn(buildDebtPositionType());
 

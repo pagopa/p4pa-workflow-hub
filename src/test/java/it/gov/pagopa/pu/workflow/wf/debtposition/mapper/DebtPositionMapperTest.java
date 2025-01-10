@@ -16,7 +16,7 @@ import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeOrgFaker.bui
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgRequestDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.IngestionFlowFileFaker.buildIngestionFlowFileDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.IngestionFlowFileFaker.buildIngestionFlowFileRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
 import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker.buildPaymentOptionRequestDTO;
@@ -41,7 +41,7 @@ class DebtPositionMapperTest {
   void testMapDebtPosition() {
     DebtPositionDTO expected = buildDebtPositionDTO();
 
-    Mockito.when(organizationMapperMock.map(buildOrganizationRequestDTO())).thenReturn(buildOrganizationDTO());
+    Mockito.when(organizationMapperMock.map(buildOrganizationRequestDTO())).thenReturn(buildOrganization());
     Mockito.when(debtPositionTypeOrgMapperMock.map(buildDebtPositionTypeOrgRequestDTO())).thenReturn(buildDebtPositionTypeOrgDTO());
     Mockito.when(ingestionFlowFileMapperMock.map(buildIngestionFlowFileRequestDTO())).thenReturn(buildIngestionFlowFileDTO());
     Mockito.when(paymentOptionMapperMock.map(buildPaymentOptionRequestDTO())).thenReturn(buildPaymentOptionDTO());

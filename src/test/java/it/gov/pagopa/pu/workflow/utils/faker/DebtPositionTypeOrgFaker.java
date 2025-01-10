@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionTypeOrgDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionTypeOrgRequestDTO;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeFaker.buildDebtPositionTypeRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
 import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
 
 public class DebtPositionTypeOrgFaker {
@@ -12,7 +12,7 @@ public class DebtPositionTypeOrgFaker {
     public static DebtPositionTypeOrgDTO buildDebtPositionTypeOrgDTO() {
         return DebtPositionTypeOrgDTO.builder()
                 .debtPositionTypeOrgId(1L)
-                .org(buildOrganizationDTO())
+                .org(buildOrganization())
                 .debtPositionType(DebtPositionTypeFaker.buildDebtPositionType())
                 .balance("balance")
                 .code("code")

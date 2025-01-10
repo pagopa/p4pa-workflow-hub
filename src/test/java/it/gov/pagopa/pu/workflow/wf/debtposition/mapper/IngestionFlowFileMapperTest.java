@@ -14,7 +14,7 @@ import static it.gov.pagopa.pu.workflow.utils.faker.IngestionFlowFileFaker.build
 import static it.gov.pagopa.pu.workflow.utils.faker.IngestionFlowFileFaker.buildIngestionFlowFileRequestDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.IngestionFlowFileTypeFaker.buildIngestionFlowFileType;
 import static it.gov.pagopa.pu.workflow.utils.faker.IngestionFlowFileTypeFaker.buildIngestionFlowFileTypeRequest;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
 import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,7 +34,7 @@ class IngestionFlowFileMapperTest {
     IngestionFlowFileDTO expected = buildIngestionFlowFileDTO();
 
     Mockito.when(ingestionFlowFileTypeMapperMock.map(buildIngestionFlowFileTypeRequest())).thenReturn(buildIngestionFlowFileType());
-    Mockito.when(organizationMapperMock.map(buildOrganizationRequestDTO())).thenReturn(buildOrganizationDTO());
+    Mockito.when(organizationMapperMock.map(buildOrganizationRequestDTO())).thenReturn(buildOrganization());
 
     IngestionFlowFileDTO result = mapper.map(buildIngestionFlowFileRequestDTO());
 

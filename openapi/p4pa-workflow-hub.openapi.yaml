@@ -94,7 +94,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
 security:
-  - BearerAuth: []
+  - BearerAuth: [ ]
 components:
   securitySchemes:
     BearerAuth:
@@ -122,7 +122,7 @@ components:
     WorkflowStatusDTO:
       type: object
       required:
-         - workflowId
+        - workflowId
       properties:
         workflowId:
           type: string
@@ -221,7 +221,7 @@ components:
     OrganizationRequestDTO:
       type: object
       properties:
-        orgId:
+        organizationId:
           type: integer
           format: int64
         ipaCode:
@@ -243,7 +243,7 @@ components:
           format: int64
         iban:
           type: string
-        urlOrgSendSILPaymentResult:
+        urlOrgSendSilPaymentResult:
           type: string
         password:
           type: string
@@ -271,7 +271,7 @@ components:
           type: string
         applicationCode:
           type: string
-        cbillInterbankCode:
+        cbillInterBankCode:
           type: string
         orgInformation:
           type: string
@@ -293,6 +293,10 @@ components:
         brokerId:
           type: integer
           format: int64
+        links:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LinkRequestDTO'
     DebtPositionTypeOrgRequestDTO:
       type: object
       properties:
@@ -594,3 +598,23 @@ components:
         email:
           type: string
           format: email
+    LinkRequestDTO:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+

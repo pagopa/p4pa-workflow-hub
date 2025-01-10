@@ -10,14 +10,14 @@ import java.util.List;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker.buildInstallmentDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker.buildInstallmentRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
 import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
 
 public class PaymentOptionFaker {
 
   public static PaymentOptionDTO buildPaymentOptionDTO() {
     return PaymentOptionDTO.builder()
-      .org(buildOrganizationDTO())
+      .org(buildOrganization())
       .totalAmount(100L)
       .status("status")
       .dueDate(LocalDate.of(2024, 5, 15))
