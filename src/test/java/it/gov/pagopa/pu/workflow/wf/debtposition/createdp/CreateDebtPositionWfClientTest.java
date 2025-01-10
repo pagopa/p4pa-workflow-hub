@@ -15,7 +15,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static it.gov.pagopa.pu.workflow.utilities.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,7 +30,7 @@ class CreateDebtPositionWfClientTest {
 
   @BeforeEach
   void init(){
-    client = new CreateDebtPositionWfClient(workflowServiceMock);
+    client = new CreateDebtPositionWfClientImpl(workflowServiceMock);
   }
 
   @AfterEach

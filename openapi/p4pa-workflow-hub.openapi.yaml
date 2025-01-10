@@ -6,6 +6,31 @@ info:
 servers:
   - url: "http://localhost:8080/workflowhub"
 paths:
+  /workflows/debt-position:
+    post:
+      tags:
+        - DebtPosition
+      operationId: createDpSync
+      description: Create a debt position sync.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebtPositionRequestDTO'
+      responses:
+        '200':
+          description: "Debt position created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDpSyncResponseDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflows/{workflowId}/status:
     get:
       tags:
@@ -59,4 +84,475 @@ components:
             - WORKFLOW_NOT_FOUND
             - WORKFLOW_GENERIC_ERROR
         message:
+          type: string
+    DebtPositionRequestDTO:
+      type: object
+      properties:
+        debtPositionId:
+          type: integer
+          format: int64
+        iupdOrg:
+          type: string
+        iupdPagopa:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        ingestionFlowFile:
+          $ref: '#/components/schemas/IngestionFlowFileRequestDTO'
+        ingestionFlowFileLineNumber:
+          type: integer
+          format: int64
+        gpdStatus:
+          type: string
+          maxLength: 1
+        org:
+          $ref: '#/components/schemas/OrganizationRequestDTO'
+        debtPositionTypeOrg:
+          $ref: '#/components/schemas/DebtPositionTypeOrgRequestDTO'
+        paymentOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentOptionRequestDTO'
+    IngestionFlowFileRequestDTO:
+      type: object
+      properties:
+        ingestionFlowFileId:
+          type: integer
+          format: int64
+        flowFileType:
+          $ref: '#/components/schemas/IngestionFlowFileTypeRequest'
+        version:
+          type: integer
+        org:
+          $ref: '#/components/schemas/OrganizationRequestDTO'
+        status:
+          type: string
+        numTotalRows:
+          type: integer
+          format: int64
+        numCorrectlyImportedRows:
+          type: integer
+          format: int64
+        creationDate:
+          type: string
+          format: date-time
+        lastUpdateDate:
+          type: string
+          format: date-time
+        flagActive:
+          type: boolean
+        operatorExternalUserId:
+          type: string
+        flagSpontaneous:
+          type: boolean
+        filePathName:
+          type: string
+        fileName:
+          type: string
+        pdfGenerated:
+          type: integer
+          format: int64
+        codRequestToken:
+          type: string
+        codError:
+          type: string
+        pspIdentifier:
+          type: string
+        flowDateTime:
+          type: string
+          format: date-time
+        fileSize:
+          type: integer
+          format: int64
+        fileSourceCode:
+          type: string
+        discardFileName:
+          type: string
+    IngestionFlowFileTypeRequest:
+      type: string
+      enum:
+        - OPI
+        - PAYMENTS_REPORTING
+    OrganizationRequestDTO:
+      type: object
+      properties:
+        orgId:
+          type: integer
+          format: int64
+        ipaCode:
+          type: string
+        orgFiscalCode:
+          type: string
+        orgName:
+          type: string
+        adminEmail:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        lastUpdateDate:
+          type: string
+          format: date-time
+        fee:
+          type: integer
+          format: int64
+        iban:
+          type: string
+        urlOrgSendSILPaymentResult:
+          type: string
+        password:
+          type: string
+        creditBicSeller:
+          type: boolean
+        beneficiaryOrgName:
+          type: string
+        beneficiaryOrgAddress:
+          type: string
+        beneficiaryOrgCivic:
+          type: string
+        beneficiaryOrgPostalCode:
+          type: string
+        beneficiaryOrgLocation:
+          type: string
+        beneficiaryOrgProvince:
+          type: string
+        beneficiaryOrgNation:
+          type: string
+        beneficiaryOrgPhoneNumber:
+          type: string
+        beneficiaryOrgWebSite:
+          type: string
+        beneficiaryOrgEmail:
+          type: string
+        applicationCode:
+          type: string
+        cbillInterbankCode:
+          type: string
+        orgInformation:
+          type: string
+        orgLogoDesc:
+          type: string
+        authorizationDesc:
+          type: string
+        status:
+          type: string
+        urlActiveExternal:
+          type: string
+        additionalLanguage:
+          type: string
+        orgTypeCode:
+          type: string
+        startDate:
+          type: string
+          format: date
+        brokerId:
+          type: integer
+          format: int64
+    DebtPositionTypeOrgRequestDTO:
+      type: object
+      properties:
+        debtPositionTypeOrgId:
+          type: integer
+          format: int64
+        org:
+          $ref: '#/components/schemas/OrganizationRequestDTO'
+        debtPositionType:
+          $ref: '#/components/schemas/DebtPositionTypeRequestDTO'
+        balance:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+        flagMandatoryDueDate:
+          type: boolean
+        flagAnonymousFiscalCode:
+          type: boolean
+        postalIban:
+          type: string
+        iban:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        externalPaymentUrl:
+          type: string
+        balanceDefaultDesc:
+          type: string
+        orgSector:
+          type: string
+        postalAccountCode:
+          type: string
+        holderPostalCC:
+          type: string
+        flagNotifyIO:
+          type: boolean
+        flagDisablePrintNotice:
+          type: boolean
+        flagNotifyOutcomePush:
+          type: boolean
+        maxAttemptForwardingOutcome:
+          type: integer
+        xsdDefinitionRef:
+          type: string
+        taxonomyCode:
+          type: string
+        orgSilId:
+          type: integer
+          format: int64
+        amountActualizationUser:
+          type: string
+        amountActualizationUrl:
+          type: string
+        amountActualizationPwd:
+          type: string
+        flagActive:
+          type: boolean
+        urlNotifyActualizationPnd:
+          type: string
+    DebtPositionTypeRequestDTO:
+      type: object
+      properties:
+        debtTypePositionId:
+          type: integer
+          format: int64
+        brokerId:
+          type: integer
+          format: int64
+        code:
+          type: string
+        description:
+          type: string
+        taxonomyCode:
+          type: string
+        macroArea:
+          type: string
+        serviceType:
+          type: string
+        collectingReason:
+          type: string
+        flagPrintDueDate:
+          type: boolean
+        flagAnonymousFiscalCode:
+          type: boolean
+        flagMandatoryDueDate:
+          type: boolean
+    PaymentOptionRequestDTO:
+      type: object
+      properties:
+        org:
+          $ref: '#/components/schemas/OrganizationRequestDTO'
+        totalAmount:
+          type: integer
+          format: int64
+        description:
+          type: string
+        status:
+          type: string
+        multiDebtor:
+          type: boolean
+        paymentOptionType:
+          $ref: '#/components/schemas/PaymentOptionTypeRequest'
+        dueDate:
+          type: string
+          format: date
+        installments:
+          type: array
+          items:
+            $ref: '#/components/schemas/InstallmentRequestDTO'
+    PaymentOptionTypeRequest:
+      type: string
+      enum:
+        - SINGLE_INSTALLMENT
+        - INSTALMENTS
+        - DOWN_PAYMENT
+    InstallmentRequestDTO:
+      type: object
+      properties:
+        installmentId:
+          type: integer
+          format: int64
+        status:
+          type: string
+        iud:
+          type: string
+        iuv:
+          type: string
+        iur:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        updateDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date
+        paymentTypeCode:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        fee:
+          type: integer
+          format: int64
+        remittanceInformation:
+          type: string
+        iuvCreationDate:
+          type: string
+          format: date-time
+        humanFriendlyRemittanceInformation:
+          type: string
+        balance:
+          type: string
+        flagGenerateIuv:
+          type: boolean
+        sessionId:
+          type: string
+        flagIuvVolatile:
+          type: boolean
+        legacyPaymentMetadata:
+          type: string
+        transfers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransferRequestDTO'
+        receipt:
+          $ref: '#/components/schemas/ReceiptRequestDTO'
+        payer:
+          $ref: '#/components/schemas/PersonRequestDTO'
+    TransferRequestDTO:
+      type: object
+      properties:
+        transferId:
+          type: integer
+          format: int64
+        orgFiscalCode:
+          type: string
+        beneficiaryName:
+          type: string
+        iban:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        creationDate:
+          type: string
+          format: date-time
+        lastUpdateDate:
+          type: string
+          format: date-time
+        remittanceInformation:
+          type: string
+        stampType:
+          type: string
+        documentHash:
+          type: string
+        provincialResidence:
+          type: string
+        category:
+          type: string
+        transferIndex:
+          type: integer
+    ReceiptRequestDTO:
+      type: object
+      properties:
+        receiptId:
+          type: integer
+          format: int64
+        creationDate:
+          type: string
+          format: date-time
+        paymentReceiptId:
+          type: string
+        noticeNumber:
+          type: string
+        fiscalCode:
+          type: string
+        outcome:
+          type: string
+        creditorReferenceId:
+          type: string
+        paymentAmount:
+          type: integer
+          format: int64
+        description:
+          type: string
+        companyName:
+          type: string
+        officeName:
+          type: string
+        debtor:
+          $ref: '#/components/schemas/PersonRequestDTO'
+        idPsp:
+          type: string
+        pspFiscalCode:
+          type: string
+        pspPartitaIva:
+          type: string
+        pspCompanyName:
+          type: string
+        idChannel:
+          type: string
+        channelDescription:
+          type: string
+        payer:
+          $ref: '#/components/schemas/PersonRequestDTO'
+        paymentMethod:
+          type: string
+        fee:
+          type: integer
+          format: int64
+        paymentDateTime:
+          type: string
+          format: date
+        applicationDate:
+          type: string
+          format: date
+        transferDate:
+          type: string
+          format: date
+        receiptBytes:
+          type: string
+          format: byte
+        standin:
+          type: boolean
+        status:
+          type: string
+        dtProcessing:
+          type: string
+          format: date-time
+        numTriesProcessing:
+          type: integer
+    PersonRequestDTO:
+      type: object
+      properties:
+        uniqueIdentifierType:
+          type: string
+        uniqueIdentifierCode:
+          type: string
+        fullName:
+          type: string
+        address:
+          type: string
+        civic:
+          type: string
+        postalCode:
+          type: string
+        location:
+          type: string
+        province:
+          type: string
+        nation:
+          type: string
+        email:
+          type: string
+          format: email
+    CreateDpSyncResponseDTO:
+      type: object
+      properties:
+        workflowId:
           type: string

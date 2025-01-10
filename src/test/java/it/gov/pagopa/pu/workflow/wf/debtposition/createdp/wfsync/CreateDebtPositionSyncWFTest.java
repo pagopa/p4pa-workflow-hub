@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import static it.gov.pagopa.pu.workflow.utilities.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CreateDebtPositionSyncWFTest {
