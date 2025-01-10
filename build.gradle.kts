@@ -41,17 +41,22 @@ val openApiToolsVersion = "0.2.6"
 val micrometerVersion = "1.4.1"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
+val bouncycastleVersion = "1.79"
 val activitiesVersion = "1.25.0"
 val mapStructVersion = "1.6.3"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
   implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
+
+  //security
+  implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
 
   implementation("it.gov.pagopa.payhub:p4pa-payhub-activities:$activitiesVersion") {
     exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
@@ -147,7 +152,6 @@ openApiGenerate {
     )
   )
 }
-
 
 tasks.withType<Copy> {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
