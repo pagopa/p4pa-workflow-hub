@@ -1,10 +1,8 @@
-package it.gov.pagopa.pu.workflow.service;
+package it.gov.pagopa.pu.workflow.service.debtposition;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.CreateDpSyncResponseDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
-import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
-import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionServiceImpl;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.CreateDebtPositionWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.mapper.DebtPositionMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,9 +42,9 @@ class DebtPositionServiceTest {
 
     Mockito.when(debtPositionMapperMock.map(debtPositionRequestDTO)).thenReturn(debtPositionDTO);
 
-    CreateDpSyncResponseDTO createDpSyncResponseDTO = service.createDPSync(debtPositionRequestDTO);
+    WorkflowCreatedDTO workflowCreatedDTO = service.createDPSync(debtPositionRequestDTO);
 
-    assertNotNull(createDpSyncResponseDTO);
-    assertEquals(workflowId, createDpSyncResponseDTO.getWorkflowId());
+    assertNotNull(workflowCreatedDTO);
+    assertEquals(workflowId, workflowCreatedDTO.getWorkflowId());
   }
 }

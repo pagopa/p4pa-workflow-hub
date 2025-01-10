@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.controller.debtposition;
 
 import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
-import it.gov.pagopa.pu.workflow.dto.generated.CreateDpSyncResponseDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,8 +20,9 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
   }
 
   @Override
-  public ResponseEntity<CreateDpSyncResponseDTO> createDpSync(DebtPositionRequestDTO debtPositionRequestDTO) {
-    CreateDpSyncResponseDTO createDpSyncResponseDTO = service.createDPSync(debtPositionRequestDTO);
+  public ResponseEntity<WorkflowCreatedDTO> createDpSync(DebtPositionRequestDTO debtPositionRequestDTO) {
+    log.info("Starting workflow for creation debt position sync with payload: {}", debtPositionRequestDTO);
+    WorkflowCreatedDTO createDpSyncResponseDTO = service.createDPSync(debtPositionRequestDTO);
     return new ResponseEntity<>(createDpSyncResponseDTO, HttpStatus.OK);
   }
 }

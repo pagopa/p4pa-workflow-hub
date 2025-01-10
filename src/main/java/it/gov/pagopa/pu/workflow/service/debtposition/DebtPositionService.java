@@ -1,9 +1,9 @@
 package it.gov.pagopa.pu.workflow.service.debtposition;
 
-import it.gov.pagopa.pu.workflow.dto.generated.CreateDpSyncResponseDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 
 public interface DebtPositionService {
 
-  CreateDpSyncResponseDTO createDPSync(DebtPositionRequestDTO debtPosition);
+  WorkflowCreatedDTO createDPSync(DebtPositionRequestDTO debtPosition);
 }

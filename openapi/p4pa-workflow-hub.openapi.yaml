@@ -24,7 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateDpSyncResponseDTO'
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
         '500':
           description: Server Error
           content:
@@ -594,8 +594,3 @@ components:
         email:
           type: string
           format: email
-    CreateDpSyncResponseDTO:
-      type: object
-      properties:
-        workflowId:
-          type: string
