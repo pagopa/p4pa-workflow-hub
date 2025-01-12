@@ -51,10 +51,10 @@ management:
 
 workflow:
   default:
-    startToCloseTimeoutInSeconds: "\${DEFAULT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:60}"
+    startToCloseTimeoutInSeconds: "\${DEFAULT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:300}"
     retryInitialIntervalInMillis: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:1000}"
-    retryBackoffCoefficient: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:1.1}"
-    retryMaximumAttempts: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:10}"
+    retryBackoffCoefficient: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:1.5}"
+    retryMaximumAttempts: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:30}"
 
   payments-reporting-ingestion:
     start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
