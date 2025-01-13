@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf;
+package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto;
 
 
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
@@ -11,19 +11,14 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
-public class IufReceiptClassificationSignalDTO {
-  public static final String  SIGNAL_METHOD_NAME="setSignalDTO";
-
-  private IufReceiptClassificationSignalType type;
+public class IufReceiptClassificationForReportingSignalDTO {
+  public static final String SIGNAL_METHOD_NAME = "signalForReporting";
 
   // common fields
   private Long organizationId;
   private String iuf;
 
-  // specific fields for treasury
-  private Long treasuryId;
-
-  // specific fields for reporting
+  // specific fields
   private String outcomeCode;
   private List<Transfer2ClassifyDTO> transfers2classify;
 

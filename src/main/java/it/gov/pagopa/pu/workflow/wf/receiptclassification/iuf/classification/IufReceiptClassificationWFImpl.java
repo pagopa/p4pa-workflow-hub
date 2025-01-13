@@ -3,9 +3,10 @@ package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.classification;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.*;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.IufReceiptClassificationSignalType;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.IufReceiptClassificationSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
 import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.config.IufReceiptClassificationWfConfig;
+import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.helper.TransferClassificationWfHelperActivity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -21,12 +22,15 @@ import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfing
 public class IufReceiptClassificationWFImpl implements IufReceiptClassificationWF, ApplicationContextAware {
   public static final String TASK_QUEUE = "IufReceiptClassificationWF";
 
-  private IufReceiptClassificationSignalDTO signalDTO;
+  private IufReceiptClassificationForTreasurySignalDTO signalDTO;
 
   private ClearClassifyIufActivity clearClassifyIufActivity;
   private IufClassificationActivity iufClassificationActivity;
   private TransferClassificationActivity transferClassificationActivity;
 
+  private TransferClassificationWfHelperActivity transferClassificationWfHelperActivity;
+
+  private IufClassificationActivityResult result;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid
@@ -43,80 +47,62 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
     iufClassificationActivity = wfConfig.buildIufClassificationActivityStub();
     transferClassificationActivity = wfConfig.buildTransferClassificationActivityStub();
 
+    transferClassificationWfHelperActivity = wfConfig.buildTransferClassificationStarterHelperActivityStub();
+
   }
 
   @Override
-  public void classify(IufReceiptClassificationSignalDTO signalDTO) {
+  public void classify() {
 
-    Long organizationId = signalDTO.getOrganizationId();
+    if (result != null && result.isSuccess()) {
 
-    switch (signalDTO.getType()) {
-      case IufReceiptClassificationSignalType.RENDICONTAZIONE:
+      // signal transfer classification for each transfer
+      result.getTransfers2classify().forEach(transfer2ClassifyDTO -> {
 
-        log.info("Handling iuf receipt classification for organizatioId {}, treasuryId {} and iuf {}",
-          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
+        String iuv = transfer2ClassifyDTO.getIuv();
+        String iur = transfer2ClassifyDTO.getIur();
+        int transferIndex = transfer2ClassifyDTO.getTransferIndex();
 
-        boolean clearedForTreasury = clearClassifyIufActivity.deleteClassificationByIuf(organizationId, signalDTO.getIuf());
+        transferClassificationWfHelperActivity.signalTransferClassificationWithStart(result.getOrganizationId(), iuv, iur, transferIndex);
+      });
 
-        log.info("IUF receipt classification cleared with result {} for organizatioId {}, treasuryId {} and iuf {}",
-          clearedForTreasury,
-          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
-
-        IufClassificationActivityResult result = iufClassificationActivity.classify(organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
-
-
-        if (result != null && result.isSuccess()) {
-
-          result.getTransfers2classify().forEach(transfer2ClassifyDTO -> {
-
-            String iuv = transfer2ClassifyDTO.getIuv();
-            String iur = transfer2ClassifyDTO.getIur();
-            int transferIndex = transfer2ClassifyDTO.getTransferIndex();
-
-            String workflowId = getTransferClassificationWorkflowId(organizationId, iuv, iur, transferIndex, TASK_QUEUE);
-
-
-
-
-
-
-          });
-
-
-        }
-        log.info("IUF receipt classification completed for for for organizationId {}, treasuryId {} and iuf {}",
-          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
-        break;
-
-
-      case IufReceiptClassificationSignalType.TESORERIA:
-
-        // TODO: implement the logic
-
-        log.info("Handling iuf receipt classification for organizatioId {}, treasuryId {} and iuf {}",
-          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
-
-        boolean clearedForReporting = clearClassifyIufActivity.deleteClassificationByIuf(organizationId, signalDTO.getIuf());
-
-        log.info("IUF receipt classification cleared with result {} for organizatioId {}, treasuryId {} and iuf {}",
-          clearedForReporting,
-          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
-
-
-        break;
-      default:
-        throw new IllegalArgumentException("Invalid classification type: " + signalDTO.getType());
-
+    } else {
+      log.warn("Result is null or classification was not successful for organizationId {}, treasuryId {} and iuf {}",
+        result != null ? result.getOrganizationId() : "N/A",
+        signalDTO.getTreasuryId(),
+        signalDTO.getIuf());
     }
+
+    log.info("IUF receipt classification completed for for for organizationId {}, treasuryId {} and iuf {}",
+      result.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
   }
+
 
   @Override
-  public void setSignalDTO(IufReceiptClassificationSignalDTO signalDTO) {
-    signalDTO = signalDTO;
+  public void signalForTreasury(IufReceiptClassificationForTreasurySignalDTO signalDTO) {
+
+    log.info("Handling iuf receipt classification for organizatioId {}, treasuryId {} and iuf {}",
+      signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+
+    boolean clearedForTreasury = clearClassifyIufActivity.deleteClassificationByIuf(signalDTO.getOrganizationId(),
+      signalDTO.getIuf());
+
+    log.info("IUF receipt classification cleared with result {} for organizatioId {}, treasuryId {} and iuf {}",
+      clearedForTreasury,
+      signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+
+    result = iufClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+
   }
 
 
-  private String getTransferClassificationWorkflowId(Long organizationId, String iuv, String iur, int transferIndex , String workflow) {
+  @Override
+  public void signalForReporting(IufReceiptClassificationForReportingSignalDTO signalDTO) {
+
+  }
+
+
+  private String getTransferClassificationWorkflowId(Long organizationId, String iuv, String iur, int transferIndex, String workflow) {
     return String.format("%s-%s-%s-%s-%d", organizationId, iuv, iur, transferIndex, "TransferClassificationWF");
   }
 
