@@ -34,7 +34,8 @@ public class IufReceiptClassificationWFClient {
     String workflowId = generateWorkflowIdForTreasury(organizationId, treasuryId, iuf, IufReceiptClassificationWFImpl.TASK_QUEUE);
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufReceiptClassificationWFImpl.TASK_QUEUE, workflowId);
-    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(signalDTO.SIGNAL_METHOD_NAME,
+    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
+      IufReceiptClassificationForTreasurySignalDTO.SIGNAL_METHOD_NAME,
       new Object[]{signalDTO},
       new Object[]{}
     );
@@ -55,7 +56,8 @@ public class IufReceiptClassificationWFClient {
     String workflowId = generateWorkflowIdForReporting(organizationId, iuf, outcomeCode, transfers2classify, IufReceiptClassificationWFImpl.TASK_QUEUE);
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufReceiptClassificationWFImpl.TASK_QUEUE, workflowId);
-    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(signalDTO.SIGNAL_METHOD_NAME,
+    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
+      IufReceiptClassificationForReportingSignalDTO.SIGNAL_METHOD_NAME,
       new Object[]{signalDTO},
       new Object[]{}
     );
