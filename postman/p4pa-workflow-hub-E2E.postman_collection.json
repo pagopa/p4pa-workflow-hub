@@ -128,6 +128,8 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
+                  "pm=instrumentPmMethod(pm);\r",
+                  "\r",
                   "function generateRandomNumber() {\r",
                   "    let randomNumber = '';\r",
                   "    for (let i = 0; i < 10; i++) {\r",
