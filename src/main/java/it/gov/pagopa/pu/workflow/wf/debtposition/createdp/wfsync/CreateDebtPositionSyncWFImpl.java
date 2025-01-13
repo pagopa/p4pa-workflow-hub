@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.config.CreateDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -16,7 +16,7 @@ import static it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDe
 @WorkflowImpl(taskQueues = TASK_QUEUE)
 public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE = "CreateDebtPositionWf";
+  public static final String TASK_QUEUE = "CreateDebtPositionSyncWF";
 
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
 
@@ -36,6 +36,6 @@ public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, A
   public void createDPSync(DebtPositionDTO debtPosition) {
     log.info("Starting workflow for ingesting DebtPosition with ID: {}", debtPosition.getDebtPositionId());
     sendDebtPositionIONotificationActivity.sendMessage(debtPosition);
-    log.info("Message to IO sent with payload {}", debtPosition);
+    log.info("Message sent to IO for organizationId {} and debtPositionTypeOrgId {}", debtPosition.getOrganizationId(), debtPosition.getDebtPositionTypeOrgId());
   }
 }

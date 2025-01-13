@@ -57,10 +57,10 @@ class TemporalSpringBootIntegrationTest {
 
     waitUntilWfCompletion(workflowId);
 
-    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
+    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB", null);
     verify(fileActivityMock, times(1)).processFile(1L);
     verify(emailActivityMock, times(1)).sendEmail(1L, true);
-    verify(statusActivityMock, times(1)).updateStatus(1L, "OK");
+    verify(statusActivityMock, times(1)).updateStatus(1L, "OK", null);
   }
 
   @Test
@@ -74,10 +74,10 @@ class TemporalSpringBootIntegrationTest {
 
     waitUntilWfCompletion(workflowId);
 
-    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB");
+    verify(statusActivityMock, times(1)).updateStatus(1L, "IMPORT_IN_ELAB", null);
     verify(fileActivityMock, times(1)).processFile(1L);
     verify(emailActivityMock, times(1)).sendEmail(1L, false);
-    verify(statusActivityMock, times(1)).updateStatus(1L, "KO");
+    verify(statusActivityMock, times(1)).updateStatus(1L, "KO", null);
   }
 
   private void waitUntilWfCompletion(String workflowId) {
