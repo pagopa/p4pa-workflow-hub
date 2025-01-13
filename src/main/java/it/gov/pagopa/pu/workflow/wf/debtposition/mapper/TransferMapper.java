@@ -8,7 +8,5 @@ import org.mapstruct.Mapper;
 public interface TransferMapper {
 
   TransferDTO map(TransferRequestDTO transferRequestDTO);
-
-
 }
 
