@@ -1,16 +1,11 @@
 package it.gov.pagopa.pu.workflow.utils.faker;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
 
 import java.util.List;
 
-import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionTypeOrgFaker.buildDebtPositionTypeOrgRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.IngestionFlowFileFaker.buildIngestionFlowFileDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.IngestionFlowFileFaker.buildIngestionFlowFileRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
+import static it.gov.pagopa.pu.workflow.utils.TestUtils.OFFSET_DATE_TIME;
 import static it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker.buildPaymentOptionRequestDTO;
 
@@ -19,15 +14,19 @@ public class DebtPositionFaker {
   public static DebtPositionDTO buildDebtPositionDTO() {
     return DebtPositionDTO.builder()
       .debtPositionId(1L)
-      .iupdOrg("codeIud")
-      .iupdPagopa("gpdIupd")
+      .iupdOrg("iupdOrg")
+      .iupdPagopa("iupdPagopa")
       .description("description")
-      .status("statusCode")
-      .ingestionFlowFile(buildIngestionFlowFileDTO())
+      .status("status")
+      .ingestionFlowFileId(1L)
       .ingestionFlowFileLineNumber(1L)
-      .gpdStatus('G')
-      .org(buildOrganization())
-      .debtPositionTypeOrg(buildDebtPositionTypeOrgDTO())
+      .organizationId(1L)
+      .debtPositionTypeOrgId(1L)
+      .notificationDate(OFFSET_DATE_TIME)
+      .validityDate(OFFSET_DATE_TIME)
+      .flagIuvVolatile(false)
+      .creationDate(OFFSET_DATE_TIME)
+      .updateDate(OFFSET_DATE_TIME)
       .paymentOptions(List.of(buildPaymentOptionDTO()))
       .build();
   }
@@ -35,15 +34,19 @@ public class DebtPositionFaker {
   public static DebtPositionRequestDTO buildDebtPositionRequestDTO() {
     return DebtPositionRequestDTO.builder()
       .debtPositionId(1L)
-      .iupdOrg("codeIud")
-      .iupdPagopa("gpdIupd")
+      .iupdOrg("iupdOrg")
+      .iupdPagopa("iupdPagopa")
       .description("description")
-      .status("statusCode")
-      .ingestionFlowFile(buildIngestionFlowFileRequestDTO())
+      .status("status")
+      .ingestionFlowFileId(1L)
       .ingestionFlowFileLineNumber(1L)
-      .gpdStatus("G")
-      .org(buildOrganizationRequestDTO())
-      .debtPositionTypeOrg(buildDebtPositionTypeOrgRequestDTO())
+      .organizationId(1L)
+      .debtPositionTypeOrgId(1L)
+      .notificationDate(OFFSET_DATE_TIME)
+      .validityDate(OFFSET_DATE_TIME)
+      .flagIuvVolatile(false)
+      .creationDate(OFFSET_DATE_TIME)
+      .updateDate(OFFSET_DATE_TIME)
       .paymentOptions(List.of(buildPaymentOptionRequestDTO()))
       .build();
   }

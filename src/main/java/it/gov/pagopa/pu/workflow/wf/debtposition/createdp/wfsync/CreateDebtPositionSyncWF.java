@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
 /**
  * Workflow interface for creating a Sync Debt Position Workflow

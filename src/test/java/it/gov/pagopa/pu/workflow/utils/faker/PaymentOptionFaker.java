@@ -1,43 +1,39 @@
 package it.gov.pagopa.pu.workflow.utils.faker;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.PaymentOptionDTO;
-import it.gov.pagopa.payhub.activities.enums.PaymentOptionType;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentOptionRequestDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentOptionTypeRequest;
 
-import java.time.LocalDate;
 import java.util.List;
 
+import static it.gov.pagopa.pu.workflow.utils.TestUtils.OFFSET_DATE_TIME;
 import static it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker.buildInstallmentDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker.buildInstallmentRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganization;
-import static it.gov.pagopa.pu.workflow.utils.faker.OrganizationFaker.buildOrganizationRequestDTO;
 
 public class PaymentOptionFaker {
 
   public static PaymentOptionDTO buildPaymentOptionDTO() {
     return PaymentOptionDTO.builder()
-      .org(buildOrganization())
-      .totalAmount(100L)
+      .paymentOptionId(1L)
+      .totalAmountCents(1L)
       .status("status")
-      .dueDate(LocalDate.of(2024, 5, 15))
-      .installments(List.of(buildInstallmentDTO()))
       .multiDebtor(false)
-      .paymentOptionType(PaymentOptionType.DOWN_PAYMENT)
+      .dueDate(OFFSET_DATE_TIME)
       .description("description")
+      .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.DOWN_PAYMENT)
+      .installments(List.of(buildInstallmentDTO()))
       .build();
   }
 
   public static PaymentOptionRequestDTO buildPaymentOptionRequestDTO() {
     return PaymentOptionRequestDTO.builder()
-      .org(buildOrganizationRequestDTO())
-      .totalAmount(100L)
+      .paymentOptionId(1L)
+      .totalAmountCents(1L)
       .status("status")
-      .dueDate(LocalDate.of(2024, 5, 15))
-      .installments(List.of(buildInstallmentRequestDTO()))
       .multiDebtor(false)
-      .paymentOptionType(PaymentOptionTypeRequest.DOWN_PAYMENT)
+      .dueDate(OFFSET_DATE_TIME)
       .description("description")
+      .paymentOptionType(PaymentOptionRequestDTO.PaymentOptionTypeEnum.DOWN_PAYMENT)
+      .installments(List.of(buildInstallmentRequestDTO()))
       .build();
   }
 }

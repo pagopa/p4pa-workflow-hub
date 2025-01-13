@@ -68,9 +68,9 @@ class PaymentsReportingIngestionWFTest {
     wf.ingest(ingestionFlowFileId);
 
     // Then
-    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB");
+    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB", null);
     Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, success);
-    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "OK");
+    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "OK", null);
   }
 
   @Test
@@ -86,8 +86,8 @@ class PaymentsReportingIngestionWFTest {
     wf.ingest(ingestionFlowFileId);
 
     // Then
-    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB");
+    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB", null);
     Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, success);
-    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "KO");
+    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "KO", null);
   }
 }

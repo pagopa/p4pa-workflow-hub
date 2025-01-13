@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.mapper;
 
-import it.gov.pagopa.payhub.activities.dto.TransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;

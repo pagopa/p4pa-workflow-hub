@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.mapper;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -14,8 +14,6 @@ import static it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker.buildInstal
 import static it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker.buildInstallmentRequestDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.PersonFaker.buildPersonDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.PersonFaker.buildPersonRequestDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.ReceiptFaker.buildReceiptDTO;
-import static it.gov.pagopa.pu.workflow.utils.faker.ReceiptFaker.buildReceiptRequestDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.TransferFaker.buildTransferDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.TransferFaker.buildTransferRequestDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,8 +24,6 @@ class InstallmentMapperTest {
   @Mock
   private TransferMapper transferMapperMock;
   @Mock
-  private ReceiptMapper receiptMapperMock;
-  @Mock
   private PersonMapper personMapperMock;
 
   @InjectMocks
@@ -37,8 +33,6 @@ class InstallmentMapperTest {
   void testMapInstallmentDTO() {
     InstallmentDTO expected = buildInstallmentDTO();
     Mockito.when(transferMapperMock.map(buildTransferRequestDTO())).thenReturn(buildTransferDTO());
-
-    Mockito.when(receiptMapperMock.map(buildReceiptRequestDTO())).thenReturn(buildReceiptDTO());
 
     Mockito.when(personMapperMock.map(buildPersonRequestDTO())).thenReturn(buildPersonDTO());
 
