@@ -1,12 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto;
 
 
-import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor

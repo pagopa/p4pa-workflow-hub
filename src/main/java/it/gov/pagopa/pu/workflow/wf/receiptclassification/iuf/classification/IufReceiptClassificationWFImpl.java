@@ -95,15 +95,9 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
 
   }
 
-
   @Override
   public void signalForReporting(IufReceiptClassificationForReportingSignalDTO signalDTO) {
 
-  }
-
-
-  private String getTransferClassificationWorkflowId(Long organizationId, String iuv, String iur, int transferIndex, String workflow) {
-    return String.format("%s-%s-%s-%s-%d", organizationId, iuv, iur, transferIndex, "TransferClassificationWF");
   }
 
 }

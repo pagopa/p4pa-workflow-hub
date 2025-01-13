@@ -5,6 +5,6 @@ import io.temporal.activity.ActivityInterface;
 @ActivityInterface
 public interface TransferClassificationWfHelperActivity {
 
-  public void signalTransferClassificationWithStart(Long organizationId, String iuv, String iur, int transferIndex);
+  void signalTransferClassificationWithStart(Long organizationId, String iuv, String iur, int transferIndex);
 
 }
