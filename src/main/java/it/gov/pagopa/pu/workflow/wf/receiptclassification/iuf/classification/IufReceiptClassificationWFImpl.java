@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContextAware;
 import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE;
 
 /**
- *
+ * Implementation of the IufReceiptClassificationWF interface
  */
 @Slf4j
 @WorkflowImpl(taskQueues = TASK_QUEUE)
@@ -48,29 +48,44 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
   @Override
   public void classify(IufReceiptClassificationSignalDTO signalDTO) {
 
+    Long organizationId = signalDTO.getOrganizationId();
+
     switch (signalDTO.getType()) {
       case IufReceiptClassificationSignalType.RENDICONTAZIONE:
 
-
         log.info("Handling iuf receipt classification for organizatioId {}, treasuryId {} and iuf {}",
-          signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
 
-        boolean clearedForTreasury = clearClassifyIufActivity.deleteClassificationByIuf(signalDTO.getOrganizationId(), signalDTO.getIuf());
+        boolean clearedForTreasury = clearClassifyIufActivity.deleteClassificationByIuf(organizationId, signalDTO.getIuf());
 
         log.info("IUF receipt classification cleared with result {} for organizatioId {}, treasuryId {} and iuf {}",
           clearedForTreasury,
-          signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
 
-        IufClassificationActivityResult result = iufClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
-
-
+        IufClassificationActivityResult result = iufClassificationActivity.classify(organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
 
 
+        if (result != null && result.isSuccess()) {
+
+          result.getTransfers2classify().forEach(transfer2ClassifyDTO -> {
+
+            String iuv = transfer2ClassifyDTO.getIuv();
+            String iur = transfer2ClassifyDTO.getIur();
+            int transferIndex = transfer2ClassifyDTO.getTransferIndex();
+
+            String workflowId = getTransferClassificationWorkflowId(organizationId, iuv, iur, transferIndex, TASK_QUEUE);
 
 
 
-        log.info("IUF receipt classification completed for for for organizatioId {}, treasuryId {} and iuf {}",
-          signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+
+
+
+          });
+
+
+        }
+        log.info("IUF receipt classification completed for for for organizationId {}, treasuryId {} and iuf {}",
+          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
         break;
 
 
@@ -79,13 +94,13 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
         // TODO: implement the logic
 
         log.info("Handling iuf receipt classification for organizatioId {}, treasuryId {} and iuf {}",
-          signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
 
-        boolean clearedForReporting = clearClassifyIufActivity.deleteClassificationByIuf(signalDTO.getOrganizationId(), signalDTO.getIuf());
+        boolean clearedForReporting = clearClassifyIufActivity.deleteClassificationByIuf(organizationId, signalDTO.getIuf());
 
         log.info("IUF receipt classification cleared with result {} for organizatioId {}, treasuryId {} and iuf {}",
           clearedForReporting,
-          signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+          organizationId, signalDTO.getTreasuryId(), signalDTO.getIuf());
 
 
         break;
@@ -98,6 +113,11 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
   @Override
   public void setSignalDTO(IufReceiptClassificationSignalDTO signalDTO) {
     signalDTO = signalDTO;
+  }
+
+
+  private String getTransferClassificationWorkflowId(Long organizationId, String iuv, String iur, int transferIndex , String workflow) {
+    return String.format("%s-%s-%s-%s-%d", organizationId, iuv, iur, transferIndex, "TransferClassificationWF");
   }
 
 }

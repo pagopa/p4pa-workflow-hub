@@ -1,11 +1,10 @@
 package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf;
 
 import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.classification.IufReceiptClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.classification.IufReceiptClassificationWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,9 +33,7 @@ public class IufReceiptClassificationWFClient {
       .treasuryId(treasuryId)
       .build();
 
-
-    // TODO   generateWorkflowId(signalDTO, IufReceiptClassificationWFImpl.TASK_QUEUE);
-    String workflowId = generateWorkflowId(signalDTO.getTreasuryId(), IufReceiptClassificationWFImpl.TASK_QUEUE);
+    String workflowId = generateWorkflowIdForTreasure(organizationId, treasuryId, iuf, IufReceiptClassificationWFImpl.TASK_QUEUE);
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufReceiptClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(SIGNAL_METHOD_NAME,
@@ -58,8 +55,7 @@ public class IufReceiptClassificationWFClient {
       .transfers2classify(transfers2classify)
       .build();
 
-    // TODO   generateWorkflowId(signalDTO, IufReceiptClassificationWFImpl.TASK_QUEUE);
-    String workflowId = generateWorkflowId(signalDTO.getTreasuryId(), IufReceiptClassificationWFImpl.TASK_QUEUE);
+    String workflowId = generateWorkflowIdForReporting(organizationId, iuf, outcomeCode, transfers2classify, IufReceiptClassificationWFImpl.TASK_QUEUE);
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufReceiptClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(SIGNAL_METHOD_NAME,
@@ -74,4 +70,29 @@ public class IufReceiptClassificationWFClient {
   }
 
 
+  ///  private methods
+
+  private static String generateWorkflowIdForTreasure(Long organizationId, Long treasuryId, String iuf, String workflow) {
+
+    if (organizationId == null || treasuryId == null || iuf == null || workflow == null) {
+      throw new WorkflowInternalErrorException("The organizationId or treasuryId or iuf or the workflow must not be null");
+    }
+    return String.format("%s-%s-%d-%s", workflow, organizationId, treasuryId, iuf);
+
+  }
+
+
+  private static String generateWorkflowIdForReporting(Long organizationId, String iuf, String outcomeCode,
+                                                       List<Transfer2ClassifyDTO> transfers2classify, String workflow) {
+
+    if (organizationId == null || iuf == null || outcomeCode == null || transfers2classify == null || workflow == null) {
+      throw new WorkflowInternalErrorException("The organizationId or treasuryId or iuf or transfers2classify or the workflow must not be null");
+    }
+    return String.format("%s-%d-%s-%s-%d", workflow, organizationId, outcomeCode, iuf, transfers2classify.hashCode());
+
+  }
+
 }
+
+
+
