@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.classification;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.*;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
+import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
 import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.config.IufReceiptClassificationWfConfig;
@@ -81,13 +82,14 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
   @Override
   public void signalForTreasury(IufReceiptClassificationForTreasurySignalDTO signalDTO) {
 
-    log.info("Handling iuf receipt classification for organizatioId {}, treasuryId {} and iuf {}",
+    log.info("Handling iuf receipt classification for treasury with organizationId {}, treasuryId {} and IUF {}",
       signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
 
-    boolean clearedForTreasury = clearClassifyIufActivity.deleteClassificationByIuf(signalDTO.getOrganizationId(),
+    boolean clearedForTreasury = clearClassifyIufActivity.deleteClassificationByIuf(
+      signalDTO.getOrganizationId(),
       signalDTO.getIuf());
 
-    log.info("IUF receipt classification cleared with result {} for organizatioId {}, treasuryId {} and iuf {}",
+    log.info("IUF receipt classification cleared with result {} for organizationId {}, treasuryId {} and IUF {}",
       clearedForTreasury,
       signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
 
@@ -97,6 +99,28 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
 
   @Override
   public void signalForReporting(IufReceiptClassificationForReportingSignalDTO signalDTO) {
+
+    log.info("Handling iuf receipt classification for reporting with organizationId {}, IUF {} and outcome {}",
+      signalDTO.getOrganizationId(),
+      signalDTO.getIuf(),
+      signalDTO.getOutcomeCode()
+    );
+
+    boolean clearedForTreasury = clearClassifyIufActivity.deleteClassificationByIuf(
+      signalDTO.getOrganizationId(),
+      signalDTO.getIuf());
+
+    log.info("IUF receipt classification for reporting cleared. Result is {} for organizationId {}, iuf {} and outcome {}",
+      clearedForTreasury,
+      signalDTO.getOrganizationId(),
+      signalDTO.getIuf(),
+      signalDTO.getOutcomeCode());
+
+    result = IufClassificationActivityResult.builder()
+      .organizationId(signalDTO.getOrganizationId())
+      .success(true)
+      .transfers2classify(signalDTO.getTransfers2classify())
+      .build();
 
   }
 
