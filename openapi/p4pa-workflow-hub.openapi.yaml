@@ -61,7 +61,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /ingestion-flow/treasury-opi/{ingestionFlowId}:
+  /ingestion-flow/treasury/opi/{ingestionFlowFileId}:
     post:
       tags:
         - IngestionFlow
@@ -70,10 +70,10 @@ paths:
       description: It will start the Treasury OPI ingestion
         returning its workflowId
       parameters:
-        - name: ingestionFlowId
+        - name: ingestionFlowFileId
           in: path
           required: true
-          description: The unique identifier of the ingestion flow.
+          description: The unique identifier of the ingestion flow File.
           schema:
             type: integer
             format: int64

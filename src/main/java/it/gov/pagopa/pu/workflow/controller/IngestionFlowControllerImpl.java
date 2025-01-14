@@ -37,14 +37,14 @@ public class IngestionFlowControllerImpl implements IngestionFlowApi {
     }
 
     @Override
-    public ResponseEntity<WorkflowCreatedDTO> ingestTreasuryOpi(@PathVariable("ingestionFlowId") Long ingestionFlowId) {
-        log.info("Creating Treasury OPI Ingestion Workflow for ingestionFlowId: {}", ingestionFlowId);
-        String workflowId = treasuryOpiIngestionWFClient.ingest(ingestionFlowId);
+    public ResponseEntity<WorkflowCreatedDTO> ingestTreasuryOpi(@PathVariable("ingestionFlowFileId") Long ingestionFlowFileId) {
+        log.info("Creating Treasury OPI Ingestion Workflow for ingestionFlowFileId: {}", ingestionFlowFileId);
+        String workflowId = treasuryOpiIngestionWFClient.ingest(ingestionFlowFileId);
 
         WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
         response.setWorkflowId(workflowId);
 
-        log.info("Treasury OPI Ingestion workflow {} created successfully for ingestionFlowId: {}", workflowId, ingestionFlowId);
+        log.info("Treasury OPI Ingestion workflow {} created successfully for ingestionFlowFileId: {}", workflowId, ingestionFlowFileId);
         return ResponseEntity.status(201).body(response);
     }
 }

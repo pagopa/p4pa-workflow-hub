@@ -61,14 +61,14 @@ class IngestionFlowControllerTest {
 
     @Test
     void givenIdWhenIngestThenCreateTreasuryOpiWFSuccessfully() throws Exception {
-        Long ingestionFlowId = 1L;
+        Long ingestionFlowFileId = 1L;
         String workflowId = "workflow123";
 
         WorkflowCreatedDTO workflowCreatedDTO = WorkflowCreatedDTO.builder().workflowId(workflowId).build();
 
-        Mockito.when(treasuryOpiIngestionWFClientMock.ingest(ingestionFlowId)).thenReturn(workflowId);
+        Mockito.when(treasuryOpiIngestionWFClientMock.ingest(ingestionFlowFileId)).thenReturn(workflowId);
 
-        MvcResult result = mockMvc.perform(post(basePath + "/ingestion-flow/treasury-opi/{ingestionFlowId}", ingestionFlowId)
+        MvcResult result = mockMvc.perform(post(basePath + "/ingestion-flow/treasury/opi/{ingestionFlowFileId}", ingestionFlowFileId)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
