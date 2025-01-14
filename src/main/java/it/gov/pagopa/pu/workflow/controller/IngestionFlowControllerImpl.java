@@ -32,4 +32,9 @@ public class IngestionFlowControllerImpl implements IngestionFlowApi {
         return ResponseEntity.status(201).body(response);
     }
 
+  @Override
+  public ResponseEntity<WorkflowCreatedDTO> ingestTreasuryOpi(Long ingestionFlowId) {
+    return IngestionFlowApi.super.ingestTreasuryOpi(ingestionFlowId);
+  }
+
 }
