@@ -24,7 +24,7 @@ class TreasuryOpiIngestionWFImplTest {
   @Mock
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivityMock;
   @Mock
-  TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
+  private TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
 
   private TreasuryOpiIngestionWFImpl wf;
 
