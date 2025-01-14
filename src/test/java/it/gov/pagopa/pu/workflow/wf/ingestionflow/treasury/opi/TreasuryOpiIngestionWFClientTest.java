@@ -1,9 +1,9 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.wfingestion.TreasuryOpiIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.wfingestion.TreasuryOpiIngestionWFImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWF;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

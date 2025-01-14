@@ -1,10 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.wfingestion;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.config.TreasuryOpiIngestionWfConfig;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

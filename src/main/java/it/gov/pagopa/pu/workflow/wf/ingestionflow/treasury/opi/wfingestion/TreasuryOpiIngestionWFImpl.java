@@ -1,11 +1,11 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.wfingestion;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.config.TreasuryOpiIngestionWfConfig;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

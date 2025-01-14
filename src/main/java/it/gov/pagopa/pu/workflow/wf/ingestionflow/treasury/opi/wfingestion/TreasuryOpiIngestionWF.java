@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.wfingestion;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
