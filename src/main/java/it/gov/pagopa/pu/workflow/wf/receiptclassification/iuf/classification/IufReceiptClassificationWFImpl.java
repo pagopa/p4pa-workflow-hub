@@ -68,14 +68,10 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
       });
 
     } else {
-      log.warn("Result is null or classification was not successful for organizationId {}, treasuryId {} and iuf {}",
-        result != null ? result.getOrganizationId() : "N/A",
-        signalDTO.getTreasuryId(),
-        signalDTO.getIuf());
+      log.warn("Result is null or classification was not successful for organizationId {}",
+        result != null ? result.getOrganizationId() : "N/A");
     }
 
-    log.info("IUF receipt classification completed for for for organizationId {}, treasuryId {} and iuf {}",
-      result.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
   }
 
 
