@@ -41,8 +41,9 @@ val openApiToolsVersion = "0.2.6"
 val micrometerVersion = "1.4.1"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
-val activitiesVersion = "1.30.1"
 val bouncycastleVersion = "1.79"
+val activitiesVersion = "1.31.0"
+val mapStructVersion = "1.6.3"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -71,6 +72,15 @@ dependencies {
 
   compileOnly("org.projectlombok:lombok")
   annotationProcessor("org.projectlombok:lombok")
+
+  /**
+   * Mapstruct
+   * https://mapstruct.org/
+   * mapstruct dependencies must always be placed after the lombok dependency
+   * or the generated mappers will return an empty object
+   **/
+  implementation("org.mapstruct:mapstruct:$mapStructVersion")
+  annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
   //	Testing
   testImplementation("org.springframework.boot:spring-boot-starter-test")
