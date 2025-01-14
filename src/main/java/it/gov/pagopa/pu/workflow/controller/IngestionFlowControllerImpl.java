@@ -23,7 +23,7 @@ public class IngestionFlowControllerImpl implements IngestionFlowApi {
     }
 
     @Override
-    public ResponseEntity<WorkflowCreatedDTO> ingestPaymentsReportingFile(@PathVariable("ingestionFlowFileId") Long ingestionFlowFileId) {
+    public ResponseEntity<WorkflowCreatedDTO> ingestPaymentsReportingFile(Long ingestionFlowFileId) {
         log.info("Creating Payments Reporting Ingestion Workflow for ingestionFlowFileId: {}", ingestionFlowFileId);
 
         String workflowId = paymentsReportingIngestionWFClient.ingest(ingestionFlowFileId);
@@ -37,7 +37,7 @@ public class IngestionFlowControllerImpl implements IngestionFlowApi {
     }
 
     @Override
-    public ResponseEntity<WorkflowCreatedDTO> ingestTreasuryOpi(@PathVariable("ingestionFlowFileId") Long ingestionFlowFileId) {
+    public ResponseEntity<WorkflowCreatedDTO> ingestTreasuryOpi(Long ingestionFlowFileId) {
         log.info("Creating Treasury OPI Ingestion Workflow for ingestionFlowFileId: {}", ingestionFlowFileId);
         String workflowId = treasuryOpiIngestionWFClient.ingest(ingestionFlowFileId);
 
