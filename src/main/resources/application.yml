@@ -16,24 +16,42 @@ spring:
         - it.gov.pagopa.pu.workflow.wf
 
 management:
+  endpoints:
+    jmx:
+      exposure.include: "*"
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+      base-path: /actuator
   endpoint:
     health:
       probes.enabled: true
       group:
         readiness.include: "*"
         liveness.include: livenessState,diskSpace,ping
-  endpoints:
-    jmx:
-      exposure.include: "*"
-    web:
-      exposure.include: info, health
+      prometheus:
+        enabled: true
+    metrics:
+      tags:
+        application: ${artifactId}
+      export:
+        prometheus:
+          enabled: true
+          step: 1m
+          descriptions: true
+      enable:
+        jvm: true
+        process: true
+        system: true
+        http: true
+        logback: true
 
 workflow:
   default:
-    startToCloseTimeoutInSeconds: "\${DEFAULT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:60}"
+    startToCloseTimeoutInSeconds: "\${DEFAULT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:300}"
     retryInitialIntervalInMillis: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:1000}"
-    retryBackoffCoefficient: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:1.1}"
-    retryMaximumAttempts: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:10}"
+    retryBackoffCoefficient: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:1.5}"
+    retryMaximumAttempts: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:30}"
 
   payments-reporting-ingestion:
     start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
@@ -53,6 +71,12 @@ workflow:
     retry-backoff-coefficient: "\${IUF-RECEIPT-CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${IUF-RECEIPT-CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
+
+  treasury-opi-ingestion:
+    start-to-close-timeout-in-seconds: "\${TREASURY_OPI_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
 springdoc:
   writer-with-default-pretty-printer: true

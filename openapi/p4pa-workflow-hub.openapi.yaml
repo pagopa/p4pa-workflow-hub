@@ -6,6 +6,31 @@ info:
 servers:
   - url: "http://localhost:8080/workflowhub"
 paths:
+  /workflow/debt-position:
+    post:
+      tags:
+        - DebtPosition
+      operationId: createDpSync
+      description: Create a debt position sync.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebtPositionRequestDTO'
+      responses:
+        '200':
+          description: "Debt position created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /ingestion-flow/payments-reporting/{ingestionFlowFileId}:
     post:
       tags:
@@ -69,7 +94,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
 security:
-  - BearerAuth: []
+  - BearerAuth: [ ]
 components:
   securitySchemes:
     BearerAuth:
@@ -97,9 +122,378 @@ components:
     WorkflowStatusDTO:
       type: object
       required:
-         - workflowId
+        - workflowId
       properties:
         workflowId:
           type: string
         status:
           type: string
+    DebtPositionRequestDTO:
+      required:
+        - debtPositionTypeOrgId
+        - organizationId
+      type: object
+      properties:
+        debtPositionId:
+          type: integer
+          format: int64
+        iupdOrg:
+          type: string
+        iupdPagopa:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        ingestionFlowFileId:
+          type: integer
+          format: int64
+        ingestionFlowFileLineNumber:
+          type: integer
+          format: int64
+        organizationId:
+          type: integer
+          format: int64
+        debtPositionTypeOrgId:
+          type: integer
+          format: int64
+        notificationDate:
+          type: string
+          format: date-time
+        validityDate:
+          type: string
+          format: date-time
+        flagIuvVolatile:
+          type: boolean
+        creationDate:
+          type: string
+          format: date-time
+        updateDate:
+          type: string
+          format: date-time
+        paymentOptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentOptionRequestDTO"
+    PaymentOptionRequestDTO:
+      required:
+        - installments
+        - totalAmountCents
+      type: object
+      properties:
+        paymentOptionId:
+          type: integer
+          format: int64
+        totalAmountCents:
+          type: integer
+          format: int64
+        status:
+          type: string
+        multiDebtor:
+          type: boolean
+        dueDate:
+          type: string
+          format: date-time
+        description:
+          type: string
+        paymentOptionType:
+          type: string
+          enum:
+            - SINGLE_INSTALLMENT
+            - INSTALMENTS
+            - DOWN_PAYMENT
+        installments:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstallmentRequestDTO"
+    InstallmentRequestDTO:
+      required:
+        - amountCents
+        - debtor
+        - remittanceInformation
+        - transfers
+      type: object
+      properties:
+        installmentId:
+          type: integer
+          format: int64
+        paymentOptionId:
+          type: integer
+          format: int64
+        status:
+          type: string
+        iupd_pagopa:
+          type: string
+        iud:
+          type: string
+        iuv:
+          type: string
+        iur:
+          type: string
+        iuf:
+          type: string
+        nav:
+          type: string
+        dueDate:
+          type: string
+          format: date-time
+        paymentTypeCode:
+          type: string
+        amountCents:
+          type: integer
+          format: int64
+        notificationFeeCents:
+          type: integer
+          format: int64
+        remittanceInformation:
+          type: string
+        humanFriendlyRemittanceInformation:
+          type: string
+        balance:
+          type: string
+        legacyPaymentMetadata:
+          type: string
+        debtor:
+          $ref: "#/components/schemas/PersonRequestDTO"
+        transfers:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransferRequestDTO"
+        creationDate:
+          type: string
+          format: date-time
+        updateDate:
+          type: string
+          format: date-time
+    TransferRequestDTO:
+      required:
+        - amountCents
+        - category
+        - orgFiscalCode
+        - orgName
+        - remittanceInformation
+      type: object
+      properties:
+        transferId:
+          type: integer
+          format: int64
+        orgFiscalCode:
+          type: string
+        orgName:
+          type: string
+        amountCents:
+          type: integer
+          format: int64
+        remittanceInformation:
+          type: string
+        stampType:
+          type: string
+        stampHashDocument:
+          type: string
+        stampProvincialResidence:
+          type: string
+        iban:
+          type: string
+        postalIban:
+          type: string
+        category:
+          type: string
+        transferIndex:
+          type: integer
+          format: int32
+    ReceiptRequestDTO:
+      type: object
+      properties:
+        receiptId:
+          type: integer
+          format: int64
+        installmentId:
+          type: integer
+          format: int64
+        paymentReceiptId:
+          type: string
+        noticeNumber:
+          type: string
+        orgFiscalCode:
+          type: string
+        outcome:
+          type: string
+        creditorReferenceId:
+          type: string
+        paymentAmountCents:
+          type: integer
+          format: int64
+        description:
+          type: string
+        companyName:
+          type: string
+        officeName:
+          type: string
+        idPsp:
+          type: string
+        pspFiscalCode:
+          type: string
+        pspPartitaIva:
+          type: string
+        pspCompanyName:
+          type: string
+        idChannel:
+          type: string
+        channelDescription:
+          type: string
+        paymentMethod:
+          type: string
+        feeCents:
+          type: integer
+          format: int64
+        paymentDateTime:
+          type: string
+          format: date-time
+        applicationDate:
+          type: string
+          format: date-time
+        transferDate:
+          type: string
+          format: date-time
+        receiptBytes:
+          type: string
+          format: byte
+        standin:
+          type: boolean
+        debtor:
+          $ref: "#/components/schemas/PersonRequestDTO"
+        payer:
+          $ref: "#/components/schemas/PersonRequestDTO"
+        creationDate:
+          type: string
+          format: date-time
+        updateDate:
+          type: string
+          format: date-time
+    PersonRequestDTO:
+      required:
+        - email
+        - fullName
+        - entityType
+        - fiscalCode
+      type: object
+      properties:
+        entityType:
+          type: string
+        fiscalCode:
+          type: string
+        fullName:
+          type: string
+        address:
+          type: string
+        civic:
+          type: string
+        postalCode:
+          type: string
+        location:
+          type: string
+        province:
+          type: string
+        nation:
+          type: string
+        email:
+          type: string
+    OrganizationRequestDTO:
+      type: object
+      properties:
+        organizationId:
+          type: integer
+          format: int64
+        ipaCode:
+          type: string
+        orgFiscalCode:
+          type: string
+        orgName:
+          type: string
+        adminEmail:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        lastUpdateDate:
+          type: string
+          format: date-time
+        fee:
+          type: integer
+          format: int64
+        iban:
+          type: string
+        urlOrgSendSilPaymentResult:
+          type: string
+        password:
+          type: string
+        creditBicSeller:
+          type: boolean
+        beneficiaryOrgName:
+          type: string
+        beneficiaryOrgAddress:
+          type: string
+        beneficiaryOrgCivic:
+          type: string
+        beneficiaryOrgPostalCode:
+          type: string
+        beneficiaryOrgLocation:
+          type: string
+        beneficiaryOrgProvince:
+          type: string
+        beneficiaryOrgNation:
+          type: string
+        beneficiaryOrgPhoneNumber:
+          type: string
+        beneficiaryOrgWebSite:
+          type: string
+        beneficiaryOrgEmail:
+          type: string
+        applicationCode:
+          type: string
+        cbillInterBankCode:
+          type: string
+        orgInformation:
+          type: string
+        orgLogoDesc:
+          type: string
+        authorizationDesc:
+          type: string
+        status:
+          type: string
+        urlActiveExternal:
+          type: string
+        additionalLanguage:
+          type: string
+        orgTypeCode:
+          type: string
+        startDate:
+          type: string
+          format: date
+        brokerId:
+          type: integer
+          format: int64
+        links:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/LinkRequestDTO'
+    LinkRequestDTO:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+

@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.createdp;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWF;
@@ -15,7 +15,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static it.gov.pagopa.pu.workflow.utilities.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,7 +30,7 @@ class CreateDebtPositionWfClientTest {
 
   @BeforeEach
   void init(){
-    client = new CreateDebtPositionWfClient(workflowServiceMock);
+    client = new CreateDebtPositionWfClientImpl(workflowServiceMock);
   }
 
   @AfterEach
