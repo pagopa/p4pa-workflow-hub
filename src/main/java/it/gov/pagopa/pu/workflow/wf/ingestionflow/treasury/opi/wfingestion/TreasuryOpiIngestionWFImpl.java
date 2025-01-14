@@ -39,14 +39,14 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
   }
 
   @Override
-  public void ingest(Long ingestionFlowId) {
-    log.info("Handling ingestionFlowId {}", ingestionFlowId);
+  public void ingest(Long ingestionFlowFileId) {
+    log.info("Handling ingestionFlowFileId {}", ingestionFlowFileId);
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowId, "IMPORT_IN_ELAB", null);
-    TreasuryIufResult ingestionResult = treasuryOpiIngestionActivity.processFile(ingestionFlowId);
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowId, ingestionResult.isSuccess());
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowId, ingestionResult.isSuccess() ? "OK" : "KO", ingestionResult.getDiscardedFileName());
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB", null);
+    TreasuryIufResult ingestionResult = treasuryOpiIngestionActivity.processFile(ingestionFlowFileId);
+    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, ingestionResult.isSuccess());
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? "OK" : "KO", ingestionResult.getDiscardedFileName());
 
-    log.info("Ingestion with ID {} is completed", ingestionFlowId);
+    log.info("Ingestion with ID {} is completed", ingestionFlowFileId);
   }
 }

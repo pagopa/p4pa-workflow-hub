@@ -61,6 +61,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /ingestion-flow/treasury/opi/{ingestionFlowFileId}:
+    post:
+      tags:
+        - IngestionFlow
+      operationId: ingestTreasuryOpi
+      summary: Treasury OPI ingestion
+      description: It will start the Treasury OPI ingestion
+        returning its workflowId
+      parameters:
+        - name: ingestionFlowFileId
+          in: path
+          required: true
+          description: The unique identifier of the ingestion flow File.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: "Treasury OPI Ingestion Workflow created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflows/{workflowId}/status:
     get:
       tags:

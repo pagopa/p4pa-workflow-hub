@@ -12,8 +12,8 @@ public interface TreasuryOpiIngestionWF {
 
   /**
    * Workflow method for the Treasury OPI Ingestion
-   * @param ingestionFlowId the id of the ingestion flow to ingest
+   * @param ingestionFlowFileId the id of the ingestion flow file to ingest
    * */
   @WorkflowMethod
-  void ingest(Long ingestionFlowId);
+  void ingest(Long ingestionFlowFileId);
 }
