@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.TreasuryOpiIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
