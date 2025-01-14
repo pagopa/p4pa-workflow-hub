@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.controller;
 import it.gov.pagopa.pu.workflow.controller.generated.IngestionFlowApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.TreasuryOpiIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
