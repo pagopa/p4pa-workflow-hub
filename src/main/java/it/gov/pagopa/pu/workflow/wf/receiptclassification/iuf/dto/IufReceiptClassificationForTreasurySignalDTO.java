@@ -16,6 +16,6 @@ public class IufReceiptClassificationForTreasurySignalDTO   {
   private String iuf;
 
   // specific fields
-  private Long treasuryId;
+  private String treasuryId;
 
 }

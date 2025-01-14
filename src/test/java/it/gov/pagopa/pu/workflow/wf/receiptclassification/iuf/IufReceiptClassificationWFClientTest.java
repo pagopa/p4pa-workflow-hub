@@ -47,9 +47,9 @@ class IufReceiptClassificationWFClientTest {
   void testClassifyForTreasury() {
     // Given
     Long organizationId = 1L;
-    Long treasuryId = 2L;
+    String treasuryId = "2T";
     String iuf = "iuf123";
-    String expectedWorkflowId = "IufReceiptClassificationWF-1-2-iuf123";
+    String expectedWorkflowId = "IufReceiptClassificationWF-1-2T-iuf123";
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);

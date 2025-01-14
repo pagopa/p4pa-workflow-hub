@@ -79,10 +79,10 @@ void testClassify() {
     // Given
     IufReceiptClassificationForTreasurySignalDTO signalDTO =
       IufReceiptClassificationForTreasurySignalDTO.builder()
-        .organizationId(1L).treasuryId(2L).iuf("iuf123").build();
+        .organizationId(1L).treasuryId("2T").iuf("iuf123").build();
 
     Mockito.when(clearClassifyIufActivity.deleteClassificationByIuf(1L, "iuf123")).thenReturn(true);
-    Mockito.when(iufClassificationActivity.classify(1L, 2L, "iuf123")).thenReturn(
+    Mockito.when(iufClassificationActivity.classify(1L, "2T", "iuf123")).thenReturn(
       IufClassificationActivityResult.builder()
         .organizationId(1L)
         .success(true)
@@ -95,7 +95,7 @@ void testClassify() {
 
     // Then
     Mockito.verify(clearClassifyIufActivity).deleteClassificationByIuf(1L, "iuf123");
-    Mockito.verify(iufClassificationActivity).classify(1L, 2L, "iuf123");
+    Mockito.verify(iufClassificationActivity).classify(1L, "2T", "iuf123");
   }
 
   @Test

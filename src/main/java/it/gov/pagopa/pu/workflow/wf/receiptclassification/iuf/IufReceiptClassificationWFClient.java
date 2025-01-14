@@ -23,7 +23,7 @@ public class IufReceiptClassificationWFClient {
     this.workflowService = workflowService;
   }
 
-  public String classifyForTreasury(Long organizationId, Long treasuryId, String iuf) {
+  public String classifyForTreasury(Long organizationId, String treasuryId, String iuf) {
 
     IufReceiptClassificationForTreasurySignalDTO signalDTO = IufReceiptClassificationForTreasurySignalDTO.builder()
       .organizationId(organizationId)
@@ -70,13 +70,13 @@ public class IufReceiptClassificationWFClient {
 
   // private methods
 
-  private static String generateWorkflowIdForTreasury(Long organizationId, Long treasuryId, String iuf,
+  private static String generateWorkflowIdForTreasury(Long organizationId, String treasuryId, String iuf,
                                                       String workflow) {
 
     if (organizationId == null || treasuryId == null || iuf == null || workflow == null) {
       throw new WorkflowInternalErrorException("The organizationId or treasuryId or iuf or the workflow must not be null");
     }
-    return String.format("%s-%s-%d-%s", workflow, organizationId, treasuryId, iuf);
+    return String.format("%s-%d-%s-%s", workflow, organizationId, treasuryId, iuf);
   }
 
   private static String generateWorkflowIdForReporting(Long organizationId, String iuf, String outcomeCode,
