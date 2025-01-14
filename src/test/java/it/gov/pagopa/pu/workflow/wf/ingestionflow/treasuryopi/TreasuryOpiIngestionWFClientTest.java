@@ -1,0 +1,60 @@
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi;
+
+import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.wfingestion.TreasuryOpiIngestionWF;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.wfingestion.TreasuryOpiIngestionWFImpl;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class TreasuryOpiIngestionWFClientTest {
+  @Mock
+  private WorkflowService workflowServiceMock;
+  @Mock
+  private TreasuryOpiIngestionWF wfMock;
+
+  private TreasuryOpiIngestionWFClient client;
+
+  @BeforeEach
+  void setUp(){
+    client = new TreasuryOpiIngestionWFClient(workflowServiceMock);
+  }
+
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+  }
+
+  @Test
+  void whenIngestThenOk(){
+    // Given
+    long ingestionFlowId = 1L;
+    String expectedWorkflowId = "TreasuryIngestionWF-1";
+
+    try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
+      utilitiesMockedStatic
+        .when(() -> Utilities.generateWorkflowId(ingestionFlowId, TreasuryOpiIngestionWFImpl.TASK_QUEUE))
+        .thenReturn(expectedWorkflowId);
+
+      doReturn(wfMock).when(workflowServiceMock)
+        .buildWorkflowStub(TreasuryOpiIngestionWF.class, TreasuryOpiIngestionWFImpl.TASK_QUEUE, expectedWorkflowId);
+
+      // When
+      String workflowId = client.ingest(ingestionFlowId);
+
+      // Then
+      assertEquals(expectedWorkflowId, workflowId);
+      verify(wfMock).ingest(ingestionFlowId);
+    }
+  }
+}
