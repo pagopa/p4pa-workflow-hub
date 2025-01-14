@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasuryopi.TreasuryOpiIngestionWFClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ class IngestionFlowControllerTest {
     @MockitoBean
     private PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClientMock;
 
+    @MockitoBean
+    private TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClientMock;
+
     @Test
     void testCreatePaymentIngestionWF_Success() throws Exception {
         Long ingestionFileId = 1L;
@@ -55,4 +59,22 @@ class IngestionFlowControllerTest {
 
     }
 
+    @Test
+    void givenIdWhenIngestThenCreateTreasuryOpiWFSuccessfully() throws Exception {
+        Long ingestionFlowId = 1L;
+        String workflowId = "workflow123";
+
+        WorkflowCreatedDTO workflowCreatedDTO = WorkflowCreatedDTO.builder().workflowId(workflowId).build();
+
+        Mockito.when(treasuryOpiIngestionWFClientMock.ingest(ingestionFlowId)).thenReturn(workflowId);
+
+        MvcResult result = mockMvc.perform(post(basePath + "/ingestion-flow/treasury-opi/{ingestionFlowId}", ingestionFlowId)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
+
+        WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+        assertEquals(workflowCreatedDTO, resultResponse);
+    }
 }
