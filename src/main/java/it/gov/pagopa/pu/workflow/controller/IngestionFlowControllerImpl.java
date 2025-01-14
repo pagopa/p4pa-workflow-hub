@@ -19,7 +19,7 @@ public class IngestionFlowControllerImpl implements IngestionFlowApi {
     public IngestionFlowControllerImpl(PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient,
                                        TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient) {
         this.paymentsReportingIngestionWFClient = paymentsReportingIngestionWFClient;
-	      this.treasuryOpiIngestionWFClient = treasuryOpiIngestionWFClient;
+        this.treasuryOpiIngestionWFClient = treasuryOpiIngestionWFClient;
     }
 
     @Override

@@ -69,7 +69,7 @@ class IngestionFlowControllerTest {
         Mockito.when(treasuryOpiIngestionWFClientMock.ingest(ingestionFlowId)).thenReturn(workflowId);
 
         MvcResult result = mockMvc.perform(post(basePath + "/ingestion-flow/treasury-opi/{ingestionFlowId}", ingestionFlowId)
-                .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andReturn();
