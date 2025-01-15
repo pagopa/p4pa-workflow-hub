@@ -1,11 +1,11 @@
-package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf;
+package it.gov.pagopa.pu.workflow.wf.classification.iuf;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
-class IufReceiptClassificationWFClientTest {
+class IufClassificationWFClientTest {
 
   @Mock
   private WorkflowService workflowServiceMock;
@@ -31,11 +31,11 @@ class IufReceiptClassificationWFClientTest {
   @Mock
   private WorkflowExecution workflowExecutionMock;
 
-  private IufReceiptClassificationWFClient client;
+  private IufClassificationWFClient client;
 
   @BeforeEach
   void setUp() {
-    client = new IufReceiptClassificationWFClient(workflowServiceMock);
+    client = new IufClassificationWFClient(workflowServiceMock);
   }
 
   @AfterEach
@@ -49,7 +49,7 @@ class IufReceiptClassificationWFClientTest {
     Long organizationId = 1L;
     String treasuryId = "2T";
     String iuf = "iuf123";
-    String expectedWorkflowId = "IufReceiptClassificationWF-1-2T-iuf123";
+    String expectedWorkflowId = "IufReceiptClassificationWF-1-iuf123";
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
@@ -59,7 +59,7 @@ class IufReceiptClassificationWFClientTest {
       .thenReturn(expectedWorkflowId);
 
     // When
-    String workflowId = client.classifyForTreasury(organizationId, treasuryId, iuf);
+    String workflowId = client.notifyTreasury(organizationId, treasuryId, iuf);
 
     // Then
     assertEquals(expectedWorkflowId, workflowId);
@@ -72,13 +72,12 @@ class IufReceiptClassificationWFClientTest {
   }
 
   @Test
-  void testClassifyForReporting() {
+  void testNotifyPaymentsReporting() {
     // Given
     Long organizationId = 1L;
     String iuf = "iuf123";
-    String outcomeCode = "outcome123";
     List<Transfer2ClassifyDTO> transfers2classify = Collections.emptyList();
-    String expectedWorkflowId = "IufReceiptClassificationWF-1-outcome123-iuf123-" + transfers2classify.hashCode();
+    String expectedWorkflowId = "IufReceiptClassificationWF-1-iuf123";
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
@@ -88,7 +87,7 @@ class IufReceiptClassificationWFClientTest {
       .thenReturn(expectedWorkflowId);
 
     // When
-    String workflowId = client.classifyForReporting(organizationId, iuf, outcomeCode, transfers2classify);
+    String workflowId = client.notifyPaymentsReporting(organizationId, iuf, transfers2classify);
 
     // Then
     assertEquals(expectedWorkflowId, workflowId);

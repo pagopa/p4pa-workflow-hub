@@ -1,14 +1,14 @@
-package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.classification;
+package it.gov.pagopa.pu.workflow.wf.classification.iuf.classification;
 
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.config.IufReceiptClassificationWfConfig;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.helper.TransferClassificationWfHelperActivity;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufReceiptClassificationWfConfig;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +34,7 @@ class IufReceiptClassificationWFTest {
   @Mock
   private TransferClassificationActivity transferClassificationActivity;
   @Mock
-  private TransferClassificationWfHelperActivity transferClassificationWfHelperActivity;
+  private StartTransferClassificationActivity startTransferClassificationActivity;
 
   private IufReceiptClassificationWFImpl wf;
 
@@ -50,11 +50,8 @@ class IufReceiptClassificationWFTest {
     Mockito.when(iufReceiptClassificationWfConfigMock.buildIufClassificationActivityStub())
       .thenReturn(iufClassificationActivity);
 
-    Mockito.when(iufReceiptClassificationWfConfigMock.buildTransferClassificationActivityStub())
-      .thenReturn(transferClassificationActivity);
-
     Mockito.when(iufReceiptClassificationWfConfigMock.buildTransferClassificationStarterHelperActivityStub())
-      .thenReturn(transferClassificationWfHelperActivity);
+      .thenReturn(startTransferClassificationActivity);
 
     Mockito.when(applicationContextMock.getBean(IufReceiptClassificationWfConfig.class))
       .thenReturn(iufReceiptClassificationWfConfigMock);
@@ -70,7 +67,7 @@ void testClassify() {
   wf.classify();
 
   // Then
-  verify(transferClassificationWfHelperActivity, times(0)).signalTransferClassificationWithStart(
+  verify(startTransferClassificationActivity, times(0)).signalTransferClassificationWithStart(
     eq(1L), any(String.class), any(String.class), any(Integer.class));
 }
 

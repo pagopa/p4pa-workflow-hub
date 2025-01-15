@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto;
+package it.gov.pagopa.pu.workflow.wf.classification.iuf.dto;
 
 
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;

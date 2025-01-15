@@ -1,12 +1,12 @@
-package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.classification;
+package it.gov.pagopa.pu.workflow.wf.classification.iuf.classification;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.*;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.config.IufReceiptClassificationWfConfig;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.helper.TransferClassificationWfHelperActivity;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufReceiptClassificationWfConfig;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +28,7 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
   private IufClassificationActivity iufClassificationActivity;
   private TransferClassificationActivity transferClassificationActivity;
 
-  private TransferClassificationWfHelperActivity transferClassificationWfHelperActivity;
+  private StartTransferClassificationActivity startTransferClassificationActivity;
 
   private IufClassificationActivityResult result;
 
@@ -45,9 +45,8 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
 
     clearClassifyIufActivity = wfConfig.buildClearClassifyIufActivityStub();
     iufClassificationActivity = wfConfig.buildIufClassificationActivityStub();
-    transferClassificationActivity = wfConfig.buildTransferClassificationActivityStub();
 
-    transferClassificationWfHelperActivity = wfConfig.buildTransferClassificationStarterHelperActivityStub();
+    startTransferClassificationActivity = wfConfig.buildTransferClassificationStarterHelperActivityStub();
 
   }
 
@@ -63,7 +62,7 @@ public class IufReceiptClassificationWFImpl implements IufReceiptClassificationW
         String iur = transfer2ClassifyDTO.getIur();
         int transferIndex = transfer2ClassifyDTO.getTransferIndex();
 
-        transferClassificationWfHelperActivity.signalTransferClassificationWithStart(result.getOrganizationId(), iuv, iur, transferIndex);
+        startTransferClassificationActivity.signalTransferClassificationWithStart(result.getOrganizationId(), iuv, iur, transferIndex);
       });
 
     } else {

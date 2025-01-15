@@ -1,11 +1,11 @@
-package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.config;
+package it.gov.pagopa.pu.workflow.wf.classification.iuf.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.*;
 
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.helper.TransferClassificationWfHelperActivity;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,13 +22,9 @@ public class IufReceiptClassificationWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(IufClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
-  public TransferClassificationActivity buildTransferClassificationActivityStub() {
-    return Workflow.newActivityStub(TransferClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
-  }
-
   // helper activity
-  public TransferClassificationWfHelperActivity buildTransferClassificationStarterHelperActivityStub() {
-    return Workflow.newActivityStub(TransferClassificationWfHelperActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  public StartTransferClassificationActivity buildTransferClassificationStarterHelperActivityStub() {
+    return Workflow.newActivityStub(StartTransferClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
 }

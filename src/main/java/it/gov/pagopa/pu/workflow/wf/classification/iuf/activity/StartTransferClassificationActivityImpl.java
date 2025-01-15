@@ -1,8 +1,8 @@
-package it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.helper;
+package it.gov.pagopa.pu.workflow.wf.classification.iuf.activity;
 
 //import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.TransferClassificationWFClient;
 import io.temporal.spring.boot.ActivityImpl;
-import it.gov.pagopa.pu.workflow.wf.receiptclassification.iuf.classification.IufReceiptClassificationWFImpl;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufReceiptClassificationWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @ActivityImpl(taskQueues = IufReceiptClassificationWFImpl.TASK_QUEUE)
-public class TransferClassificationWfHelperActivityImpl implements TransferClassificationWfHelperActivity {
+public class StartTransferClassificationActivityImpl implements StartTransferClassificationActivity {
 
   // TODO: Uncomment the following lines
  // private TransferClassificationWFClient TransferClassificationWFClient;
 
-//  public TransferClassificationWfHelperActivityImpl(TransferClassificationWFClient TransferClassificationWFClient) {
+//  public StartTransferClassificationActivityImpl(TransferClassificationWFClient TransferClassificationWFClient) {
 //    this.TransferClassificationWFClient = TransferClassificationWFClient;
 //  }
 
