@@ -12,8 +12,8 @@ import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNoti
 @WorkflowInterface
 public interface IufClassificationWF {
 
-  String  SIGNAL_METHOD_NAME_FOR_TREASURY="signalForTreasury";
-  String  SIGNAL_METHOD_NAME_FOR_REPORTING="signalForReporting";
+  String SIGNAL_METHOD_NAME_NOTIFY_TREASURY ="notifyTreasury";
+  String SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING ="notifyPaymentsReporting";
 
   @WorkflowMethod
   void classify();

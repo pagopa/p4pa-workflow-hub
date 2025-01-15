@@ -64,7 +64,7 @@ class IufClassificationWFClientTest {
     assertEquals(expectedWorkflowId, workflowId);
     Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedWorkflowId));
     Mockito.verify(workflowStubMock).signalWithStart(
-      eq(IufClassificationWF.SIGNAL_METHOD_NAME_FOR_TREASURY),
+      eq(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY),
       any(Object[].class),
       any(Object[].class)
     );
@@ -92,7 +92,7 @@ class IufClassificationWFClientTest {
     assertEquals(expectedWorkflowId, workflowId);
     Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedWorkflowId));
     Mockito.verify(workflowStubMock).signalWithStart(
-      eq(IufClassificationWF.SIGNAL_METHOD_NAME_FOR_REPORTING),
+      eq(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING),
       any(Object[].class),
       any(Object[].class)
     );

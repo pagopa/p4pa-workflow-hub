@@ -22,8 +22,7 @@ public class IufClassificationWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(IufClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
-  // helper activity
-  public StartTransferClassificationActivity buildTransferClassificationStarterHelperActivityStub() {
+  public StartTransferClassificationActivity buildStartTransferClassificationActivityStub() {
     return Workflow.newActivityStub(StartTransferClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 

@@ -36,7 +36,7 @@ public class IufClassificationWFClient {
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
-      IufClassificationWF.SIGNAL_METHOD_NAME_FOR_TREASURY,
+      IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
       new Object[]{signalDTO},
       new Object[]{}
     );
@@ -58,7 +58,7 @@ public class IufClassificationWFClient {
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
-      IufClassificationWF.SIGNAL_METHOD_NAME_FOR_REPORTING,
+      IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,
       new Object[]{signalDTO},
       new Object[]{}
     );

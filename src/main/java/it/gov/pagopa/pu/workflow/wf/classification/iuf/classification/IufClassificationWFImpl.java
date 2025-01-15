@@ -13,6 +13,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,15 +28,12 @@ import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfing
 public class IufClassificationWFImpl implements IufClassificationWF, ApplicationContextAware {
   public static final String TASK_QUEUE = "IufClassificationWF";
 
-  private IufClassificationNotifyTreasurySignalDTO signalDTO;
-
   private ClearClassifyIufActivity clearClassifyIufActivity;
   private IufClassificationActivity iufClassificationActivity;
-  private TransferClassificationActivity transferClassificationActivity;
 
   private StartTransferClassificationActivity startTransferClassificationActivity;
 
-  private IufClassificationActivityResult result;
+  List<IufClassificationActivityResult> toNotify = new ArrayList<>();;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid
@@ -51,31 +49,22 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
     clearClassifyIufActivity = wfConfig.buildClearClassifyIufActivityStub();
     iufClassificationActivity = wfConfig.buildIufClassificationActivityStub();
 
-    startTransferClassificationActivity = wfConfig.buildTransferClassificationStarterHelperActivityStub();
+    startTransferClassificationActivity = wfConfig.buildStartTransferClassificationActivityStub();
 
   }
 
   @Override
   public void classify() {
 
-    if (result != null && result.isSuccess()) {
-
-      Set<Transfer2ClassifyDTO> uniqueTransfers = new HashSet<>(result.getTransfers2classify());
-
-      // signal transfer classification for each transfer
-      uniqueTransfers.forEach(transfer2ClassifyDTO -> {
-
-        String iuv = transfer2ClassifyDTO.getIuv();
-        String iur = transfer2ClassifyDTO.getIur();
-        int transferIndex = transfer2ClassifyDTO.getTransferIndex();
-
-        startTransferClassificationActivity.signalTransferClassificationWithStart(result.getOrganizationId(), iuv, iur, transferIndex);
-      });
-
-    } else {
-      log.warn("Result is null or classification was not successful for organizationId {}",
-        result != null ? result.getOrganizationId() : "N/A");
-    }
+    toNotify.stream()
+      .flatMap(r -> r. getTransfers2classify().stream())
+      .distinct()
+      .forEach(transfer2ClassifyDTO -> {
+      String iuv = transfer2ClassifyDTO.getIuv();
+      String iur = transfer2ClassifyDTO.getIur();
+      int transferIndex = transfer2ClassifyDTO.getTransferIndex();
+      startTransferClassificationActivity.signalTransferClassificationWithStart(toNotify.get(0).getOrganizationId(), iuv, iur, transferIndex);
+    });
 
   }
 
@@ -91,20 +80,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
     log.info("IUF receipt classification cleared with result {} for {}", clearedResult, signalDTO);
 
     IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
-
-    if (iufClassificationActivityResult.isSuccess()) {
-      if (result == null) {
-        result = iufClassificationActivityResult;
-      } else {
-        Set<Transfer2ClassifyDTO> uniqueTransfers = new HashSet<>(result.getTransfers2classify());
-        uniqueTransfers.addAll(iufClassificationActivityResult.getTransfers2classify());
-        List<Transfer2ClassifyDTO> listTransfers = uniqueTransfers.stream().toList();
-        result.setTransfers2classify(listTransfers);
-
-      }
-    } else {
-      log.error("Error in treasury classification for organizationId {}", signalDTO.getOrganizationId());
-    }
+    toNotify.add(iufClassificationActivityResult);
   }
 
   @Override
@@ -117,20 +93,11 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
     log.info("IUF receipt classification cleared with result {} for {}", clearedResult, signalDTO);
 
-    if (result == null) {
-      result = IufClassificationActivityResult.builder()
-        .organizationId(signalDTO.getOrganizationId())
-        .success(true)
-        .transfers2classify(signalDTO.getTransfers2classify())
-        .build();
-    } else {
-
-      Set<Transfer2ClassifyDTO> uniqueTransfers = new HashSet<>(result.getTransfers2classify());
-      uniqueTransfers.addAll(signalDTO.getTransfers2classify());
-
-      List<Transfer2ClassifyDTO> listTransfers = uniqueTransfers.stream().toList();
-      result.setTransfers2classify(listTransfers);
-    }
+    toNotify.add(IufClassificationActivityResult.builder()
+      .organizationId(signalDTO.getOrganizationId())
+      .success(true)
+      .transfers2classify(signalDTO.getTransfers2classify())
+      .build());
   }
 
 }
