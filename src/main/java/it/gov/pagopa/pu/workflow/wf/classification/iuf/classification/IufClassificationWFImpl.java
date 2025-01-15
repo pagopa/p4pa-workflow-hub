@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE;
@@ -97,8 +98,9 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
       } else {
         Set<Transfer2ClassifyDTO> uniqueTransfers = new HashSet<>(result.getTransfers2classify());
         uniqueTransfers.addAll(iufClassificationActivityResult.getTransfers2classify());
-        result.getTransfers2classify().clear();
-        result.getTransfers2classify().addAll(uniqueTransfers);
+        List<Transfer2ClassifyDTO> listTransfers = uniqueTransfers.stream().toList();
+        result.setTransfers2classify(listTransfers);
+
       }
     } else {
       log.error("Error in treasury classification for organizationId {}", signalDTO.getOrganizationId());
@@ -126,9 +128,8 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
       Set<Transfer2ClassifyDTO> uniqueTransfers = new HashSet<>(result.getTransfers2classify());
       uniqueTransfers.addAll(signalDTO.getTransfers2classify());
 
-      result.getTransfers2classify().clear();
-      result.getTransfers2classify().addAll(uniqueTransfers);
-
+      List<Transfer2ClassifyDTO> listTransfers = uniqueTransfers.stream().toList();
+      result.setTransfers2classify(listTransfers);
     }
   }
 
