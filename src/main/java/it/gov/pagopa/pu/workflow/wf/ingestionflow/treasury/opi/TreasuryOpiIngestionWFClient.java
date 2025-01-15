@@ -17,13 +17,13 @@ public class TreasuryOpiIngestionWFClient {
     this.workflowService = workflowService;
   }
 
-  public String ingest(Long ingestionFlowId) {
-    String workflowId = generateWorkflowId(ingestionFlowId, TreasuryOpiIngestionWFImpl.TASK_QUEUE);
+  public String ingest(Long ingestionFlowFileId) {
+    String workflowId = generateWorkflowId(ingestionFlowFileId, TreasuryOpiIngestionWFImpl.TASK_QUEUE);
     TreasuryOpiIngestionWF workflow = workflowService.buildWorkflowStub(
       TreasuryOpiIngestionWF.class,
       TreasuryOpiIngestionWFImpl.TASK_QUEUE,
       workflowId);
-    WorkflowClient.start(workflow::ingest, ingestionFlowId);
+    WorkflowClient.start(workflow::ingest, ingestionFlowFileId);
     return workflowId;
   }
 }

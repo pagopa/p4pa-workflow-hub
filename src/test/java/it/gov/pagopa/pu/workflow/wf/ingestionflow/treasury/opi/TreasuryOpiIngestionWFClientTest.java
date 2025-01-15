@@ -38,23 +38,23 @@ class TreasuryOpiIngestionWFClientTest {
   @Test
   void whenIngestThenOk(){
     // Given
-    long ingestionFlowId = 1L;
+    long ingestionFlowFileId = 1L;
     String expectedWorkflowId = "TreasuryIngestionWF-1";
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(ingestionFlowId, TreasuryOpiIngestionWFImpl.TASK_QUEUE))
+        .when(() -> Utilities.generateWorkflowId(ingestionFlowFileId, TreasuryOpiIngestionWFImpl.TASK_QUEUE))
         .thenReturn(expectedWorkflowId);
 
       doReturn(wfMock).when(workflowServiceMock)
         .buildWorkflowStub(TreasuryOpiIngestionWF.class, TreasuryOpiIngestionWFImpl.TASK_QUEUE, expectedWorkflowId);
 
       // When
-      String workflowId = client.ingest(ingestionFlowId);
+      String workflowId = client.ingest(ingestionFlowFileId);
 
       // Then
       assertEquals(expectedWorkflowId, workflowId);
-      verify(wfMock).ingest(ingestionFlowId);
+      verify(wfMock).ingest(ingestionFlowFileId);
     }
   }
 }

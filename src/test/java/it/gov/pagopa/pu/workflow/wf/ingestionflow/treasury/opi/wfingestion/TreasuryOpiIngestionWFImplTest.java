@@ -68,18 +68,18 @@ class TreasuryOpiIngestionWFImplTest {
   @Test
   void givenFailingProcessingConditionWhenIngestThenKo(){
     // Given
-    long ingestionFlowId = 1L;
+    long ingestionFlowFileId = 1L;
     boolean success = false;
 
-    when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowId))
+    when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId))
       .thenReturn(new TreasuryIufResult(Collections.emptyList(), success, "error", "discardedFileName"));
 
     // When
-    wf.ingest(ingestionFlowId);
+    wf.ingest(ingestionFlowFileId);
 
     // Then
-    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "IMPORT_IN_ELAB", null);
-    verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowId, success);
-    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "KO", "discardedFileName");
+    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB", null);
+    verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, success);
+    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "KO", "discardedFileName");
   }
 }
