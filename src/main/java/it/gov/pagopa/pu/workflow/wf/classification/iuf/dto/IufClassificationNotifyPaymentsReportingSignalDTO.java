@@ -11,9 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
-public class IufReceiptClassificationForReportingSignalDTO {
-  public static final String SIGNAL_METHOD_NAME = "signalForReporting";
-
+public class IufClassificationNotifyPaymentsReportingSignalDTO {
   // common fields
   private Long organizationId;
   private String iuf;

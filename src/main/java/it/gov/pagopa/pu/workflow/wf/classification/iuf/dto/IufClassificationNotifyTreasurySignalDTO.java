@@ -8,9 +8,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class IufReceiptClassificationForTreasurySignalDTO   {
-  public static final String  SIGNAL_METHOD_NAME="signalForTreasury";
-
+public class IufClassificationNotifyTreasurySignalDTO {
   // common fields
   private Long organizationId;
   private String iuf;

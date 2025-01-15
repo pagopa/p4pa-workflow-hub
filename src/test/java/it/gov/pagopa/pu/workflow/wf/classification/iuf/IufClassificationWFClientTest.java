@@ -4,8 +4,7 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWF;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,7 @@ class IufClassificationWFClientTest {
     Long organizationId = 1L;
     String treasuryId = "2T";
     String iuf = "iuf123";
-    String expectedWorkflowId = "IufReceiptClassificationWF-1-iuf123";
+    String expectedWorkflowId = "IufClassificationWF-1-iuf123";
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
@@ -65,7 +64,7 @@ class IufClassificationWFClientTest {
     assertEquals(expectedWorkflowId, workflowId);
     Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedWorkflowId));
     Mockito.verify(workflowStubMock).signalWithStart(
-      eq(IufReceiptClassificationForTreasurySignalDTO.SIGNAL_METHOD_NAME),
+      eq(IufClassificationWF.SIGNAL_METHOD_NAME_FOR_TREASURY),
       any(Object[].class),
       any(Object[].class)
     );
@@ -77,7 +76,7 @@ class IufClassificationWFClientTest {
     Long organizationId = 1L;
     String iuf = "iuf123";
     List<Transfer2ClassifyDTO> transfers2classify = Collections.emptyList();
-    String expectedWorkflowId = "IufReceiptClassificationWF-1-iuf123";
+    String expectedWorkflowId = "IufClassificationWF-1-iuf123";
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
@@ -93,7 +92,7 @@ class IufClassificationWFClientTest {
     assertEquals(expectedWorkflowId, workflowId);
     Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedWorkflowId));
     Mockito.verify(workflowStubMock).signalWithStart(
-      eq(IufReceiptClassificationForReportingSignalDTO.SIGNAL_METHOD_NAME),
+      eq(IufClassificationWF.SIGNAL_METHOD_NAME_FOR_REPORTING),
       any(Object[].class),
       any(Object[].class)
     );

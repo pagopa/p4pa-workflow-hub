@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-@ConfigurationProperties(prefix = "workflow.iuf-receipt-classification")
-public class IufReceiptClassificationWfConfig extends BaseWfConfig {
+@ConfigurationProperties(prefix = "workflow.iuf-classification")
+public class IufClassificationWfConfig extends BaseWfConfig {
 
   public ClearClassifyIufActivity buildClearClassifyIufActivityStub() {
     return Workflow.newActivityStub(ClearClassifyIufActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));

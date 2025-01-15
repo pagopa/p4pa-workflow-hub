@@ -5,9 +5,9 @@ import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificatio
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufReceiptClassificationWfConfig;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForReportingSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufReceiptClassificationForTreasurySignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class IufReceiptClassificationWFTest {
+class IufClassificationWFTest {
 
   @Mock
   private ClearClassifyIufActivity clearClassifyIufActivity;
@@ -36,27 +36,27 @@ class IufReceiptClassificationWFTest {
   @Mock
   private StartTransferClassificationActivity startTransferClassificationActivity;
 
-  private IufReceiptClassificationWFImpl wf;
+  private IufClassificationWFImpl wf;
 
 
   @BeforeEach
   void init() {
-    IufReceiptClassificationWfConfig iufReceiptClassificationWfConfigMock = Mockito.mock(IufReceiptClassificationWfConfig.class);
+    IufClassificationWfConfig iufClassificationWfConfigMock = Mockito.mock(IufClassificationWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
-    Mockito.when(iufReceiptClassificationWfConfigMock.buildClearClassifyIufActivityStub())
+    Mockito.when(iufClassificationWfConfigMock.buildClearClassifyIufActivityStub())
       .thenReturn(clearClassifyIufActivity);
 
-    Mockito.when(iufReceiptClassificationWfConfigMock.buildIufClassificationActivityStub())
+    Mockito.when(iufClassificationWfConfigMock.buildIufClassificationActivityStub())
       .thenReturn(iufClassificationActivity);
 
-    Mockito.when(iufReceiptClassificationWfConfigMock.buildTransferClassificationStarterHelperActivityStub())
+    Mockito.when(iufClassificationWfConfigMock.buildTransferClassificationStarterHelperActivityStub())
       .thenReturn(startTransferClassificationActivity);
 
-    Mockito.when(applicationContextMock.getBean(IufReceiptClassificationWfConfig.class))
-      .thenReturn(iufReceiptClassificationWfConfigMock);
+    Mockito.when(applicationContextMock.getBean(IufClassificationWfConfig.class))
+      .thenReturn(iufClassificationWfConfigMock);
 
-    wf = new IufReceiptClassificationWFImpl();
+    wf = new IufClassificationWFImpl();
     wf.setApplicationContext(applicationContextMock);
 
   }
@@ -72,10 +72,10 @@ void testClassify() {
 }
 
   @Test
-  void testSignalForTreasury() {
+  void testNotifyTreasury() {
     // Given
-    IufReceiptClassificationForTreasurySignalDTO signalDTO =
-      IufReceiptClassificationForTreasurySignalDTO.builder()
+    IufClassificationNotifyTreasurySignalDTO signalDTO =
+      IufClassificationNotifyTreasurySignalDTO.builder()
         .organizationId(1L).treasuryId("2T").iuf("iuf123").build();
 
     Mockito.when(clearClassifyIufActivity.deleteClassificationByIuf(1L, "iuf123")).thenReturn(true);
@@ -88,7 +88,7 @@ void testClassify() {
     );
 
     // When
-    wf.signalForTreasury(signalDTO);
+    wf.notifyTreasury(signalDTO);
 
     // Then
     Mockito.verify(clearClassifyIufActivity).deleteClassificationByIuf(1L, "iuf123");
@@ -96,9 +96,9 @@ void testClassify() {
   }
 
   @Test
-  void testSignalForReporting() {
+  void testNotifyPaymentsReporting() {
     // Given
-    IufReceiptClassificationForReportingSignalDTO signalDTO = IufReceiptClassificationForReportingSignalDTO.builder()
+    IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
       .organizationId(1L)
       .iuf("iuf123")
       .outcomeCode("outcome123")
@@ -107,7 +107,7 @@ void testClassify() {
     Mockito.when(clearClassifyIufActivity.deleteClassificationByIuf(1L, "iuf123")).thenReturn(true);
 
     // When
-    wf.signalForReporting(signalDTO);
+    wf.notifyPaymentsReporting(signalDTO);
 
     // Then
     Mockito.verify(clearClassifyIufActivity).deleteClassificationByIuf(1L, "iuf123");
