@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.classifications.transfer.wfclassification;
+package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;

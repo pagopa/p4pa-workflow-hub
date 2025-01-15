@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.classifications.transfer.config;
+package it.gov.pagopa.pu.workflow.wf.classification.transfer.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
