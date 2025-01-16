@@ -5,7 +5,6 @@ import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWF;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWFImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -102,24 +101,18 @@ class IufClassificationWFClientTest {
     );
   }
 
-
   @Test
   void testSignalMethodsExist() {
     assertDoesNotThrow(() -> {
-      IufClassificationWF.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
-        IufClassificationNotifyTreasurySignalDTO.class);
-
-      IufClassificationWFClient.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
-        Long.class, String.class, String.class);
+      checkMethodExists(IufClassificationWF.class, IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY, IufClassificationNotifyTreasurySignalDTO.class);
+      checkMethodExists(IufClassificationWF.class, IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING, IufClassificationNotifyPaymentsReportingSignalDTO.class);
+      checkMethodExists(IufClassificationWFClient.class, IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY, Long.class, String.class, String.class);
+      checkMethodExists(IufClassificationWFClient.class, IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING, Long.class, String.class, List.class);
     });
+  }
 
-    assertDoesNotThrow(() -> {
-      IufClassificationWF.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,
-        IufClassificationNotifyPaymentsReportingSignalDTO.class);
-
-      IufClassificationWFClient.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,
-        Long.class, String.class, List.class);
-    });
+  private void checkMethodExists(Class<?> clazz, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+    clazz.getMethod(methodName, parameterTypes);
   }
 
 }
