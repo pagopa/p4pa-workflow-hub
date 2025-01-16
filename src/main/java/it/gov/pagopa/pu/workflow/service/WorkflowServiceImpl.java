@@ -5,6 +5,7 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.client.WorkflowStub;
 import io.temporal.failure.TemporalException;
 import io.temporal.internal.client.WorkflowClientHelper;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
@@ -27,6 +28,17 @@ public class WorkflowServiceImpl implements WorkflowService {
   public <T> T buildWorkflowStub(Class<T> workflowClass, String taskQueue, String workflowId) {
     return workflowClient.newWorkflowStub(
       workflowClass,
+      WorkflowOptions.newBuilder()
+        .setTaskQueue(taskQueue)
+        .setWorkflowId(workflowId)
+        .build());
+  }
+
+
+  @Override
+  public WorkflowStub  buildUntypedWorkflowStub( String taskQueue, String workflowId) {
+    return workflowClient.newUntypedWorkflowStub(
+      workflowId,
       WorkflowOptions.newBuilder()
         .setTaskQueue(taskQueue)
         .setWorkflowId(workflowId)

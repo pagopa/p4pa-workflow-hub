@@ -6,6 +6,7 @@ import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowServiceException;
+import io.temporal.client.WorkflowStub;
 import io.temporal.internal.client.WorkflowClientHelper;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
@@ -147,4 +148,25 @@ class WorkflowServiceTest {
       assertEquals("workflowId='test-workflow-id', runId='', workflowType='Generic Error'", exception.getMessage());
     }
   }
+
+  @Test
+  void testBuildUntypedWorkflowStub() {
+    // Given
+    String taskQueue = "test-task-queue";
+    String workflowId = "test-workflow-id";
+    WorkflowStub expectedStub = Mockito.mock(WorkflowStub.class);
+
+    when(workflowClientMock.newUntypedWorkflowStub(
+      eq(workflowId),
+      argThat(options -> taskQueue.equals(options.getTaskQueue()) && workflowId.equals(options.getWorkflowId()))
+    )).thenReturn(expectedStub);
+
+    // When
+    WorkflowStub result = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
+
+    // Then
+    assertEquals(expectedStub, result);
+  }
+
+
 }
