@@ -2,7 +2,6 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
-import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWF;
@@ -11,8 +10,6 @@ import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNoti
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -25,14 +22,7 @@ public class IufClassificationWFClient {
   }
 
   public String notifyTreasury(IufClassificationNotifyTreasurySignalDTO signalDTO) {
-
-//    IufClassificationNotifyTreasurySignalDTO signalDTO = IufClassificationNotifyTreasurySignalDTO.builder()
-//      .organizationId(organizationId)
-//      .iuf(iuf)
-//      .treasuryId(treasuryId)
-//      .build();
-
-    String workflowId = generateWorkflowId(IufClassificationWFImpl.TASK_QUEUE, signalDTO.getOrganizationId(), signalDTO.getIuf());
+    String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIuf());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
@@ -47,14 +37,7 @@ public class IufClassificationWFClient {
   }
 
   public String notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
-
-//    IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
-//      .organizationId(organizationId)
-//      .iuf(iuf)
-//      .transfers2classify(transfers2classify)
-//      .build();
-
-    String workflowId = generateWorkflowId(IufClassificationWFImpl.TASK_QUEUE, signalDTO.getOrganizationId(), signalDTO.getIuf());
+    String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIuf());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
@@ -68,11 +51,11 @@ public class IufClassificationWFClient {
 
   }
 
- private static String generateWorkflowId(String workflow, Long organizationId, String iuf) {
-  if (workflow == null || organizationId == null || iuf == null) {
-    throw new WorkflowInternalErrorException("The workflow or organizationId or iuf must not be null");
+ private static String generateWorkflowId(Long organizationId, String iuf) {
+  if (organizationId == null || iuf == null) {
+    throw new WorkflowInternalErrorException("The organizationId or iuf must not be null");
   }
-  return String.format("%s-%d-%s", workflow, organizationId, iuf);
+  return String.format("%s-%d-%s", IufClassificationWFImpl.TASK_QUEUE, organizationId, iuf);
 }
 
 }
