@@ -102,15 +102,23 @@ class IufClassificationWFClientTest {
     );
   }
 
+
   @Test
   void testSignalMethodsExist() {
     assertDoesNotThrow(() -> {
       IufClassificationWF.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
         IufClassificationNotifyTreasurySignalDTO.class);
+
+      IufClassificationWFClient.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
+        Long.class, String.class, String.class);
     });
+
     assertDoesNotThrow(() -> {
       IufClassificationWF.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,
         IufClassificationNotifyPaymentsReportingSignalDTO.class);
+
+      IufClassificationWFClient.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,
+        Long.class, String.class, List.class);
     });
   }
 
