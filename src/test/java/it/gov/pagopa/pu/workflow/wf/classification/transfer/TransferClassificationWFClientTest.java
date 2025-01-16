@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.classification.transfer;
 
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWFImpl;
@@ -12,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -54,5 +56,25 @@ class TransferClassificationWFClientTest {
     assertEquals(expectedWorkflowId, actualWorkflowId);
     verify(wfMock).classify(ORGANIZATION, IUV, IUR, INDEX);
 
+  }
+
+  @Test
+  void givenGenerateWorkflowIdWhenOrgIdNullThenThrowWorkflowInternalErrorException(){
+    testGenerateWorkflowIdWhenNullErrors(null, IUV, IUR, INDEX);
+  }
+
+  @Test
+  void givenGenerateWorkflowIuvWhenWorkflowNullThenThrowWorkflowInternalErrorException(){
+    testGenerateWorkflowIdWhenNullErrors(ORGANIZATION, null, IUR, INDEX);
+  }
+
+  @Test
+  void givenGenerateWorkflowIurWhenWorkflowNullThenThrowWorkflowInternalErrorException(){
+    testGenerateWorkflowIdWhenNullErrors(ORGANIZATION, IUV, null, INDEX);
+  }
+
+  private void testGenerateWorkflowIdWhenNullErrors(Long orgId, String iuv, String iur, int transferIndex) {
+    assertThrows(WorkflowInternalErrorException.class,
+      () -> client.classify(orgId, iuv, iur, transferIndex), "The ID or the workflow must not be null");
   }
 }
