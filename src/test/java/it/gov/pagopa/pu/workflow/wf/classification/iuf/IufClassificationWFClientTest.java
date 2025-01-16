@@ -48,9 +48,16 @@ class IufClassificationWFClientTest {
   @Test
   void testClassifyForTreasury() {
     // Given
-    Long organizationId = 1L;
-    String treasuryId = "2T";
-    String iuf = "iuf123";
+//    Long organizationId = 1L;
+//    String treasuryId = "2T";
+//    String iuf = "iuf123";
+
+    IufClassificationNotifyTreasurySignalDTO signalDTO = IufClassificationNotifyTreasurySignalDTO.builder()
+      .organizationId(1L)
+      .iuf("iuf123")
+      .treasuryId("2T")
+      .build();
+
     String expectedWorkflowId = "IufClassificationWF-1-iuf123";
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
@@ -61,7 +68,7 @@ class IufClassificationWFClientTest {
       .thenReturn(expectedWorkflowId);
 
     // When
-    String workflowId = client.notifyTreasury(organizationId, treasuryId, iuf);
+    String workflowId = client.notifyTreasury(signalDTO);
 
     // Then
     assertEquals(expectedWorkflowId, workflowId);
@@ -76,9 +83,17 @@ class IufClassificationWFClientTest {
   @Test
   void testNotifyPaymentsReporting() {
     // Given
-    Long organizationId = 1L;
-    String iuf = "iuf123";
-    List<Transfer2ClassifyDTO> transfers2classify = Collections.emptyList();
+
+//    Long organizationId = 1L;
+//    String iuf = "iuf123";
+//    List<Transfer2ClassifyDTO> transfers2classify = Collections.emptyList();
+
+    IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
+      .organizationId(1L)
+      .iuf("iuf123")
+      .transfers2classify(Collections.emptyList())
+      .build();
+
     String expectedWorkflowId = "IufClassificationWF-1-iuf123";
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
@@ -89,7 +104,7 @@ class IufClassificationWFClientTest {
       .thenReturn(expectedWorkflowId);
 
     // When
-    String workflowId = client.notifyPaymentsReporting(organizationId, iuf, transfers2classify);
+    String workflowId = client.notifyPaymentsReporting(signalDTO);
 
     // Then
     assertEquals(expectedWorkflowId, workflowId);
@@ -104,15 +119,21 @@ class IufClassificationWFClientTest {
   @Test
   void testSignalMethodsExist() {
     assertDoesNotThrow(() -> {
-      checkMethodExists(IufClassificationWF.class, IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY, IufClassificationNotifyTreasurySignalDTO.class);
-      checkMethodExists(IufClassificationWF.class, IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING, IufClassificationNotifyPaymentsReportingSignalDTO.class);
-      checkMethodExists(IufClassificationWFClient.class, IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY, Long.class, String.class, String.class);
-      checkMethodExists(IufClassificationWFClient.class, IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING, Long.class, String.class, List.class);
+      // Check that the methods exist on the IufClassificationWF and IufClassificationWFClient classes
+      checkMethodExistsOnWfAndClientClasses(IufClassificationWF.class, IufClassificationWFClient.class,
+        IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
+        IufClassificationNotifyTreasurySignalDTO.class);
+
+      checkMethodExistsOnWfAndClientClasses(IufClassificationWF.class, IufClassificationWFClient.class,
+        IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,
+        IufClassificationNotifyPaymentsReportingSignalDTO.class);
+
     });
   }
 
-  private void checkMethodExists(Class<?> clazz, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
-    clazz.getMethod(methodName, parameterTypes);
+  // Helper method to check that the method exists on both classes
+  private void checkMethodExistsOnWfAndClientClasses(Class<?> clazzWf, Class<?> clazzClient, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+    clazzWf.getMethod(methodName, parameterTypes);
+    clazzClient.getMethod(methodName, parameterTypes);
   }
-
 }

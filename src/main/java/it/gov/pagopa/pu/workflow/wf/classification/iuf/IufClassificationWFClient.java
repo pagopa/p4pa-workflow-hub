@@ -24,15 +24,15 @@ public class IufClassificationWFClient {
     this.workflowService = workflowService;
   }
 
-  public String notifyTreasury(Long organizationId, String treasuryId, String iuf) {
+  public String notifyTreasury(IufClassificationNotifyTreasurySignalDTO signalDTO) {
 
-    IufClassificationNotifyTreasurySignalDTO signalDTO = IufClassificationNotifyTreasurySignalDTO.builder()
-      .organizationId(organizationId)
-      .iuf(iuf)
-      .treasuryId(treasuryId)
-      .build();
+//    IufClassificationNotifyTreasurySignalDTO signalDTO = IufClassificationNotifyTreasurySignalDTO.builder()
+//      .organizationId(organizationId)
+//      .iuf(iuf)
+//      .treasuryId(treasuryId)
+//      .build();
 
-    String workflowId = generateWorkflowId(IufClassificationWFImpl.TASK_QUEUE, organizationId, iuf);
+    String workflowId = generateWorkflowId(IufClassificationWFImpl.TASK_QUEUE, signalDTO.getOrganizationId(), signalDTO.getIuf());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
@@ -46,15 +46,15 @@ public class IufClassificationWFClient {
 
   }
 
-  public String notifyPaymentsReporting(Long organizationId, String iuf, List<Transfer2ClassifyDTO> transfers2classify) {
+  public String notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
 
-    IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
-      .organizationId(organizationId)
-      .iuf(iuf)
-      .transfers2classify(transfers2classify)
-      .build();
+//    IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
+//      .organizationId(organizationId)
+//      .iuf(iuf)
+//      .transfers2classify(transfers2classify)
+//      .build();
 
-    String workflowId = generateWorkflowId(IufClassificationWFImpl.TASK_QUEUE, organizationId, iuf);
+    String workflowId = generateWorkflowId(IufClassificationWFImpl.TASK_QUEUE, signalDTO.getOrganizationId(), signalDTO.getIuf());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(

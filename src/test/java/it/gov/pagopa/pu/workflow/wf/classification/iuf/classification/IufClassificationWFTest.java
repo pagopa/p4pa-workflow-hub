@@ -2,7 +2,6 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.classification;
 
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
-import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
@@ -32,8 +31,6 @@ class IufClassificationWFTest {
   @Mock
   private IufClassificationActivity iufClassificationActivity;
   @Mock
-  private TransferClassificationActivity transferClassificationActivity;
-  @Mock
   private StartTransferClassificationActivity startTransferClassificationActivity;
 
   private IufClassificationWFImpl wf;
@@ -62,16 +59,6 @@ class IufClassificationWFTest {
   }
 
   @Test
-  void testClassify() {
-    // When
-    wf.classify();
-
-    // Then
-    verify(startTransferClassificationActivity, times(0)).signalTransferClassificationWithStart(
-      eq(1L), any(String.class), any(String.class), any(Integer.class));
-  }
-
-  @Test
   void testNotifyTreasury() {
     // Given
     IufClassificationNotifyTreasurySignalDTO signalDTO =
@@ -83,16 +70,22 @@ class IufClassificationWFTest {
       IufClassificationActivityResult.builder()
         .organizationId(1L)
         .success(true)
-        .transfers2classify(Collections.singletonList(new Transfer2ClassifyDTO()))
+        .transfers2classify(Collections.singletonList(
+          Transfer2ClassifyDTO.builder().iur("iur1").iuv("iuv1").transferIndex(1).build())
+        )
         .build()
     );
 
     // When
     wf.notifyTreasury(signalDTO);
+    wf.classify();
 
     // Then
-    Mockito.verify(clearClassifyIufActivity).deleteClassificationByIuf(1L, "iuf123");
-    Mockito.verify(iufClassificationActivity).classify(1L, "2T", "iuf123");
+    verify(clearClassifyIufActivity).deleteClassificationByIuf(1L, "iuf123");
+    verify(iufClassificationActivity).classify(1L, "2T", "iuf123");
+    verify(startTransferClassificationActivity, times(1)).signalTransferClassificationWithStart(
+      eq(1L), any(String.class), any(String.class), any(Integer.class));
+
   }
 
 
@@ -103,15 +96,20 @@ class IufClassificationWFTest {
       .organizationId(1L)
       .iuf("iuf123")
       .outcomeCode("outcome123")
+      .transfers2classify(Collections.singletonList(new Transfer2ClassifyDTO()))
       .build();
 
     Mockito.when(clearClassifyIufActivity.deleteClassificationByIuf(1L, "iuf123")).thenReturn(true);
 
     // When
     wf.notifyPaymentsReporting(signalDTO);
+    wf.classify();
 
     // Then
-    Mockito.verify(clearClassifyIufActivity).deleteClassificationByIuf(1L, "iuf123");
+    verify(clearClassifyIufActivity).deleteClassificationByIuf(1L, "iuf123");
+    verify(startTransferClassificationActivity, times(0)).signalTransferClassificationWithStart(
+      eq(1L), any(String.class), any(String.class), any(Integer.class));
+
   }
 
 }
