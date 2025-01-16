@@ -7,14 +7,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+/**
+ * This class handles the start of the transfer classification workflow.
+ *
+ * @see <a href="https://pagopa.atlassian.net/browse/P4ADEV-1921">P4ADEV-1921</a>
+ */
 @Lazy
 @Service
 @Slf4j
 @ActivityImpl(taskQueues = IufClassificationWFImpl.TASK_QUEUE)
 public class StartTransferClassificationActivityImpl implements StartTransferClassificationActivity {
 
-  // TODO: Uncomment the following lines
- // private TransferClassificationWFClient TransferClassificationWFClient;
+//  TODO: Uncomment the following lines
+//  private TransferClassificationWFClient TransferClassificationWFClient;
 
 //  public StartTransferClassificationActivityImpl(TransferClassificationWFClient TransferClassificationWFClient) {
 //    this.TransferClassificationWFClient = TransferClassificationWFClient;

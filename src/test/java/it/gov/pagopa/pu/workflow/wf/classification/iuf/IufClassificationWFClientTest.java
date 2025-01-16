@@ -5,6 +5,9 @@ import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWF;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWFImpl;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -38,7 +42,7 @@ class IufClassificationWFClientTest {
   }
 
   @AfterEach
-  void verifyNoMoreInteractions(){
+  void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(workflowServiceMock);
   }
 
@@ -97,4 +101,17 @@ class IufClassificationWFClientTest {
       any(Object[].class)
     );
   }
+
+  @Test
+  void testSignalMethodsExist() {
+    assertDoesNotThrow(() -> {
+      IufClassificationWF.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
+        IufClassificationNotifyTreasurySignalDTO.class);
+    });
+    assertDoesNotThrow(() -> {
+      IufClassificationWF.class.getMethod(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,
+        IufClassificationNotifyPaymentsReportingSignalDTO.class);
+    });
+  }
+
 }
