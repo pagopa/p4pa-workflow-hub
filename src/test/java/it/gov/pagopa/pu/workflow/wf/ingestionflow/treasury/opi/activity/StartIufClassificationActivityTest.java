@@ -4,13 +4,15 @@ import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 class StartIufClassificationActivityTest {
 
     @Mock
@@ -20,7 +22,6 @@ class StartIufClassificationActivityTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         startIufClassificationActivity = new StartIufClassificationActivityImpl(iufClassificationWFClientMock);
     }
 
