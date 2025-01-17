@@ -36,12 +36,14 @@ class StartIufClassificationActivityTest {
         startIufClassificationActivity.signalIufClassificationWithStart(organizationId, iuf, treasuryId);
 
         // Then
-        ArgumentCaptor<IufClassificationNotifyTreasurySignalDTO> captor = ArgumentCaptor.forClass(IufClassificationNotifyTreasurySignalDTO.class);
-        verify(iufClassificationWFClientMock).notifyTreasury(captor.capture());
-
-        IufClassificationNotifyTreasurySignalDTO capturedDTO = captor.getValue();
-        assertEquals(organizationId, capturedDTO.getOrganizationId());
-        assertEquals(iuf, capturedDTO.getIuf());
-        assertEquals(treasuryId, capturedDTO.getTreasuryId());
+// the following line should go on Given block
+     IufClassificationNotifyTreasurySignalDTO expectedSignalDTO = IufClassificationNotifyTreasurySignalDTO.builder()
+       .organizationId(organizationId)
+       .iuf(iuf)
+       .treasuryId(treasuryId)
+       .build();
+       
+     verify(iufClassificationWFClientMock).notifyTreasury(expectedSignalDTO);
+    
     }
 }
