@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.StartIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ class TreasuryOpiIngestionWFImplTest {
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivityMock;
   @Mock
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
+  @Mock
+  private StartIufClassificationActivity startIufClassificationActivityMock;
 
   private TreasuryOpiIngestionWFImpl wf;
 
@@ -39,6 +42,8 @@ class TreasuryOpiIngestionWFImplTest {
       .thenReturn(treasuryOpiIngestionActivityMock);
     when(treasuryOpiIngestionWfConfigMock.buildSendEmailIngestionFlowActivityStub())
       .thenReturn(sendEmailIngestionFlowActivityMock);
+    when(treasuryOpiIngestionWfConfigMock.buildStartIufClassificationActivityStub())
+      .thenReturn(startIufClassificationActivityMock);
 
     when(applicationContextMock.getBean(TreasuryOpiIngestionWfConfig.class))
       .thenReturn(treasuryOpiIngestionWfConfigMock);
@@ -53,8 +58,18 @@ class TreasuryOpiIngestionWFImplTest {
     long ingestionFlowId = 1L;
     boolean success = true;
 
+    TreasuryIufResult treasuryIufResult = new TreasuryIufResult(
+      List.of("iuf-1"), success, null, null);
+
     when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowId))
-      .thenReturn(new TreasuryIufResult(List.of("iuf-1"), success, null,null));
+      .thenReturn(treasuryIufResult);
+
+    // TODO P4ADEV-1936 replace fake values with real ones
+    // treasuryIufResult.getTreasuryId()
+    // treasuryIufResult.getOrganizationId()
+
+    String treasuryId = "123A";
+    Long organizationId = 1L;
 
     // When
     wf.ingest(ingestionFlowId);
@@ -63,6 +78,7 @@ class TreasuryOpiIngestionWFImplTest {
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "IMPORT_IN_ELAB", null);
     verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowId, success);
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "OK", null);
+    verify(startIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, treasuryIufResult.getIufs().getFirst(), treasuryId);
   }
 
   @Test

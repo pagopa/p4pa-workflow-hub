@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.StartIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -21,7 +22,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
-
+  private StartIufClassificationActivity startIufClassificationActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -36,6 +37,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     treasuryOpiIngestionActivity = wfConfig.buildTreasuryOpiIngestionActivityStub();
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
     sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
+    startIufClassificationActivity = wfConfig.buildStartIufClassificationActivityStub();
   }
 
   @Override
@@ -46,6 +48,19 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     TreasuryIufResult ingestionResult = treasuryOpiIngestionActivity.processFile(ingestionFlowFileId);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, ingestionResult.isSuccess());
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? "OK" : "KO", ingestionResult.getDiscardedFileName());
+
+    ingestionResult.getIufs().forEach(iuf -> {
+
+      // TODO P4ADEV-1936 replace fake values with real ones for organizationId and treasuryId
+      // ingestionResult.getOrganizationId()
+      // ingestionResult.getTreasuryId()
+
+      startIufClassificationActivity.signalIufClassificationWithStart(
+        1L, // organizationId
+        iuf,
+        "123A" // treasuryId
+      );
+    });
 
     log.info("Ingestion with ID {} is completed", ingestionFlowFileId);
   }
