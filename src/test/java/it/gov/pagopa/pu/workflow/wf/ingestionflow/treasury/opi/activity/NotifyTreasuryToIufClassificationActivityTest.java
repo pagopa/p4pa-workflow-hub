@@ -16,11 +16,11 @@ class NotifyTreasuryToIufClassificationActivityTest {
     @Mock
     private IufClassificationWFClient iufClassificationWFClientMock;
 
-    private NotifyTreasuryToIufClassificationActivityImpl startIufClassificationActivity;
+    private NotifyTreasuryToIufClassificationActivityImpl notifyTreasuryToIufClassificationActivity;
 
     @BeforeEach
     void setUp() {
-        startIufClassificationActivity = new NotifyTreasuryToIufClassificationActivityImpl(iufClassificationWFClientMock);
+        notifyTreasuryToIufClassificationActivity = new NotifyTreasuryToIufClassificationActivityImpl(iufClassificationWFClientMock);
     }
 
     @Test
@@ -37,7 +37,7 @@ class NotifyTreasuryToIufClassificationActivityTest {
                 .build();
 
         // When
-        startIufClassificationActivity.signalIufClassificationWithStart(organizationId, iuf, treasuryId);
+        notifyTreasuryToIufClassificationActivity.signalIufClassificationWithStart(organizationId, iuf, treasuryId);
 
         // Then
         verify(iufClassificationWFClientMock).notifyTreasury(expectedSignalDTO);
