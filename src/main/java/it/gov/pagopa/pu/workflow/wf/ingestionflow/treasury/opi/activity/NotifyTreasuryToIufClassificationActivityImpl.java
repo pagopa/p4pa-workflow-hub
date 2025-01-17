@@ -16,8 +16,8 @@ public class NotifyTreasuryToIufClassificationActivityImpl implements NotifyTrea
 
   private IufClassificationWFClient iufClassificationWFClient;
 
-  public NotifyTreasuryToIufClassificationActivityImpl(IufClassificationWFClient IufClassificationWFClient) {
-    this.iufClassificationWFClient = IufClassificationWFClient;
+  public NotifyTreasuryToIufClassificationActivityImpl(IufClassificationWFClient iufClassificationWFClient) {
+    this.iufClassificationWFClient = iufClassificationWFClient;
   }
 
   @Override
