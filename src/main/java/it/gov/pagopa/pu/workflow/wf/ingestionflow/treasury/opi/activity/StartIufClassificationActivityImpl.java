@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Lazy
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = PaymentsReportingIngestionWFImpl.TASK_QUEUE)
+@ActivityImpl(taskQueues = TreasuryOpiIngestionWFImpl.TASK_QUEUE)
 public class StartIufClassificationActivityImpl implements StartIufClassificationActivity {
 
   private IufClassificationWFClient iufClassificationWFClient;
