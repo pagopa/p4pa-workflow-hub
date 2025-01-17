@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @ActivityImpl(taskQueues = TreasuryOpiIngestionWFImpl.TASK_QUEUE)
-public class StartIufClassificationActivityImpl implements StartIufClassificationActivity {
+public class NotifyTreasuryToIufClassificationActivityImpl implements NotifyTreasuryToIufClassificationActivity {
 
   private IufClassificationWFClient iufClassificationWFClient;
 
-  public StartIufClassificationActivityImpl(IufClassificationWFClient IufClassificationWFClient) {
+  public NotifyTreasuryToIufClassificationActivityImpl(IufClassificationWFClient IufClassificationWFClient) {
     this.iufClassificationWFClient = IufClassificationWFClient;
   }
 

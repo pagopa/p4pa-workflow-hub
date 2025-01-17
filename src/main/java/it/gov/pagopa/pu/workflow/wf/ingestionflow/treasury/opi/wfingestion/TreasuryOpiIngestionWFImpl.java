@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.StartIufClassificationActivity;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -22,7 +22,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
-  private StartIufClassificationActivity startIufClassificationActivity;
+  private NotifyTreasuryToIufClassificationActivity notifyTreasuryToIufClassificationActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -37,7 +37,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     treasuryOpiIngestionActivity = wfConfig.buildTreasuryOpiIngestionActivityStub();
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
     sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
-    startIufClassificationActivity = wfConfig.buildStartIufClassificationActivityStub();
+    notifyTreasuryToIufClassificationActivity = wfConfig.buildNotifyTreasuryToIufClassificationActivityStub();
   }
 
   @Override
@@ -55,7 +55,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
       // ingestionResult.getOrganizationId()
       // ingestionResult.getTreasuryId()
 
-      startIufClassificationActivity.signalIufClassificationWithStart(
+      notifyTreasuryToIufClassificationActivity.signalIufClassificationWithStart(
         1L, // organizationId
         iuf,
         "123A" // treasuryId

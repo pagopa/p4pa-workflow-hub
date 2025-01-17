@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.StartIufClassificationActivity;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class TreasuryOpiIngestionWFImplTest {
   @Mock
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
   @Mock
-  private StartIufClassificationActivity startIufClassificationActivityMock;
+  private NotifyTreasuryToIufClassificationActivity notifyTreasuryToIufClassificationActivityMock;
 
   private TreasuryOpiIngestionWFImpl wf;
 
@@ -42,8 +42,8 @@ class TreasuryOpiIngestionWFImplTest {
       .thenReturn(treasuryOpiIngestionActivityMock);
     when(treasuryOpiIngestionWfConfigMock.buildSendEmailIngestionFlowActivityStub())
       .thenReturn(sendEmailIngestionFlowActivityMock);
-    when(treasuryOpiIngestionWfConfigMock.buildStartIufClassificationActivityStub())
-      .thenReturn(startIufClassificationActivityMock);
+    when(treasuryOpiIngestionWfConfigMock.buildNotifyTreasuryToIufClassificationActivityStub())
+      .thenReturn(notifyTreasuryToIufClassificationActivityMock);
 
     when(applicationContextMock.getBean(TreasuryOpiIngestionWfConfig.class))
       .thenReturn(treasuryOpiIngestionWfConfigMock);
@@ -78,7 +78,7 @@ class TreasuryOpiIngestionWFImplTest {
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "IMPORT_IN_ELAB", null);
     verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowId, success);
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "OK", null);
-    verify(startIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, treasuryIufResult.getIufs().getFirst(), treasuryId);
+    verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, treasuryIufResult.getIufs().getFirst(), treasuryId);
   }
 
   @Test
