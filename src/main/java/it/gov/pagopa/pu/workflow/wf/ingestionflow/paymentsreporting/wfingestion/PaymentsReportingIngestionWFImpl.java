@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -25,6 +26,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
   private PaymentsReportingIngestionFlowFileActivity paymentsReportingIngestionFlowFileActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
+  private NotifyPaymentsReportingToIufClassificationActivity notifyPaymentsReportingToIufClassificationActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -39,6 +41,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     paymentsReportingIngestionFlowFileActivity = wfConfig.buildPaymentsReportingIngestionFlowFileActivityStub();
     sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
+    notifyPaymentsReportingToIufClassificationActivity = wfConfig.buildNotifyPaymentsReportingToIufClassificationActivityStub();
   }
 
   @Override
@@ -49,6 +52,18 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     PaymentsReportingIngestionFlowFileActivityResult ingestionResult = paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, ingestionResult.isSuccess());
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? "OK" : "KO", null);
+
+    // TODO P4ADEV-1940 replace fake values in the following call
+
+    ingestionResult.getIufs().forEach(iuf -> {
+      notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
+        1L,
+        iuf,
+         "OK",
+        null //List< Transfer2ClassifyDTO > transfers2classify
+         );
+
+      });
 
     log.info("Ingestion completed for file with ID {}", ingestionFlowFileId);
   }
