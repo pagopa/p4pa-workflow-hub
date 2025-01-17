@@ -3,7 +3,9 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Collections;
+import java.util.List;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentsReportingIngestionWFTest {
@@ -26,19 +31,25 @@ class PaymentsReportingIngestionWFTest {
   @Mock
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivityMock;
 
+  @Mock
+  private NotifyPaymentsReportingToIufClassificationActivity notifyPaymentsReportingToIufClassificationActivityMock;
+
+
   private PaymentsReportingIngestionWFImpl wf;
 
   @BeforeEach
-  void init(){
+  void init() {
     PaymentsReportingIngestionWfConfig paymentsReportingIngestionWfConfigMock = Mockito.mock(PaymentsReportingIngestionWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
     Mockito.when(paymentsReportingIngestionWfConfigMock.buildUpdateIngestionFlowStatusActivityStub())
-        .thenReturn(updateIngestionFlowStatusActivityMock);
+      .thenReturn(updateIngestionFlowStatusActivityMock);
     Mockito.when(paymentsReportingIngestionWfConfigMock.buildPaymentsReportingIngestionFlowFileActivityStub())
       .thenReturn(paymentsReportingIngestionFlowFileActivityMock);
     Mockito.when(paymentsReportingIngestionWfConfigMock.buildSendEmailIngestionFlowActivityStub())
       .thenReturn(sendEmailIngestionFlowActivityMock);
+    Mockito.when(paymentsReportingIngestionWfConfigMock.buildNotifyPaymentsReportingToIufClassificationActivityStub())
+      .thenReturn(notifyPaymentsReportingToIufClassificationActivityMock);
 
     Mockito.when(applicationContextMock.getBean(PaymentsReportingIngestionWfConfig.class))
       .thenReturn(paymentsReportingIngestionWfConfigMock);
@@ -48,21 +59,37 @@ class PaymentsReportingIngestionWFTest {
   }
 
   @AfterEach
-  void verifyNoMoreInteractions(){
+  void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
       updateIngestionFlowStatusActivityMock,
       paymentsReportingIngestionFlowFileActivityMock,
-      sendEmailIngestionFlowActivityMock);
+      sendEmailIngestionFlowActivityMock,
+      notifyPaymentsReportingToIufClassificationActivityMock);
   }
 
   @Test
-  void givenSuccessfulProcessingConditionWhenIngestThenOk(){
+  void givenSuccessfulProcessingConditionWhenIngestThenOk() {
     // Given
     long ingestionFlowFileId = 1L;
     boolean success = true;
 
-    Mockito.when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId))
-      .thenReturn(new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), success, null));
+
+    PaymentsReportingIngestionFlowFileActivityResult result =
+      new PaymentsReportingIngestionFlowFileActivityResult(
+        List.of("iuf-1"), success, null);
+
+    // TODO P4ADEV-1936 replace fake values with real ones
+    // result.getOrganizationId()
+    // result.getOutcomeCode()
+    // result.getTransfers2classify()
+
+    Long organizationId = 1L;
+    String outcomeCode = "OK";
+    List<Transfer2ClassifyDTO> transfers2classify = null;
+      //Collections.singletonList(new Transfer2ClassifyDTO());
+
+    when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId))
+      .thenReturn(result);
 
     // When
     wf.ingest(ingestionFlowFileId);
@@ -71,10 +98,11 @@ class PaymentsReportingIngestionWFTest {
     Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB", null);
     Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, success);
     Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "OK", null);
+    Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, result.getIufs().getFirst(), outcomeCode, transfers2classify);
   }
 
   @Test
-  void givenFailingProcessingConditionWhenIngestThenKo(){
+  void givenFailingProcessingConditionWhenIngestThenKo() {
     // Given
     long ingestionFlowFileId = 1L;
     boolean success = false;

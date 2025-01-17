@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIng
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,5 +25,10 @@ public class PaymentsReportingIngestionWfConfig extends BaseWfConfig {
   public SendEmailIngestionFlowActivity buildSendEmailIngestionFlowActivityStub() {
     return Workflow.newActivityStub(SendEmailIngestionFlowActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
+
+  public NotifyPaymentsReportingToIufClassificationActivity buildNotifyPaymentsReportingToIufClassificationActivityStub() {
+    return Workflow.newActivityStub(NotifyPaymentsReportingToIufClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
 }
 

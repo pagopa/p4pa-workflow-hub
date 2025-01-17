@@ -24,6 +24,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class})
@@ -75,6 +77,7 @@ class TemporalSpringBootIntegrationTest {
   @Test
   void givenSuccessFulUseCaseWhenExecuteWfThenInvokeAllActivities() {
     PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
+    result.setIufs(Collections.emptyList());
     result.setSuccess(true);
 
     when(fileActivityMock.processFile(anyLong())).thenReturn(result);
