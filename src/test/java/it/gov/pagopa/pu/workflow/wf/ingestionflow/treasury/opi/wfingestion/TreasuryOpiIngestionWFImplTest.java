@@ -78,7 +78,7 @@ class TreasuryOpiIngestionWFImplTest {
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "IMPORT_IN_ELAB", null);
     verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowId, success);
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "OK", null);
-    verify(startIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, treasuryIufResult.getIufs().getFirst(), treasuryId);
+    verify(startIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, treasuryIufResult.getIufs().get(0), treasuryId);
   }
 
   @Test
