@@ -4,10 +4,12 @@ import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWFImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
+@Slf4j
 @Service
 public class TreasuryOpiIngestionWFClient {
 
@@ -18,6 +20,7 @@ public class TreasuryOpiIngestionWFClient {
   }
 
   public String ingest(Long ingestionFlowFileId) {
+    log.info("Starting treasury OPI ingestion flow file having id {}", ingestionFlowFileId);
     String workflowId = generateWorkflowId(ingestionFlowFileId, TreasuryOpiIngestionWFImpl.TASK_QUEUE);
     TreasuryOpiIngestionWF workflow = workflowService.buildWorkflowStub(
       TreasuryOpiIngestionWF.class,
