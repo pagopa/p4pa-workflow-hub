@@ -14,6 +14,49 @@ spring:
     workers-auto-discovery:
       packages:
         - it.gov.pagopa.pu.workflow.wf
+  cloud:
+    function:
+      definition: paymentsConsumer
+    stream:
+      binders:
+        kafka-payments-consumer:
+          type: kafka
+          environment:
+            spring.cloud.stream.kafka.binder:
+              brokers: \${KAFKA_BINDER_BROKER:}
+              configuration:
+                sasl.jaas.config: \${KAFKA_PAYMENTS_SASL_JAAS_CONFIG:}
+      bindings:
+        paymentsConsumer-in-0:
+          binder: kafka-payments-consumer
+          content-type: \${KAFKA_CONTENT_TYPE:application/json}
+          destination: \${KAFKA_TOPIC_NOTIFICATION:}
+          group: \${KAFKA_PAYMENTS_GROUP_ID:p4pa-workflow-hub-consumer-group}
+      kafka:
+        binder:
+          auto-create-topics: false
+          configuration:
+            heartbeat.interval.ms: \${KAFKA_CONFIG_HEARTBEAT_INTERVAL_MS:3000}
+            session.timeout.ms: \${KAFKA_CONFIG_SESSION_TIMEOUT_MS:30000}
+            request.timeout.ms: \${KAFKA_CONFIG_REQUEST_TIMEOUT_MS:60000}
+            metadata.max.age.ms: \${KAFKA_CONFIG_METADATA_MAX_AGE:180000}
+            sasl.mechanism: \${KAFKA_SASL_MECHANISM:}
+            security.protocol: \${KAFKA_SECURITY_PROTOCOL:}
+            max.request.size: \${KAFKA_CONFIG_MAX_REQUEST_SIZE:1000000}
+        binders:
+          paymentsConsumer-in-0:
+            consumer:
+              autoCommitOffset: \${KAFKA_PAYMENTS_AUTO_COMMIT:${KAFKA_CONSUMER_CONFIG_AUTO_COMMIT:true}}
+              configuration:
+                connections.max.idle.ms: \${KAFKA_PAYMENTS_REQUEST_CONNECTIONS_MAX_IDLE_MS:${KAFKA_CONSUMER_CONFIG_CONNECTIONS_MAX_IDLE_MS:180000}}
+                max.poll:
+                  interval.ms: \${KAFKA_PAYMENTS_INTERVAL_TIMEOUT_MS:${KAFKA_CONFIG_MAX_POLL_INTERVAL_TIMEOUT_MS:300000}}
+                  records: \${KAFKA_PAYMENTS_MAX_POLL_SIZE:${KAFKA_CONSUMER_CONFIG_MAX_POLL_SIZE:500}}
+                socket.connection.setup.timeout:
+                  max.ms: \${KAFKA_PAYMENTS_REQUEST_CONNECTION_TIMEOUT_MAX_MS:${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MAX_MS:200000}}
+                  ms: \${KAFKA_PAYMENTS_REQUEST_CONNECTION_TIMEOUT_MS:${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MS:100000}}
+              standardHeaders: \${KAFKA_PAYMENTS_STANDARD_HEADERS:\${KAFKA_CONSUMER_CONFIG_STANDARD_HEADERS:both}}
+              startOffset: \${KAFKA_PAYMENTS_REQUEST_START_OFFSET:\${KAFKA_CONSUMER_CONFIG_START_OFFSET:earliest}}
 
 management:
   endpoints:
