@@ -1,6 +1,8 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync;
+package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin;
 
 import io.temporal.spring.boot.WorkflowImpl;
+import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.aca.AcaStandInCreateDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.config.CreateDebtPositionWfConfig;
@@ -14,10 +16,12 @@ import static it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDe
 
 @Slf4j
 @WorkflowImpl(taskQueues = TASK_QUEUE)
-public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, ApplicationContextAware {
+public class CreateDebtPositionSyncAcaWFImpl implements CreateDebtPositionSyncAcaWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE = "CreateDebtPositionSyncWF";
+  public static final String TASK_QUEUE = "CreateDebtPositionSyncAcaWF";
 
+  private AcaStandInCreateDebtPositionActivity acaStandInCreateDebtPositionActivity;
+  private FinalizeDebtPositionSyncStatusActivity finalizeDebtPositionSyncStatusActivity;
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
 
   /**
@@ -29,12 +33,19 @@ public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, A
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     CreateDebtPositionWfConfig wfConfig = applicationContext.getBean(CreateDebtPositionWfConfig.class);
+    acaStandInCreateDebtPositionActivity = wfConfig.buildAcaStandInCreateDebtPositionActivityStub();
+    finalizeDebtPositionSyncStatusActivity = wfConfig.buildFinalizeDebtPositionSyncStatusActivityStub();
     sendDebtPositionIONotificationActivity = wfConfig.buildSendDebtPositionIONotificationActivityStub();
   }
 
   @Override
-  public void createDPSync(DebtPositionDTO debtPosition) {
-    log.info("Starting workflow for creating DebtPosition with ID: {}", debtPosition.getDebtPositionId());
+  public void createDPSyncAca(DebtPositionDTO debtPosition) {
+    log.info("Starting workflow for creating an Aca DebtPosition with ID: {}", debtPosition.getDebtPositionId());
+    acaStandInCreateDebtPositionActivity.createAcaDebtPosition(debtPosition);
+
+    finalizeDebtPositionSyncStatusActivity.finalizeDebtPositionSyncStatus(debtPosition.getDebtPositionId(), null);
+    log.info("Sync status updated");
+
     sendDebtPositionIONotificationActivity.sendMessage(debtPosition);
     log.info("Message sent to IO for organizationId {} and debtPositionTypeOrgId {}", debtPosition.getOrganizationId(), debtPosition.getDebtPositionTypeOrgId());
   }

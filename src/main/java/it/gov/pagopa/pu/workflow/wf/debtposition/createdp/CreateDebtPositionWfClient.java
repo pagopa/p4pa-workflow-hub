@@ -6,4 +6,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 public interface CreateDebtPositionWfClient {
 
   String createDPSync(DebtPositionDTO debtPositionDTO);
+
+  String createDPSyncAca(DebtPositionDTO debtPositionDTO);
 }
