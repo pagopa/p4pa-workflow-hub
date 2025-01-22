@@ -7,10 +7,12 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPosit
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWFImpl;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin.CreateDebtPositionSyncAcaWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin.CreateDebtPositionSyncAcaWFImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
+@Slf4j
 @Service
 public class CreateDebtPositionWfClientImpl implements CreateDebtPositionWfClient{
   private final WorkflowService workflowService;
@@ -32,6 +34,7 @@ public class CreateDebtPositionWfClientImpl implements CreateDebtPositionWfClien
 
   @Override
   public String createDPSyncAca(DebtPositionDTO debtPosition) {
+    log.info("Starting sync ACA debt position creation WF: {}", debtPosition.getDebtPositionId());
     String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), CreateDebtPositionSyncAcaWFImpl.TASK_QUEUE);
     CreateDebtPositionSyncAcaWF workflow = workflowService.buildWorkflowStub(
       CreateDebtPositionSyncAcaWF.class,
