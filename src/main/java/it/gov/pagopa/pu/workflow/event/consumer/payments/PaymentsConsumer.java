@@ -22,6 +22,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO> {
 
   @Override
   public void accept(PaymentEventDTO paymentEventDTO) {
+    //TODO align statuses enum
     if ("RT_RECEIVED".equals(paymentEventDTO.getEventType())) {
       log.info("Event RT_RECEIVED occurred on DebtPosition {}", paymentEventDTO.getPayload().getDebtPositionId());
       paymentEventDTO.getPayload().getPaymentOptions().stream()
