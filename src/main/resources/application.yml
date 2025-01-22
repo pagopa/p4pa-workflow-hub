@@ -30,7 +30,7 @@ spring:
         paymentsConsumer-in-0:
           binder: kafka-payments-consumer
           content-type: \${KAFKA_CONTENT_TYPE:application/json}
-          destination: \${KAFKA_TOPIC_NOTIFICATION:}
+          destination: \${KAFKA_TOPIC_PAYMENTS:}
           group: \${KAFKA_PAYMENTS_GROUP_ID:p4pa-workflow-hub-consumer-group}
       kafka:
         binder:
