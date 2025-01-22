@@ -44,7 +44,7 @@ public class CreateDebtPositionSyncAcaWFImpl implements CreateDebtPositionSyncAc
     acaStandInCreateDebtPositionActivity.createAcaDebtPosition(debtPosition);
 
     finalizeDebtPositionSyncStatusActivity.finalizeDebtPositionSyncStatus(debtPosition.getDebtPositionId(), null);
-    log.info("Sync status updated");
+    log.info("Sync status updated");//aggiornare log quando avrò la mappa
 
     sendDebtPositionIONotificationActivity.sendMessage(debtPosition);
     log.info("Message sent to IO for organizationId {} and debtPositionTypeOrgId {}", debtPosition.getOrganizationId(), debtPosition.getDebtPositionTypeOrgId());
