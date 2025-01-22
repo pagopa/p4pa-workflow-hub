@@ -4,6 +4,9 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositio
 import it.gov.pagopa.payhub.activities.activity.debtposition.aca.AcaStandInCreateDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.config.CreateDebtPositionWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +17,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Map;
+
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class CreateDebtPositionSyncAcaWFTest {
@@ -59,22 +65,24 @@ class CreateDebtPositionSyncAcaWFTest {
   void givenCreateDPSyncAcaThenOk(){
     // Given
     Long id = 1L;
-//    IupdSyncStatusUpdateDTO.NewStatusEnum newStatus = IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID;
-//    String iupdPagoPa = "iupdPagoPa";
+    IupdSyncStatusUpdateDTO.NewStatusEnum newStatus = IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID;
+    String iupdPagoPa = "iupdPagoPa";
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
+    IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
+      .newStatus(newStatus)
+      .iupdPagopa(iupdPagoPa)
+      .build();
+    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = Map.of("iud", iupdSyncStatusUpdateDTO);
 
-    Mockito.doNothing().when(acaStandInCreateDebtPositionActivityMock)
-      .createAcaDebtPosition(debtPosition);
+    Mockito.when(acaStandInCreateDebtPositionActivityMock.createAcaDebtPosition(debtPosition))
+      .thenReturn(syncStatusDTO);
 
-//    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = new HashMap<>();
-//    IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-//      .newStatus(newStatus)
-//      .iupdPagopa(iupdPagoPa)
-//      .build();
-//    syncStatusDTO.put("iud", iupdSyncStatusUpdateDTO);
+    debtPosition.setStatus(DebtPositionDTO.StatusEnum.UNPAID);
+    debtPosition.getPaymentOptions().getFirst().setStatus(PaymentOptionDTO.StatusEnum.UNPAID);
+    debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentDTO.StatusEnum.UNPAID);
 
-    Mockito.when(finalizeDebtPositionSyncStatusActivityMock.finalizeDebtPositionSyncStatus(id, null))
-      .thenReturn(buildDebtPositionDTO());
+    Mockito.when(finalizeDebtPositionSyncStatusActivityMock.finalizeDebtPositionSyncStatus(id, syncStatusDTO))
+      .thenReturn(debtPosition);
 
     Mockito.doNothing().when(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
 
@@ -82,8 +90,12 @@ class CreateDebtPositionSyncAcaWFTest {
     wf.createDPSyncAca(debtPosition);
 
     // Then
+    assertEquals(DebtPositionDTO.StatusEnum.UNPAID, debtPosition.getStatus());
+    assertEquals(PaymentOptionDTO.StatusEnum.UNPAID, debtPosition.getPaymentOptions().getFirst().getStatus());
+    assertEquals(InstallmentDTO.StatusEnum.UNPAID, debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
+
     Mockito.verify(acaStandInCreateDebtPositionActivityMock).createAcaDebtPosition(debtPosition);
-    Mockito.verify(finalizeDebtPositionSyncStatusActivityMock).finalizeDebtPositionSyncStatus(id, null);
+    Mockito.verify(finalizeDebtPositionSyncStatusActivityMock).finalizeDebtPositionSyncStatus(id, syncStatusDTO);
     Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
   }
 }
