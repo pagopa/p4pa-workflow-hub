@@ -27,4 +27,9 @@ public class CreateDebtPositionWfClientImpl implements CreateDebtPositionWfClien
     WorkflowClient.start(workflow::createDPSync, debtPosition);
     return workflowId;
   }
+
+  @Override
+  public String createDPSyncAca(DebtPositionDTO debtPositionDTO) {
+    return "";
+  }
 }
