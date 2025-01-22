@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,7 @@ class TransferClassificationWFImplTest {
   private static final Long ORGANIZATION = 123L;
   private static final String IUV = "01011112222333345";
   private static final String IUR = "IUR";
-  private static final int INDEX = 1;
+  private static final int TRANSFER_INDEX = 1;
 
   @Mock
   private TransferClassificationActivity transferClassificationActivityMock;
@@ -47,12 +48,13 @@ class TransferClassificationWFImplTest {
 
   @Test
   void givenClassifyThenSuccess() {
+    TransferSemanticKeyDTO transferSemanticKey = new TransferSemanticKeyDTO(ORGANIZATION, IUV, IUR, TRANSFER_INDEX);
     doNothing().when(transferClassificationActivityMock)
-      .classify(ORGANIZATION, IUV, IUR, INDEX);
+      .classify(transferSemanticKey);
     // when
-     wf.classify(ORGANIZATION, IUV, IUR, INDEX);
+     wf.classify(ORGANIZATION, IUV, IUR, TRANSFER_INDEX);
 
     // then
-    verify(transferClassificationActivityMock).classify(ORGANIZATION, IUV, IUR, INDEX);
+    verify(transferClassificationActivityMock).classify(transferSemanticKey);
   }
 }

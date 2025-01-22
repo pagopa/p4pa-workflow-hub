@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -32,7 +33,7 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
   @Override
   public void classify(Long orgId, String iuv, String iur, int transferIndex) {
     log.info("Handling Transfer classification for organization id {} and iuv {} and iur {} and transfer index {}", orgId, iuv, iur, transferIndex);
-    transferClassificationActivity.classify(orgId, iuv, iur, transferIndex);
+    transferClassificationActivity.classify(new TransferSemanticKeyDTO(orgId, iuv, iur, transferIndex));
     log.info("Ingestion organization id {} and iuv {} and iur {} and transfer index {} is completed", orgId, iuv, iur, transferIndex);
   }
 }
