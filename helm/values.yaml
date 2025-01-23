@@ -54,6 +54,12 @@ microservice-chart:
       - name: appinsights-config
         key: applicationinsights.json
 
+  externalConfigMapValues:
+    eventhub-config:
+      KAFKA_CONFIG_SECURITY_PROTOCOL: p4pa-payhub-security-protocol
+      KAFKA_CONFIG_SASL_MECHANISM: p4pa-payhub-sasl-mechanism
+      KAFKA_TOPIC_PAYMENTS: p4pa-payhub-payments-topic
+
   envConfig:
     APPLICATIONINSIGHTS_ROLE_NAME: "p4pa-workflow-hub"
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
@@ -61,13 +67,15 @@ microservice-chart:
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
     ENABLE_AUDIT_APPENDER: "TRUE"
 
-
   envSecret:
     APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-connection-string
     JWT_TOKEN_PUBLIC_KEY: jwt-public-key
 
     MAIL_USERNAME: mail-username
     MAIL_PASSWORD: mail-password
+
+    KAFKA_BINDER_BROKER: p4pa-payhub-kafka-broker
+    KAFKA_PAYMENTS_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-consumer-jaas-config
 
   # nodeSelector: {}
 

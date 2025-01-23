@@ -23,6 +23,7 @@ public class CreateDebtPositionWfClientImpl implements CreateDebtPositionWfClien
 
   @Override
   public String createDPSync(DebtPositionDTO debtPosition) {
+    log.info("Starting SYNC debt position creation WF: {}", debtPosition.getDebtPositionId());
     String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), CreateDebtPositionSyncWFImpl.TASK_QUEUE);
     CreateDebtPositionSyncWF workflow = workflowService.buildWorkflowStub(
       CreateDebtPositionSyncWF.class,
