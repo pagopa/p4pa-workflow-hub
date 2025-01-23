@@ -35,8 +35,8 @@ paths:
     post:
       tags:
         - DebtPosition
-      operationId: createDpSyncAca
-      description: Create a debt position sync in Aca.
+      operationId: alignDpSyncAca
+      description: Align a debt position sync in Aca.
       requestBody:
         required: true
         content:
@@ -45,7 +45,7 @@ paths:
               $ref: '#/components/schemas/DebtPositionRequestDTO'
       responses:
         '200':
-          description: "Debt position Aca created"
+          description: "Debt position Aca aligned"
           content:
             application/json:
               schema:
