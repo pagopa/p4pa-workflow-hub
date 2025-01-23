@@ -24,13 +24,32 @@ public class DebtPositionServiceImpl implements DebtPositionService {
   @Override
   public WorkflowCreatedDTO createDPSync(DebtPositionRequestDTO debtPositionRequestDTO) {
     log.info("Mapping the debt position to create debt position sync");
-    DebtPositionDTO debtPosition = debtPositionMapper.map(debtPositionRequestDTO);
+    DebtPositionDTO debtPosition = mapDebtPositionRequestDTO2DebtPositionDTO(debtPositionRequestDTO);
 
     log.debug("Starting workflow for creation debt position sync with debtPositionId: {}", debtPositionRequestDTO.getDebtPositionId());
     String workflowId = client.createDPSync(debtPosition);
 
+    return buildWorkflowCreatedDTO(workflowId);
+  }
+
+  @Override
+  public WorkflowCreatedDTO createDPSyncAca(DebtPositionRequestDTO debtPositionRequestDTO) {
+    log.info("Mapping the debt position to create debt position sync on ACA");
+    DebtPositionDTO debtPosition = mapDebtPositionRequestDTO2DebtPositionDTO(debtPositionRequestDTO);
+
+    log.debug("Starting workflow for creation debt position sync on ACA with debtPositionId: {}", debtPositionRequestDTO.getDebtPositionId());
+    String workflowId = client.createDPSyncAca(debtPosition);
+
+    return buildWorkflowCreatedDTO(workflowId);
+  }
+
+  private WorkflowCreatedDTO buildWorkflowCreatedDTO(String workflowId) {
     return WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
       .build();
+  }
+
+  private DebtPositionDTO mapDebtPositionRequestDTO2DebtPositionDTO(DebtPositionRequestDTO debtPositionRequestDTO) {
+    return debtPositionMapper.map(debtPositionRequestDTO);
   }
 }

@@ -31,6 +31,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/debt-position/aca:
+    post:
+      tags:
+        - DebtPosition
+      operationId: createDpSyncAca
+      description: Create a debt position sync in Aca.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebtPositionRequestDTO'
+      responses:
+        '200':
+          description: "Debt position Aca created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /ingestion-flow/payments-reporting/{ingestionFlowFileId}:
     post:
       tags:
