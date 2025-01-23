@@ -8,6 +8,7 @@ public class TransferFaker {
     public static TransferDTO buildTransferDTO(){
         return TransferDTO.builder()
           .transferId(1L)
+          .installmentId(1L)
           .orgFiscalCode("orgFiscalCode")
           .orgName("orgName")
           .amountCents(100L)
@@ -18,13 +19,14 @@ public class TransferFaker {
           .iban("iban")
           .postalIban("postalIban")
           .category("category")
-          .transferIndex(1)
+          .transferIndex(1L)
           .build();
     }
 
   public static TransferRequestDTO buildTransferRequestDTO(){
     return TransferRequestDTO.builder()
       .transferId(1L)
+      .installmentId(1L)
       .orgFiscalCode("orgFiscalCode")
       .orgName("orgName")
       .amountCents(100L)
@@ -35,7 +37,7 @@ public class TransferFaker {
       .iban("iban")
       .postalIban("postalIban")
       .category("category")
-      .transferIndex(1)
+      .transferIndex(1L)
       .build();
   }
 }

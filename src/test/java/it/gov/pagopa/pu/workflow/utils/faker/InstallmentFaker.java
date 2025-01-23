@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.utils.faker;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.InstallmentRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.InstallmentRequestStatus;
 import it.gov.pagopa.pu.workflow.dto.generated.TransferRequestDTO;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class InstallmentFaker {
     return InstallmentDTO.builder()
       .installmentId(1L)
       .paymentOptionId(1L)
-      .status("status")
+      .status(InstallmentDTO.StatusEnum.TO_SYNC)
       .iud("iud")
       .iuv("iuv")
       .iur("iur")
@@ -50,7 +51,7 @@ public class InstallmentFaker {
     return InstallmentRequestDTO.builder()
       .installmentId(1L)
       .paymentOptionId(1L)
-      .status("status")
+      .status(InstallmentRequestStatus.TO_SYNC)
       .iud("iud")
       .iuv("iuv")
       .iur("iur")

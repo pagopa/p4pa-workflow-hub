@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -59,7 +59,7 @@ class TreasuryOpiIngestionWFImplTest {
     boolean success = true;
 
     TreasuryIufResult treasuryIufResult = new TreasuryIufResult(
-      List.of("iuf-1"), success, null, null);
+      List.of("iuf-1"), List.of("treasuryid-1"), 1L, success, null, null);
 
     when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowId))
       .thenReturn(treasuryIufResult);
@@ -75,9 +75,9 @@ class TreasuryOpiIngestionWFImplTest {
     wf.ingest(ingestionFlowId);
 
     // Then
-    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "IMPORT_IN_ELAB", null);
+    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowId, success);
-    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, "OK", null);
+    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
     verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, treasuryIufResult.getIufs().getFirst(), treasuryId);
   }
 
@@ -88,14 +88,14 @@ class TreasuryOpiIngestionWFImplTest {
     boolean success = false;
 
     when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId))
-      .thenReturn(new TreasuryIufResult(Collections.emptyList(), success, "error", "discardedFileName"));
+      .thenReturn(new TreasuryIufResult(List.of(), List.of(), null, success, "error", "discardedFileName"));
 
     // When
     wf.ingest(ingestionFlowFileId);
 
     // Then
-    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB", null);
+    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, success);
-    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, "KO", "discardedFileName");
+    verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.ERROR, "error", "discardedFileName");
   }
 }

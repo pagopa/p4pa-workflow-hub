@@ -206,8 +206,9 @@ components:
           type: string
     DebtPositionRequestDTO:
       required:
-        - debtPositionTypeOrgId
         - organizationId
+        - debtPositionTypeOrgId
+        - paymentOptions
       type: object
       properties:
         debtPositionId:
@@ -215,12 +216,10 @@ components:
           format: int64
         iupdOrg:
           type: string
-        iupdPagopa:
-          type: string
         description:
           type: string
         status:
-          type: string
+          $ref: "#/components/schemas/DebtPositionRequestStatus"
         ingestionFlowFileId:
           type: integer
           format: int64
@@ -255,16 +254,20 @@ components:
       required:
         - installments
         - totalAmountCents
+        - paymentOptionType
       type: object
       properties:
         paymentOptionId:
+          type: integer
+          format: int64
+        debtPositionId:
           type: integer
           format: int64
         totalAmountCents:
           type: integer
           format: int64
         status:
-          type: string
+          $ref: "#/components/schemas/PaymentOptionRequestStatus"
         multiDebtor:
           type: boolean
         dueDate:
@@ -297,8 +300,8 @@ components:
           type: integer
           format: int64
         status:
-          type: string
-        iupd_pagopa:
+          $ref: "#/components/schemas/InstallmentRequestStatus"
+        iupdPagopa:
           type: string
         iud:
           type: string
@@ -353,6 +356,9 @@ components:
         transferId:
           type: integer
           format: int64
+        installmentId:
+          type: integer
+          format: int64
         orgFiscalCode:
           type: string
         orgName:
@@ -376,9 +382,25 @@ components:
           type: string
         transferIndex:
           type: integer
-          format: int32
+          format: int64
     ReceiptRequestDTO:
       type: object
+      required:
+        - receiptSource
+        - paymentReceiptId
+        - noticeNumber
+        - orgFiscalCode
+        - outcome
+        - creditorReferenceId
+        - paymentAmountCents
+        - description
+        - companyName
+        - idPsp
+        - pspCompanyName
+        - idChannel
+        - channelDescription
+        - debtor
+        - payer
       properties:
         receiptId:
           type: integer
@@ -386,9 +408,16 @@ components:
         installmentId:
           type: integer
           format: int64
+        ingestionFlowFileId:
+          type: integer
+          format: int64
+        receiptOrigin:
+          type: string
         paymentReceiptId:
           type: string
         noticeNumber:
+          type: string
+        paymentNote:
           type: string
         orgFiscalCode:
           type: string
@@ -431,9 +460,6 @@ components:
         transferDate:
           type: string
           format: date-time
-        receiptBytes:
-          type: string
-          format: byte
         standin:
           type: boolean
         debtor:
@@ -474,102 +500,39 @@ components:
           type: string
         email:
           type: string
-    OrganizationRequestDTO:
-      type: object
-      properties:
-        organizationId:
-          type: integer
-          format: int64
-        ipaCode:
-          type: string
-        orgFiscalCode:
-          type: string
-        orgName:
-          type: string
-        adminEmail:
-          type: string
-        creationDate:
-          type: string
-          format: date-time
-        lastUpdateDate:
-          type: string
-          format: date-time
-        fee:
-          type: integer
-          format: int64
-        iban:
-          type: string
-        urlOrgSendSilPaymentResult:
-          type: string
-        password:
-          type: string
-        creditBicSeller:
-          type: boolean
-        beneficiaryOrgName:
-          type: string
-        beneficiaryOrgAddress:
-          type: string
-        beneficiaryOrgCivic:
-          type: string
-        beneficiaryOrgPostalCode:
-          type: string
-        beneficiaryOrgLocation:
-          type: string
-        beneficiaryOrgProvince:
-          type: string
-        beneficiaryOrgNation:
-          type: string
-        beneficiaryOrgPhoneNumber:
-          type: string
-        beneficiaryOrgWebSite:
-          type: string
-        beneficiaryOrgEmail:
-          type: string
-        applicationCode:
-          type: string
-        cbillInterBankCode:
-          type: string
-        orgInformation:
-          type: string
-        orgLogoDesc:
-          type: string
-        authorizationDesc:
-          type: string
-        status:
-          type: string
-        urlActiveExternal:
-          type: string
-        additionalLanguage:
-          type: string
-        orgTypeCode:
-          type: string
-        startDate:
-          type: string
-          format: date
-        brokerId:
-          type: integer
-          format: int64
-        links:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/LinkRequestDTO'
-    LinkRequestDTO:
-      type: object
-      properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
+    DebtPositionRequestStatus:
+      type: string
+      enum:
+        - TO_SYNC
+        - REPORTED
+        - PAID
+        - PARTIALLY_PAID
+        - CANCELLED
+        - INVALID
+        - EXPIRED
+        - UNPAID
+        - DRAFT
+    PaymentOptionRequestStatus:
+      type: string
+      enum:
+        - TO_SYNC
+        - REPORTED
+        - PAID
+        - PARTIALLY_PAID
+        - CANCELLED
+        - INVALID
+        - EXPIRED
+        - UNPAID
+        - DRAFT
+    InstallmentRequestStatus:
+      type: string
+      enum:
+        - TO_SYNC
+        - REPORTED
+        - PAID
+        - CANCELLED
+        - INVALID
+        - EXPIRED
+        - UNPAID
+        - DRAFT
 

@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.utils.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentOptionRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.PaymentOptionRequestStatus;
 
 import java.util.List;
 
@@ -14,8 +15,9 @@ public class PaymentOptionFaker {
   public static PaymentOptionDTO buildPaymentOptionDTO() {
     return PaymentOptionDTO.builder()
       .paymentOptionId(1L)
+      .debtPositionId(1L)
       .totalAmountCents(1L)
-      .status("status")
+      .status(PaymentOptionDTO.StatusEnum.TO_SYNC)
       .multiDebtor(false)
       .dueDate(OFFSET_DATE_TIME)
       .description("description")
@@ -27,8 +29,9 @@ public class PaymentOptionFaker {
   public static PaymentOptionRequestDTO buildPaymentOptionRequestDTO() {
     return PaymentOptionRequestDTO.builder()
       .paymentOptionId(1L)
+      .debtPositionId(1L)
       .totalAmountCents(1L)
-      .status("status")
+      .status(PaymentOptionRequestStatus.TO_SYNC)
       .multiDebtor(false)
       .dueDate(OFFSET_DATE_TIME)
       .description("description")
