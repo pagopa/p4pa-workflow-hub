@@ -9,9 +9,10 @@ import io.temporal.internal.client.WorkflowClientHelper;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
-import it.gov.pagopa.payhub.activities.dao.IngestionFlowFileDao;
+import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.Collections;
 
 import static org.mockito.Mockito.*;
 
@@ -59,7 +58,7 @@ class TemporalSpringBootIntegrationTest {
   private UpdateIngestionFlowStatusActivityImpl statusActivitySpy;
   // Using real UpdateIngestionFlowStatusActivityImpl which depends on the following
   @MockitoBean
-  private IngestionFlowFileDao ingestionFlowFileDaoMock;
+  private IngestionFlowFileService ingestionFlowFileServiceMock;
 
   @Autowired
   private PaymentsReportingIngestionWFClient workflowClient;
@@ -68,7 +67,7 @@ class TemporalSpringBootIntegrationTest {
   void verifyNoMoreInteractions(){
     Mockito.verifyNoMoreInteractions(
       fileActivityMock,
-      ingestionFlowFileDaoMock,
+      ingestionFlowFileServiceMock,
       emailActivityMock,
       statusActivitySpy
     );
@@ -77,57 +76,56 @@ class TemporalSpringBootIntegrationTest {
   @Test
   void givenSuccessFulUseCaseWhenExecuteWfThenInvokeAllActivities() {
     PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
-    result.setIufs(Collections.emptyList());
     result.setSuccess(true);
 
     when(fileActivityMock.processFile(anyLong())).thenReturn(result);
     doReturn(true).when(statusActivitySpy)
-      .updateStatus(anyLong(), any(), any());
+      .updateStatus(anyLong(), any(), any(), any());
 
     String workflowId = workflowClient.ingest(1L);
 
     waitUntilWfCompletion(workflowId);
 
-    verify(statusActivitySpy, times(1)).updateStatus(1L, "IMPORT_IN_ELAB", null);
+    verify(statusActivitySpy, times(1)).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(fileActivityMock, times(1)).processFile(1L);
     verify(emailActivityMock, times(1)).sendEmail(1L, true);
-    verify(statusActivitySpy, times(1)).updateStatus(1L, "OK", null);
+    verify(statusActivitySpy, times(1)).updateStatus(1L, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
   }
 
   @Test
   void givenNotRetryableExceptionWhenExecuteWfThenStopExecutionWithoutRetries() {
-    when(ingestionFlowFileDaoMock.updateStatus(anyLong(), any(), any()))
+    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenThrow(new NotRetryableActivityException("NotRetryableActivityException"));
 
     String workflowId = workflowClient.ingest(1L);
     waitUntilWfFailed(workflowId);
 
-    verify(statusActivitySpy).updateStatus(1L, "IMPORT_IN_ELAB", null);
-    verify(ingestionFlowFileDaoMock, times(1)).updateStatus(anyLong(), any(), any());
+    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(ingestionFlowFileServiceMock, times(1)).updateStatus(anyLong(), any(), any(), any());
   }
 
   @Test
   void givenNotRetryableExceptionExtensionWhenExecuteWfThenStopExecutionWithoutRetries() {
-    when(ingestionFlowFileDaoMock.updateStatus(anyLong(), any(), any()))
+    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenThrow(new NotRetryableActivityException("extension"){});
 
     String workflowId = workflowClient.ingest(1L);
     waitUntilWfFailed(workflowId);
 
-    verify(statusActivitySpy).updateStatus(1L, "IMPORT_IN_ELAB", null);
-    verify(ingestionFlowFileDaoMock, times(1)).updateStatus(anyLong(), any(), any());
+    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(ingestionFlowFileServiceMock, times(1)).updateStatus(anyLong(), any(), any(), any());
   }
 
   @Test
   void givenRetryableExceptionWhenExecuteWfThenRetrieActivityUntilMax() {
-    when(ingestionFlowFileDaoMock.updateStatus(anyLong(), any(), any()))
+    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenThrow(new RuntimeException("RetryableActivityException"));
 
     String workflowId = workflowClient.ingest(1L);
     waitUntilWfFailed(workflowId);
 
-    verify(statusActivitySpy, times(3)).updateStatus(1L, "IMPORT_IN_ELAB", null);
-    verify(ingestionFlowFileDaoMock, times(3)).updateStatus(anyLong(), any(), any());
+    verify(statusActivitySpy, times(3)).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(ingestionFlowFileServiceMock, times(3)).updateStatus(anyLong(), any(), any(), any());
   }
 
   // PRIVATE METHODS

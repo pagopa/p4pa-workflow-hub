@@ -88,7 +88,7 @@ class IufClassificationWFTest {
       IufClassificationNotifyTreasurySignalDTO.builder()
         .organizationId(1L).treasuryId(treasuryId).iuf(iuf).build();
 
-    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(true);
+    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1L);
     Mockito.when(iufClassificationActivityMock.classify(1L, treasuryId, iuf)).thenReturn(
       IufClassificationActivityResult.builder()
         .organizationId(1L)
@@ -116,7 +116,7 @@ class IufClassificationWFTest {
         .build()))
       .build();
 
-    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(true);
+    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1L);
 
     // When
     wf.notifyPaymentsReporting(signalDTO);

@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufResult;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +45,15 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
   public void ingest(Long ingestionFlowFileId) {
     log.info("Handling ingestionFlowFileId {}", ingestionFlowFileId);
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB", null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     TreasuryIufResult ingestionResult = treasuryOpiIngestionActivity.processFile(ingestionFlowFileId);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, ingestionResult.isSuccess());
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? "OK" : "KO", ingestionResult.getDiscardedFileName());
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
+      ingestionResult.isSuccess()
+        ? IngestionFlowFile.StatusEnum.COMPLETED
+        : IngestionFlowFile.StatusEnum.ERROR,
+      ingestionResult.getErrorDescription(),
+      ingestionResult.getDiscardedFileName());
 
     ingestionResult.getIufs().forEach(iuf -> {
 
@@ -56,7 +62,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
       // ingestionResult.getTreasuryId()
 
       notifyTreasuryToIufClassificationActivity.signalIufClassificationWithStart(
-        1L, // organizationId
+        ingestionResult.getOrganizationID(),
         iuf,
         "123A" // treasuryId
       );

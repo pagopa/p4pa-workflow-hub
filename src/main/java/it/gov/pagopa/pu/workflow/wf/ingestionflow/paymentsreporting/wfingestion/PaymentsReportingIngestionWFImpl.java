@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -48,22 +49,21 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
   public void ingest(Long ingestionFlowFileId) {
     log.info("Handling IngestingFlowFileId {}", ingestionFlowFileId);
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, "IMPORT_IN_ELAB", null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     PaymentsReportingIngestionFlowFileActivityResult ingestionResult = paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, ingestionResult.isSuccess());
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? "OK" : "KO", null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? IngestionFlowFile.StatusEnum.COMPLETED : IngestionFlowFile.StatusEnum.ERROR, ingestionResult.getErrorDescription(), null);
 
     // TODO P4ADEV-1940 replace fake values in the following call
 
-    ingestionResult.getIufs().forEach(iuf -> {
+    if(ingestionResult.isSuccess()) {
       notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
-        1L,
-        iuf,
-         "OK",
-        null //List< Transfer2ClassifyDTO > transfers2classify
-         );
-
-      });
+        1L, // organizationId
+        "iuf-1", //IUF
+        "CODICEESITO", // codiceEsito
+        null // List< Transfer2ClassifyDTO > transfers2classify
+      );
+    }
 
     log.info("Ingestion completed for file with ID {}", ingestionFlowFileId);
   }

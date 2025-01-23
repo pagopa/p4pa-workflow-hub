@@ -34,7 +34,7 @@ public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, A
 
   @Override
   public void createDPSync(DebtPositionDTO debtPosition) {
-    log.info("Starting workflow for ingesting DebtPosition with ID: {}", debtPosition.getDebtPositionId());
+    log.info("Starting workflow for creating DebtPosition with ID: {}", debtPosition.getDebtPositionId());
     sendDebtPositionIONotificationActivity.sendMessage(debtPosition);
     log.info("Message sent to IO for organizationId {} and debtPositionTypeOrgId {}", debtPosition.getOrganizationId(), debtPosition.getDebtPositionTypeOrgId());
   }
