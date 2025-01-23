@@ -38,7 +38,7 @@ class PaymentsConsumerTest {
   }
 
   @Test
-  void givenExpectedEventwhenAcceptThenInvokeClient() {
+  void givenExpectedEventWhenAcceptThenInvokeClient() {
     // Given
     PaymentEventDTO paymentEventDTO = new PaymentEventDTO(
       buildPaidDebtPosition(),
@@ -55,6 +55,20 @@ class PaymentsConsumerTest {
       .classify(1L, "iuv3", "iur2", 1);
     Mockito.verify(wfClientMock)
       .classify(1L, "iuv5", "iur1", 1);
+  }
+
+  @Test
+  void givenNotHandledEventWhenAcceptThenInvokeClient() {
+    // Given
+    PaymentEventDTO paymentEventDTO = new PaymentEventDTO(
+      buildPaidDebtPosition(),
+      "NOTHANDLED"
+    );
+
+    // When
+    paymentsConsumer.accept(paymentEventDTO);
+
+    Mockito.verifyNoInteractions(wfClientMock);
   }
 
   private DebtPositionDTO buildPaidDebtPosition() {
