@@ -6,6 +6,7 @@ on:
       - develop
       - uat
       - main
+      - feature/*
     paths-ignore:
       - 'CODEOWNERS'
       - '**.md'
