@@ -15,6 +15,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.function.Function;
+
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionRequestDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,16 +37,27 @@ class DebtPositionControllerTest {
 
   @Test
   void whenCreateDpSyncThenOk() throws Exception {
+    testWorkflowCreationDP("/workflowhub/workflow/debt-position",
+      debtPositionRequestDTO -> service.createDPSync(debtPositionRequestDTO));
+  }
+
+  @Test
+  void whenCreateDpSyncAcaThenOk() throws Exception {
+    testWorkflowCreationDP("/workflowhub/workflow/debt-position/aca",
+      debtPositionRequestDTO -> service.createDPSyncAca(debtPositionRequestDTO));
+  }
+
+  private void testWorkflowCreationDP(String endpoint, Function<DebtPositionRequestDTO, WorkflowCreatedDTO> service) throws Exception {
     String workflowId = "workflow-1";
     DebtPositionRequestDTO debtPositionRequestDTO = buildDebtPositionRequestDTO();
     WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.createDPSync(Mockito.any(DebtPositionRequestDTO.class))).thenReturn(expected);
+    Mockito.when(service.apply(Mockito.any(DebtPositionRequestDTO.class))).thenReturn(expected);
 
     MvcResult result = mockMvc.perform(
-        post("/workflowhub/workflow/debt-position")
+        post(endpoint)
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .content(objectMapper.writeValueAsString(debtPositionRequestDTO)))
       .andExpect(status().isOk())

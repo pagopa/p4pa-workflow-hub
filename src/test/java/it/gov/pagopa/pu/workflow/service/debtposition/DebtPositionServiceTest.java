@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.function.Function;
+
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionRequestDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,17 +35,35 @@ class DebtPositionServiceTest {
   }
 
   @Test
-  void givenCreateDPSyncThenOk(){
+  void givenCreateDPSyncThenOk() {
+    testWorkflowCreationDP(
+      debtPositionDTO -> clientMock.createDPSync(debtPositionDTO),
+      debtPositionRequestDTO -> service.createDPSync(debtPositionRequestDTO)
+    );
+  }
+
+  @Test
+  void givenCreateDPSyncAcaThenOk() {
+    testWorkflowCreationDP(
+      debtPositionDTO -> clientMock.createDPSyncAca(debtPositionDTO),
+      debtPositionRequestDTO -> service.createDPSyncAca(debtPositionRequestDTO)
+    );
+  }
+
+  private void testWorkflowCreationDP(Function<DebtPositionDTO, String> clientMockSetup, Function<DebtPositionRequestDTO, WorkflowCreatedDTO> serviceMethod) {
+    // when
     String workflowId = "workflow-1";
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
     DebtPositionRequestDTO debtPositionRequestDTO = buildDebtPositionRequestDTO();
 
-    Mockito.when(clientMock.createDPSync(debtPositionDTO)).thenReturn(workflowId);
-
     Mockito.when(debtPositionMapperMock.map(debtPositionRequestDTO)).thenReturn(debtPositionDTO);
 
-    WorkflowCreatedDTO workflowCreatedDTO = service.createDPSync(debtPositionRequestDTO);
+    Mockito.when(clientMockSetup.apply(debtPositionDTO)).thenReturn("workflow-1");
 
+    // given
+    WorkflowCreatedDTO workflowCreatedDTO = serviceMethod.apply(debtPositionRequestDTO);
+
+    // then
     assertNotNull(workflowCreatedDTO);
     assertEquals(workflowId, workflowCreatedDTO.getWorkflowId());
   }

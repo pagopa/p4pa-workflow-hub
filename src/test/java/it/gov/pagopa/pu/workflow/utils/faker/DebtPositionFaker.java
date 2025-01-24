@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.utils.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestStatus;
 
 import java.util.List;
 
@@ -15,9 +16,8 @@ public class DebtPositionFaker {
     return DebtPositionDTO.builder()
       .debtPositionId(1L)
       .iupdOrg("iupdOrg")
-      .iupdPagopa("iupdPagopa")
       .description("description")
-      .status("status")
+      .status(DebtPositionDTO.StatusEnum.TO_SYNC)
       .ingestionFlowFileId(1L)
       .ingestionFlowFileLineNumber(1L)
       .organizationId(1L)
@@ -35,9 +35,8 @@ public class DebtPositionFaker {
     return DebtPositionRequestDTO.builder()
       .debtPositionId(1L)
       .iupdOrg("iupdOrg")
-      .iupdPagopa("iupdPagopa")
       .description("description")
-      .status("status")
+      .status(DebtPositionRequestStatus.TO_SYNC)
       .ingestionFlowFileId(1L)
       .ingestionFlowFileLineNumber(1L)
       .organizationId(1L)

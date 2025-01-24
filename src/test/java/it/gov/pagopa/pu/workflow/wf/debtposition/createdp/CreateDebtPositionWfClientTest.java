@@ -5,6 +5,8 @@ import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWFImpl;
+import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin.CreateDebtPositionSyncAcaWF;
+import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin.CreateDebtPositionSyncAcaWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +26,9 @@ class CreateDebtPositionWfClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
-  private CreateDebtPositionSyncWF wfMock;
+  private CreateDebtPositionSyncWF wfSyncMock;
+  @Mock
+  private CreateDebtPositionSyncAcaWF wfSyncAcaMock;
 
   private CreateDebtPositionWfClient client;
 
@@ -42,7 +46,7 @@ class CreateDebtPositionWfClientTest {
   void whenCreateDPSyncThenSuccess() {
     // Given
     long id = 1L;
-    String expectedWorkflowId = "CreateDebtPositionWf-1";
+    String expectedWorkflowId = "CreateDebtPositionSyncWF-1";
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
@@ -54,14 +58,41 @@ class CreateDebtPositionWfClientTest {
           CreateDebtPositionSyncWF.class,
           CreateDebtPositionSyncWFImpl.TASK_QUEUE,
           expectedWorkflowId))
-        .thenReturn(wfMock);
+        .thenReturn(wfSyncMock);
 
       // When
       String workflowId = client.createDPSync(debtPosition);
 
       // Then
       Assertions.assertEquals(expectedWorkflowId, workflowId);
-      Mockito.verify(wfMock).createDPSync(debtPosition);
+      Mockito.verify(wfSyncMock).createDPSync(debtPosition);
+    }
+  }
+
+  @Test
+  void whenCreateDPSyncAcaThenSuccess() {
+    // Given
+    long id = 1L;
+    String expectedWorkflowId = "CreateDebtPositionSyncAcaWF-1";
+    DebtPositionDTO debtPosition = buildDebtPositionDTO();
+
+    try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
+      utilitiesMockedStatic
+        .when(() -> Utilities.generateWorkflowId(id, CreateDebtPositionSyncAcaWFImpl.TASK_QUEUE))
+        .thenReturn(expectedWorkflowId);
+
+      Mockito.when(workflowServiceMock.buildWorkflowStub(
+          CreateDebtPositionSyncAcaWF.class,
+          CreateDebtPositionSyncAcaWFImpl.TASK_QUEUE,
+          expectedWorkflowId))
+        .thenReturn(wfSyncAcaMock);
+
+      // When
+      String workflowId = client.createDPSyncAca(debtPosition);
+
+      // Then
+      Assertions.assertEquals(expectedWorkflowId, workflowId);
+      Mockito.verify(wfSyncAcaMock).createDPSyncAca(debtPosition);
     }
   }
 }
