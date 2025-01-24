@@ -59,6 +59,7 @@ jobs:
         uses: pagopa/github-actions-template/payments-flow-docker-snapshot@b825ee193430395706a4a7e580b8435bdded0227
         with:
           current_branch: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   azure-devops-trigger:
     name: 🅰️ Azure DevOps Pipeline Trigger
