@@ -115,53 +115,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /classification/transfer/{orgId}:
-    post:
-      tags:
-        - Classification
-      operationId: transferClassification
-      summary: Transfer classification
-      description: It will Processes Transfer classification based on the provided parameters
-        returning its workflowId
-      parameters:
-        - name: orgId
-          in: path
-          required: true
-          description: the unique identifier of the organization.
-          schema:
-            type: integer
-            format: int64
-        - name: iuv
-          in: query
-          required: true
-          description: the unique identifier of the payment (IUV).
-          schema:
-            type: string
-        - name: iur
-          in: query
-          required: true
-          description: the identifier of the receipt associated with the payment.
-          schema:
-            type: string
-        - name: transferIndex
-          in: query
-          required: true
-          description: the index of the transfer to be classified.
-          schema:
-            type: integer
-      responses:
-        '201':
-          description: "Treasury OPI Ingestion Workflow created successfully"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowCreatedDTO'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflows/{workflowId}/status:
     get:
       tags:

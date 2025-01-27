@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 
+import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
+import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 
 /**
  * Workflow interface for the Transfer classification
@@ -9,14 +11,11 @@ import io.temporal.workflow.WorkflowMethod;
 
 @WorkflowInterface
 public interface TransferClassificationWF {
-    /**
-     * Workflow method for the Transfer classification
-     *
-     * @param orgId the unique identifier of the organization
-     * @param iuv   the unique identifier of the payment (IUV)
-     * @param iur   the identifier of the receipt associated with the payment
-     * @param transferIndex  the index of the transfer to be classified
-     */
+    String SIGNAL_METHOD_NAME_START_TRANSFER_CLASSIFICATION ="startTransferClassification";
+
     @WorkflowMethod
-    void classify(Long orgId, String iuv, String iur, int transferIndex);
+    void classify();
+
+    @SignalMethod
+    void startTransferClassification(TransferClassificationStartSignalDTO signalDTO);
 }

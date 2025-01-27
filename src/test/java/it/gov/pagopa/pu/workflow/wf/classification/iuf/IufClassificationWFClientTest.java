@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
@@ -14,8 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,9 +78,14 @@ class IufClassificationWFClientTest {
   void testNotifyPaymentsReporting() {
     // Given
     IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
-      .organizationId(1L)
       .iuf("iuf123")
-      .transfers2classify(Collections.emptyList())
+      .paymentsReportingTransferDTO(PaymentsReportingTransferDTO.builder()
+        .iur("iur")
+        .iuv("iuv")
+        .transferIndex(1)
+        .orgId(1L)
+        .paymentOutcomeCode("CODICEESITO")
+        .build())
       .build();
 
     String expectedWorkflowId = "IufClassificationWF-1-iuf123";

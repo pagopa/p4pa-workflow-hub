@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.classification;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
@@ -18,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Collections;
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class IufClassificationWFTest {
@@ -106,14 +106,14 @@ class IufClassificationWFTest {
   void notifyPaymentsReporting(String iuf, String iur, String iuv) {
     // Given
     IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
-      .organizationId(1L)
       .iuf(iuf)
-      .outcomeCode("outcome123")
-      .transfers2classify(List.of(Transfer2ClassifyDTO.builder()
+      .paymentsReportingTransferDTO(PaymentsReportingTransferDTO.builder()
         .iur(iur)
         .iuv(iuv)
         .transferIndex(1)
-        .build()))
+        .orgId(1L)
+        .paymentOutcomeCode("CODICEESITO")
+        .build())
       .build();
 
     Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1L);

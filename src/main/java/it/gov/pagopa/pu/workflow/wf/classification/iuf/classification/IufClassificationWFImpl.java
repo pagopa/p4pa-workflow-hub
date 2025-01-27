@@ -4,6 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
+import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
@@ -86,15 +87,20 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
     log.info("Handling payments reporting notification in iuf classification: {}", signalDTO);
     Long clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
-      signalDTO.getOrganizationId(),
+      signalDTO.getPaymentsReportingTransferDTO().getOrgId(),
       signalDTO.getIuf());
 
     log.info("IUF receipt classification cleared cleared {} records for {}", clearedResult, signalDTO);
+    Transfer2ClassifyDTO transfer2ClassifyDTO = Transfer2ClassifyDTO.builder()
+      .iur(signalDTO.getPaymentsReportingTransferDTO().getIur())
+      .iuv(signalDTO.getPaymentsReportingTransferDTO().getIuv())
+      .transferIndex(signalDTO.getPaymentsReportingTransferDTO().getTransferIndex())
+      .build();
 
     toNotify.add(IufClassificationActivityResult.builder()
-      .organizationId(signalDTO.getOrganizationId())
+      .organizationId(signalDTO.getPaymentsReportingTransferDTO().getOrgId())
       .success(true)
-      .transfers2classify(signalDTO.getTransfers2classify())
+      .transfers2classify(List.of(transfer2ClassifyDTO))
       .build());
   }
 

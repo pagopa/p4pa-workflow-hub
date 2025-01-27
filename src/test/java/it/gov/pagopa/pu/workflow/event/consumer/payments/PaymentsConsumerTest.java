@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,11 +51,11 @@ class PaymentsConsumerTest {
 
     // Then
     Mockito.verify(wfClientMock)
-      .classify(1L, "iuv1", "iur1", 1);
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv1", "iur1", 1));
     Mockito.verify(wfClientMock)
-      .classify(1L, "iuv3", "iur2", 1);
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv3", "iur2", 1));
     Mockito.verify(wfClientMock)
-      .classify(1L, "iuv5", "iur1", 1);
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv5", "iur1", 1));
   }
 
   @Test

@@ -1,14 +1,11 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity;
 
 import io.temporal.activity.ActivityInterface;
-import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
-
-import java.util.List;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 
 @ActivityInterface
 public interface NotifyPaymentsReportingToIufClassificationActivity {
 
-  void signalIufClassificationWithStart(Long organizationId, String iuf,
-                                        String outComeCode, List<Transfer2ClassifyDTO> transfers2classify);
+  void signalIufClassificationWithStart(String iuf, PaymentsReportingTransferDTO paymentsReportingTransferDTO);
 
 }

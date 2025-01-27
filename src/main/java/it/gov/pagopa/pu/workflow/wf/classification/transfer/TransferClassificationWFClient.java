@@ -1,8 +1,14 @@
 package it.gov.pagopa.pu.workflow.wf.classification.transfer;
 
+import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWF;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWFImpl;
+import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWFImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -18,15 +24,17 @@ public class TransferClassificationWFClient {
     this.workflowService = workflowService;
   }
 
-  public String classify(Long organizationId, String iuv, String iur, int transferIndex) {
-    log.info("Starting Transfer Classification for organizationId {}, iuv {}, iur {}, transferIndex {}",
-      organizationId, iuv, iur, transferIndex);
-    String workflowId = generateWorkflowId(organizationId, iuv, iur, transferIndex);
-    TransferClassificationWF workflow = workflowService.buildWorkflowStub(
-      TransferClassificationWF.class,
-      TransferClassificationWFImpl.TASK_QUEUE,
-      workflowId);
-    WorkflowClient.start(workflow::classify, organizationId, iuv, iur, transferIndex);
+  public String startTransferClassification(TransferClassificationStartSignalDTO signalDTO) {
+    log.info("Starting Transfer Classification for semantic key: {}", signalDTO);
+
+    String workflowId = generateWorkflowId(signalDTO.getOrgId(), signalDTO.getIuv(), signalDTO.getIur(), signalDTO.getTransferIndex());
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(TransferClassificationWFImpl.TASK_QUEUE, workflowId);
+    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
+      TransferClassificationWF.SIGNAL_METHOD_NAME_START_TRANSFER_CLASSIFICATION,
+      new Object[]{signalDTO},
+      new Object[]{}
+    );
+    log.info("Transfer classification Workflow started with workflowId: {}", wfExecution.getWorkflowId());
     return workflowId;
   }
 
