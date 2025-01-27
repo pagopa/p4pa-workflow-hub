@@ -6,7 +6,7 @@ on:
       - develop
       - uat
       - main
-      - argo
+      - P4ADEV-1892-migrate-to-argoCD
     paths-ignore:
       - 'CODEOWNERS'
       - '**.md'
