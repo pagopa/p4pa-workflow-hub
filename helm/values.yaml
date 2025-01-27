@@ -76,6 +76,7 @@ microservice-chart:
 
     KAFKA_BINDER_BROKER: p4pa-payhub-kafka-broker
     KAFKA_PAYMENTS_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-consumer-jaas-config
+    KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG: p4pa-payhub-payments-evh-producer-jaas-config
 
   # nodeSelector: {}
 
