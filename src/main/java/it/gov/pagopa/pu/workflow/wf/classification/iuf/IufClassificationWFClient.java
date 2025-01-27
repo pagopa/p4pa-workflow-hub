@@ -37,7 +37,7 @@ public class IufClassificationWFClient {
   }
 
   public String notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
-    String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIuf());
+    String workflowId = generateWorkflowId(signalDTO.getPaymentsReportingTransferDTO().getOrgId(), signalDTO.getIuf());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(

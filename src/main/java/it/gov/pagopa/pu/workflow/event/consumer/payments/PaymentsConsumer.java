@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.workflow.event.consumer.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,14 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO> {
         .forEach(i -> i.getTransfers()
           .forEach(t ->
             // Once the IUD classification is ready, this should call the IUD Classification if there is a IUD
-            transferClassificationWFClient.classify(paymentEventDTO.getPayload().getOrganizationId(), i.getIuv(), i.getIur(), t.getTransferIndex().intValue())));
+            transferClassificationWFClient.startTransferClassification(
+              TransferClassificationStartSignalDTO.builder()
+                .orgId(paymentEventDTO.getPayload().getOrganizationId())
+                .iuv(i.getIuv())
+                .iur(i.getIur())
+                .transferIndex(t.getTransferIndex().intValue())
+                .build()
+            )));
     }
   }
 

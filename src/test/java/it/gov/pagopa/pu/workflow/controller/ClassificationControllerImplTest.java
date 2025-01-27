@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,7 +40,8 @@ class ClassificationControllerImplTest {
 
     WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId);
 
-    Mockito.when(transferClassificationWFClientMock.classify(ORGANIZATION, IUV, IUR, INDEX)).thenReturn(expectedWorkflowId);
+    when(transferClassificationWFClientMock.startTransferClassification(new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, INDEX)))
+      .thenReturn(expectedWorkflowId);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/classification/transfer/{orgId}", ORGANIZATION)
       .param("iuv", IUV)

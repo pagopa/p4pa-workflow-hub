@@ -55,19 +55,12 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
       ingestionResult.getErrorDescription(),
       ingestionResult.getDiscardedFileName());
 
-    ingestionResult.getIufs().forEach(iuf -> {
-
-      // TODO P4ADEV-1936 replace fake values with real ones for organizationId and treasuryId
-      // ingestionResult.getOrganizationId()
-      // ingestionResult.getTreasuryId()
-
+    ingestionResult.getIufTreasuryIdMap().forEach((key, value) ->
       notifyTreasuryToIufClassificationActivity.signalIufClassificationWithStart(
-        ingestionResult.getOrganizationID(),
-        iuf,
-        "123A" // treasuryId
-      );
-    });
-
+        ingestionResult.getOrganizationId(),
+        key, // iuf
+        value // treasuryId
+      ));
     log.info("Ingestion with ID {} is completed", ingestionFlowFileId);
   }
 }

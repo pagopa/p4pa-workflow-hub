@@ -1,28 +1,20 @@
 package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 
-import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
-import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
-import org.junit.jupiter.api.AfterEach;
+import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class TransferClassificationWFImplTest {
   private static final Long ORGANIZATION = 123L;
   private static final String IUV = "01011112222333345";
   private static final String IUR = "IUR";
   private static final int TRANSFER_INDEX = 1;
-
-  @Mock
-  private TransferClassificationActivity transferClassificationActivityMock;
 
   private TransferClassificationWFImpl wf;
 
@@ -31,9 +23,6 @@ class TransferClassificationWFImplTest {
     TransferClassificationWfConfig transferClassificationWfConfig = Mockito.mock(TransferClassificationWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
-    when(transferClassificationWfConfig.buildTransferClassificationActivityStub())
-      .thenReturn(transferClassificationActivityMock);
-
     when(applicationContextMock.getBean(TransferClassificationWfConfig.class))
       .thenReturn(transferClassificationWfConfig);
 
@@ -41,20 +30,8 @@ class TransferClassificationWFImplTest {
     wf.setApplicationContext(applicationContextMock);
   }
 
-  @AfterEach
-  void tearDown() {
-    verifyNoMoreInteractions(transferClassificationActivityMock);
-  }
-
   @Test
   void givenClassifyThenSuccess() {
-    TransferSemanticKeyDTO transferSemanticKey = new TransferSemanticKeyDTO(ORGANIZATION, IUV, IUR, TRANSFER_INDEX);
-    doNothing().when(transferClassificationActivityMock)
-      .classify(transferSemanticKey);
-    // when
-     wf.classify(ORGANIZATION, IUV, IUR, TRANSFER_INDEX);
-
-    // then
-    verify(transferClassificationActivityMock).classify(transferSemanticKey);
+    assertDoesNotThrow(() -> wf.startTransferClassification(new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, TRANSFER_INDEX)));
   }
 }

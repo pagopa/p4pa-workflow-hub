@@ -4,10 +4,13 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
+import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.util.*;
 
 import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE;
 
@@ -17,6 +20,8 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
   public static final String TASK_QUEUE = "TransferClassificationWF";
 
   private TransferClassificationActivity transferClassificationActivity;
+
+  List<TransferSemanticKeyDTO> toClassify = new ArrayList<>();
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -31,9 +36,24 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
   }
 
   @Override
-  public void classify(Long orgId, String iuv, String iur, int transferIndex) {
-    log.info("Handling Transfer classification for organization id {} and iuv {} and iur {} and transfer index {}", orgId, iuv, iur, transferIndex);
-    transferClassificationActivity.classify(new TransferSemanticKeyDTO(orgId, iuv, iur, transferIndex));
-    log.info("Ingestion organization id {} and iuv {} and iur {} and transfer index {} is completed", orgId, iuv, iur, transferIndex);
+  public void classify() {
+    toClassify.stream().distinct()
+      .forEach(item -> {
+        log.info("Handling Transfer classification for semantic key", item);
+        transferClassificationActivity.classify(item);
+      });
+    log.info("Ingestion to classify Transfers is completed");
+  }
+
+  @Override
+  public void startTransferClassification(TransferClassificationStartSignalDTO signalDTO) {
+    log.info("Starting Transfer classification with signal {}", signalDTO);
+    TransferSemanticKeyDTO transferSemanticKeyDTO = TransferSemanticKeyDTO.builder()
+      .orgId(signalDTO.getOrgId())
+      .iuv(signalDTO.getIuv())
+      .iur(signalDTO.getIur())
+      .transferIndex(signalDTO.getTransferIndex())
+      .build();
+    toClassify.add(transferSemanticKeyDTO);
   }
 }
