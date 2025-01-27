@@ -59,12 +59,10 @@ jobs:
           ref: ${{ env.CURRENT_BRANCH }}
 
       - name: Run Snapshot Docker Build/Push
-        # https://github.com/pagopa/github-actions-template/releases/tag/v2.0.0
-        uses: pagopa/github-actions-template/payments-flow-docker-snapshot@fix-maven-package-read
+        # https://github.com/pagopa/github-actions-template/releases/tag/v2.1.1
+        uses: pagopa/github-actions-template/payments-flow-docker-snapshot@e67e0ec4bb01d6cb5065e311ba0e1c92c49966a7
         with:
           current_branch: ${{ github.ref_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   azure-devops-trigger:
     name: 🅰️ Azure DevOps Pipeline Trigger
