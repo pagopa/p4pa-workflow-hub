@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin;
+package it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.wfsyncstandin;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.aca.AcaStandInCreateDebtPositionActivity;
@@ -23,7 +23,7 @@ import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtP
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class CreateDebtPositionSyncAcaWFTest {
+class SynchronizeSyncAcaWFTest {
 
   @Mock
   private AcaStandInCreateDebtPositionActivity acaStandInCreateDebtPositionActivityMock;
@@ -32,7 +32,7 @@ class CreateDebtPositionSyncAcaWFTest {
   @Mock
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivityMock;
 
-  private CreateDebtPositionSyncAcaWFImpl wf;
+  private SynchronizeSyncAcaWFImpl wf;
 
   @BeforeEach
   void init() {
@@ -49,7 +49,7 @@ class CreateDebtPositionSyncAcaWFTest {
     Mockito.when(applicationContextMock.getBean(CreateDebtPositionWfConfig.class))
       .thenReturn(createDebtPositionWfConfigMock);
 
-    wf = new CreateDebtPositionSyncAcaWFImpl();
+    wf = new SynchronizeSyncAcaWFImpl();
     wf.setApplicationContext(applicationContextMock);
   }
 
@@ -62,7 +62,7 @@ class CreateDebtPositionSyncAcaWFTest {
   }
 
   @Test
-  void givenCreateDPSyncAcaThenOk(){
+  void givenSynchronizeDPSyncAcaThenOk(){
     // Given
     Long id = 1L;
     IupdSyncStatusUpdateDTO.NewStatusEnum newStatus = IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID;
@@ -87,7 +87,7 @@ class CreateDebtPositionSyncAcaWFTest {
     Mockito.doNothing().when(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
 
     // When
-    wf.createDPSyncAca(debtPosition);
+    wf.synchronizeDPSyncAca(debtPosition);
 
     // Then
     assertEquals(DebtPositionDTO.StatusEnum.UNPAID, debtPosition.getStatus());

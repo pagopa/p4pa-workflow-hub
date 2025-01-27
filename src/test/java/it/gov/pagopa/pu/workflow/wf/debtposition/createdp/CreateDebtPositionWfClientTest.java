@@ -5,8 +5,8 @@ import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWFImpl;
-import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin.CreateDebtPositionSyncAcaWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin.CreateDebtPositionSyncAcaWFImpl;
+import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.wfsyncstandin.SynchronizeSyncAcaWF;
+import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.wfsyncstandin.SynchronizeSyncAcaWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ class CreateDebtPositionWfClientTest {
   @Mock
   private CreateDebtPositionSyncWF wfSyncMock;
   @Mock
-  private CreateDebtPositionSyncAcaWF wfSyncAcaMock;
+  private SynchronizeSyncAcaWF wfSyncAcaMock;
 
   private CreateDebtPositionWfClient client;
 
@@ -78,12 +78,12 @@ class CreateDebtPositionWfClientTest {
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(id, CreateDebtPositionSyncAcaWFImpl.TASK_QUEUE))
+        .when(() -> Utilities.generateWorkflowId(id, SynchronizeSyncAcaWFImpl.TASK_QUEUE))
         .thenReturn(expectedWorkflowId);
 
       Mockito.when(workflowServiceMock.buildWorkflowStub(
-          CreateDebtPositionSyncAcaWF.class,
-          CreateDebtPositionSyncAcaWFImpl.TASK_QUEUE,
+          SynchronizeSyncAcaWF.class,
+          SynchronizeSyncAcaWFImpl.TASK_QUEUE,
           expectedWorkflowId))
         .thenReturn(wfSyncAcaMock);
 
@@ -92,7 +92,7 @@ class CreateDebtPositionWfClientTest {
 
       // Then
       Assertions.assertEquals(expectedWorkflowId, workflowId);
-      Mockito.verify(wfSyncAcaMock).createDPSyncAca(debtPosition);
+      Mockito.verify(wfSyncAcaMock).synchronizeDPSyncAca(debtPosition);
     }
   }
 }

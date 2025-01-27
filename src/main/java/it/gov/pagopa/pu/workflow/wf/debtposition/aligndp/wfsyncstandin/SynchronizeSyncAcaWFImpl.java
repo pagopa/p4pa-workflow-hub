@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsyncstandin;
+package it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.wfsyncstandin;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
@@ -19,9 +19,9 @@ import static it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDe
 
 @Slf4j
 @WorkflowImpl(taskQueues = TASK_QUEUE)
-public class CreateDebtPositionSyncAcaWFImpl implements CreateDebtPositionSyncAcaWF, ApplicationContextAware {
+public class SynchronizeSyncAcaWFImpl implements SynchronizeSyncAcaWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE = "CreateDebtPositionSyncAcaWF";
+  public static final String TASK_QUEUE = "SynchronizeSyncAcaWF";
 
   private AcaStandInCreateDebtPositionActivity acaStandInCreateDebtPositionActivity;
   private FinalizeDebtPositionSyncStatusActivity finalizeDebtPositionSyncStatusActivity;
@@ -42,7 +42,7 @@ public class CreateDebtPositionSyncAcaWFImpl implements CreateDebtPositionSyncAc
   }
 
   @Override
-  public void createDPSyncAca(DebtPositionDTO debtPosition) {
+  public void synchronizeDPSyncAca(DebtPositionDTO debtPosition) {
     log.info("Starting workflow for creating an Aca DebtPosition with ID: {}", debtPosition.getDebtPositionId());
     Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = acaStandInCreateDebtPositionActivity.createAcaDebtPosition(debtPosition);
 
