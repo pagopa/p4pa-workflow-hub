@@ -33,6 +33,9 @@ env:
   # branch choosed by workflow_dispatch or by push event
   CURRENT_BRANCH: ${{ github.event.inputs.branch || github.ref_name }}
 
+permissions:
+  packages: read
+
 jobs:
   checkout:
     name: 🔖 Checkout Repository
@@ -56,7 +59,7 @@ jobs:
 
       - name: Run Snapshot Docker Build/Push
         # https://github.com/pagopa/github-actions-template/releases/tag/v2.0.0
-        uses: pagopa/github-actions-template/payments-flow-docker-snapshot@b825ee193430395706a4a7e580b8435bdded0227
+        uses: pagopa/github-actions-template/payments-flow-docker-snapshot@fix-maven-package-read
         with:
           current_branch: ${{ github.ref_name }}
         env:
