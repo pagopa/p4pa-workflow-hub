@@ -34,7 +34,7 @@ env:
   CURRENT_BRANCH: ${{ github.event.inputs.branch || github.ref_name }}
 
 permissions:
-  packages: read
+  packages: write
   contents: read
 
 jobs:
