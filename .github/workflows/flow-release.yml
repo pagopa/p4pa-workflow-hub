@@ -13,8 +13,11 @@ on:
       - '.**'
   workflow_dispatch:
 
-jobs:
+permissions:
+  packages: write
+  contents: write
 
+jobs:
   checkout:
     name: 🔖 Checkout Repository
     runs-on: ubuntu-22.04
