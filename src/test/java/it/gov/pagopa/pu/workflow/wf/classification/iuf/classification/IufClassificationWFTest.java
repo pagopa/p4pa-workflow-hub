@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Collections;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class IufClassificationWFTest {
@@ -107,13 +108,13 @@ class IufClassificationWFTest {
     // Given
     IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
       .iuf(iuf)
-      .paymentsReportingTransferDTO(PaymentsReportingTransferDTO.builder()
+      .transfers(List.of(PaymentsReportingTransferDTO.builder()
         .iur(iur)
         .iuv(iuv)
         .transferIndex(1)
         .orgId(1L)
         .paymentOutcomeCode("CODICEESITO")
-        .build())
+        .build()))
       .build();
 
     Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1L);

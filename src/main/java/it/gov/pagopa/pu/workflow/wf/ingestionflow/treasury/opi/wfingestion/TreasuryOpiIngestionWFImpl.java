@@ -55,11 +55,11 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
       ingestionResult.getErrorDescription(),
       ingestionResult.getDiscardedFileName());
 
-    ingestionResult.getIufTreasuryIdMap().forEach((key, value) ->
+    ingestionResult.getIufTreasuryIdMap().forEach((iuf, treasuryId) ->
       notifyTreasuryToIufClassificationActivity.signalIufClassificationWithStart(
         ingestionResult.getOrganizationId(),
-        key, // iuf
-        value // treasuryId
+        iuf,
+        treasuryId
       ));
     log.info("Ingestion with ID {} is completed", ingestionFlowFileId);
   }

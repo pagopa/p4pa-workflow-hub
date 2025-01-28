@@ -84,23 +84,24 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
   @Override
   public void notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
-
     log.info("Handling payments reporting notification in iuf classification: {}", signalDTO);
     Long clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
-      signalDTO.getPaymentsReportingTransferDTO().getOrgId(),
+      signalDTO.getTransfers().getFirst().getOrgId(),
       signalDTO.getIuf());
 
     log.info("IUF receipt classification cleared cleared {} records for {}", clearedResult, signalDTO);
-    Transfer2ClassifyDTO transfer2ClassifyDTO = Transfer2ClassifyDTO.builder()
-      .iur(signalDTO.getPaymentsReportingTransferDTO().getIur())
-      .iuv(signalDTO.getPaymentsReportingTransferDTO().getIuv())
-      .transferIndex(signalDTO.getPaymentsReportingTransferDTO().getTransferIndex())
-      .build();
+    List<Transfer2ClassifyDTO> transfer2ClassifyDTOList = signalDTO.getTransfers().stream()
+      .map(transfer -> Transfer2ClassifyDTO.builder()
+        .iur(transfer.getIur())
+        .iuv(transfer.getIuv())
+        .transferIndex(transfer.getTransferIndex())
+        .build()
+      ).toList();
 
     toNotify.add(IufClassificationActivityResult.builder()
-      .organizationId(signalDTO.getPaymentsReportingTransferDTO().getOrgId())
+      .organizationId(signalDTO.getTransfers().getFirst().getOrgId())
       .success(true)
-      .transfers2classify(List.of(transfer2ClassifyDTO))
+      .transfers2classify(transfer2ClassifyDTOList)
       .build());
   }
 

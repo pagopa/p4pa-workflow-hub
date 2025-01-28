@@ -55,10 +55,9 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? IngestionFlowFile.StatusEnum.COMPLETED : IngestionFlowFile.StatusEnum.ERROR, ingestionResult.getErrorDescription(), null);
 
     if(ingestionResult.isSuccess()) {
-      ingestionResult.getTransfers().forEach(transfer ->
         notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
           ingestionResult.getIuf(),
-          transfer));
+          ingestionResult.getTransfers());
     }
 
     log.info("Ingestion completed for file with ID {}", ingestionFlowFileId);

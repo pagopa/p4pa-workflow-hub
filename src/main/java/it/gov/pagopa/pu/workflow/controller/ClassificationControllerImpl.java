@@ -19,7 +19,7 @@ public class ClassificationControllerImpl implements ClassificationApi {
 
 	@Override
   public ResponseEntity<WorkflowCreatedDTO> transferClassification(Long orgId, String iuv, String iur, Integer transferIndex) {
-    log.info("Creating Treasury OPI Ingestion Workflow for for organization id {} and iuv {} and iur {} and transfer index {}", orgId, iuv, iur, transferIndex);
+    log.info("Creating transfer classification Workflow for organization id {} and iuv {} and iur {} and transfer index {}", orgId, iuv, iur, transferIndex);
     String workflowId = transferClassificationWFClient.startTransferClassification(new TransferClassificationStartSignalDTO(orgId, iuv, iur, transferIndex));
 
     WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);

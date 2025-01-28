@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @Builder
@@ -13,6 +15,6 @@ public class IufClassificationNotifyPaymentsReportingSignalDTO {
   // common fields
   private String iuf;
   // specific fields
-  private PaymentsReportingTransferDTO paymentsReportingTransferDTO;
+  private List<PaymentsReportingTransferDTO> transfers;
 
 }

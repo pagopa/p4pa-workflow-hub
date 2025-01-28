@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -79,13 +81,13 @@ class IufClassificationWFClientTest {
     // Given
     IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
       .iuf("iuf123")
-      .paymentsReportingTransferDTO(PaymentsReportingTransferDTO.builder()
+      .transfers(List.of(PaymentsReportingTransferDTO.builder()
         .iur("iur")
         .iuv("iuv")
         .transferIndex(1)
         .orgId(1L)
         .paymentOutcomeCode("CODICEESITO")
-        .build())
+        .build()))
       .build();
 
     String expectedWorkflowId = "IufClassificationWF-1-iuf123";

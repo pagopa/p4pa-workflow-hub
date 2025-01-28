@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Lazy
 @Service
 @Slf4j
@@ -22,11 +24,11 @@ public class NotifyPaymentsReportingToIufClassificationActivityImpl implements N
   }
 
   @Override
-  public void signalIufClassificationWithStart(String iuf, PaymentsReportingTransferDTO paymentsReportingTransferDTO) {
+  public void signalIufClassificationWithStart(String iuf, List<PaymentsReportingTransferDTO> transfers) {
     IufClassificationNotifyPaymentsReportingSignalDTO paymentsReportingSignalDTO =
       IufClassificationNotifyPaymentsReportingSignalDTO.builder()
         .iuf(iuf)
-        .paymentsReportingTransferDTO(paymentsReportingTransferDTO)
+        .transfers(transfers)
         .build();
     iufClassificationWFClient.notifyPaymentsReporting(paymentsReportingSignalDTO);
   }

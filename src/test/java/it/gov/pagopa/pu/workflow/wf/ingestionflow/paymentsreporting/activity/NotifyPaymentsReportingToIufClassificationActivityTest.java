@@ -9,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,10 +39,10 @@ class NotifyPaymentsReportingToIufClassificationActivityTest {
       .build();
     IufClassificationNotifyPaymentsReportingSignalDTO expectedSignalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
       .iuf(iuf)
-      .paymentsReportingTransferDTO(paymentsReportingTransferDTO)
+      .transfers(List.of(paymentsReportingTransferDTO))
       .build();
     // When
-    notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(iuf, paymentsReportingTransferDTO);
+    notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(iuf, List.of(paymentsReportingTransferDTO));
 
     // Then
     verify(iufClassificationWFClientMock).notifyPaymentsReporting(expectedSignalDTO);

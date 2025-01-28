@@ -21,7 +21,7 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
 
   private TransferClassificationActivity transferClassificationActivity;
 
-  List<TransferSemanticKeyDTO> toClassify = new ArrayList<>();
+  private List<TransferSemanticKeyDTO> toClassify = new ArrayList<>();
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
