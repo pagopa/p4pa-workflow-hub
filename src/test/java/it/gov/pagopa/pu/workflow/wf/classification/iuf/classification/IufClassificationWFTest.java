@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.classification;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
@@ -106,13 +107,14 @@ class IufClassificationWFTest {
   void notifyPaymentsReporting(String iuf, String iur, String iuv) {
     // Given
     IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
-      .organizationId(1L)
       .iuf(iuf)
-      .outcomeCode("outcome123")
-      .transfers2classify(List.of(Transfer2ClassifyDTO.builder()
+      .organizationId(1L)
+      .transfers(List.of(PaymentsReportingTransferDTO.builder()
         .iur(iur)
         .iuv(iuv)
         .transferIndex(1)
+        .orgId(1L)
+        .paymentOutcomeCode("CODICEESITO")
         .build()))
       .build();
 

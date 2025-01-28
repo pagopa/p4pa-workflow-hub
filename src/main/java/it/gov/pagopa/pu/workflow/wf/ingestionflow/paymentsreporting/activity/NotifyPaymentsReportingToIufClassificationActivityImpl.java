@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
-import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
@@ -24,19 +24,13 @@ public class NotifyPaymentsReportingToIufClassificationActivityImpl implements N
   }
 
   @Override
-  public void signalIufClassificationWithStart(Long organizationId, String iuf,
-                                               String outComeCode, List<Transfer2ClassifyDTO> transfers2classify) {
-
+  public void signalIufClassificationWithStart(Long organizationId, String iuf, List<PaymentsReportingTransferDTO> transfers) {
     IufClassificationNotifyPaymentsReportingSignalDTO paymentsReportingSignalDTO =
       IufClassificationNotifyPaymentsReportingSignalDTO.builder()
-        .organizationId(organizationId)
         .iuf(iuf)
-        .outcomeCode(outComeCode)
-        .transfers2classify(transfers2classify)
+        .organizationId(organizationId)
+        .transfers(transfers)
         .build();
-
     iufClassificationWFClient.notifyPaymentsReporting(paymentsReportingSignalDTO);
-
   }
-
 }

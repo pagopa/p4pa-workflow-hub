@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
@@ -57,19 +57,16 @@ class TreasuryOpiIngestionWFImplTest {
     // Given
     long ingestionFlowId = 1L;
     boolean success = true;
+    Long organizationId = 1L;
+    String treasuryId = "treasuryid-1";
+    String iuf = "iuf-1";
 
+    Map<String, String> iufTreasuryIdMap = Map.of(iuf, treasuryId);
     TreasuryIufResult treasuryIufResult = new TreasuryIufResult(
-      List.of("iuf-1"), List.of("treasuryid-1"), 1L, success, null, null);
+      iufTreasuryIdMap, organizationId, success, null, null);
 
     when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowId))
       .thenReturn(treasuryIufResult);
-
-    // TODO P4ADEV-1936 replace fake values with real ones
-    // treasuryIufResult.getTreasuryId()
-    // treasuryIufResult.getOrganizationId()
-
-    String treasuryId = "123A";
-    Long organizationId = 1L;
 
     // When
     wf.ingest(ingestionFlowId);
@@ -78,7 +75,7 @@ class TreasuryOpiIngestionWFImplTest {
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowId, success);
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
-    verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, treasuryIufResult.getIufs().getFirst(), treasuryId);
+    verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, iuf, treasuryId);
   }
 
   @Test
@@ -88,7 +85,7 @@ class TreasuryOpiIngestionWFImplTest {
     boolean success = false;
 
     when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId))
-      .thenReturn(new TreasuryIufResult(List.of(), List.of(), null, success, "error", "discardedFileName"));
+      .thenReturn(new TreasuryIufResult(Map.of(), null, success, "error", "discardedFileName"));
 
     // When
     wf.ingest(ingestionFlowFileId);
