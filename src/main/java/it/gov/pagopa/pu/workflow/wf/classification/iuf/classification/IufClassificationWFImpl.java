@@ -86,7 +86,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
   public void notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
     log.info("Handling payments reporting notification in iuf classification: {}", signalDTO);
     Long clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
-      signalDTO.getTransfers().getFirst().getOrgId(),
+      signalDTO.getOrganizationId(),
       signalDTO.getIuf());
 
     log.info("IUF receipt classification cleared cleared {} records for {}", clearedResult, signalDTO);

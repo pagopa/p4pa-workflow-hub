@@ -56,6 +56,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
 
     if(ingestionResult.isSuccess()) {
         notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
+          ingestionResult.getTransfers().getFirst().getOrgId(),
           ingestionResult.getIuf(),
           ingestionResult.getTransfers());
     }

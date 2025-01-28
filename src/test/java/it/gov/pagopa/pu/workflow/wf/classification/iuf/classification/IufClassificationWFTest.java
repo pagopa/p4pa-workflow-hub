@@ -108,6 +108,7 @@ class IufClassificationWFTest {
     // Given
     IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
       .iuf(iuf)
+      .organizationId(1L)
       .transfers(List.of(PaymentsReportingTransferDTO.builder()
         .iur(iur)
         .iuv(iuv)

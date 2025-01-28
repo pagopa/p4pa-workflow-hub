@@ -39,10 +39,11 @@ class NotifyPaymentsReportingToIufClassificationActivityTest {
       .build();
     IufClassificationNotifyPaymentsReportingSignalDTO expectedSignalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
       .iuf(iuf)
+      .organizationId(1L)
       .transfers(List.of(paymentsReportingTransferDTO))
       .build();
     // When
-    notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(iuf, List.of(paymentsReportingTransferDTO));
+    notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(1L, iuf, List.of(paymentsReportingTransferDTO));
 
     // Then
     verify(iufClassificationWFClientMock).notifyPaymentsReporting(expectedSignalDTO);

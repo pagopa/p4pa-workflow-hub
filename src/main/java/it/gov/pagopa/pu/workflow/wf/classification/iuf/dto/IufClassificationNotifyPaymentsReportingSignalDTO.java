@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class IufClassificationNotifyPaymentsReportingSignalDTO {
   // common fields
+  private Long organizationId;
   private String iuf;
   // specific fields
   private List<PaymentsReportingTransferDTO> transfers;

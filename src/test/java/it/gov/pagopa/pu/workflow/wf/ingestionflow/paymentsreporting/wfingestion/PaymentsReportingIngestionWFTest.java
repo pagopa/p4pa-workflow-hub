@@ -95,7 +95,7 @@ class PaymentsReportingIngestionWFTest {
     Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, success);
     Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
-    Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock).signalIufClassificationWithStart("iuf-1", List.of(paymentsReportingTransferDTO));
+    Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock).signalIufClassificationWithStart(1L, "iuf-1", List.of(paymentsReportingTransferDTO));
   }
 
   @Test
