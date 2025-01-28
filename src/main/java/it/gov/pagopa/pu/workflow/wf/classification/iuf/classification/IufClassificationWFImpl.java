@@ -99,7 +99,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
       ).toList();
 
     toNotify.add(IufClassificationActivityResult.builder()
-      .organizationId(signalDTO.getTransfers().getFirst().getOrgId())
+      .organizationId(signalDTO.getOrganizationId())
       .success(true)
       .transfers2classify(transfer2ClassifyDTOList)
       .build());
