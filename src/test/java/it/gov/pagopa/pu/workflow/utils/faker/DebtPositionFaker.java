@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.utils.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionOriginRequest;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestStatus;
 
@@ -18,6 +19,7 @@ public class DebtPositionFaker {
       .iupdOrg("iupdOrg")
       .description("description")
       .status(DebtPositionDTO.StatusEnum.TO_SYNC)
+      .debtPositionOrigin(DebtPositionDTO.DebtPositionOriginEnum.ORDINARY)
       .ingestionFlowFileId(1L)
       .ingestionFlowFileLineNumber(1L)
       .organizationId(1L)
@@ -37,6 +39,7 @@ public class DebtPositionFaker {
       .iupdOrg("iupdOrg")
       .description("description")
       .status(DebtPositionRequestStatus.TO_SYNC)
+      .debtPositionOrigin(DebtPositionOriginRequest.ORDINARY)
       .ingestionFlowFileId(1L)
       .ingestionFlowFileLineNumber(1L)
       .organizationId(1L)

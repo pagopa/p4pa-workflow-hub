@@ -29,7 +29,7 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
   @Override
   public ResponseEntity<WorkflowCreatedDTO> alignDpSyncAca(DebtPositionRequestDTO debtPositionRequestDTO) {
     log.info("Starting workflow for align debt position sync on ACA with debtPositionId: {}", debtPositionRequestDTO.getDebtPositionId());
-    WorkflowCreatedDTO createDpSyncResponseDTO = service.createDPSyncAca(debtPositionRequestDTO);
+    WorkflowCreatedDTO createDpSyncResponseDTO = service.alignDpSyncAca(debtPositionRequestDTO);
     return new ResponseEntity<>(createDpSyncResponseDTO, HttpStatus.OK);
   }
 }

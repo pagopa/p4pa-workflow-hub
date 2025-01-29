@@ -7,5 +7,4 @@ public interface CreateDebtPositionWfClient {
 
   String createDPSync(DebtPositionDTO debtPositionDTO);
 
-  String createDPSyncAca(DebtPositionDTO debtPositionDTO);
 }

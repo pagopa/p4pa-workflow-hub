@@ -7,7 +7,7 @@ public class PersonFaker {
 
   public static PersonDTO buildPersonDTO() {
     return PersonDTO.builder()
-      .entityType("entityType")
+      .entityType(PersonDTO.EntityTypeEnum.F)
       .fiscalCode("fiscalCode")
       .fullName("fullName")
       .address("address")
@@ -22,7 +22,7 @@ public class PersonFaker {
 
   public static PersonRequestDTO buildPersonRequestDTO() {
     return PersonRequestDTO.builder()
-      .entityType("entityType")
+      .entityType(PersonRequestDTO.EntityTypeEnum.F)
       .fiscalCode("fiscalCode")
       .fullName("fullName")
       .address("address")

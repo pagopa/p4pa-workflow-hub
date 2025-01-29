@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -25,6 +26,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith({SpringExtension.class})
@@ -38,6 +41,7 @@ import static org.mockito.Mockito.*;
   "spring.temporal.workers[0].activity-beans[0]: updateIngestionFlowStatusActivityImpl",
   "spring.temporal.workers[0].activity-beans[1]: fileActivityMock",
   "spring.temporal.workers[0].activity-beans[2]: emailActivityMock",
+  "spring.cloud.stream.default-binder: kafka-payments-producer",
 
   "workflow.payments-reporting-ingestion.retry-maximum-attempts: 3",
   "workflow.payments-reporting-ingestion.retry-maximum-interval: 100",
@@ -77,6 +81,10 @@ class TemporalSpringBootIntegrationTest {
   void givenSuccessFulUseCaseWhenExecuteWfThenInvokeAllActivities() {
     PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
     result.setSuccess(true);
+    result.setIuf("iuf");
+    PaymentsReportingTransferDTO paymentsReportingTransferDTO = new PaymentsReportingTransferDTO();
+    paymentsReportingTransferDTO.setOrgId(1L);
+    result.setTransfers(List.of(paymentsReportingTransferDTO));
 
     when(fileActivityMock.processFile(anyLong())).thenReturn(result);
     doReturn(true).when(statusActivitySpy)
