@@ -59,7 +59,7 @@ spring:
           paymentsProducer-out-0:
             producer:
               configuration:
-                client.id: debt-positions
+                client.id: workflow-hub
                 connections.max.idle.ms: \${KAFKA_PAYMENTS_PRODUCER_CONNECTION_MAX_IDLE_TIME:180000}
                 retry.backoff.ms: \${KAFKA_PAYMENTS_PRODUCER_RETRY_MS:\${KAFKA_RETRY_MS:10000}}
                 linger.ms: \${KAFKA_PAYMENTS_PRODUCER_LINGER_MS:\${KAFKA_LINGER_MS:2}}
