@@ -38,6 +38,7 @@ import static org.mockito.Mockito.*;
   "spring.temporal.workers[0].activity-beans[0]: updateIngestionFlowStatusActivityImpl",
   "spring.temporal.workers[0].activity-beans[1]: fileActivityMock",
   "spring.temporal.workers[0].activity-beans[2]: emailActivityMock",
+  "spring.cloud.stream.default-binder: kafka-payments-producer",
 
   "workflow.payments-reporting-ingestion.retry-maximum-attempts: 3",
   "workflow.payments-reporting-ingestion.retry-maximum-interval: 100",

@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
@@ -59,7 +59,7 @@ class TreasuryOpiIngestionWFImplTest {
     boolean success = true;
 
     TreasuryIufResult treasuryIufResult = new TreasuryIufResult(
-      List.of("iuf-1"), List.of("treasuryid-1"), 1L, success, null, null);
+      Map.of("iuf-1", "iuf"), 1L, success, null, null);
 
     when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowId))
       .thenReturn(treasuryIufResult);
@@ -78,7 +78,7 @@ class TreasuryOpiIngestionWFImplTest {
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowId, success);
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
-    verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, treasuryIufResult.getIufs().getFirst(), treasuryId);
+    verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, "iuf", treasuryId);
   }
 
   @Test
@@ -88,7 +88,7 @@ class TreasuryOpiIngestionWFImplTest {
     boolean success = false;
 
     when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowFileId))
-      .thenReturn(new TreasuryIufResult(List.of(), List.of(), null, success, "error", "discardedFileName"));
+      .thenReturn(new TreasuryIufResult(Map.of(), null, success, "error", "discardedFileName"));
 
     // When
     wf.ingest(ingestionFlowFileId);

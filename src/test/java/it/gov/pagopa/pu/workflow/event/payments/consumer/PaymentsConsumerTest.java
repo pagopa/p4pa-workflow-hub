@@ -1,10 +1,9 @@
-package it.gov.pagopa.pu.workflow.event.consumer.payments;
+package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
-import it.gov.pagopa.pu.workflow.event.payments.consumer.PaymentsConsumer;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
 import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
@@ -44,7 +43,8 @@ class PaymentsConsumerTest {
     // Given
     PaymentEventDTO paymentEventDTO = new PaymentEventDTO(
       buildPaidDebtPosition(),
-      PaymentEventType.RT_RECEIVED
+      PaymentEventType.RT_RECEIVED,
+      ""
     );
 
     // When
@@ -64,7 +64,8 @@ class PaymentsConsumerTest {
     // Given
     PaymentEventDTO paymentEventDTO = new PaymentEventDTO(
       buildPaidDebtPosition(),
-      PaymentEventType.SYNC_ERROR
+      PaymentEventType.SYNC_ERROR,
+      ""
     );
 
     // When

@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.debtposition;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.SynchronizeSyncAcaWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.CreateDebtPositionWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.mapper.DebtPositionMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DebtPositionServiceTest {
 
   @Mock
-  private CreateDebtPositionWfClient clientMock;
+  private CreateDebtPositionWfClient createDebtPositionWfClientMock;
+  @Mock
+  private SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClientMock;
   @Mock
   private DebtPositionMapper debtPositionMapperMock;
 
@@ -31,13 +34,13 @@ class DebtPositionServiceTest {
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(clientMock, debtPositionMapperMock);
+    service = new DebtPositionServiceImpl(createDebtPositionWfClientMock, synchronizeSyncAcaWfClientMock, debtPositionMapperMock);
   }
 
   @Test
   void givenCreateDPSyncThenOk() {
     testWorkflowCreationDP(
-      debtPositionDTO -> clientMock.createDPSync(debtPositionDTO),
+      debtPositionDTO -> createDebtPositionWfClientMock.createDPSync(debtPositionDTO),
       debtPositionRequestDTO -> service.createDPSync(debtPositionRequestDTO)
     );
   }
@@ -45,8 +48,8 @@ class DebtPositionServiceTest {
   @Test
   void givenCreateDPSyncAcaThenOk() {
     testWorkflowCreationDP(
-      debtPositionDTO -> clientMock.createDPSyncAca(debtPositionDTO),
-      debtPositionRequestDTO -> service.createDPSyncAca(debtPositionRequestDTO)
+      debtPositionDTO -> synchronizeSyncAcaWfClientMock.synchronizeDPSyncAca(debtPositionDTO),
+      debtPositionRequestDTO -> service.alignDpSyncAca(debtPositionRequestDTO)
     );
   }
 

@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
-import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
@@ -77,8 +77,8 @@ class PaymentsReportingIngestionWFTest {
 
 
     PaymentsReportingIngestionFlowFileActivityResult result =
-      new PaymentsReportingIngestionFlowFileActivityResult(
-        List.of(new TransferSemanticKeyDTO(1L, "iuv-1", "iur-1", 1))
+      new PaymentsReportingIngestionFlowFileActivityResult("iuf",
+        List.of(new PaymentsReportingTransferDTO("paymentOutcomeCode"))
         , success, null);
 
     // TODO P4ADEV-1936 replace fake values with real ones
@@ -111,7 +111,7 @@ class PaymentsReportingIngestionWFTest {
     boolean success = false;
 
     Mockito.when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId))
-      .thenReturn(new PaymentsReportingIngestionFlowFileActivityResult(Collections.emptyList(), success, null));
+      .thenReturn(new PaymentsReportingIngestionFlowFileActivityResult("iuf", Collections.emptyList(), success, null));
 
     // When
     wf.ingest(ingestionFlowFileId);

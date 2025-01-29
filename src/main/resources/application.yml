@@ -36,7 +36,7 @@ spring:
                 sasl.jaas.config: \${KAFKA_PAYMENTS_SASL_JAAS_CONFIG:}
       bindings:
         paymentsProducer-out-0:
-          binder: kafka-payments
+          binder: kafka-payments-producer
           content-type: \${KAFKA_CONTENT_TYPE:application/json}
           destination: \${KAFKA_TOPIC_PAYMENTS:}
         paymentsConsumer-in-0:

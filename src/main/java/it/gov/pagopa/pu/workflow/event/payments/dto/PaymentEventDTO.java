@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class PaymentEventDTO {
   private DebtPositionDTO payload;
   private PaymentEventType eventType;
+  private String eventDescription;
 }

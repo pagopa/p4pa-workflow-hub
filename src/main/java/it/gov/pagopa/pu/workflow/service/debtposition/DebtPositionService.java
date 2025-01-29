@@ -7,5 +7,5 @@ public interface DebtPositionService {
 
   WorkflowCreatedDTO createDPSync(DebtPositionRequestDTO debtPosition);
 
-  WorkflowCreatedDTO createDPSyncAca(DebtPositionRequestDTO debtPosition);
+  WorkflowCreatedDTO alignDpSyncAca(DebtPositionRequestDTO debtPosition);
 }

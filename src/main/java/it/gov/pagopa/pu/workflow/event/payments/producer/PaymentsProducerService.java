@@ -32,9 +32,9 @@ public class PaymentsProducerService {
     }
     */
 
-    public void notifyPaymentsEvent(DebtPositionDTO debtPosition, PaymentEventType event){
+    public void notifyPaymentsEvent(DebtPositionDTO debtPosition, PaymentEventType event, String eventDescription){
         streamBridge.send("paymentsProducer-out-0", binder,
-          MessageBuilder.withPayload(new PaymentEventDTO(debtPosition, event))
+          MessageBuilder.withPayload(new PaymentEventDTO(debtPosition, event, eventDescription))
             .setHeader(KafkaHeaders.KEY, String.valueOf(debtPosition.getOrganizationId()))
             .build()
         );

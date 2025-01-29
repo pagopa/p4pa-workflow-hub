@@ -1,9 +1,11 @@
 package it.gov.pagopa.pu.workflow.utils.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.InstallmentRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.InstallmentRequestStatus;
+import it.gov.pagopa.pu.workflow.dto.generated.InstallmentSyncStatusRequest;
 import it.gov.pagopa.pu.workflow.dto.generated.TransferRequestDTO;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class InstallmentFaker {
       .installmentId(1L)
       .paymentOptionId(1L)
       .status(InstallmentDTO.StatusEnum.TO_SYNC)
+      .syncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentSyncStatus.SyncStatusFromEnum.TO_SYNC).syncStatusTo(InstallmentSyncStatus.SyncStatusToEnum.UNPAID).build())
       .iud("iud")
       .iuv("iuv")
       .iur("iur")
@@ -52,6 +55,7 @@ public class InstallmentFaker {
       .installmentId(1L)
       .paymentOptionId(1L)
       .status(InstallmentRequestStatus.TO_SYNC)
+      .syncStatus(InstallmentSyncStatusRequest.builder().syncStatusFrom(InstallmentRequestStatus.TO_SYNC).syncStatusTo(InstallmentRequestStatus.UNPAID).build())
       .iud("iud")
       .iuv("iuv")
       .iur("iur")

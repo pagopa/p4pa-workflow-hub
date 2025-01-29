@@ -32,15 +32,4 @@ public class CreateDebtPositionWfClientImpl implements CreateDebtPositionWfClien
     WorkflowClient.start(workflow::createDPSync, debtPosition);
     return workflowId;
   }
-
-  @Override
-  public String createDPSyncAca(DebtPositionDTO debtPosition) {
-    log.info("Starting sync ACA debt position creation WF: {}", debtPosition.getDebtPositionId());
-    String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), SynchronizeSyncAcaWFImpl.TASK_QUEUE);
-    SynchronizeSyncAcaWF workflow = workflowService.buildWorkflowStub(
-      SynchronizeSyncAcaWF.class,
-      SynchronizeSyncAcaWFImpl.TASK_QUEUE,
-      workflowId);
-    WorkflowClient.start(workflow::synchronizeDPSyncAca, debtPosition);
-    return workflowId;  }
 }

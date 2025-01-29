@@ -44,7 +44,7 @@ class DebtPositionControllerTest {
   @Test
   void whenCreateDpSyncAcaThenOk() throws Exception {
     testWorkflowCreationDP("/workflowhub/workflow/debt-position/aca",
-      debtPositionRequestDTO -> service.createDPSyncAca(debtPositionRequestDTO));
+      debtPositionRequestDTO -> service.alignDpSyncAca(debtPositionRequestDTO));
   }
 
   private void testWorkflowCreationDP(String endpoint, Function<DebtPositionRequestDTO, WorkflowCreatedDTO> service) throws Exception {

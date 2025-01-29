@@ -1,13 +1,13 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.wfsyncstandin;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.aca.AcaStandInCreateDebtPositionActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.aca.SynchronizeInstallmentAcaActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.config.CreateDebtPositionWfConfig;
+import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
+import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
+import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.config.SynchronizeDebtPositionWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,82 +20,98 @@ import org.springframework.context.ApplicationContext;
 import java.util.Map;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeSyncAcaWFTest {
 
   @Mock
-  private AcaStandInCreateDebtPositionActivity acaStandInCreateDebtPositionActivityMock;
+  private SynchronizeInstallmentAcaActivity synchronizeInstallmentAcaActivityMock;
   @Mock
   private FinalizeDebtPositionSyncStatusActivity finalizeDebtPositionSyncStatusActivityMock;
   @Mock
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivityMock;
+  @Mock
+  private PaymentsProducerService paymentsProducerServiceMock;
 
   private SynchronizeSyncAcaWFImpl wf;
 
   @BeforeEach
   void init() {
-    CreateDebtPositionWfConfig createDebtPositionWfConfigMock = Mockito.mock(CreateDebtPositionWfConfig.class);
+    SynchronizeDebtPositionWfConfig createDebtPositionWfConfigMock = Mockito.mock(SynchronizeDebtPositionWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
-    Mockito.when(createDebtPositionWfConfigMock.buildAcaStandInCreateDebtPositionActivityStub())
-      .thenReturn(acaStandInCreateDebtPositionActivityMock);
+    Mockito.when(createDebtPositionWfConfigMock.buildSynchronizeInstallmentAcaActivity())
+      .thenReturn(synchronizeInstallmentAcaActivityMock);
     Mockito.when(createDebtPositionWfConfigMock.buildFinalizeDebtPositionSyncStatusActivityStub())
       .thenReturn(finalizeDebtPositionSyncStatusActivityMock);
     Mockito.when(createDebtPositionWfConfigMock.buildSendDebtPositionIONotificationActivityStub())
       .thenReturn(sendDebtPositionIONotificationActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(CreateDebtPositionWfConfig.class))
+    Mockito.when(applicationContextMock.getBean(SynchronizeDebtPositionWfConfig.class))
       .thenReturn(createDebtPositionWfConfigMock);
 
-    wf = new SynchronizeSyncAcaWFImpl();
+    wf = new SynchronizeSyncAcaWFImpl(paymentsProducerServiceMock);
     wf.setApplicationContext(applicationContextMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      acaStandInCreateDebtPositionActivityMock,
+      synchronizeInstallmentAcaActivityMock,
       finalizeDebtPositionSyncStatusActivityMock,
       sendDebtPositionIONotificationActivityMock);
   }
 
   @Test
-  void givenSynchronizeDPSyncAcaThenOk(){
+  void givenSynchronizeDPSyncAcaThenOk() {
     // Given
     Long id = 1L;
-    IupdSyncStatusUpdateDTO.NewStatusEnum newStatus = IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID;
-    String iupdPagoPa = "iupdPagoPa";
+    String iud = "iud";
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
-    IupdSyncStatusUpdateDTO iupdSyncStatusUpdateDTO = IupdSyncStatusUpdateDTO.builder()
-      .newStatus(newStatus)
-      .iupdPagopa(iupdPagoPa)
-      .build();
-    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = Map.of("iud", iupdSyncStatusUpdateDTO);
 
-    Mockito.when(acaStandInCreateDebtPositionActivityMock.createAcaDebtPosition(debtPosition))
-      .thenReturn(syncStatusDTO);
-
-    debtPosition.setStatus(DebtPositionDTO.StatusEnum.UNPAID);
-    debtPosition.getPaymentOptions().getFirst().setStatus(PaymentOptionDTO.StatusEnum.UNPAID);
-    debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst().setStatus(InstallmentDTO.StatusEnum.UNPAID);
+    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = buildSyncStatusUpdateMap(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID);
 
     Mockito.when(finalizeDebtPositionSyncStatusActivityMock.finalizeDebtPositionSyncStatus(id, syncStatusDTO))
       .thenReturn(debtPosition);
-
-    Mockito.doNothing().when(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
 
     // When
     wf.synchronizeDPSyncAca(debtPosition);
 
     // Then
-    assertEquals(DebtPositionDTO.StatusEnum.UNPAID, debtPosition.getStatus());
-    assertEquals(PaymentOptionDTO.StatusEnum.UNPAID, debtPosition.getPaymentOptions().getFirst().getStatus());
-    assertEquals(InstallmentDTO.StatusEnum.UNPAID, debtPosition.getPaymentOptions().getFirst().getInstallments().getFirst().getStatus());
-
-    Mockito.verify(acaStandInCreateDebtPositionActivityMock).createAcaDebtPosition(debtPosition);
+    Mockito.verify(synchronizeInstallmentAcaActivityMock).synchronizeInstallmentAca(debtPosition, iud);
     Mockito.verify(finalizeDebtPositionSyncStatusActivityMock).finalizeDebtPositionSyncStatus(id, syncStatusDTO);
     Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
+  }
+
+  @Test
+  void givenSynchronizeDPSyncAcaWhenExceptionThenPublishMessageToQueue() {
+    // Given
+    Long id = 1L;
+    String iud = "iud";
+    DebtPositionDTO debtPosition = buildDebtPositionDTO();
+
+    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = buildSyncStatusUpdateMap(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC);
+
+    Mockito.doThrow(new IllegalArgumentException("Error"))
+      .when(synchronizeInstallmentAcaActivityMock).synchronizeInstallmentAca(debtPosition, iud);
+
+    Mockito.when(finalizeDebtPositionSyncStatusActivityMock.finalizeDebtPositionSyncStatus(id, syncStatusDTO))
+      .thenReturn(debtPosition);
+
+    // When
+    wf.synchronizeDPSyncAca(debtPosition);
+
+    // Then
+    Mockito.verify(synchronizeInstallmentAcaActivityMock).synchronizeInstallmentAca(debtPosition, iud);
+    Mockito.verify(paymentsProducerServiceMock).notifyPaymentsEvent(debtPosition, PaymentEventType.SYNC_ERROR, "Error");
+    Mockito.verify(finalizeDebtPositionSyncStatusActivityMock).finalizeDebtPositionSyncStatus(id, syncStatusDTO);
+    Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
+  }
+
+  private Map<String, IupdSyncStatusUpdateDTO> buildSyncStatusUpdateMap(IupdSyncStatusUpdateDTO.NewStatusEnum newStatus) {
+    return Map.of("iud", IupdSyncStatusUpdateDTO.builder()
+      .newStatus(newStatus)
+      .iupdPagopa(null)
+      .build());
   }
 }
