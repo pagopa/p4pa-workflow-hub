@@ -4,7 +4,6 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
-import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
@@ -75,21 +74,16 @@ class PaymentsReportingIngestionWFTest {
     long ingestionFlowFileId = 1L;
     boolean success = true;
 
-
+    PaymentsReportingTransferDTO paymentsReportingTransferDTO = PaymentsReportingTransferDTO.builder()
+      .iur("iur-1")
+      .iuv("iuv-1")
+      .transferIndex(1)
+      .orgId(1L)
+      .paymentOutcomeCode("CODICEESITO")
+      .build();
     PaymentsReportingIngestionFlowFileActivityResult result =
-      new PaymentsReportingIngestionFlowFileActivityResult("iuf",
-        List.of(new PaymentsReportingTransferDTO("paymentOutcomeCode"))
-        , success, null);
-
-    // TODO P4ADEV-1936 replace fake values with real ones
-    // result.getOrganizationId()
-    // result.getOutcomeCode()
-    // result.getTransfers2classify()
-
-    Long organizationId = 1L;
-    String outcomeCode = "CODICEESITO";
-    List<Transfer2ClassifyDTO> transfers2classify = null;
-      //Collections.singletonList(new Transfer2ClassifyDTO());
+      new PaymentsReportingIngestionFlowFileActivityResult("iuf-1",
+        List.of(paymentsReportingTransferDTO), success, null);
 
     when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId))
       .thenReturn(result);
@@ -101,7 +95,7 @@ class PaymentsReportingIngestionWFTest {
     Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, success);
     Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
-    Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, "iuf-1", outcomeCode, transfers2classify);
+    Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock).signalIufClassificationWithStart(1L, "iuf-1", List.of(paymentsReportingTransferDTO));
   }
 
   @Test
@@ -111,7 +105,7 @@ class PaymentsReportingIngestionWFTest {
     boolean success = false;
 
     Mockito.when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId))
-      .thenReturn(new PaymentsReportingIngestionFlowFileActivityResult("iuf", Collections.emptyList(), success, null));
+      .thenReturn(new PaymentsReportingIngestionFlowFileActivityResult(null, Collections.emptyList(), success, null));
 
     // When
     wf.ingest(ingestionFlowFileId);

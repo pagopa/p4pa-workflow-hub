@@ -54,15 +54,11 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, ingestionResult.isSuccess());
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? IngestionFlowFile.StatusEnum.COMPLETED : IngestionFlowFile.StatusEnum.ERROR, ingestionResult.getErrorDescription(), null);
 
-    // TODO P4ADEV-1940 replace fake values in the following call
-
     if(ingestionResult.isSuccess()) {
-      notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
-        1L, // organizationId
-        "iuf-1", //IUF
-        "CODICEESITO", // codiceEsito
-        null // List< Transfer2ClassifyDTO > transfers2classify
-      );
+        notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
+          ingestionResult.getTransfers().getFirst().getOrgId(),
+          ingestionResult.getIuf(),
+          ingestionResult.getTransfers());
     }
 
     log.info("Ingestion completed for file with ID {}", ingestionFlowFileId);

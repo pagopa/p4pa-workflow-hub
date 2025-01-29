@@ -57,19 +57,16 @@ class TreasuryOpiIngestionWFImplTest {
     // Given
     long ingestionFlowId = 1L;
     boolean success = true;
+    Long organizationId = 1L;
+    String treasuryId = "treasuryid-1";
+    String iuf = "iuf-1";
 
+    Map<String, String> iufTreasuryIdMap = Map.of(iuf, treasuryId);
     TreasuryIufResult treasuryIufResult = new TreasuryIufResult(
-      Map.of("iuf-1", "iuf"), 1L, success, null, null);
+      iufTreasuryIdMap, organizationId, success, null, null);
 
     when(treasuryOpiIngestionActivityMock.processFile(ingestionFlowId))
       .thenReturn(treasuryIufResult);
-
-    // TODO P4ADEV-1936 replace fake values with real ones
-    // treasuryIufResult.getTreasuryId()
-    // treasuryIufResult.getOrganizationId()
-
-    String treasuryId = "123A";
-    Long organizationId = 1L;
 
     // When
     wf.ingest(ingestionFlowId);
@@ -78,7 +75,7 @@ class TreasuryOpiIngestionWFImplTest {
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowId, success);
     verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
-    verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, "iuf", treasuryId);
+    verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, iuf, treasuryId);
   }
 
   @Test
