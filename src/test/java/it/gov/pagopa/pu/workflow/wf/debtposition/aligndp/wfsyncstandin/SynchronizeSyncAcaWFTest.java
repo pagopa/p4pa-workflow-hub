@@ -17,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
@@ -69,7 +70,10 @@ class SynchronizeSyncAcaWFTest {
     String iud = "iud";
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
 
-    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = buildSyncStatusUpdateMap(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID);
+    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = Map.of("iud", IupdSyncStatusUpdateDTO.builder()
+      .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID)
+      .iupdPagopa(null)
+      .build());
 
     Mockito.when(finalizeDebtPositionSyncStatusActivityMock.finalizeDebtPositionSyncStatus(id, syncStatusDTO))
       .thenReturn(debtPosition);
@@ -90,7 +94,7 @@ class SynchronizeSyncAcaWFTest {
     String iud = "iud";
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
 
-    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = buildSyncStatusUpdateMap(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC);
+    Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = new HashMap<>();
 
     Mockito.doThrow(new IllegalArgumentException("Error"))
       .when(synchronizeInstallmentAcaActivityMock).synchronizeInstallmentAca(debtPosition, iud);
@@ -106,12 +110,5 @@ class SynchronizeSyncAcaWFTest {
     Mockito.verify(paymentsProducerServiceMock).notifyPaymentsEvent(debtPosition, PaymentEventType.SYNC_ERROR, "Error");
     Mockito.verify(finalizeDebtPositionSyncStatusActivityMock).finalizeDebtPositionSyncStatus(id, syncStatusDTO);
     Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
-  }
-
-  private Map<String, IupdSyncStatusUpdateDTO> buildSyncStatusUpdateMap(IupdSyncStatusUpdateDTO.NewStatusEnum newStatus) {
-    return Map.of("iud", IupdSyncStatusUpdateDTO.builder()
-      .newStatus(newStatus)
-      .iupdPagopa(null)
-      .build());
   }
 }

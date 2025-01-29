@@ -8,7 +8,6 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.config.SynchronizeDebtPositionWfConfig;
@@ -96,8 +95,6 @@ public class SynchronizeSyncAcaWFImpl implements SynchronizeSyncAcaWF, Applicati
         PaymentEventType.SYNC_ERROR,
         e.getMessage()
       );
-
-      updateSyncStatusMap(IupdSyncStatusUpdateDTO.NewStatusEnum.TO_SYNC, syncStatusMap, iud);
     }
   }
 
