@@ -106,7 +106,7 @@ class PaymentsConsumerTest {
       TransferDTO.builder()
         .orgFiscalCode("FC_ORG1")
         .orgName("ORG1")
-        .transferIndex(1L)
+        .transferIndex(1)
         .amountCents(10_00L)
         .remittanceInformation("REMITTANCE_" + iuv)
         .category("CATEGORY")

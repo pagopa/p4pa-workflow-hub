@@ -16,6 +16,7 @@ import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -27,6 +28,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -49,6 +51,13 @@ import static org.mockito.Mockito.*;
   "workflow.payments-reporting-ingestion.start-to-close-timeout-in-seconds: 100"
 })
 class TemporalSpringBootIntegrationTest {
+
+  private final Set<WorkflowExecutionStatus> wfTerminationStatuses = Set.of(
+    WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
+    WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_FAILED,
+    WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_TERMINATED,
+    WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_CANCELED
+  );
 
   @Autowired
   private WorkflowClient temporalClient;
@@ -80,10 +89,9 @@ class TemporalSpringBootIntegrationTest {
   @Test
   void givenSuccessFulUseCaseWhenExecuteWfThenInvokeAllActivities() {
     PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
-    result.setSuccess(true);
     result.setIuf("iuf");
+    result.setOrganizationId(1L);
     PaymentsReportingTransferDTO paymentsReportingTransferDTO = new PaymentsReportingTransferDTO();
-    paymentsReportingTransferDTO.setOrgId(1L);
     result.setTransfers(List.of(paymentsReportingTransferDTO));
 
     when(fileActivityMock.processFile(anyLong())).thenReturn(result);
@@ -149,7 +157,9 @@ class TemporalSpringBootIntegrationTest {
     WorkflowExecutionInfo info;
     do {
       info = WorkflowClientHelper.describeWorkflowInstance(temporalClient.getWorkflowServiceStubs(), "default", WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), new NoopScope());
-    } while (!status.equals(info.getStatus()));
+    } while (!wfTerminationStatuses.contains(info.getStatus()));
+
+    Assertions.assertEquals(status, info.getStatus());
   }
 }
 

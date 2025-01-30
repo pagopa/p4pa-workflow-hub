@@ -47,20 +47,35 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
 
   @Override
   public void ingest(Long ingestionFlowFileId) {
-    log.info("Handling IngestingFlowFileId {}", ingestionFlowFileId);
+    log.info("Handling PaymentsReporting IngestingFlowFileId {}", ingestionFlowFileId);
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
-    PaymentsReportingIngestionFlowFileActivityResult ingestionResult = paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, ingestionResult.isSuccess());
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, ingestionResult.isSuccess() ? IngestionFlowFile.StatusEnum.COMPLETED : IngestionFlowFile.StatusEnum.ERROR, ingestionResult.getErrorDescription(), null);
+    String errorDescription = processFile(ingestionFlowFileId);
 
-    if(ingestionResult.isSuccess()) {
-        notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
-          ingestionResult.getTransfers().getFirst().getOrgId(),
-          ingestionResult.getIuf(),
-          ingestionResult.getTransfers());
+    boolean success = errorDescription==null;
+    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
+      success
+        ? IngestionFlowFile.StatusEnum.COMPLETED
+        : IngestionFlowFile.StatusEnum.ERROR,
+      errorDescription,
+      null);
+
+    log.info("PaymentsReporting Ingestion completed for file with ID {}", ingestionFlowFileId);
+  }
+
+  private String processFile(Long ingestionFlowFileId) {
+    try{
+      PaymentsReportingIngestionFlowFileActivityResult ingestionResult = paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
+
+      notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
+        ingestionResult.getOrganizationId(),
+        ingestionResult.getIuf(),
+        ingestionResult.getTransfers());
+
+      return null;
+    } catch (Exception e) {
+      return e.getMessage();
     }
-
-    log.info("Ingestion completed for file with ID {}", ingestionFlowFileId);
   }
 }

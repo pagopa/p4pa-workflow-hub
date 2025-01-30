@@ -93,7 +93,6 @@ class IufClassificationWFTest {
     Mockito.when(iufClassificationActivityMock.classify(1L, treasuryId, iuf)).thenReturn(
       IufClassificationActivityResult.builder()
         .organizationId(1L)
-        .success(true)
         .transfers2classify(Collections.singletonList(
           Transfer2ClassifyDTO.builder().iur(iur).iuv(iuv).transferIndex(1).build())
         )
