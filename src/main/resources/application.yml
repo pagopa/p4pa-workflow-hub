@@ -18,6 +18,7 @@ spring:
     function:
       definition: paymentsConsumer;paymentsProducer
     stream:
+      default-binder: kafka-payments-consumer
       binders:
         kafka-payments-producer:
           type: kafka
