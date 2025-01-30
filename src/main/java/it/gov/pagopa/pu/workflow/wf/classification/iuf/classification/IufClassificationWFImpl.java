@@ -100,7 +100,6 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
     toNotify.add(IufClassificationActivityResult.builder()
       .organizationId(signalDTO.getOrganizationId())
-      .success(true)
       .transfers2classify(transfer2ClassifyDTOList)
       .build());
   }

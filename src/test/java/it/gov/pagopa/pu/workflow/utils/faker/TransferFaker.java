@@ -19,7 +19,7 @@ public class TransferFaker {
           .iban("iban")
           .postalIban("postalIban")
           .category("category")
-          .transferIndex(1L)
+          .transferIndex(1)
           .build();
     }
 
@@ -37,7 +37,7 @@ public class TransferFaker {
       .iban("iban")
       .postalIban("postalIban")
       .category("category")
-      .transferIndex(1L)
+      .transferIndex(1)
       .build();
   }
 }
