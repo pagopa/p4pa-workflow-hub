@@ -7,7 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.treasury.TreasuryOpiIngestionAct
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivityImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWFImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,7 +29,7 @@ public class TreasuryOpiIngestionWfConfig extends BaseWfConfig {
 
   public NotifyTreasuryToIufClassificationActivity buildNotifyTreasuryToIufClassificationActivityStub() {
     return Workflow.newActivityStub(NotifyTreasuryToIufClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-      NotifyTreasuryToIufClassificationActivityImpl.TASK_QUEUE_NOTIFY_TREASURY_TO_IUF_CLASSIFICATION_ACTIVITY,
+      TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_LOCAL_ACTIVITY,
       this));
   }
 }

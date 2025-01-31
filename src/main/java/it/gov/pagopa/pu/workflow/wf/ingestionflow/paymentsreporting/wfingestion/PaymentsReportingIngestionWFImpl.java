@@ -15,14 +15,11 @@ import org.springframework.context.ApplicationContextAware;
 
 import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF;
 
-/**
- * Workflow implementation for the Payments Reporting Ingestion Workflow
- */
-
 @Slf4j
 @WorkflowImpl(taskQueues = TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF)
 public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngestionWF, ApplicationContextAware {
   public static final String TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF = "PaymentsReportingIngestionWF";
+  public static final String TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_LOCAL_ACTIVITY = "PaymentsReportingIngestionWF_LOCAL";
 
   private PaymentsReportingIngestionFlowFileActivity paymentsReportingIngestionFlowFileActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;

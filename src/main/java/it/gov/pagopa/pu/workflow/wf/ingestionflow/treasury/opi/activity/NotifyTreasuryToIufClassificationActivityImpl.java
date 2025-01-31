@@ -3,14 +3,14 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity;
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = NotifyTreasuryToIufClassificationActivityImpl.TASK_QUEUE_NOTIFY_TREASURY_TO_IUF_CLASSIFICATION_ACTIVITY)
+@ActivityImpl(taskQueues = TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_LOCAL_ACTIVITY)
 public class NotifyTreasuryToIufClassificationActivityImpl implements NotifyTreasuryToIufClassificationActivity {
-  public static final String TASK_QUEUE_NOTIFY_TREASURY_TO_IUF_CLASSIFICATION_ACTIVITY = "NOTIFY_TREASURY_TO_IUF_CLASSIFICATION";
 
   private final IufClassificationWFClient iufClassificationWFClient;
 

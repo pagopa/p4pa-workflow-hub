@@ -19,20 +19,18 @@ import java.util.List;
 
 import static it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF;
 
-/**
- * Implementation of the IufClassificationWF interface
- */
 @Slf4j
 @WorkflowImpl(taskQueues = TASK_QUEUE_IUF_CLASSIFICATION_WF)
 public class IufClassificationWFImpl implements IufClassificationWF, ApplicationContextAware {
   public static final String TASK_QUEUE_IUF_CLASSIFICATION_WF = "IufClassificationWF";
+  public static final String TASK_QUEUE_IUF_CLASSIFICATION_LOCAL_ACTIVITY = "IufClassificationWF_LOCAL";
 
   private ClearClassifyIufActivity clearClassifyIufActivity;
   private IufClassificationActivity iufClassificationActivity;
 
   private StartTransferClassificationActivity startTransferClassificationActivity;
 
-  List<IufClassificationActivityResult> toNotify = new ArrayList<>();
+  private final List<IufClassificationActivityResult> toNotify = new ArrayList<>();
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid
