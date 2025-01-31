@@ -1,22 +1,22 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync;
+package it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.config.CreateDebtPositionWfConfig;
+import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.config.HandleDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import static it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync.CreateDebtPositionSyncWFImpl.TASK_QUEUE;
+import static it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync.HandleDebtPositionSyncWFImpl.TASK_QUEUE;
 
 
 @Slf4j
 @WorkflowImpl(taskQueues = TASK_QUEUE)
-public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, ApplicationContextAware {
+public class HandleDebtPositionSyncWFImpl implements HandleDebtPositionSyncWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE = "CreateDebtPositionSyncWF";
+  public static final String TASK_QUEUE = "HandleDebtPositionSyncWF";
 
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
 
@@ -28,13 +28,13 @@ public class CreateDebtPositionSyncWFImpl implements CreateDebtPositionSyncWF, A
    */
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    CreateDebtPositionWfConfig wfConfig = applicationContext.getBean(CreateDebtPositionWfConfig.class);
+    HandleDebtPositionWfConfig wfConfig = applicationContext.getBean(HandleDebtPositionWfConfig.class);
     sendDebtPositionIONotificationActivity = wfConfig.buildSendDebtPositionIONotificationActivityStub();
   }
 
   @Override
-  public void createDPSync(DebtPositionDTO debtPosition) {
-    log.info("Starting workflow for creating DebtPosition with ID: {}", debtPosition.getDebtPositionId());
+  public void handleDPSync(DebtPositionDTO debtPosition) {
+    log.info("Starting workflow to handle DebtPosition with ID: {}", debtPosition.getDebtPositionId());
     sendDebtPositionIONotificationActivity.sendMessage(debtPosition);
     log.info("Message sent to IO for organizationId {} and debtPositionTypeOrgId {}", debtPosition.getOrganizationId(), debtPosition.getDebtPositionTypeOrgId());
   }

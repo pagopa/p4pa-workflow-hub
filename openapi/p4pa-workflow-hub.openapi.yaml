@@ -6,12 +6,12 @@ info:
 servers:
   - url: "http://localhost:8080/workflowhub"
 paths:
-  /workflow/debt-position:
+  /workflow/debt-position/sync:
     post:
       tags:
         - DebtPosition
-      operationId: createDpSync
-      description: Create a debt position sync.
+      operationId: handleDpSync
+      description: Handle a debt position sync.
       requestBody:
         required: true
         content:
@@ -37,6 +37,81 @@ paths:
         - DebtPosition
       operationId: alignDpSyncAca
       description: Align a debt position sync in Aca.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebtPositionRequestDTO'
+      responses:
+        '200':
+          description: "Debt position Aca aligned"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/debt-position/gpd-preload:
+    post:
+      tags:
+        - DebtPosition
+      operationId: alignDpSyncGpdPreload
+      description: Align a debt position sync using GPD preload.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebtPositionRequestDTO'
+      responses:
+        '200':
+          description: "Debt position Aca aligned"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/debt-position/aca_gpd-preload:
+    post:
+      tags:
+        - DebtPosition
+      operationId: alignDpSyncAcaGpdPreload
+      description: Align a debt position sync in Aca and GPD preload.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebtPositionRequestDTO'
+      responses:
+        '200':
+          description: "Debt position Aca aligned"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/debt-position/gpd:
+    post:
+      tags:
+        - DebtPosition
+      operationId: alignDpGPD
+      description: Align a debt position sync in GPD.
       requestBody:
         required: true
         content:

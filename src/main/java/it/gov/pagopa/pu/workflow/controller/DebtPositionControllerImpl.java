@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.controller.debtposition;
+package it.gov.pagopa.pu.workflow.controller;
 
 import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
@@ -20,9 +20,9 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> createDpSync(DebtPositionRequestDTO debtPositionRequestDTO) {
-    log.info("Starting workflow for creation debt position sync with debtPositionId: {}", debtPositionRequestDTO.getDebtPositionId());
-    WorkflowCreatedDTO createDpSyncResponseDTO = service.createDPSync(debtPositionRequestDTO);
+  public ResponseEntity<WorkflowCreatedDTO> handleDpSync(DebtPositionRequestDTO debtPositionRequestDTO) {
+    log.info("Starting workflow to handling debt position sync with debtPositionId: {}", debtPositionRequestDTO.getDebtPositionId());
+    WorkflowCreatedDTO createDpSyncResponseDTO = service.handleDPSync(debtPositionRequestDTO);
     return new ResponseEntity<>(createDpSyncResponseDTO, HttpStatus.OK);
   }
 

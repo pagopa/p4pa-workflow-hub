@@ -1,7 +1,6 @@
-package it.gov.pagopa.pu.workflow.controller.debtPosition;
+package it.gov.pagopa.pu.workflow.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.pu.workflow.controller.debtposition.DebtPositionControllerImpl;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
@@ -37,8 +36,8 @@ class DebtPositionControllerTest {
 
   @Test
   void whenCreateDpSyncThenOk() throws Exception {
-    testWorkflowCreationDP("/workflowhub/workflow/debt-position",
-      debtPositionRequestDTO -> service.createDPSync(debtPositionRequestDTO));
+    testWorkflowCreationDP("/workflowhub/workflow/debt-position/sync",
+      debtPositionRequestDTO -> service.handleDPSync(debtPositionRequestDTO));
   }
 
   @Test

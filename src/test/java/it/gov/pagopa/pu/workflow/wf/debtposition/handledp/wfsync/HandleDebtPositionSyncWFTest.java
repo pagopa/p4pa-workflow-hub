@@ -1,8 +1,8 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.wfsync;
+package it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.config.CreateDebtPositionWfConfig;
+import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.config.HandleDebtPositionWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,25 +15,25 @@ import org.springframework.context.ApplicationContext;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
-class CreateDebtPositionSyncWFTest {
+class HandleDebtPositionSyncWFTest {
 
   @Mock
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivityMock;
 
-  private CreateDebtPositionSyncWFImpl wf;
+  private HandleDebtPositionSyncWFImpl wf;
 
   @BeforeEach
   void init() {
-    CreateDebtPositionWfConfig createDebtPositionWfConfigMock = Mockito.mock(CreateDebtPositionWfConfig.class);
+    HandleDebtPositionWfConfig handleDebtPositionWfConfigMock = Mockito.mock(HandleDebtPositionWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
-    Mockito.when(createDebtPositionWfConfigMock.buildSendDebtPositionIONotificationActivityStub())
+    Mockito.when(handleDebtPositionWfConfigMock.buildSendDebtPositionIONotificationActivityStub())
       .thenReturn(sendDebtPositionIONotificationActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(CreateDebtPositionWfConfig.class))
-      .thenReturn(createDebtPositionWfConfigMock);
+    Mockito.when(applicationContextMock.getBean(HandleDebtPositionWfConfig.class))
+      .thenReturn(handleDebtPositionWfConfigMock);
 
-    wf = new CreateDebtPositionSyncWFImpl();
+    wf = new HandleDebtPositionSyncWFImpl();
     wf.setApplicationContext(applicationContextMock);
   }
 
@@ -43,7 +43,7 @@ class CreateDebtPositionSyncWFTest {
   }
 
   @Test
-  void givenCreateDPSyncThenSuccess() {
+  void givenHandleDPSyncThenSuccess() {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
 
@@ -51,7 +51,7 @@ class CreateDebtPositionSyncWFTest {
       .sendMessage(debtPosition);
 
     // When
-    wf.createDPSync(debtPosition);
+    wf.handleDPSync(debtPosition);
 
     // Then
     Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
