@@ -16,12 +16,11 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.Collections;
 
-import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE;
-
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE)
+@WorkflowImpl(taskQueues = TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF)
 public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, ApplicationContextAware {
-  public static final String TASK_QUEUE = "TreasuryOpiIngestionWF";
+  public static final String TASK_QUEUE_TREASURY_OPI_INGESTION_WF = "TreasuryOpiIngestionWF";
+  public static final String TASK_QUEUE_TREASURY_OPI_INGESTION_LOCAL_ACTIVITY = "TreasuryOpiIngestionWF_LOCAL";
 
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;

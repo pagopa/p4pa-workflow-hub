@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReport
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,7 +28,10 @@ public class PaymentsReportingIngestionWfConfig extends BaseWfConfig {
   }
 
   public NotifyPaymentsReportingToIufClassificationActivity buildNotifyPaymentsReportingToIufClassificationActivityStub() {
-    return Workflow.newActivityStub(NotifyPaymentsReportingToIufClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+    return Workflow.newActivityStub(NotifyPaymentsReportingToIufClassificationActivity.class,
+      TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+        PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_LOCAL_ACTIVITY,
+        this));
   }
 
 }

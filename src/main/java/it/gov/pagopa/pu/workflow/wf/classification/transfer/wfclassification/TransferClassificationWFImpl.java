@@ -12,16 +12,14 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.*;
 
-import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE;
-
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE)
+@WorkflowImpl(taskQueues = TransferClassificationWFImpl.TASK_QUEUE_TRANSFER_CLASSIFICATION_WF)
 public class TransferClassificationWFImpl implements TransferClassificationWF, ApplicationContextAware {
-  public static final String TASK_QUEUE = "TransferClassificationWF";
+  public static final String TASK_QUEUE_TRANSFER_CLASSIFICATION_WF = "TransferClassificationWF";
 
   private TransferClassificationActivity transferClassificationActivity;
 
-  private List<TransferSemanticKeyDTO> toClassify = new ArrayList<>();
+  private final List<TransferSemanticKeyDTO> toClassify = new ArrayList<>();
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />

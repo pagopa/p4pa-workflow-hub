@@ -9,14 +9,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import static it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync.HandleDebtPositionSyncWFImpl.TASK_QUEUE;
+import static it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync.HandleDebtPositionSyncWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF;
 
 
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE)
+@WorkflowImpl(taskQueues = TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF)
 public class HandleDebtPositionSyncWFImpl implements HandleDebtPositionSyncWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE = "HandleDebtPositionSyncWF";
+  public static final String TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF = "HandleDebtPositionSyncWF";
 
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
 

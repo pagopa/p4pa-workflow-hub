@@ -20,14 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync.HandleDebtPositionSyncWFImpl.TASK_QUEUE;
-
+import static it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.wfsyncstandin.SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE)
+@WorkflowImpl(taskQueues = TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF)
 public class SynchronizeSyncAcaWFImpl implements SynchronizeSyncAcaWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE = "SynchronizeSyncAcaWF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF = "SynchronizeSyncAcaWF";
 
   private SynchronizeInstallmentAcaActivity synchronizeInstallmentAcaActivity;
   private FinalizeDebtPositionSyncStatusActivity finalizeDebtPositionSyncStatusActivity;

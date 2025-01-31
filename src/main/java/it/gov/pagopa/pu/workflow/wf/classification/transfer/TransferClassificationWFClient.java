@@ -1,13 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.classification.transfer;
 
 import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowStub;
-import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWF;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.classification.IufClassificationWFImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWFImpl;
@@ -28,7 +24,7 @@ public class TransferClassificationWFClient {
     log.info("Starting Transfer Classification for semantic key: {}", signalDTO);
 
     String workflowId = generateWorkflowId(signalDTO.getOrgId(), signalDTO.getIuv(), signalDTO.getIur(), signalDTO.getTransferIndex());
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(TransferClassificationWFImpl.TASK_QUEUE, workflowId);
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(TransferClassificationWFImpl.TASK_QUEUE_TRANSFER_CLASSIFICATION_WF, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
       TransferClassificationWF.SIGNAL_METHOD_NAME_START_TRANSFER_CLASSIFICATION,
       new Object[]{signalDTO},
@@ -42,6 +38,6 @@ public class TransferClassificationWFClient {
     if (orgId == null || iuv == null || iur == null) {
       throw new WorkflowInternalErrorException("The ID or the workflow must not be null");
     }
-    return String.format("%s-%d-%s-%s-%d", TransferClassificationWFImpl.TASK_QUEUE, orgId, iuv, iur, transferIndex);
+    return String.format("%s-%d-%s-%s-%d", TransferClassificationWFImpl.TASK_QUEUE_TRANSFER_CLASSIFICATION_WF, orgId, iuv, iur, transferIndex);
   }
 }

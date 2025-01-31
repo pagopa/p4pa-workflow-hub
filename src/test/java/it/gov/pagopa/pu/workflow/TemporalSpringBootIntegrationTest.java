@@ -14,6 +14,8 @@ import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTran
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -66,6 +68,8 @@ class TemporalSpringBootIntegrationTest {
   private PaymentsReportingIngestionFlowFileActivityImpl fileActivityMock;
   @MockitoBean("emailActivityMock")
   private SendEmailIngestionFlowActivityImpl emailActivityMock;
+  @MockitoBean
+  private IufClassificationWFClient iufClassificationWFClientMock;
 
   @MockitoSpyBean
   private UpdateIngestionFlowStatusActivityImpl statusActivitySpy;
@@ -82,7 +86,8 @@ class TemporalSpringBootIntegrationTest {
       fileActivityMock,
       ingestionFlowFileServiceMock,
       emailActivityMock,
-      statusActivitySpy
+      statusActivitySpy,
+      iufClassificationWFClientMock
     );
   }
 
@@ -95,29 +100,31 @@ class TemporalSpringBootIntegrationTest {
     result.setTransfers(List.of(paymentsReportingTransferDTO));
 
     when(fileActivityMock.processFile(anyLong())).thenReturn(result);
-    doReturn(true).when(statusActivitySpy)
-      .updateStatus(anyLong(), any(), any(), any());
+
+    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
+      .thenReturn(1);
 
     String workflowId = workflowClient.ingest(1L);
 
     waitUntilWfCompletion(workflowId);
 
-    verify(statusActivitySpy, times(1)).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
-    verify(fileActivityMock, times(1)).processFile(1L);
-    verify(emailActivityMock, times(1)).sendEmail(1L, true);
-    verify(statusActivitySpy, times(1)).updateStatus(1L, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(fileActivityMock).processFile(1L);
+    verify(emailActivityMock).sendEmail(1L, true);
+    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+    verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+    verify(iufClassificationWFClientMock)
+      .notifyPaymentsReporting(new IufClassificationNotifyPaymentsReportingSignalDTO(result.getOrganizationId(), result.getIuf(), result.getTransfers()));
   }
 
   @Test
   void givenNotRetryableExceptionWhenExecuteWfThenStopExecutionWithoutRetries() {
-    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
-      .thenThrow(new NotRetryableActivityException("NotRetryableActivityException"));
-
     String workflowId = workflowClient.ingest(1L);
     waitUntilWfFailed(workflowId);
 
     verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
-    verify(ingestionFlowFileServiceMock, times(1)).updateStatus(anyLong(), any(), any(), any());
+    verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
   }
 
   @Test
@@ -129,7 +136,7 @@ class TemporalSpringBootIntegrationTest {
     waitUntilWfFailed(workflowId);
 
     verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
-    verify(ingestionFlowFileServiceMock, times(1)).updateStatus(anyLong(), any(), any(), any());
+    verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
   }
 
   @Test

@@ -61,13 +61,13 @@ class WorkflowServiceTest {
     when(workflowClientMock.newWorkflowStub(
         Mockito.eq(PaymentsReportingIngestionWF.class),
         Mockito.<WorkflowOptions>argThat(options ->
-          PaymentsReportingIngestionWFImpl.TASK_QUEUE.equals(options.getTaskQueue()) &&
+          PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF.equals(options.getTaskQueue()) &&
             workflowId.equals(options.getWorkflowId())
         )))
       .thenReturn(wfMock);
 
     // When
-    PaymentsReportingIngestionWF result = workflowService.buildWorkflowStub(PaymentsReportingIngestionWF.class, PaymentsReportingIngestionWFImpl.TASK_QUEUE, workflowId);
+    PaymentsReportingIngestionWF result = workflowService.buildWorkflowStub(PaymentsReportingIngestionWF.class, PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF, workflowId);
 
     // Then
     Assertions.assertSame(wfMock, result);

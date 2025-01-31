@@ -47,12 +47,12 @@ class HandleDebtPositionWfClientTest {
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(id, HandleDebtPositionSyncWFImpl.TASK_QUEUE))
+        .when(() -> Utilities.generateWorkflowId(id, HandleDebtPositionSyncWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF))
         .thenReturn(expectedWorkflowId);
 
       Mockito.when(workflowServiceMock.buildWorkflowStub(
           HandleDebtPositionSyncWF.class,
-          HandleDebtPositionSyncWFImpl.TASK_QUEUE,
+          HandleDebtPositionSyncWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF,
           expectedWorkflowId))
         .thenReturn(wfSyncMock);
 

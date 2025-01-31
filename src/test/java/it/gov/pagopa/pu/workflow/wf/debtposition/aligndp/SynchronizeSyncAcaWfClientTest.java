@@ -47,12 +47,12 @@ class SynchronizeSyncAcaWfClientTest {
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(id, SynchronizeSyncAcaWFImpl.TASK_QUEUE))
+        .when(() -> Utilities.generateWorkflowId(id, SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF))
         .thenReturn(expectedWorkflowId);
 
       Mockito.when(workflowServiceMock.buildWorkflowStub(
           SynchronizeSyncAcaWF.class,
-          SynchronizeSyncAcaWFImpl.TASK_QUEUE,
+          SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF,
           expectedWorkflowId))
         .thenReturn(wfSyncAcaMock);
 

@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "debt-position-synchronize")
+@ConfigurationProperties(prefix = "workflow.debt-position-synchronize")
 public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
 
   public SynchronizeInstallmentAcaActivity buildSynchronizeInstallmentAcaActivity() {
