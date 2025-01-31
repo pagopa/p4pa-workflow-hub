@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.classification.iuf.classification;
+package it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification;
 
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;

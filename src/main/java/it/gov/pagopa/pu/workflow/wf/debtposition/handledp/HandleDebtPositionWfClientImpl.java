@@ -22,10 +22,10 @@ public class HandleDebtPositionWfClientImpl implements HandleDebtPositionWfClien
   @Override
   public String handleDPSync(DebtPositionDTO debtPosition) {
     log.info("Starting SYNC debt position handling WF: {}", debtPosition.getDebtPositionId());
-    String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), HandleDebtPositionSyncWFImpl.TASK_QUEUE);
+    String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), HandleDebtPositionSyncWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF);
     HandleDebtPositionSyncWF workflow = workflowService.buildWorkflowStub(
       HandleDebtPositionSyncWF.class,
-      HandleDebtPositionSyncWFImpl.TASK_QUEUE,
+      HandleDebtPositionSyncWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF,
       workflowId);
     WorkflowClient.start(workflow::handleDPSync, debtPosition);
     return workflowId;

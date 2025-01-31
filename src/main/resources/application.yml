@@ -44,6 +44,7 @@ spring:
           content-type: "\${KAFKA_CONTENT_TYPE:application/json}"
           destination: "\${KAFKA_TOPIC_PAYMENTS:}"
           group: "\${KAFKA_PAYMENTS_GROUP_ID:p4pa-workflow-hub-consumer-group}"
+          consumer.auto-startup: "\${KAFKA_PAYMENTS_CONSUMER_ENABLED:true}"
       kafka:
         binder:
           auto-create-topics: false
@@ -117,6 +118,7 @@ logging:
     org.springframework: "\${LOG_LEVEL_SPRING:INFO}"
     org.springframework.boot.availability: "\${LOG_LEVEL_SPRING_BOOT_AVAILABILITY:DEBUG}"
     org.springframework.kafka: "\${LOG_LEVEL_SPRING_KAFKA:INFO}"
+    org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: "\${LOG_LEVEL_KAFKA_CONSUMER_COORDINATOR:WARN}"
 
 workflow:
   default:
@@ -137,7 +139,7 @@ workflow:
     retry-backoff-coefficient: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  debt-position-creation:
+  debt-position-handling:
     start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"

@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.classification.iuf.classification;
+package it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
@@ -17,15 +17,15 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.ArrayList;
 import java.util.List;
 
-import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE;
+import static it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF;
 
 /**
  * Implementation of the IufClassificationWF interface
  */
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE)
+@WorkflowImpl(taskQueues = TASK_QUEUE_IUF_CLASSIFICATION_WF)
 public class IufClassificationWFImpl implements IufClassificationWF, ApplicationContextAware {
-  public static final String TASK_QUEUE = "IufClassificationWF";
+  public static final String TASK_QUEUE_IUF_CLASSIFICATION_WF = "IufClassificationWF";
 
   private ClearClassifyIufActivity clearClassifyIufActivity;
   private IufClassificationActivity iufClassificationActivity;

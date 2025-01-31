@@ -29,8 +29,13 @@ public class TemporalWFImplementationCustomizer implements TemporalOptionsCustom
   }
 
   public static ActivityOptions baseWfConfig2ActivityOptions(BaseWfConfig baseWfConfig) {
+    return baseWfConfig2ActivityOptions(null, baseWfConfig);
+  }
+
+  public static ActivityOptions baseWfConfig2ActivityOptions(String taskQueue, BaseWfConfig baseWfConfig) {
     return ActivityOptions.newBuilder()
       .setStartToCloseTimeout(Duration.ofSeconds(baseWfConfig.getStartToCloseTimeoutInSeconds()))
+      .setTaskQueue(taskQueue)
       .setRetryOptions(
         RetryOptions.newBuilder()
           .setInitialInterval(Duration.ofMillis(baseWfConfig.getRetryInitialIntervalInMillis()))

@@ -44,10 +44,10 @@ class PaymentsReportingIngestionWFClientTest {
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(ingestionFlowFileId, PaymentsReportingIngestionWFImpl.TASK_QUEUE))
+        .when(() -> Utilities.generateWorkflowId(ingestionFlowFileId, PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF))
         .thenReturn(expectedWorkflowId);
 
-      Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingIngestionWF.class, PaymentsReportingIngestionWFImpl.TASK_QUEUE, expectedWorkflowId))
+      Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingIngestionWF.class, PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF, expectedWorkflowId))
         .thenReturn(wfMock);
 
       // When

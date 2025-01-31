@@ -22,10 +22,10 @@ public class SynchronizeSyncAcaWfClientImpl implements SynchronizeSyncAcaWfClien
   @Override
   public String synchronizeDPSyncAca(DebtPositionDTO debtPosition) {
     log.info("Starting sync ACA debt position WF: {}", debtPosition.getDebtPositionId());
-    String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), SynchronizeSyncAcaWFImpl.TASK_QUEUE);
+    String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF);
     SynchronizeSyncAcaWF workflow = workflowService.buildWorkflowStub(
       SynchronizeSyncAcaWF.class,
-      SynchronizeSyncAcaWFImpl.TASK_QUEUE,
+      SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF,
       workflowId);
     WorkflowClient.start(workflow::synchronizeDPSyncAca, debtPosition);
     return workflowId;  }
