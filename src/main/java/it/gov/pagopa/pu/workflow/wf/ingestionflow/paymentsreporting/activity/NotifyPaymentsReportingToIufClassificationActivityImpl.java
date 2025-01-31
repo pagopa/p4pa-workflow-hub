@@ -14,7 +14,7 @@ import java.util.List;
 @Lazy
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = PaymentsReportingIngestionWFImpl.TASK_QUEUE)
+//@ActivityImpl(taskQueues = PaymentsReportingIngestionWFImpl.TASK_QUEUE)
 public class NotifyPaymentsReportingToIufClassificationActivityImpl implements NotifyPaymentsReportingToIufClassificationActivity {
 
   private IufClassificationWFClient iufClassificationWFClient;

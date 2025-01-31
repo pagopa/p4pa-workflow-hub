@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTran
 
 import java.util.List;
 
-@ActivityInterface
+//@ActivityInterface
 public interface NotifyPaymentsReportingToIufClassificationActivity {
 
   void signalIufClassificationWithStart(Long organizationId, String iuf, List<PaymentsReportingTransferDTO> transfers);

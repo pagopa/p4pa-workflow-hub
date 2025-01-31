@@ -27,7 +27,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
   private PaymentsReportingIngestionFlowFileActivity paymentsReportingIngestionFlowFileActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
-  private NotifyPaymentsReportingToIufClassificationActivity notifyPaymentsReportingToIufClassificationActivity;
+//  private NotifyPaymentsReportingToIufClassificationActivity notifyPaymentsReportingToIufClassificationActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -42,7 +42,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     paymentsReportingIngestionFlowFileActivity = wfConfig.buildPaymentsReportingIngestionFlowFileActivityStub();
     sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
-    notifyPaymentsReportingToIufClassificationActivity = wfConfig.buildNotifyPaymentsReportingToIufClassificationActivityStub();
+    //notifyPaymentsReportingToIufClassificationActivity = wfConfig.buildNotifyPaymentsReportingToIufClassificationActivityStub();
   }
 
   @Override
@@ -68,10 +68,10 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     try{
       PaymentsReportingIngestionFlowFileActivityResult ingestionResult = paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
 
-      notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
-        ingestionResult.getOrganizationId(),
-        ingestionResult.getIuf(),
-        ingestionResult.getTransfers());
+//      notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
+//        ingestionResult.getOrganizationId(),
+//        ingestionResult.getIuf(),
+//        ingestionResult.getTransfers());
 
       return null;
     } catch (Exception e) {
