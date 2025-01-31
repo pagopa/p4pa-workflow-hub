@@ -4,7 +4,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.SynchronizeSyncAcaWfClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.createdp.CreateDebtPositionWfClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.HandleDebtPositionWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.mapper.DebtPositionMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DebtPositionServiceTest {
 
   @Mock
-  private CreateDebtPositionWfClient createDebtPositionWfClientMock;
+  private HandleDebtPositionWfClient handleDebtPositionWfClientMock;
   @Mock
   private SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClientMock;
   @Mock
@@ -34,19 +34,19 @@ class DebtPositionServiceTest {
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(createDebtPositionWfClientMock, synchronizeSyncAcaWfClientMock, debtPositionMapperMock);
+    service = new DebtPositionServiceImpl(handleDebtPositionWfClientMock, synchronizeSyncAcaWfClientMock, debtPositionMapperMock);
   }
 
   @Test
-  void givenCreateDPSyncThenOk() {
+  void givenHandleDPSyncThenOk() {
     testWorkflowCreationDP(
-      debtPositionDTO -> createDebtPositionWfClientMock.createDPSync(debtPositionDTO),
-      debtPositionRequestDTO -> service.createDPSync(debtPositionRequestDTO)
+      debtPositionDTO -> handleDebtPositionWfClientMock.handleDPSync(debtPositionDTO),
+      debtPositionRequestDTO -> service.handleDPSync(debtPositionRequestDTO)
     );
   }
 
   @Test
-  void givenCreateDPSyncAcaThenOk() {
+  void givenHandleDPSyncAcaThenOk() {
     testWorkflowCreationDP(
       debtPositionDTO -> synchronizeSyncAcaWfClientMock.synchronizeDPSyncAca(debtPositionDTO),
       debtPositionRequestDTO -> service.alignDpSyncAca(debtPositionRequestDTO)

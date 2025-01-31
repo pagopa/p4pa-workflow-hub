@@ -5,7 +5,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 
 public interface DebtPositionService {
 
-  WorkflowCreatedDTO createDPSync(DebtPositionRequestDTO debtPosition);
+  WorkflowCreatedDTO handleDPSync(DebtPositionRequestDTO debtPosition);
 
   WorkflowCreatedDTO alignDpSyncAca(DebtPositionRequestDTO debtPosition);
 }

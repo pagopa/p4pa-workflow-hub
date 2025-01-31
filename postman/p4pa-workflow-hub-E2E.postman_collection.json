@@ -175,7 +175,7 @@
                   }
                 },
                 "url": {
-                  "raw": "{{workflowHubBaseUrl}}/workflowhub/workflow/debt-position",
+                  "raw": "{{workflowHubBaseUrl}}/workflowhub/workflow/debt-position/sync",
                   "host": [
                     "{{workflowHubBaseUrl}}"
                   ],

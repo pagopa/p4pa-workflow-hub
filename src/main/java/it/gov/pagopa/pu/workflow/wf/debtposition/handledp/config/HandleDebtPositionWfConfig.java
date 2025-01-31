@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.createdp.config;
+package it.gov.pagopa.pu.workflow.wf.debtposition.handledp.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "workflow.debt-position-creation")
-public class CreateDebtPositionWfConfig extends BaseWfConfig {
+public class HandleDebtPositionWfConfig extends BaseWfConfig {
 
   public SendDebtPositionIONotificationActivity buildSendDebtPositionIONotificationActivityStub() {
     return Workflow.newActivityStub(SendDebtPositionIONotificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
