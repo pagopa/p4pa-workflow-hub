@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.pu.workflow.dto.generated.DebtPositionRequestDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.function.Function;
 
-import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionRequestDTO;
+import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,14 +46,14 @@ class DebtPositionControllerTest {
       debtPositionRequestDTO -> service.alignDpSyncAca(debtPositionRequestDTO));
   }
 
-  private void testWorkflowCreationDP(String endpoint, Function<DebtPositionRequestDTO, WorkflowCreatedDTO> service) throws Exception {
+  private void testWorkflowCreationDP(String endpoint, Function<DebtPositionDTO, WorkflowCreatedDTO> service) throws Exception {
     String workflowId = "workflow-1";
-    DebtPositionRequestDTO debtPositionRequestDTO = buildDebtPositionRequestDTO();
+    DebtPositionDTO debtPositionRequestDTO = buildDebtPositionDTO();
     WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.apply(Mockito.any(DebtPositionRequestDTO.class))).thenReturn(expected);
+    Mockito.when(service.apply(Mockito.any(DebtPositionDTO.class))).thenReturn(expected);
 
     MvcResult result = mockMvc.perform(
         post(endpoint)

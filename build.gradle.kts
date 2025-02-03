@@ -156,19 +156,26 @@ openApiGenerate {
   outputDir.set("$projectDir/build/generated")
   apiPackage.set("it.gov.pagopa.pu.workflow.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
-  configOptions.set(
-    mapOf(
-      "dateLibrary" to "java8",
-      "requestMappingMode" to "api_interface",
-      "useSpringBoot3" to "true",
-      "interfaceOnly" to "true",
-      "useTags" to "true",
-      "useBeanValidation" to "true",
-      "generateConstructorWithAllArgs" to "true",
-      "generatedConstructorWithRequiredArgs" to "true",
-      "additionalModelTypeAnnotations" to "@lombok.Builder"
-    )
-  )
+  importMappings.set(mapOf(
+    "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+    "PaymentOptionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO",
+    "InstallmentDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO",
+    "PersonDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO",
+    "TransferDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO",
+  ))
+  configOptions.set(mapOf(
+    "dateLibrary" to "java8",
+    "requestMappingMode" to "api_interface",
+    "useSpringBoot3" to "true",
+    "interfaceOnly" to "true",
+    "useTags" to "true",
+    "useBeanValidation" to "true",
+    "generateConstructorWithAllArgs" to "true",
+    "generatedConstructorWithRequiredArgs" to "true",
+    "additionalModelTypeAnnotations" to "@lombok.Builder",
+    "skipOverwrite" to "true",
+    "skipModels" to "true"
+  ))
 }
 
 tasks.withType<Copy> {
