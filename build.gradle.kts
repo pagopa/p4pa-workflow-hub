@@ -156,7 +156,7 @@ openApiGenerate {
   outputDir.set("$projectDir/build/generated")
   apiPackage.set("it.gov.pagopa.pu.workflow.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
-  importMappings.set(mapOf(
+  typeMappings.set(mapOf(
     "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
     "PaymentOptionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO",
     "InstallmentDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO",

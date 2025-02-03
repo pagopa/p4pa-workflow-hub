@@ -17,7 +17,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DebtPositionDTO'
+              type: 'DebtPositionDTO'
       responses:
         '200':
           description: "Debt position created"
@@ -42,7 +42,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DebtPositionDTO'
+              type: 'DebtPositionDTO'
       responses:
         '200':
           description: "Debt position Aca aligned"
@@ -67,7 +67,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DebtPositionDTO'
+              type: 'DebtPositionDTO'
       responses:
         '200':
           description: "Debt position Aca aligned"
@@ -92,7 +92,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DebtPositionDTO'
+              type: 'DebtPositionDTO'
       responses:
         '200':
           description: "Debt position Aca aligned"
@@ -117,7 +117,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DebtPositionDTO'
+              type: 'DebtPositionDTO'
       responses:
         '200':
           description: "Debt position Aca aligned"
@@ -319,9 +319,9 @@ components:
         description:
           type: string
         status:
-          $ref: "#/components/schemas/DebtPositionStatus"
+          type: "DebtPositionStatus"
         debtPositionOrigin:
-          $ref: "#/components/schemas/DebtPositionOrigin"
+          type: "DebtPositionOrigin"
         ingestionFlowFileId:
           type: integer
           format: int64
@@ -351,7 +351,7 @@ components:
         paymentOptions:
           type: array
           items:
-            $ref: "#/components/schemas/PaymentOptionDTO"
+            type: "PaymentOptionDTO"
     PaymentOptionDTO:
       required:
         - installments
@@ -369,7 +369,7 @@ components:
           type: integer
           format: int64
         status:
-          $ref: "#/components/schemas/PaymentOptionStatus"
+          type: "PaymentOptionStatus"
         multiDebtor:
           type: boolean
         dueDate:
@@ -386,7 +386,7 @@ components:
         installments:
           type: array
           items:
-            $ref: "#/components/schemas/InstallmentDTO"
+            type: "InstallmentDTO"
     InstallmentDTO:
       required:
         - amountCents
@@ -402,9 +402,9 @@ components:
           type: integer
           format: int64
         status:
-          $ref: "#/components/schemas/InstallmentStatus"
+          type: "InstallmentStatus"
         syncStatus:
-          $ref: "#/components/schemas/InstallmentSyncStatus"
+          type: "InstallmentSyncStatus"
         iupdPagopa:
           type: string
         iud:
@@ -437,11 +437,11 @@ components:
         legacyPaymentMetadata:
           type: string
         debtor:
-          $ref: "#/components/schemas/PersonDTO"
+          type: "PersonDTO"
         transfers:
           type: array
           items:
-            $ref: "#/components/schemas/TransferDTO"
+            type: "TransferDTO"
         creationDate:
           type: string
           format: date-time
@@ -567,9 +567,9 @@ components:
         standin:
           type: boolean
         debtor:
-          $ref: "#/components/schemas/PersonDTO"
+          type: "PersonDTO"
         payer:
-          $ref: "#/components/schemas/PersonDTO"
+          type: "PersonDTO"
         creationDate:
           type: string
           format: date-time
@@ -623,9 +623,9 @@ components:
       type: object
       properties:
         syncStatusFrom:
-          $ref: "#/components/schemas/InstallmentStatus"
+          type: "InstallmentStatus"
         syncStatusTo:
-          $ref: "#/components/schemas/InstallmentStatus"
+          type: "InstallmentStatus"
     DebtPositionStatus:
       type: string
       enum:
