@@ -157,11 +157,7 @@ openApiGenerate {
   apiPackage.set("it.gov.pagopa.pu.workflow.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
   typeMappings.set(mapOf(
-    "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
-    "PaymentOptionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO",
-    "InstallmentDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO",
-    "PersonDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO",
-    "TransferDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO",
+    "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",
