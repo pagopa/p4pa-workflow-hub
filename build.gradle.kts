@@ -156,19 +156,20 @@ openApiGenerate {
   outputDir.set("$projectDir/build/generated")
   apiPackage.set("it.gov.pagopa.pu.workflow.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
-  configOptions.set(
-    mapOf(
-      "dateLibrary" to "java8",
-      "requestMappingMode" to "api_interface",
-      "useSpringBoot3" to "true",
-      "interfaceOnly" to "true",
-      "useTags" to "true",
-      "useBeanValidation" to "true",
-      "generateConstructorWithAllArgs" to "true",
-      "generatedConstructorWithRequiredArgs" to "true",
-      "additionalModelTypeAnnotations" to "@lombok.Builder"
-    )
-  )
+  typeMappings.set(mapOf(
+    "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO"
+  ))
+  configOptions.set(mapOf(
+    "dateLibrary" to "java8",
+    "requestMappingMode" to "api_interface",
+    "useSpringBoot3" to "true",
+    "interfaceOnly" to "true",
+    "useTags" to "true",
+    "useBeanValidation" to "true",
+    "generateConstructorWithAllArgs" to "true",
+    "generatedConstructorWithRequiredArgs" to "true",
+    "additionalModelTypeAnnotations" to "@lombok.Builder"
+  ))
 }
 
 tasks.withType<Copy> {
