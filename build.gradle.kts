@@ -54,6 +54,7 @@ val mapStructVersion = "1.6.3"
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
   implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-validation")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -79,6 +80,7 @@ dependencies {
 
   compileOnly("org.projectlombok:lombok")
   annotationProcessor("org.projectlombok:lombok")
+  testAnnotationProcessor("org.projectlombok:lombok")
 
   /**
    * Mapstruct
@@ -88,6 +90,7 @@ dependencies {
    **/
   implementation("org.mapstruct:mapstruct:$mapStructVersion")
   annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
+  testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
   //	Testing
   testImplementation("org.springframework.boot:spring-boot-starter-test")
