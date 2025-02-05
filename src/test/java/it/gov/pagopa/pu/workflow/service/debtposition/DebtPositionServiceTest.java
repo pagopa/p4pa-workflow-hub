@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.debtposition;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.SynchronizeSyncAcaWfClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.HandleDebtPositionExpirationWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.HandleDebtPositionWfClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,12 +25,14 @@ class DebtPositionServiceTest {
   private HandleDebtPositionWfClient handleDebtPositionWfClientMock;
   @Mock
   private SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClientMock;
+  @Mock
+  private HandleDebtPositionExpirationWfClient handleDebtPositionExpirationWfClient;
 
   private DebtPositionService service;
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(handleDebtPositionWfClientMock, synchronizeSyncAcaWfClientMock);
+    service = new DebtPositionServiceImpl(handleDebtPositionWfClientMock, synchronizeSyncAcaWfClientMock, handleDebtPositionExpirationWfClient);
   }
 
   @Test
