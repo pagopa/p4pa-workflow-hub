@@ -14,6 +14,8 @@ import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 @Service
 @Slf4j
 public class WorkflowServiceImpl implements WorkflowService {
@@ -69,5 +71,16 @@ public class WorkflowServiceImpl implements WorkflowService {
       log.error("An error occurred while retrieving the workflow status: {}", e.getMessage());
       throw new WorkflowInternalErrorException(e.getMessage());
     }
+  }
+
+  @Override
+  public <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, Duration startDelay) {
+    return workflowClient.newWorkflowStub(
+      workflowClass,
+      WorkflowOptions.newBuilder()
+        .setTaskQueue(taskQueue)
+        .setWorkflowId(workflowId)
+        .setStartDelay(startDelay)
+        .build());
   }
 }

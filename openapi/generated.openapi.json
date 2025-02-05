@@ -152,6 +152,48 @@
         } ]
       }
     },
+    "/workflowhub/workflow/debt-position/expiration" : {
+      "post" : {
+        "tags" : [ "DebtPosition" ],
+        "description" : "Handle a debt position expiration.",
+        "operationId" : "handleDpExpiration",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DebtPositionDTO"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Debt position expiration handled",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
     "/workflowhub/workflow/debt-position/aca_gpd-preload" : {
       "post" : {
         "tags" : [ "DebtPosition" ],
