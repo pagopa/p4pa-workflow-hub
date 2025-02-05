@@ -458,7 +458,7 @@
         "properties" : {
           "code" : {
             "type" : "string",
-            "enum" : [ "WORKFLOW_NOT_FOUND", "WORKFLOW_GENERIC_ERROR" ]
+            "enum" : [ "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR" ]
           },
           "message" : {
             "type" : "string"
