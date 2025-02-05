@@ -157,7 +157,7 @@ class WorkflowServiceTest {
     WorkflowStub expectedStub = Mockito.mock(WorkflowStub.class);
 
     when(workflowClientMock.newUntypedWorkflowStub(
-      eq(workflowId),
+      eq(taskQueue),
       argThat(options -> taskQueue.equals(options.getTaskQueue()) && workflowId.equals(options.getWorkflowId()))
     )).thenReturn(expectedStub);
 
