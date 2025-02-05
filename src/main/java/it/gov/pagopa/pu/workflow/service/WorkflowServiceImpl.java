@@ -38,7 +38,7 @@ public class WorkflowServiceImpl implements WorkflowService {
   @Override
   public WorkflowStub  buildUntypedWorkflowStub( String taskQueue, String workflowId) {
     return workflowClient.newUntypedWorkflowStub(
-      workflowId,
+      taskQueue,
       WorkflowOptions.newBuilder()
         .setTaskQueue(taskQueue)
         .setWorkflowId(workflowId)
