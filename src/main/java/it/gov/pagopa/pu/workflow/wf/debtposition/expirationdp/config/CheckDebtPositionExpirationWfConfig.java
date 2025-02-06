@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "workflow.debt-position-expiration")
-public class HandleDebtPositionExpirationWfConfig extends BaseWfConfig {
+public class CheckDebtPositionExpirationWfConfig extends BaseWfConfig {
 
   public DebtPositionExpirationActivity buildDebtPositionExpirationActivityStub() {
     return Workflow.newActivityStub(DebtPositionExpirationActivity.class,

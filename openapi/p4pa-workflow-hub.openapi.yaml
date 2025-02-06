@@ -131,12 +131,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/debt-position/{debtPositionId}/expiration:
+  /workflow/debt-position/{debtPositionId}/check-expiration:
     post:
       tags:
         - DebtPosition
-      operationId: handleDpExpiration
-      description: Handle a debt position expiration.
+      operationId: checkDpExpiration
+      description: Check if a debt position expiration.
       parameters:
         - name: debtPositionId
           in: path

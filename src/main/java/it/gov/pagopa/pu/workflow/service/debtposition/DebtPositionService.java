@@ -9,5 +9,5 @@ public interface DebtPositionService {
 
   WorkflowCreatedDTO alignDpSyncAca(DebtPositionDTO debtPosition);
 
-  WorkflowCreatedDTO handleDpExpiration(Long debtPositionId);
+  WorkflowCreatedDTO checkDpExpiration(Long debtPositionId);
 }

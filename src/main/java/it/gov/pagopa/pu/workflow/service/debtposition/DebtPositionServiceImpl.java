@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.service.debtposition;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.SynchronizeSyncAcaWfClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.HandleDebtPositionExpirationWfClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.HandleDebtPositionWfClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,9 +14,9 @@ public class DebtPositionServiceImpl implements DebtPositionService {
 
   private final HandleDebtPositionWfClient handleDebtPositionWfClient;
   private final SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClient;
-  private final HandleDebtPositionExpirationWfClient handleDebtPositionExpirationWfClient;
+  private final CheckDebtPositionExpirationWfClient handleDebtPositionExpirationWfClient;
 
-  public DebtPositionServiceImpl(HandleDebtPositionWfClient handleDebtPositionWfClient, SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClient, HandleDebtPositionExpirationWfClient handleDebtPositionExpirationWfClient) {
+  public DebtPositionServiceImpl(HandleDebtPositionWfClient handleDebtPositionWfClient, SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClient, CheckDebtPositionExpirationWfClient handleDebtPositionExpirationWfClient) {
     this.handleDebtPositionWfClient = handleDebtPositionWfClient;
     this.synchronizeSyncAcaWfClient = synchronizeSyncAcaWfClient;
     this.handleDebtPositionExpirationWfClient = handleDebtPositionExpirationWfClient;
@@ -39,9 +39,9 @@ public class DebtPositionServiceImpl implements DebtPositionService {
   }
 
   @Override
-  public WorkflowCreatedDTO handleDpExpiration(Long debtPositionId) {
-    log.debug("Starting workflow for handling expiration of debt position with debtPositionId: {}", debtPositionId);
-    String workflowId = handleDebtPositionExpirationWfClient.handleDpExpiration(debtPositionId);
+  public WorkflowCreatedDTO checkDpExpiration(Long debtPositionId) {
+    log.debug("Starting workflow for checking expiration of debt position with debtPositionId: {}", debtPositionId);
+    String workflowId = handleDebtPositionExpirationWfClient.checkDpExpiration(debtPositionId);
 
     return buildWorkflowCreatedDTO(workflowId);
   }

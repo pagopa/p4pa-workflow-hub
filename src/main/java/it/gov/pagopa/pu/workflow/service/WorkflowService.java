@@ -4,6 +4,8 @@ import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public interface WorkflowService {
 
@@ -13,5 +15,9 @@ public interface WorkflowService {
 
   WorkflowStatusDTO getWorkflowStatus(String workflowId);
 
-  <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, Duration startDelay);
+  <T> T buildWorkflowStubDelayed(Class<T> workflowClass, String taskQueue, String workflowId, Duration startDelay);
+
+  <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, LocalDateTime dateTime);
+
+  <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, OffsetDateTime dateTime);
 }
