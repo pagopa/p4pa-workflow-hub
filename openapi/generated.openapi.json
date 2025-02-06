@@ -26,11 +26,11 @@
     "description" : "the DebtPosition API"
   } ],
   "paths" : {
-    "/workflowhub/workflow/debt-position/{debtPositionId}/expiration" : {
+    "/workflowhub/workflow/debt-position/{debtPositionId}/check-expiration" : {
       "post" : {
         "tags" : [ "DebtPosition" ],
-        "description" : "Handle a debt position expiration.",
-        "operationId" : "handleDpExpiration",
+        "description" : "Check if a debt position expiration.",
+        "operationId" : "checkDpExpiration",
         "parameters" : [ {
           "name" : "debtPositionId",
           "in" : "path",
