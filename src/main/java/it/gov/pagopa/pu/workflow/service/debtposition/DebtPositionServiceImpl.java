@@ -39,9 +39,9 @@ public class DebtPositionServiceImpl implements DebtPositionService {
   }
 
   @Override
-  public WorkflowCreatedDTO handleDpExpiration(DebtPositionDTO debtPositionDTO) {
-    log.debug("Starting workflow for handling expiration of debt position with debtPositionId: {}", debtPositionDTO.getDebtPositionId());
-    String workflowId = handleDebtPositionExpirationWfClient.handleDpExpiration(debtPositionDTO);
+  public WorkflowCreatedDTO handleDpExpiration(Long debtPositionId) {
+    log.debug("Starting workflow for handling expiration of debt position with debtPositionId: {}", debtPositionId);
+    String workflowId = handleDebtPositionExpirationWfClient.handleDpExpiration(debtPositionId);
 
     return buildWorkflowCreatedDTO(workflowId);
   }

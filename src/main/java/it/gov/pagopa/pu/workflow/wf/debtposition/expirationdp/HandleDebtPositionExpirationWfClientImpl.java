@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp;
 
 import io.temporal.client.WorkflowClient;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.HandleDebtPositionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.HandleDebtPositionExpirationWFImpl;
@@ -24,25 +23,24 @@ public class HandleDebtPositionExpirationWfClientImpl implements HandleDebtPosit
   }
 
   @Override
-  public String handleDpExpiration(DebtPositionDTO debtPosition) {
-    log.info("Starting debt position expiration WF: {}", debtPosition.getDebtPositionId());
-    String workflowId = generateWorkflowId(debtPosition.getDebtPositionId(), HandleDebtPositionExpirationWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_EXPIRATION_WF);
+  public String handleDpExpiration(Long debtPositionId) {
+    log.info("Starting debt position expiration WF: {}", debtPositionId);
+    String workflowId = generateWorkflowId(debtPositionId, HandleDebtPositionExpirationWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_EXPIRATION_WF);
     HandleDebtPositionExpirationWF workflow = workflowService.buildWorkflowStub(
       HandleDebtPositionExpirationWF.class,
       HandleDebtPositionExpirationWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_EXPIRATION_WF,
       workflowId);
-    OffsetDateTime nextDueDate = workflow.handleDpExpiration(debtPosition);
-    WorkflowClient.start(workflow::handleDpExpiration, debtPosition);
+    OffsetDateTime nextDueDate = workflow.handleDpExpiration(debtPositionId);
+    WorkflowClient.start(workflow::handleDpExpiration, debtPositionId);
 
-    log.info("Start of scheduling the next debt position expiration WF: {}, on {}", debtPosition.getDebtPositionId(), nextDueDate.plusDays(1));
-    String scheduledWorkflowId = generateWorkflowId(debtPosition.getDebtPositionId(), HandleDebtPositionExpirationWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_EXPIRATION_WF);
+    log.info("Start of scheduling the next debt position expiration WF: {}, on {}", debtPositionId, nextDueDate.plusDays(1));
     HandleDebtPositionExpirationWF scheduledWorkflow = workflowService.buildWorkflowStubScheduled(
       HandleDebtPositionExpirationWF.class,
       HandleDebtPositionExpirationWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_EXPIRATION_WF,
-      scheduledWorkflowId,
+      workflowId,
       Duration.between(nextDueDate.plusDays(1), OffsetDateTime.now())
     );
-    WorkflowClient.start(scheduledWorkflow::handleDpExpiration, debtPosition);
+    WorkflowClient.start(scheduledWorkflow::handleDpExpiration, debtPositionId);
     return workflowId;
   }
 }

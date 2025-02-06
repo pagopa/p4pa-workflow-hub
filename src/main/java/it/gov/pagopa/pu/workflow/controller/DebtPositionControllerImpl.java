@@ -34,9 +34,9 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> handleDpExpiration(DebtPositionDTO debtPositionDTO){
-    log.info("Starting workflow for handle expiration of debt position with debtPositionId: {}", debtPositionDTO.getDebtPositionId());
-    WorkflowCreatedDTO createDpSyncResponseDTO = service.handleDpExpiration(debtPositionDTO);
+  public ResponseEntity<WorkflowCreatedDTO> handleDpExpiration(Long debtPositionId){
+    log.info("Starting workflow for handle expiration of debt position with debtPositionId: {}", debtPositionId);
+    WorkflowCreatedDTO createDpSyncResponseDTO = service.handleDpExpiration(debtPositionId);
     return new ResponseEntity<>(createDpSyncResponseDTO, HttpStatus.OK);
   }
 }

@@ -2,7 +2,6 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.DebtPositionExpirationActivity;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.config.HandleDebtPositionExpirationWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -35,10 +34,10 @@ public class HandleDebtPositionExpirationWFImpl implements HandleDebtPositionExp
   }
 
   @Override
-  public OffsetDateTime handleDpExpiration(DebtPositionDTO debtPosition) {
-    log.info("Starting workflow to handle expiration of DebtPosition with ID: {}", debtPosition.getDebtPositionId());
-    OffsetDateTime nextDueDate = debtPositionExpirationActivity.checkAndUpdateInstallmentExpiration(debtPosition.getDebtPositionId());
-    log.info("Handled expiration of DebtPosition with ID: {}", debtPosition.getDebtPositionId());
+  public OffsetDateTime handleDpExpiration(Long debtPositionId) {
+    log.info("Starting workflow to handle expiration of DebtPosition with ID: {}", debtPositionId);
+    OffsetDateTime nextDueDate = debtPositionExpirationActivity.checkAndUpdateInstallmentExpiration(debtPositionId);
+    log.info("Handled expiration of DebtPosition with ID: {}", debtPositionId);
     return nextDueDate;
   }
 }

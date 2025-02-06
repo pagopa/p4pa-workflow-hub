@@ -131,18 +131,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/debt-position/expiration:
+  /workflow/debt-position/{debtPositionId}/expiration:
     post:
       tags:
         - DebtPosition
       operationId: handleDpExpiration
       description: Handle a debt position expiration.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: 'DebtPositionDTO'
+      parameters:
+        - name: debtPositionId
+          in: path
+          required: true
+          description: The id of debt position.
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: "Debt position expiration handled"
