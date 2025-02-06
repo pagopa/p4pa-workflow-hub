@@ -34,14 +34,18 @@ public class CheckDebtPositionExpirationWFImpl implements CheckDebtPositionExpir
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     CheckDebtPositionExpirationWfConfig wfConfig = applicationContext.getBean(CheckDebtPositionExpirationWfConfig.class);
     debtPositionExpirationActivity = wfConfig.buildDebtPositionExpirationActivityStub();
+    scheduleCheckDpExpirationActivity = wfConfig.buildScheduleCheckDpExpirationActivityStub();
   }
 
   @Override
   public void checkDpExpiration(Long debtPositionId) {
     log.info("Starting workflow to check expiration of DebtPosition with ID: {}", debtPositionId);
     OffsetDateTime nextDueDate = debtPositionExpirationActivity.checkAndUpdateInstallmentExpiration(debtPositionId);
-    log.info("Checked expiration of DebtPosition with ID {} and start scheduling the next check workflow", debtPositionId);
-    scheduleCheckDpExpirationActivity.scheduleNextCheckDpExpiration(debtPositionId, nextDueDate.plusDays(1));
+    log.info("Checked expiration of DebtPosition with ID: {}", debtPositionId);
+    if (nextDueDate != null) {
+      log.info("Start scheduling the next check expiration of DebtPosition with ID: {}", debtPositionId);
+      scheduleCheckDpExpirationActivity.scheduleNextCheckDpExpiration(debtPositionId, nextDueDate.plusDays(1));
+    }
   }
 
 }

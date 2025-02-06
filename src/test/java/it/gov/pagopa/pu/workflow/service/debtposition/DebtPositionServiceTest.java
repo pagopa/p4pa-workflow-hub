@@ -26,18 +26,18 @@ class DebtPositionServiceTest {
   @Mock
   private SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClientMock;
   @Mock
-  private CheckDebtPositionExpirationWfClient handleDebtPositionExpirationWfClient;
+  private CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClientMock;
 
   private DebtPositionService service;
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(handleDebtPositionWfClientMock, synchronizeSyncAcaWfClientMock, handleDebtPositionExpirationWfClient);
+    service = new DebtPositionServiceImpl(handleDebtPositionWfClientMock, synchronizeSyncAcaWfClientMock, checkDebtPositionExpirationWfClientMock);
   }
 
   @Test
   void givenHandleDPSyncThenOk() {
-    testWorkflowCreationDP(
+    testWorkflowDP(
       debtPositionDTO -> handleDebtPositionWfClientMock.handleDPSync(debtPositionDTO),
       debtPositionRequestDTO -> service.handleDPSync(debtPositionRequestDTO)
     );
@@ -45,13 +45,21 @@ class DebtPositionServiceTest {
 
   @Test
   void givenHandleDPSyncAcaThenOk() {
-    testWorkflowCreationDP(
+    testWorkflowDP(
       debtPositionDTO -> synchronizeSyncAcaWfClientMock.synchronizeDPSyncAca(debtPositionDTO),
       debtPositionRequestDTO -> service.alignDpSyncAca(debtPositionRequestDTO)
     );
   }
 
-  private void testWorkflowCreationDP(Function<DebtPositionDTO, String> clientMockSetup, Function<DebtPositionDTO, WorkflowCreatedDTO> serviceMethod) {
+  @Test
+  void givenCheckDPExpirationThenOk() {
+    testWorkflowDP(
+      debtPositionDTO -> checkDebtPositionExpirationWfClientMock.checkDpExpiration(1L),
+      debtPositionRequestDTO -> service.checkDpExpiration(1L)
+    );
+  }
+
+  private void testWorkflowDP(Function<DebtPositionDTO, String> clientMockSetup, Function<DebtPositionDTO, WorkflowCreatedDTO> serviceMethod) {
     // when
     String workflowId = "workflow-1";
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
@@ -65,4 +73,5 @@ class DebtPositionServiceTest {
     assertNotNull(workflowCreatedDTO);
     assertEquals(workflowId, workflowCreatedDTO.getWorkflowId());
   }
+
 }
