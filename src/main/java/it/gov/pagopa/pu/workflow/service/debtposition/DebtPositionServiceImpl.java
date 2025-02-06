@@ -14,12 +14,12 @@ public class DebtPositionServiceImpl implements DebtPositionService {
 
   private final HandleDebtPositionWfClient handleDebtPositionWfClient;
   private final SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClient;
-  private final CheckDebtPositionExpirationWfClient handleDebtPositionExpirationWfClient;
+  private final CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient;
 
-  public DebtPositionServiceImpl(HandleDebtPositionWfClient handleDebtPositionWfClient, SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClient, CheckDebtPositionExpirationWfClient handleDebtPositionExpirationWfClient) {
+  public DebtPositionServiceImpl(HandleDebtPositionWfClient handleDebtPositionWfClient, SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClient, CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient) {
     this.handleDebtPositionWfClient = handleDebtPositionWfClient;
     this.synchronizeSyncAcaWfClient = synchronizeSyncAcaWfClient;
-    this.handleDebtPositionExpirationWfClient = handleDebtPositionExpirationWfClient;
+    this.checkDebtPositionExpirationWfClient = checkDebtPositionExpirationWfClient;
   }
 
   @Override
@@ -41,7 +41,7 @@ public class DebtPositionServiceImpl implements DebtPositionService {
   @Override
   public WorkflowCreatedDTO checkDpExpiration(Long debtPositionId) {
     log.debug("Starting workflow for checking expiration of debt position with debtPositionId: {}", debtPositionId);
-    String workflowId = handleDebtPositionExpirationWfClient.checkDpExpiration(debtPositionId);
+    String workflowId = checkDebtPositionExpirationWfClient.checkDpExpiration(debtPositionId);
 
     return buildWorkflowCreatedDTO(workflowId);
   }
