@@ -53,6 +53,8 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
   @Override
   public void classify() {
+    WorkflowServiceImpl.waitForSignalMethods();
+
     log.info("Notifying Transfer Classifications: {}", toNotify);
 
     toNotify.stream()
@@ -64,8 +66,6 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
       int transferIndex = transfer2ClassifyDTO.getTransferIndex();
       startTransferClassificationActivity.signalTransferClassificationWithStart(toNotify.getFirst().getOrganizationId(), iuv, iur, transferIndex);
     });
-
-    WorkflowServiceImpl.waitForSignalMethods();
   }
 
 

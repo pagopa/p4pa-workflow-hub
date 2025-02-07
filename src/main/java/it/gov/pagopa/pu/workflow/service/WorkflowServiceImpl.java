@@ -74,7 +74,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   /** This method should be called after all workflows having signalMethods */
   public static void waitForSignalMethods(){
-    log.info("Workflow completed, waiting for signal handlers");
+    log.info("Waiting for signal handlers");
     Workflow.await(Workflow::isEveryHandlerFinished);
     log.info("All signals have been handled");
   }

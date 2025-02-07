@@ -36,6 +36,8 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
 
   @Override
   public void classify() {
+    WorkflowServiceImpl.waitForSignalMethods();
+
     log.info("Classifying Transfers: {}", toClassify);
 
     toClassify.stream().distinct()
@@ -44,8 +46,6 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
         transferClassificationActivity.classify(item);
         log.info("Ingestion to classify Transfers with semantic key {} is completed", item);
       });
-
-    WorkflowServiceImpl.waitForSignalMethods();
   }
 
   @Override
