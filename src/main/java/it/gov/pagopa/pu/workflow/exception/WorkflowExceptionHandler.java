@@ -16,9 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
 
@@ -41,18 +43,20 @@ public class WorkflowExceptionHandler {
     return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.GENERIC_ERROR);
   }
 
-  @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class})
+  @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
   public ResponseEntity<WorkflowErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.BAD_REQUEST);
   }
 
-  @ExceptionHandler({ServletException.class})
-  public ResponseEntity<WorkflowErrorDTO> handleServletException(ServletException ex, HttpServletRequest request) {
+  @ExceptionHandler({ServletException.class, ErrorResponseException.class})
+  public ResponseEntity<WorkflowErrorDTO> handleServletException(Exception ex, HttpServletRequest request) {
     HttpStatusCode httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     WorkflowErrorDTO.CodeEnum errorCode = WorkflowErrorDTO.CodeEnum.GENERIC_ERROR;
     if (ex instanceof ErrorResponse errorResponse) {
       httpStatus = errorResponse.getStatusCode();
-      if (httpStatus.is4xxClientError()) {
+      if(httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
+        errorCode = WorkflowErrorDTO.CodeEnum.NOT_FOUND;
+      } else if (httpStatus.is4xxClientError()) {
         errorCode = WorkflowErrorDTO.CodeEnum.BAD_REQUEST;
       }
     }
@@ -80,6 +84,9 @@ public class WorkflowExceptionHandler {
       getRequestDetails(request),
       httpStatus.value(),
       ex.getMessage());
+    if(log.isDebugEnabled() && ex.getCause()!=null){
+      log.debug("CausedBy: ", ex.getCause());
+    }
   }
 
   private static String buildReturnedMessage(Exception ex) {
