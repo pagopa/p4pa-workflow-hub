@@ -12,6 +12,7 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
+import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -19,10 +20,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,6 +43,8 @@ class WorkflowServiceTest {
   @Mock
   private PaymentsReportingIngestionWF wfMock;
   @Mock
+  private CheckDebtPositionExpirationWF checkDebtPositionExpirationWFMock;
+  @Mock
   private WorkflowExecutionInfo workflowExecutionInfoMock;
   @Mock
   private WorkflowServiceStubs workflowServiceStubsMock;
@@ -43,27 +52,27 @@ class WorkflowServiceTest {
   private WorkflowService workflowService;
 
   @BeforeEach
-  void init(){
+  void init() {
     workflowService = new WorkflowServiceImpl(workflowClientMock);
   }
 
   @AfterEach
-  void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(workflowClientMock, wfMock);
+  void verifyNoMoreInteractions() {
+    Mockito.verifyNoMoreInteractions(workflowClientMock, wfMock, checkDebtPositionExpirationWFMock);
   }
 
   @Test
-  void whenIngestThenOk(){
+  void whenIngestThenOk() {
     // Given
     long ingestionFlowFileId = 1L;
     String workflowId = String.valueOf(ingestionFlowFileId);
 
     when(workflowClientMock.newWorkflowStub(
-        Mockito.eq(PaymentsReportingIngestionWF.class),
-        Mockito.<WorkflowOptions>argThat(options ->
-          PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF.equals(options.getTaskQueue()) &&
-            workflowId.equals(options.getWorkflowId())
-        )))
+      Mockito.eq(PaymentsReportingIngestionWF.class),
+      Mockito.<WorkflowOptions>argThat(options ->
+        PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF.equals(options.getTaskQueue()) &&
+          workflowId.equals(options.getWorkflowId())
+      )))
       .thenReturn(wfMock);
 
     // When
@@ -127,7 +136,7 @@ class WorkflowServiceTest {
   }
 
   @Test
-  void givenGetWorkflowStatusWhenInternalErrorThenThrowWorkflowInternalErrorException(){
+  void givenGetWorkflowStatusWhenInternalErrorThenThrowWorkflowInternalErrorException() {
     String workflowId = "test-workflow-id";
 
     when(workflowClientMock.getWorkflowServiceStubs()).thenThrow(new WorkflowServiceException(WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), "Generic Error", null));
@@ -168,5 +177,75 @@ class WorkflowServiceTest {
     assertEquals(expectedStub, result);
   }
 
+  @Test
+  void testBuildWorkflowDelayed() {
+    String taskQueue = "test-task-queue";
+    String workflowId = "test-workflow-id";
+
+    when(workflowClientMock.newWorkflowStub(
+      Mockito.eq(CheckDebtPositionExpirationWF.class),
+      Mockito.<WorkflowOptions>argThat(options -> taskQueue.equals(options.getTaskQueue()) &&
+        workflowId.equals(options.getWorkflowId()) && Duration.ofDays(1).equals(options.getStartDelay()))
+    )).thenReturn(checkDebtPositionExpirationWFMock);
+
+    CheckDebtPositionExpirationWF result = workflowService.buildWorkflowStubDelayed(CheckDebtPositionExpirationWF.class,
+      taskQueue,
+      workflowId,
+      Duration.ofDays(1));
+
+    Assertions.assertSame(checkDebtPositionExpirationWFMock, result);
+  }
+
+  @Test
+  void testBuildWorkflowScheduledWithLocalDateTime() {
+    String taskQueue = "test-task-queue";
+    String workflowId = "test-workflow-id";
+
+    LocalDateTime nextSchedule = LocalDateTime.now().plusDays(1);
+    Duration expectedDelay = Duration.ofDays(1);
+
+    workflowService.buildWorkflowStubScheduled(CheckDebtPositionExpirationWF.class,
+      taskQueue,
+      workflowId,
+      nextSchedule);
+
+    ArgumentCaptor<WorkflowOptions> optionsCaptor = ArgumentCaptor.forClass(WorkflowOptions.class);
+
+    verify(workflowClientMock).newWorkflowStub(
+      eq(CheckDebtPositionExpirationWF.class),
+      optionsCaptor.capture()
+    );
+
+    WorkflowOptions capturedOptions = optionsCaptor.getValue();
+    assertEquals(expectedDelay, capturedOptions.getStartDelay());
+    assertEquals(taskQueue, capturedOptions.getTaskQueue());
+    assertEquals(workflowId, capturedOptions.getWorkflowId());
+  }
+
+  @Test
+  void testBuildWorkflowScheduledWithOffsetDateTime() {
+    String taskQueue = "test-task-queue";
+    String workflowId = "test-workflow-id";
+
+    Duration expectedDuration = Duration.ofDays(1);
+    OffsetDateTime nextSchedule = OffsetDateTime.now(ZoneOffset.MAX).plus(expectedDuration);
+
+    workflowService.buildWorkflowStubScheduled(CheckDebtPositionExpirationWF.class,
+      taskQueue,
+      workflowId,
+      nextSchedule);
+
+    ArgumentCaptor<WorkflowOptions> optionsCaptor = ArgumentCaptor.forClass(WorkflowOptions.class);
+
+    verify(workflowClientMock).newWorkflowStub(
+      eq(CheckDebtPositionExpirationWF.class),
+      optionsCaptor.capture()
+    );
+
+    WorkflowOptions capturedOptions = optionsCaptor.getValue();
+    assertEquals(expectedDuration, capturedOptions.getStartDelay());
+    assertEquals(taskQueue, capturedOptions.getTaskQueue());
+    assertEquals(workflowId, capturedOptions.getWorkflowId());
+  }
 
 }
