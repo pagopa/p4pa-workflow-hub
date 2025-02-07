@@ -53,6 +53,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
   @Override
   public void classify() {
+    log.info("Notifying Transfer Classifications: {}", toNotify);
 
     toNotify.stream()
       .flatMap(r -> r. getTransfers2classify().stream())

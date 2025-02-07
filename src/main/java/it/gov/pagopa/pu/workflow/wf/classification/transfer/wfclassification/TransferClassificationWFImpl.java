@@ -36,6 +36,8 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
 
   @Override
   public void classify() {
+    log.info("Classifying Transfers: {}", toClassify);
+
     toClassify.stream().distinct()
       .forEach(item -> {
         log.info("Handling Transfer classification for semantic key {}", item);
