@@ -31,8 +31,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -202,7 +201,7 @@ class WorkflowServiceTest {
     String workflowId = "test-workflow-id";
 
     LocalDateTime nextSchedule = LocalDateTime.now().plusDays(1);
-    Duration expectedDelay = Duration.ofDays(1);
+    Duration expectedMaxDuration = Duration.ofDays(1);
 
     workflowService.buildWorkflowStubScheduled(CheckDebtPositionExpirationWF.class,
       taskQueue,
@@ -217,7 +216,11 @@ class WorkflowServiceTest {
     );
 
     WorkflowOptions capturedOptions = optionsCaptor.getValue();
-    assertEquals(expectedDelay, capturedOptions.getStartDelay());
+    Duration actualStartDelay = capturedOptions.getStartDelay();
+    assertNotNull(actualStartDelay);
+    Duration diff = expectedMaxDuration.minus(actualStartDelay);
+    assertTrue(diff.toSeconds() >= 0);
+    assertTrue(diff.toSeconds() < 5);
     assertEquals(taskQueue, capturedOptions.getTaskQueue());
     assertEquals(workflowId, capturedOptions.getWorkflowId());
   }
@@ -227,8 +230,8 @@ class WorkflowServiceTest {
     String taskQueue = "test-task-queue";
     String workflowId = "test-workflow-id";
 
-    Duration expectedDuration = Duration.ofDays(1);
-    OffsetDateTime nextSchedule = OffsetDateTime.now(ZoneOffset.MAX).plus(expectedDuration);
+    Duration expectedMaxDuration = Duration.ofDays(1);
+    OffsetDateTime nextSchedule = OffsetDateTime.now(ZoneOffset.MAX).plus(expectedMaxDuration);
 
     workflowService.buildWorkflowStubScheduled(CheckDebtPositionExpirationWF.class,
       taskQueue,
@@ -243,7 +246,11 @@ class WorkflowServiceTest {
     );
 
     WorkflowOptions capturedOptions = optionsCaptor.getValue();
-    assertEquals(expectedDuration, capturedOptions.getStartDelay());
+    Duration actualStartDelay = capturedOptions.getStartDelay();
+    assertNotNull(actualStartDelay);
+    Duration diff = expectedMaxDuration.minus(actualStartDelay);
+    assertTrue(diff.toSeconds() >= 0);
+    assertTrue(diff.toSeconds() < 5);
     assertEquals(taskQueue, capturedOptions.getTaskQueue());
     assertEquals(workflowId, capturedOptions.getWorkflowId());
   }
