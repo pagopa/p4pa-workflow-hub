@@ -26,6 +26,48 @@
     "description" : "the DebtPosition API"
   } ],
   "paths" : {
+    "/workflowhub/workflow/debt-position/{debtPositionId}/check-expiration" : {
+      "post" : {
+        "tags" : [ "DebtPosition" ],
+        "description" : "Check if a debt position expiration.",
+        "operationId" : "checkDpExpiration",
+        "parameters" : [ {
+          "name" : "debtPositionId",
+          "in" : "path",
+          "description" : "The id of debt position.",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Debt position expiration handled",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
     "/workflowhub/workflow/debt-position/sync" : {
       "post" : {
         "tags" : [ "DebtPosition" ],

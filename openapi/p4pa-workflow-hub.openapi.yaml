@@ -131,6 +131,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/debt-position/{debtPositionId}/check-expiration:
+    post:
+      tags:
+        - DebtPosition
+      operationId: checkDpExpiration
+      description: Check if a debt position expiration.
+      parameters:
+        - name: debtPositionId
+          in: path
+          required: true
+          description: The id of debt position.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: "Debt position expiration handled"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /ingestion-flow/payments-reporting/{ingestionFlowFileId}:
     post:
       tags:
