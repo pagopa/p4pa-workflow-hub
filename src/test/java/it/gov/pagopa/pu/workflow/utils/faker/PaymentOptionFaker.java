@@ -15,7 +15,6 @@ public class PaymentOptionFaker {
       .debtPositionId(1L)
       .totalAmountCents(1L)
       .status(PaymentOptionDTO.StatusEnum.TO_SYNC)
-      .multiDebtor(false)
       .dueDate(OFFSET_DATE_TIME)
       .description("description")
       .paymentOptionType(PaymentOptionDTO.PaymentOptionTypeEnum.DOWN_PAYMENT)
