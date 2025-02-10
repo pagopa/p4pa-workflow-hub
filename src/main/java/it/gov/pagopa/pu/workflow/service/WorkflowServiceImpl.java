@@ -8,6 +8,7 @@ import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
 import io.temporal.failure.TemporalException;
 import io.temporal.internal.client.WorkflowClientHelper;
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
@@ -69,5 +70,12 @@ public class WorkflowServiceImpl implements WorkflowService {
       log.error("An error occurred while retrieving the workflow status: {}", e.getMessage());
       throw new WorkflowInternalErrorException(e.getMessage());
     }
+  }
+
+  /** This method should be called in all workflows having signalMethods before to handle signal outcome */
+  public static void waitForSignalMethods(){
+    log.info("Waiting for signal handlers");
+    Workflow.await(Workflow::isEveryHandlerFinished);
+    log.info("All pending signals have been handled");
   }
 }

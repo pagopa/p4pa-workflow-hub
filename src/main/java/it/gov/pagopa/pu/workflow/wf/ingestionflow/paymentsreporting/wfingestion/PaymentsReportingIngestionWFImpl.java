@@ -50,13 +50,13 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
     String errorDescription = processFile(ingestionFlowFileId);
 
     boolean success = errorDescription==null;
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
       success
         ? IngestionFlowFile.StatusEnum.COMPLETED
         : IngestionFlowFile.StatusEnum.ERROR,
       errorDescription,
       null);
+    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
     log.info("PaymentsReporting Ingestion completed for file with ID {}", ingestionFlowFileId);
   }
