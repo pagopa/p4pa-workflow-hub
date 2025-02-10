@@ -41,7 +41,7 @@ public class CheckDebtPositionExpirationWFImpl implements CheckDebtPositionExpir
   public void checkDpExpiration(Long debtPositionId) {
     log.info("Starting workflow to check expiration of DebtPosition with ID: {}", debtPositionId);
     OffsetDateTime nextDueDate = debtPositionExpirationActivity.checkAndUpdateInstallmentExpiration(debtPositionId);
-    log.info("Checked expiration of DebtPosition with ID: {}", debtPositionId);
+    log.info("Checked expiration of DebtPosition with ID: {}, and retrieved the next due date: {}", debtPositionId, nextDueDate);
     if (nextDueDate != null) {
       log.info("Start scheduling the next check expiration of DebtPosition with ID: {}", debtPositionId);
       scheduleCheckDpExpirationActivity.scheduleNextCheckDpExpiration(debtPositionId, nextDueDate.plusDays(1));

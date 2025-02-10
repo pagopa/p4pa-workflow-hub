@@ -73,7 +73,7 @@ public class WorkflowServiceImpl implements WorkflowService {
       throw new WorkflowInternalErrorException(e.getMessage());
     }
   }
-  
+
   /** This method should be called in all workflows having signalMethods before to handle signal outcome */
   public static void waitForSignalMethods(){
     log.info("Waiting for signal handlers");
@@ -101,7 +101,8 @@ public class WorkflowServiceImpl implements WorkflowService {
   @Override
   public <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, OffsetDateTime dateTime) {
     OffsetDateTime offsetDateTimeNow = OffsetDateTime.now(ZoneId.systemDefault());
-    Duration startDelay = Duration.between(offsetDateTimeNow, dateTime.atZoneSameInstant(ZoneId.systemDefault()));
+    Duration startDelay = Duration.between(offsetDateTimeNow, dateTime);
     return buildWorkflowStubDelayed(workflowClass, taskQueue, workflowId, startDelay);
- 
+
+  }
 }
