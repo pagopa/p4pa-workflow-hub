@@ -100,9 +100,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   @Override
   public <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, OffsetDateTime dateTime) {
-    OffsetDateTime offsetDateTimeNow = OffsetDateTime.now(ZoneId.systemDefault());
-    Duration startDelay = Duration.between(offsetDateTimeNow, dateTime);
+    Duration startDelay = Duration.between(OffsetDateTime.now(), dateTime);
     return buildWorkflowStubDelayed(workflowClass, taskQueue, workflowId, startDelay);
-
   }
 }
