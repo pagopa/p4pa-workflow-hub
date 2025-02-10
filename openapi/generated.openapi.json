@@ -528,14 +528,6 @@
             "type" : "string",
             "enum" : [ "ORDINARY", "ORDINARY_SIL", "SPONTANEOUS", "SECONDARY_ORG", "RECEIPT_FILE", "RECEIPT_PAGOPA", "REPORTING_PAGOPA" ]
           },
-          "ingestionFlowFileId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "ingestionFlowFileLineNumber" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "organizationId" : {
             "type" : "integer",
             "format" : "int64"
@@ -544,15 +536,17 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "notificationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
           "validityDate" : {
             "type" : "string",
             "format" : "date-time"
           },
           "flagIuvVolatile" : {
+            "type" : "boolean"
+          },
+          "multiDebtor" : {
+            "type" : "boolean"
+          },
+          "flagPagoPaPayment" : {
             "type" : "boolean"
           },
           "creationDate" : {
@@ -618,14 +612,7 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "notificationFeeCents" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "remittanceInformation" : {
-            "type" : "string"
-          },
-          "humanFriendlyRemittanceInformation" : {
             "type" : "string"
           },
           "balance" : {
@@ -642,6 +629,22 @@
             "items" : {
               "$ref" : "#/components/schemas/TransferDTO"
             }
+          },
+          "notificationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "ingestionFlowFileId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "ingestionFlowFileLineNumber" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "receiptId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
           "creationDate" : {
             "type" : "string",
@@ -684,9 +687,6 @@
           "status" : {
             "type" : "string",
             "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "DRAFT" ]
-          },
-          "multiDebtor" : {
-            "type" : "boolean"
           },
           "dueDate" : {
             "type" : "string",

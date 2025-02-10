@@ -48,7 +48,7 @@ val micrometerVersion = "1.4.1"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
 val bouncycastleVersion = "1.79"
-val activitiesVersion = "1.49.0"
+val activitiesVersion = "1.49.1"
 val mapStructVersion = "1.6.3"
 
 dependencies {
