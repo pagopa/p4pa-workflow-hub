@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification;
 
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
@@ -14,12 +15,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 @ExtendWith(MockitoExtension.class)
 class IufClassificationWFTest {
@@ -73,14 +76,20 @@ class IufClassificationWFTest {
     notifyPaymentsReporting("iuf1", "iur1", "iuv1");
     notifyPaymentsReporting("iuf3", "iur3", "iuv3");
 
-    wf.classify();
+    try(MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::isEveryHandlerFinished).thenReturn(true);
 
-    Mockito.verify(startTransferClassificationActivityMock)
-      .signalTransferClassificationWithStart(1L, "iuv1", "iur1", 1);
-    Mockito.verify(startTransferClassificationActivityMock)
-      .signalTransferClassificationWithStart(1L, "iuv2", "iur2", 1);
-    Mockito.verify(startTransferClassificationActivityMock)
-      .signalTransferClassificationWithStart(1L, "iuv3", "iur3", 1);
+      wf.classify();
+
+      workflowMock.verify(() -> Workflow.await(Mockito.argThat(Supplier::get)));
+
+      Mockito.verify(startTransferClassificationActivityMock)
+        .signalTransferClassificationWithStart(1L, "iuv1", "iur1", 1);
+      Mockito.verify(startTransferClassificationActivityMock)
+        .signalTransferClassificationWithStart(1L, "iuv2", "iur2", 1);
+      Mockito.verify(startTransferClassificationActivityMock)
+        .signalTransferClassificationWithStart(1L, "iuv3", "iur3", 1);
+    }
   }
 
   void notifyTreasury(String treasuryId, String iuf, String iur, String iuv) {

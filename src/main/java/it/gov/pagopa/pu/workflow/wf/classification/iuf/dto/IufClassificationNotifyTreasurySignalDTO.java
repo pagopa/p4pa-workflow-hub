@@ -4,10 +4,12 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class IufClassificationNotifyTreasurySignalDTO {
   // common fields
   private Long organizationId;

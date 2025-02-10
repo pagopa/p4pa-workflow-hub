@@ -52,13 +52,13 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     ingestionResult = processFile(ingestionFlowFileId);
     boolean success = StringUtils.isEmpty(ingestionResult.getErrorDescription());
 
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
       success
         ? IngestionFlowFile.StatusEnum.COMPLETED
         : IngestionFlowFile.StatusEnum.ERROR,
       ingestionResult.getErrorDescription(),
       ingestionResult.getDiscardedFileName());
+    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
     log.info("Treasury OPI ingestion with ID {} is completed", ingestionFlowFileId);
   }

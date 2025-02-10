@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,10 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
 
   @Override
   public void classify() {
+    WorkflowServiceImpl.waitForSignalMethods();
+
+    log.info("Classifying Transfers: {}", toClassify);
+
     toClassify.stream().distinct()
       .forEach(item -> {
         log.info("Handling Transfer classification for semantic key {}", item);

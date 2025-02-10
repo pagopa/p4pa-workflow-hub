@@ -500,7 +500,7 @@
         "properties" : {
           "code" : {
             "type" : "string",
-            "enum" : [ "WORKFLOW_NOT_FOUND", "WORKFLOW_GENERIC_ERROR" ]
+            "enum" : [ "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR" ]
           },
           "message" : {
             "type" : "string"
@@ -526,7 +526,7 @@
           },
           "debtPositionOrigin" : {
             "type" : "string",
-            "enum" : [ "ORDINARY", "SPONTANEOUS", "SECONDARY_ORG", "RECEIPT_FILE", "RECEIPT_PAGOPA", "REPORTING_PAGOPA" ]
+            "enum" : [ "ORDINARY", "ORDINARY_SIL", "SPONTANEOUS", "SECONDARY_ORG", "RECEIPT_FILE", "RECEIPT_PAGOPA", "REPORTING_PAGOPA" ]
           },
           "ingestionFlowFileId" : {
             "type" : "integer",
