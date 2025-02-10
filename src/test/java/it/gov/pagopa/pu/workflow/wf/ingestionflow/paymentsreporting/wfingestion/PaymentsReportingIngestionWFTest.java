@@ -93,12 +93,12 @@ class PaymentsReportingIngestionWFTest {
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
 
     Mockito.verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, true);
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
 
     Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock)
       .signalIufClassificationWithStart(organizationId, "iuf-1", List.of(paymentsReportingTransferDTO));
@@ -117,11 +117,11 @@ class PaymentsReportingIngestionWFTest {
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     Mockito.verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, false);
 
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.ERROR, "DUMMY", null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.ERROR, "DUMMY", null);
   }
 }

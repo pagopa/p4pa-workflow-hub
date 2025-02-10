@@ -48,11 +48,12 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     log.info("Handling Treasury OPI ingestionFlowFileId {}", ingestionFlowFileId);
     TreasuryIufIngestionFlowFileResult ingestionResult;
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     ingestionResult = processFile(ingestionFlowFileId);
     boolean success = StringUtils.isEmpty(ingestionResult.getErrorDescription());
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
+      IngestionFlowFile.StatusEnum.PROCESSING,
       success
         ? IngestionFlowFile.StatusEnum.COMPLETED
         : IngestionFlowFile.StatusEnum.ERROR,

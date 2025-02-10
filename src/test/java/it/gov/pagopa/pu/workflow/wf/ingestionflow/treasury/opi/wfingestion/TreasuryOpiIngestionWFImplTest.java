@@ -73,11 +73,11 @@ class TreasuryOpiIngestionWFImplTest {
 
     // Then
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowId, true);
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+      .updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
 
     verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, iuf, treasuryId);
   }
@@ -95,11 +95,11 @@ class TreasuryOpiIngestionWFImplTest {
 
     // Then
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, false);
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.ERROR, "error", "discardedFileName");
+      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.ERROR, "error", "discardedFileName");
   }
 
   @Test
@@ -115,10 +115,10 @@ class TreasuryOpiIngestionWFImplTest {
 
     // Then
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, false);
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.ERROR, "Unexpected error when processing TreasuryOPI file: DUMMY", null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.ERROR, "Unexpected error when processing TreasuryOPI file: DUMMY", null);
   }
 }
