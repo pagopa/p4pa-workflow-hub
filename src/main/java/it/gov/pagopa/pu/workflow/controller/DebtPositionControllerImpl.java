@@ -1,13 +1,17 @@
 package it.gov.pagopa.pu.workflow.controller;
 
-import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
 import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
+import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -20,16 +24,12 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> handleDpSync(DebtPositionDTO debtPositionDTO) {
-    log.info("Starting workflow to handling debt position sync with debtPositionId: {}", debtPositionDTO.getDebtPositionId());
-    WorkflowCreatedDTO createDpSyncResponseDTO = service.handleDPSync(debtPositionDTO);
-    return new ResponseEntity<>(createDpSyncResponseDTO, HttpStatus.OK);
-  }
-
-  @Override
-  public ResponseEntity<WorkflowCreatedDTO> alignDpSyncAca(DebtPositionDTO debtPositionDTO) {
-    log.info("Starting workflow for align debt position sync on ACA with debtPositionId: {}", debtPositionDTO.getDebtPositionId());
-    WorkflowCreatedDTO createDpSyncResponseDTO = service.alignDpSyncAca(debtPositionDTO);
+  public ResponseEntity<WorkflowCreatedDTO> syncDebtPosition(DebtPositionDTO debtPositionDTO, Boolean massive, PaymentEventType paymentEventType) {
+    log.info("Starting workflow to synchronize DebtPosition: {} (massive context: {})", debtPositionDTO.getDebtPositionId(), massive);
+    WorkflowCreatedDTO createDpSyncResponseDTO = service.syncDebtPosition(
+      debtPositionDTO, paymentEventType,
+      Optional.ofNullable(massive).orElse(false),
+      SecurityUtils.getAccessToken());
     return new ResponseEntity<>(createDpSyncResponseDTO, HttpStatus.OK);
   }
 

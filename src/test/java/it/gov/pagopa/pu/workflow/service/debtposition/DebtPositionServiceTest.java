@@ -2,9 +2,8 @@ package it.gov.pagopa.pu.workflow.service.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.SynchronizeSyncAcaWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.HandleDebtPositionWfClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.SynchronizeSyncWfClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DebtPositionServiceTest {
 
   @Mock
-  private HandleDebtPositionWfClient handleDebtPositionWfClientMock;
+  private SynchronizeSyncWfClient synchronizeSyncWfClientMock;
   @Mock
   private SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClientMock;
   @Mock
@@ -32,14 +31,14 @@ class DebtPositionServiceTest {
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(handleDebtPositionWfClientMock, synchronizeSyncAcaWfClientMock, checkDebtPositionExpirationWfClientMock);
+    service = new DebtPositionServiceImpl(synchronizeSyncWfClientMock, synchronizeSyncAcaWfClientMock, checkDebtPositionExpirationWfClientMock);
   }
 
   @Test
   void givenHandleDPSyncThenOk() {
     testWorkflowDP(
-      debtPositionDTO -> handleDebtPositionWfClientMock.handleDPSync(debtPositionDTO),
-      debtPositionRequestDTO -> service.handleDPSync(debtPositionRequestDTO)
+      debtPositionDTO -> synchronizeSyncWfClientMock.handleDPSync(debtPositionDTO),
+      debtPositionRequestDTO -> service.syncDebtPosition(debtPositionRequestDTO)
     );
   }
 

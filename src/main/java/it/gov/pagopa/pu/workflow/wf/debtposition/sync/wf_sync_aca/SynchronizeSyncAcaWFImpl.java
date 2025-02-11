@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.wfsyncstandin;
+package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
@@ -9,8 +9,8 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
-import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
-import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.config.SynchronizeDebtPositionWfConfig;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -20,23 +20,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.wfsyncstandin.SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF;
+import static it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca.SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF)
+@WorkflowImpl(taskQueues = TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF)
 public class SynchronizeSyncAcaWFImpl implements SynchronizeSyncAcaWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE_SYNCHRONIZE_SYNC_ACA_WF = "SynchronizeSyncAcaWF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF = "SynchronizeDP_SYNC+ACA_WF";
 
   private SynchronizeInstallmentAcaActivity synchronizeInstallmentAcaActivity;
   private FinalizeDebtPositionSyncStatusActivity finalizeDebtPositionSyncStatusActivity;
+  private PublishPaymentEventActivity publishPaymentEventActivity;
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
-
-  private final PaymentsProducerService paymentsProducerService;
-
-  public SynchronizeSyncAcaWFImpl(PaymentsProducerService paymentsProducerService) {
-    this.paymentsProducerService = paymentsProducerService;
-  }
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -49,15 +44,20 @@ public class SynchronizeSyncAcaWFImpl implements SynchronizeSyncAcaWF, Applicati
     SynchronizeDebtPositionWfConfig wfConfig = applicationContext.getBean(SynchronizeDebtPositionWfConfig.class);
     synchronizeInstallmentAcaActivity = wfConfig.buildSynchronizeInstallmentAcaActivity();
     finalizeDebtPositionSyncStatusActivity = wfConfig.buildFinalizeDebtPositionSyncStatusActivityStub();
+    publishPaymentEventActivity = wfConfig.buildPublishPaymentEventActivityStub();
     sendDebtPositionIONotificationActivity = wfConfig.buildSendDebtPositionIONotificationActivityStub();
   }
 
   @Override
-  public void synchronizeDPSyncAca(DebtPositionDTO debtPosition) {
+  public void synchronizeDPSyncAca(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
     Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap = invokeAcaStandInCreateDebtPositionActivity(debtPosition);
 
     DebtPositionDTO debtPositionDTO = finalizeDebtPositionSyncStatusActivity.finalizeDebtPositionSyncStatus(debtPosition.getDebtPositionId(), iupdSyncStatusUpdateDTOMap);
     log.info("Sync status updated for IUD/IupdPagoPa and new statuses: {}", iupdSyncStatusUpdateDTOMap);
+
+    if(paymentEventType!=null){
+      publishPaymentEventActivity.publish(debtPositionDTO, paymentEventType, null);
+    }
 
     sendDebtPositionIONotificationActivity.sendMessage(debtPositionDTO);
     log.info("Message sent to IO for organizationId {} and debtPositionTypeOrgId {}", debtPositionDTO.getOrganizationId(), debtPositionDTO.getDebtPositionTypeOrgId());
@@ -89,11 +89,7 @@ public class SynchronizeSyncAcaWFImpl implements SynchronizeSyncAcaWF, Applicati
       log.error("Error occurred while synchronizing Installment with IUD: {} for DebtPosition ID: {}. Error: {}",
         iud, debtPosition.getDebtPositionId(), e.getMessage());
 
-      paymentsProducerService.notifyPaymentsEvent(
-        debtPosition,
-        PaymentEventType.SYNC_ERROR,
-        e.getMessage()
-      );
+      publishPaymentEventActivity.publish(debtPosition,PaymentEventType.SYNC_ERROR,e.getMessage());
     }
   }
 

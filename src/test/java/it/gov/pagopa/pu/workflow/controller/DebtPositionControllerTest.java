@@ -37,7 +37,7 @@ class DebtPositionControllerTest {
   @Test
   void whenCreateDpSyncThenOk() throws Exception {
     testWorkflowCreationDP("/workflowhub/workflow/debt-position/sync",
-      debtPositionRequestDTO -> service.handleDPSync(debtPositionRequestDTO));
+      debtPositionRequestDTO -> service.syncDebtPosition(debtPositionRequestDTO));
   }
 
   @Test

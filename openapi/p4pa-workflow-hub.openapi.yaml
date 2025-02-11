@@ -10,8 +10,21 @@ paths:
     post:
       tags:
         - DebtPosition
-      operationId: handleDpSync
-      description: Handle a debt position sync.
+      operationId: syncDebtPosition
+      description: Sync a debtPosition.
+      parameters:
+        - name: massive
+          in: query
+          description: Indicates if the operation is massive (true) or single (false).
+          required: false
+          schema:
+            type: boolean
+        - name: paymentEventType
+          in: query
+          description: If provided, it will publish into Kafka queue the DebtPosition.
+          required: false
+          schema:
+            type: PaymentEventType
       requestBody:
         required: true
         content:
@@ -21,106 +34,6 @@ paths:
       responses:
         '200':
           description: "Debt position created"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowCreatedDTO'
-        '500':
-          description: Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/debt-position/aca:
-    post:
-      tags:
-        - DebtPosition
-      operationId: alignDpSyncAca
-      description: Align a debt position sync in Aca.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: 'DebtPositionDTO'
-      responses:
-        '200':
-          description: "Debt position Aca aligned"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowCreatedDTO'
-        '500':
-          description: Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/debt-position/gpd-preload:
-    post:
-      tags:
-        - DebtPosition
-      operationId: alignDpSyncGpdPreload
-      description: Align a debt position sync using GPD preload.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: 'DebtPositionDTO'
-      responses:
-        '200':
-          description: "Debt position Aca aligned"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowCreatedDTO'
-        '500':
-          description: Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/debt-position/aca_gpd-preload:
-    post:
-      tags:
-        - DebtPosition
-      operationId: alignDpSyncAcaGpdPreload
-      description: Align a debt position sync in Aca and GPD preload.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: 'DebtPositionDTO'
-      responses:
-        '200':
-          description: "Debt position Aca aligned"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowCreatedDTO'
-        '500':
-          description: Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/debt-position/gpd:
-    post:
-      tags:
-        - DebtPosition
-      operationId: alignDpGPD
-      description: Align a debt position sync in GPD.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: 'DebtPositionDTO'
-      responses:
-        '200':
-          description: "Debt position Aca aligned"
           content:
             application/json:
               schema:
@@ -164,9 +77,7 @@ paths:
         - IngestionFlow
       operationId: ingestPaymentsReportingFile
       summary: Payments reporting flow file ingestion
-      description: It will start the Payments Reporting flow file ingestion
-        returning its workflowId
-
+      description: It will start the Payments Reporting flow file ingestion returning its workflowId
       parameters:
         - name: ingestionFlowFileId
           in: path
@@ -194,8 +105,7 @@ paths:
         - IngestionFlow
       operationId: ingestTreasuryOpi
       summary: Treasury OPI ingestion
-      description: It will start the Treasury OPI ingestion
-        returning its workflowId
+      description: It will start the Treasury OPI ingestion returning its workflowId
       parameters:
         - name: ingestionFlowFileId
           in: path
@@ -223,8 +133,7 @@ paths:
         - Classification
       operationId: transferClassification
       summary: Transfer classification
-      description: It will Processes Transfer classification based on the provided parameters
-        returning its workflowId
+      description: It will Processes Transfer classification based on the provided parameters returning its workflowId
       parameters:
         - name: orgId
           in: path

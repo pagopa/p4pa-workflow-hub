@@ -1,23 +1,25 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync;
+package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.config.HandleDebtPositionWfConfig;
+import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import static it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync.HandleDebtPositionSyncWFImpl.TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF;
-
+import static it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync.SynchronizeSyncWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF)
-public class HandleDebtPositionSyncWFImpl implements HandleDebtPositionSyncWF, ApplicationContextAware {
+@WorkflowImpl(taskQueues = TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF)
+public class SynchronizeSyncWFImpl implements SynchronizeSyncWF, ApplicationContextAware {
 
-  public static final String TASK_QUEUE_HANDLE_DEBT_POSITION_SYNC_WF = "HandleDebtPositionSyncWF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF = "SynchronizeDP_SYNC_WF";
 
+  private PublishPaymentEventActivity publishPaymentEventActivity;
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
 
   /**
@@ -28,13 +30,17 @@ public class HandleDebtPositionSyncWFImpl implements HandleDebtPositionSyncWF, A
    */
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    HandleDebtPositionWfConfig wfConfig = applicationContext.getBean(HandleDebtPositionWfConfig.class);
+    SynchronizeDebtPositionWfConfig wfConfig = applicationContext.getBean(SynchronizeDebtPositionWfConfig.class);
+    publishPaymentEventActivity = wfConfig.buildPublishPaymentEventActivityStub();
     sendDebtPositionIONotificationActivity = wfConfig.buildSendDebtPositionIONotificationActivityStub();
   }
 
   @Override
-  public void handleDPSync(DebtPositionDTO debtPosition) {
+  public void synchronizeDpSync(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
     log.info("Starting workflow to handle DebtPosition with ID: {}", debtPosition.getDebtPositionId());
+    if(paymentEventType!=null){
+      publishPaymentEventActivity.publish(debtPosition, paymentEventType, null);
+    }
     sendDebtPositionIONotificationActivity.sendMessage(debtPosition);
     log.info("Message sent to IO for organizationId {} and debtPositionTypeOrgId {}", debtPosition.getOrganizationId(), debtPosition.getDebtPositionTypeOrgId());
   }
