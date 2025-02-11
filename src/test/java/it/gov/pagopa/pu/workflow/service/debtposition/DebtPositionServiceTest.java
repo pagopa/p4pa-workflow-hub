@@ -2,8 +2,11 @@ package it.gov.pagopa.pu.workflow.service.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
+import it.gov.pagopa.pu.workflow.service.debtposition.sync.DebtPositionSyncService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.SynchronizeSyncWfClient;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,9 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DebtPositionServiceTest {
 
   @Mock
-  private SynchronizeSyncWfClient synchronizeSyncWfClientMock;
-  @Mock
-  private SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClientMock;
+  private DebtPositionSyncService debtPositionSyncServiceMock;
   @Mock
   private CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClientMock;
 
@@ -31,23 +32,34 @@ class DebtPositionServiceTest {
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(synchronizeSyncWfClientMock, synchronizeSyncAcaWfClientMock, checkDebtPositionExpirationWfClientMock);
+    service = new DebtPositionServiceImpl(debtPositionSyncServiceMock, checkDebtPositionExpirationWfClientMock);
+  }
+
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(debtPositionSyncServiceMock, checkDebtPositionExpirationWfClientMock);
   }
 
   @Test
   void givenHandleDPSyncThenOk() {
-    testWorkflowDP(
-      debtPositionDTO -> synchronizeSyncWfClientMock.handleDPSync(debtPositionDTO),
-      debtPositionRequestDTO -> service.syncDebtPosition(debtPositionRequestDTO)
-    );
-  }
+    // Given
+    String accessToken = "ACCESSTOKEN";
+    DebtPositionDTO debtPosition = new DebtPositionDTO();
+    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    Boolean massive = Boolean.TRUE;
 
-  @Test
-  void givenHandleDPSyncAcaThenOk() {
-    testWorkflowDP(
-      debtPositionDTO -> synchronizeSyncAcaWfClientMock.synchronizeDPSyncAca(debtPositionDTO),
-      debtPositionRequestDTO -> service.alignDpSyncAca(debtPositionRequestDTO)
-    );
+    WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
+      .workflowId("WFID")
+      .build();
+
+    Mockito.when(debtPositionSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(massive), Mockito.same(accessToken)))
+      .thenReturn("WFID");
+
+    // When
+    WorkflowCreatedDTO result = service.syncDebtPosition(debtPosition, paymentEventType, massive, accessToken);
+
+    // Then
+    Assertions.assertEquals(expectedResult, result);
   }
 
   @Test

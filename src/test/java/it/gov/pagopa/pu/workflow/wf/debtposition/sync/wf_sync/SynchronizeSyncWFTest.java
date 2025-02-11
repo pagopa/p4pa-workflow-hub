@@ -1,9 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.handledp.wfsync;
+package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.config.HandleDebtPositionWfConfig;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync.SynchronizeSyncWFImpl;
+import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,19 +21,23 @@ class SynchronizeSyncWFTest {
 
   @Mock
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivityMock;
+  @Mock
+  private PublishPaymentEventActivity publishPaymentEventActivityMock;
 
   private SynchronizeSyncWFImpl wf;
 
   @BeforeEach
   void init() {
-    HandleDebtPositionWfConfig handleDebtPositionWfConfigMock = Mockito.mock(HandleDebtPositionWfConfig.class);
+    SynchronizeDebtPositionWfConfig wfConfigMock = Mockito.mock(SynchronizeDebtPositionWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
-    Mockito.when(handleDebtPositionWfConfigMock.buildSendDebtPositionIONotificationActivityStub())
+    Mockito.when(wfConfigMock.buildSendDebtPositionIONotificationActivityStub())
       .thenReturn(sendDebtPositionIONotificationActivityMock);
+    Mockito.when(wfConfigMock.buildPublishPaymentEventActivityStub())
+        .thenReturn(publishPaymentEventActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(HandleDebtPositionWfConfig.class))
-      .thenReturn(handleDebtPositionWfConfigMock);
+    Mockito.when(applicationContextMock.getBean(SynchronizeDebtPositionWfConfig.class))
+      .thenReturn(wfConfigMock);
 
     wf = new SynchronizeSyncWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -44,17 +49,19 @@ class SynchronizeSyncWFTest {
   }
 
   @Test
-  void givenSynchronizeDpSyncThenSuccess() {
+  void givenSynchronizeDPSyncThenSuccess() {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
+    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
 
     Mockito.doNothing().when(sendDebtPositionIONotificationActivityMock)
       .sendMessage(debtPosition);
 
     // When
-    wf.synchronizeDpSync(debtPosition);
+    wf.synchronizeDPSync(debtPosition, paymentEventType);
 
     // Then
     Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
+    Mockito.verify(publishPaymentEventActivityMock).publish(debtPosition, paymentEventType, null);
   }
 }

@@ -16,5 +16,5 @@ public interface SynchronizeSyncWF {
    * @param debtPosition the debt position to be created
    * */
   @WorkflowMethod
-  void synchronizeDpSync(DebtPositionDTO debtPosition, PaymentEventType paymentEventType);
+  void synchronizeDPSync(DebtPositionDTO debtPosition, PaymentEventType paymentEventType);
 }

@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.Send
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
-import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,26 +32,28 @@ class SynchronizeSyncAcaWFTest {
   @Mock
   private SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivityMock;
   @Mock
-  private PaymentsProducerService paymentsProducerServiceMock;
+  private PublishPaymentEventActivity publishPaymentEventActivityMock;
 
   private SynchronizeSyncAcaWFImpl wf;
 
   @BeforeEach
   void init() {
-    SynchronizeDebtPositionWfConfig createDebtPositionWfConfigMock = Mockito.mock(SynchronizeDebtPositionWfConfig.class);
+    SynchronizeDebtPositionWfConfig wfConfigMock = Mockito.mock(SynchronizeDebtPositionWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
-    Mockito.when(createDebtPositionWfConfigMock.buildSynchronizeInstallmentAcaActivity())
+    Mockito.when(wfConfigMock.buildSynchronizeInstallmentAcaActivity())
       .thenReturn(synchronizeInstallmentAcaActivityMock);
-    Mockito.when(createDebtPositionWfConfigMock.buildFinalizeDebtPositionSyncStatusActivityStub())
+    Mockito.when(wfConfigMock.buildFinalizeDebtPositionSyncStatusActivityStub())
       .thenReturn(finalizeDebtPositionSyncStatusActivityMock);
-    Mockito.when(createDebtPositionWfConfigMock.buildSendDebtPositionIONotificationActivityStub())
+    Mockito.when(wfConfigMock.buildSendDebtPositionIONotificationActivityStub())
       .thenReturn(sendDebtPositionIONotificationActivityMock);
+    Mockito.when(wfConfigMock.buildPublishPaymentEventActivityStub())
+        .thenReturn(publishPaymentEventActivityMock);
 
     Mockito.when(applicationContextMock.getBean(SynchronizeDebtPositionWfConfig.class))
-      .thenReturn(createDebtPositionWfConfigMock);
+      .thenReturn(wfConfigMock);
 
-    wf = new SynchronizeSyncAcaWFImpl(paymentsProducerServiceMock);
+    wf = new SynchronizeSyncAcaWFImpl();
     wf.setApplicationContext(applicationContextMock);
   }
 
@@ -60,7 +62,8 @@ class SynchronizeSyncAcaWFTest {
     Mockito.verifyNoMoreInteractions(
       synchronizeInstallmentAcaActivityMock,
       finalizeDebtPositionSyncStatusActivityMock,
-      sendDebtPositionIONotificationActivityMock);
+      sendDebtPositionIONotificationActivityMock,
+      publishPaymentEventActivityMock);
   }
 
   @Test
@@ -69,6 +72,7 @@ class SynchronizeSyncAcaWFTest {
     Long id = 1L;
     String iud = "iud";
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
+    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
 
     Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = Map.of("iud", IupdSyncStatusUpdateDTO.builder()
       .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID)
@@ -79,12 +83,13 @@ class SynchronizeSyncAcaWFTest {
       .thenReturn(debtPosition);
 
     // When
-    wf.synchronizeDPSyncAca(debtPosition);
+    wf.synchronizeDPSyncAca(debtPosition, paymentEventType);
 
     // Then
     Mockito.verify(synchronizeInstallmentAcaActivityMock).synchronizeInstallmentAca(debtPosition, iud);
     Mockito.verify(finalizeDebtPositionSyncStatusActivityMock).finalizeDebtPositionSyncStatus(id, syncStatusDTO);
     Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
+    Mockito.verify(publishPaymentEventActivityMock).publish(debtPosition, paymentEventType, null);
   }
 
   @Test
@@ -93,6 +98,7 @@ class SynchronizeSyncAcaWFTest {
     Long id = 1L;
     String iud = "iud";
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
+    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
 
     Map<String, IupdSyncStatusUpdateDTO> syncStatusDTO = new HashMap<>();
 
@@ -103,12 +109,13 @@ class SynchronizeSyncAcaWFTest {
       .thenReturn(debtPosition);
 
     // When
-    wf.synchronizeDPSyncAca(debtPosition);
+    wf.synchronizeDPSyncAca(debtPosition, paymentEventType);
 
     // Then
     Mockito.verify(synchronizeInstallmentAcaActivityMock).synchronizeInstallmentAca(debtPosition, iud);
-    Mockito.verify(paymentsProducerServiceMock).notifyPaymentsEvent(debtPosition, PaymentEventType.SYNC_ERROR, "Error");
+    Mockito.verify(publishPaymentEventActivityMock).publish(debtPosition, PaymentEventType.SYNC_ERROR, "Error");
     Mockito.verify(finalizeDebtPositionSyncStatusActivityMock).finalizeDebtPositionSyncStatus(id, syncStatusDTO);
     Mockito.verify(sendDebtPositionIONotificationActivityMock).sendMessage(debtPosition);
+    Mockito.verify(publishPaymentEventActivityMock).publish(debtPosition, paymentEventType, null);
   }
 }

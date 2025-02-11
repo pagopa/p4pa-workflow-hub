@@ -71,8 +71,26 @@
     "/workflowhub/workflow/debt-position/sync" : {
       "post" : {
         "tags" : [ "DebtPosition" ],
-        "description" : "Handle a debt position sync.",
-        "operationId" : "handleDpSync",
+        "description" : "Sync a debtPosition.",
+        "operationId" : "syncDebtPosition",
+        "parameters" : [ {
+          "name" : "massive",
+          "in" : "query",
+          "description" : "Indicates if the operation is massive (true) or single (false).",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "paymentEventType",
+          "in" : "query",
+          "description" : "If provided, it will publish into Kafka queue the DebtPosition.",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "DP_CREATED", "DP_UPDATED", "RT_RECEIVED", "SYNC_ERROR" ]
+          }
+        } ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -86,174 +104,6 @@
         "responses" : {
           "200" : {
             "description" : "Debt position created",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "BearerAuth" : [ ]
-        } ]
-      }
-    },
-    "/workflowhub/workflow/debt-position/gpd" : {
-      "post" : {
-        "tags" : [ "DebtPosition" ],
-        "description" : "Align a debt position sync in GPD.",
-        "operationId" : "alignDpGPD",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/DebtPositionDTO"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Debt position Aca aligned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "BearerAuth" : [ ]
-        } ]
-      }
-    },
-    "/workflowhub/workflow/debt-position/gpd-preload" : {
-      "post" : {
-        "tags" : [ "DebtPosition" ],
-        "description" : "Align a debt position sync using GPD preload.",
-        "operationId" : "alignDpSyncGpdPreload",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/DebtPositionDTO"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Debt position Aca aligned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "BearerAuth" : [ ]
-        } ]
-      }
-    },
-    "/workflowhub/workflow/debt-position/aca_gpd-preload" : {
-      "post" : {
-        "tags" : [ "DebtPosition" ],
-        "description" : "Align a debt position sync in Aca and GPD preload.",
-        "operationId" : "alignDpSyncAcaGpdPreload",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/DebtPositionDTO"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Debt position Aca aligned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "BearerAuth" : [ ]
-        } ]
-      }
-    },
-    "/workflowhub/workflow/debt-position/aca" : {
-      "post" : {
-        "tags" : [ "DebtPosition" ],
-        "description" : "Align a debt position sync in Aca.",
-        "operationId" : "alignDpSyncAca",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/DebtPositionDTO"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Debt position Aca aligned",
             "content" : {
               "application/json" : {
                 "schema" : {

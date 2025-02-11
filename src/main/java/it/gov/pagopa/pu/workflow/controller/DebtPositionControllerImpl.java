@@ -26,15 +26,15 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
   @Override
   public ResponseEntity<WorkflowCreatedDTO> syncDebtPosition(DebtPositionDTO debtPositionDTO, Boolean massive, PaymentEventType paymentEventType) {
     log.info("Starting workflow to synchronize DebtPosition: {} (massive context: {})", debtPositionDTO.getDebtPositionId(), massive);
-    WorkflowCreatedDTO createDpSyncResponseDTO = service.syncDebtPosition(
-      debtPositionDTO, paymentEventType,
-      Optional.ofNullable(massive).orElse(false),
-      SecurityUtils.getAccessToken());
-    return new ResponseEntity<>(createDpSyncResponseDTO, HttpStatus.OK);
+    return ResponseEntity.ok(
+      service.syncDebtPosition(
+        debtPositionDTO, paymentEventType,
+        Optional.ofNullable(massive).orElse(false),
+        SecurityUtils.getAccessToken()));
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> checkDpExpiration(Long debtPositionId){
+  public ResponseEntity<WorkflowCreatedDTO> checkDpExpiration(Long debtPositionId) {
     log.info("Starting workflow for handle expiration of debt position with debtPositionId: {}", debtPositionId);
     WorkflowCreatedDTO createWorkflowResponseDTO = service.checkDpExpiration(debtPositionId);
     return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);

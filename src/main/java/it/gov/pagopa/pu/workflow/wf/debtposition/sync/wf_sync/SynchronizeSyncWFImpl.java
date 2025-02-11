@@ -36,7 +36,7 @@ public class SynchronizeSyncWFImpl implements SynchronizeSyncWF, ApplicationCont
   }
 
   @Override
-  public void synchronizeDpSync(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
+  public void synchronizeDPSync(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
     log.info("Starting workflow to handle DebtPosition with ID: {}", debtPosition.getDebtPositionId());
     if(paymentEventType!=null){
       publishPaymentEventActivity.publish(debtPosition, paymentEventType, null);

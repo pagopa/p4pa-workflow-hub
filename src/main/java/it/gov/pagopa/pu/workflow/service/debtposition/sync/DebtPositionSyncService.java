@@ -17,7 +17,7 @@ public class DebtPositionSyncService {
   }
 
   public String invokeWorkflow(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, boolean massive, String accessToken) {
-    if (Boolean.TRUE.equals(debtPositionDTO.getFlagPagoPaPayment())) {
+    if (Boolean.FALSE.equals(debtPositionDTO.getFlagPagoPaPayment())) {
       return wfClient.synchronizeNoPagoPADPSync(debtPositionDTO, paymentEventType);
     }
 

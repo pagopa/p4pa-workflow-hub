@@ -18,10 +18,10 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Slf4j
 @Service
-public class SynchronizeSyncAcaWfClientImpl implements SynchronizeDebtPositionWfClient {
+public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPositionWfClient {
   private final WorkflowService workflowService;
 
-  public SynchronizeSyncAcaWfClientImpl(WorkflowService workflowService) {
+  public SynchronizeDebtPositionWfClientImpl(WorkflowService workflowService) {
     this.workflowService = workflowService;
   }
 
@@ -34,10 +34,10 @@ public class SynchronizeSyncAcaWfClientImpl implements SynchronizeDebtPositionWf
   public String synchronizeDPSync(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType) {
     log.info("Starting synchronization SYNC DebtPosition WF: {}", debtPositionDTO.getDebtPositionId());
     return startWF(
-      paymentEventType,
       debtPositionDTO,
+      paymentEventType,
       SynchronizeSyncWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF,
-      wf -> wf::synchronizeDpSync,
+      wf -> wf::synchronizeDPSync,
       SynchronizeSyncWF.class);
   }
 
@@ -45,8 +45,8 @@ public class SynchronizeSyncAcaWfClientImpl implements SynchronizeDebtPositionWf
   public String synchronizeDPSyncAca(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType) {
     log.info("Starting synchronization SYNC+ACA DebtPosition WF: {}", debtPositionDTO.getDebtPositionId());
     return startWF(
-      paymentEventType,
       debtPositionDTO,
+      paymentEventType,
       SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF,
       wf -> wf::synchronizeDPSyncAca,
       SynchronizeSyncAcaWF.class);
@@ -68,8 +68,8 @@ public class SynchronizeSyncAcaWfClientImpl implements SynchronizeDebtPositionWf
   }
 
   private <T> String startWF(
-    String paymentEventType,
     DebtPositionDTO debtPositionDTO,
+    PaymentEventType paymentEventType,
     String taskQueue,
     Function<T, Functions.Proc2<DebtPositionDTO, PaymentEventType>> wfMethodCall,
     Class<T> wfInterfaceClass)
@@ -79,7 +79,7 @@ public class SynchronizeSyncAcaWfClientImpl implements SynchronizeDebtPositionWf
       wfInterfaceClass,
       taskQueue,
       workflowId);
-    WorkflowClient.start(wfMethodCall.apply(workflow), paymentEventType, debtPositionDTO);
+    WorkflowClient.start(wfMethodCall.apply(workflow), debtPositionDTO, paymentEventType);
     return workflowId;
   }
 }
