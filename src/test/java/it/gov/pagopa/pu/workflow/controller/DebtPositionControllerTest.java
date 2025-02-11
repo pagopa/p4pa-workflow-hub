@@ -66,4 +66,24 @@ class DebtPositionControllerTest {
       objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
     assertEquals(expected, resultResponse);
   }
+
+  @Test
+  void whenCheckDpExpirationThenOk() throws Exception {
+    String workflowId = "workflow-1";
+    Long debtPositionId = 1L;
+
+    WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
+      .workflowId(workflowId)
+      .build();
+
+    Mockito.when(service.checkDpExpiration(debtPositionId)).thenReturn(expected);
+
+    MvcResult result = mockMvc.perform(post("/workflowhub/workflow/debt-position/{debtPositionId}/check-expiration", debtPositionId)
+        .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    assertEquals(expected, resultResponse);
+  }
 }

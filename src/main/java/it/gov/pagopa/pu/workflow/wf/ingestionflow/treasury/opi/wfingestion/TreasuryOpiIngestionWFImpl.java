@@ -48,17 +48,18 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     log.info("Handling Treasury OPI ingestionFlowFileId {}", ingestionFlowFileId);
     TreasuryIufIngestionFlowFileResult ingestionResult;
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     ingestionResult = processFile(ingestionFlowFileId);
     boolean success = StringUtils.isEmpty(ingestionResult.getErrorDescription());
 
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
+      IngestionFlowFile.StatusEnum.PROCESSING,
       success
         ? IngestionFlowFile.StatusEnum.COMPLETED
         : IngestionFlowFile.StatusEnum.ERROR,
       ingestionResult.getErrorDescription(),
       ingestionResult.getDiscardedFileName());
+    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
     log.info("Treasury OPI ingestion with ID {} is completed", ingestionFlowFileId);
   }

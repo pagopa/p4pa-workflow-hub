@@ -46,17 +46,18 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
   public void ingest(Long ingestionFlowFileId) {
     log.info("Handling PaymentsReporting IngestingFlowFileId {}", ingestionFlowFileId);
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     String errorDescription = processFile(ingestionFlowFileId);
 
     boolean success = errorDescription==null;
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
+      IngestionFlowFile.StatusEnum.PROCESSING,
       success
         ? IngestionFlowFile.StatusEnum.COMPLETED
         : IngestionFlowFile.StatusEnum.ERROR,
       errorDescription,
       null);
+    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
     log.info("PaymentsReporting Ingestion completed for file with ID {}", ingestionFlowFileId);
   }

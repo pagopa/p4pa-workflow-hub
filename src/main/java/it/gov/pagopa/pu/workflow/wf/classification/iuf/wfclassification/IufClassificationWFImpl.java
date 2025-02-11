@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIuf
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
@@ -52,6 +53,9 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
   @Override
   public void classify() {
+    WorkflowServiceImpl.waitForSignalMethods();
+
+    log.info("Notifying Transfer Classifications: {}", toNotify);
 
     toNotify.stream()
       .flatMap(r -> r. getTransfers2classify().stream())
@@ -62,7 +66,6 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
       int transferIndex = transfer2ClassifyDTO.getTransferIndex();
       startTransferClassificationActivity.signalTransferClassificationWithStart(toNotify.getFirst().getOrganizationId(), iuv, iur, transferIndex);
     });
-
   }
 
 

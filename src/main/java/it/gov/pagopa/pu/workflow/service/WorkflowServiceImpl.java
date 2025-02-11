@@ -8,11 +8,14 @@ import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
 import io.temporal.failure.TemporalException;
 import io.temporal.internal.client.WorkflowClientHelper;
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.*;
 
 @Service
 @Slf4j
@@ -69,5 +72,35 @@ public class WorkflowServiceImpl implements WorkflowService {
       log.error("An error occurred while retrieving the workflow status: {}", e.getMessage());
       throw new WorkflowInternalErrorException(e.getMessage());
     }
+  }
+
+  /** This method should be called in all workflows having signalMethods before to handle signal outcome */
+  public static void waitForSignalMethods(){
+    log.info("Waiting for signal handlers");
+    Workflow.await(Workflow::isEveryHandlerFinished);
+    log.info("All pending signals have been handled");
+  }
+
+  @Override
+  public <T> T buildWorkflowStubDelayed(Class<T> workflowClass, String taskQueue, String workflowId, Duration startDelay) {
+    return workflowClient.newWorkflowStub(
+      workflowClass,
+      WorkflowOptions.newBuilder()
+        .setTaskQueue(taskQueue)
+        .setWorkflowId(workflowId)
+        .setStartDelay(startDelay)
+        .build());
+  }
+
+  @Override
+  public <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, LocalDateTime dateTime) {
+    Duration startDelay = Duration.between(LocalDateTime.now(), dateTime);
+    return buildWorkflowStubDelayed(workflowClass, taskQueue, workflowId, startDelay);
+  }
+
+  @Override
+  public <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, OffsetDateTime dateTime) {
+    Duration startDelay = Duration.between(OffsetDateTime.now(), dateTime);
+    return buildWorkflowStubDelayed(workflowClass, taskQueue, workflowId, startDelay);
   }
 }

@@ -101,19 +101,19 @@ class TemporalSpringBootIntegrationTest {
 
     when(fileActivityMock.processFile(anyLong())).thenReturn(result);
 
-    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
+    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any(), any()))
       .thenReturn(1);
 
     String workflowId = workflowClient.ingest(1L);
 
     waitUntilWfCompletion(workflowId);
 
-    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
-    verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
     verify(fileActivityMock).processFile(1L);
     verify(emailActivityMock).sendEmail(1L, true);
-    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
-    verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+    verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
     verify(iufClassificationWFClientMock)
       .notifyPaymentsReporting(new IufClassificationNotifyPaymentsReportingSignalDTO(result.getOrganizationId(), result.getIuf(), result.getTransfers()));
   }
@@ -123,32 +123,32 @@ class TemporalSpringBootIntegrationTest {
     String workflowId = workflowClient.ingest(1L);
     waitUntilWfFailed(workflowId);
 
-    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
-    verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
+    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any(), any());
   }
 
   @Test
   void givenNotRetryableExceptionExtensionWhenExecuteWfThenStopExecutionWithoutRetries() {
-    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
+    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any(), any()))
       .thenThrow(new NotRetryableActivityException("extension"){});
 
     String workflowId = workflowClient.ingest(1L);
     waitUntilWfFailed(workflowId);
 
-    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
-    verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
+    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any(), any());
   }
 
   @Test
   void givenRetryableExceptionWhenExecuteWfThenRetrieActivityUntilMax() {
-    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
+    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any(), any()))
       .thenThrow(new RuntimeException("RetryableActivityException"));
 
     String workflowId = workflowClient.ingest(1L);
     waitUntilWfFailed(workflowId);
 
-    verify(statusActivitySpy, times(3)).updateStatus(1L, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
-    verify(ingestionFlowFileServiceMock, times(3)).updateStatus(anyLong(), any(), any(), any());
+    verify(statusActivitySpy, times(3)).updateStatus(1L, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    verify(ingestionFlowFileServiceMock, times(3)).updateStatus(anyLong(), any(), any(), any(), any());
   }
 
   // PRIVATE METHODS
