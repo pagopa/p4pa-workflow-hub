@@ -45,7 +45,7 @@ class DebtPositionSyncServiceTest {
 
     debtPosition.setFlagPagoPaPayment(false);
     String expectedWorkflowId = "WFID";
-    Mockito.when(wfClientMock.synchronizeNoPagoPADPSync(Mockito.same(debtPosition), Mockito.same(paymentEventType)))
+    Mockito.when(wfClientMock.synchronizeNoPagoPADP(Mockito.same(debtPosition), Mockito.same(paymentEventType)))
       .thenReturn(expectedWorkflowId);
 
     // When
@@ -65,11 +65,11 @@ class DebtPositionSyncServiceTest {
   }
   @Test
   void givenSYNC_ACA_GPDPRELOADWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.SYNC_ACA_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncAcaGpdPreload);
+    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.SYNC_ACA_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncAcaGpdPreLoad);
   }
   @Test
   void givenSYNC_GPDPRELOADWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.SYNC_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncGpdPreload);
+    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.SYNC_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncGpdPreLoad);
   }
   @Test
   void givenASYNC_GPDWhenInvokeWorkflowThenInvokeWfClient() {

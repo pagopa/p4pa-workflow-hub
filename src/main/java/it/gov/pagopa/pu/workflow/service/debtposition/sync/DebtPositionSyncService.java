@@ -18,7 +18,7 @@ public class DebtPositionSyncService {
 
   public String invokeWorkflow(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, boolean massive, String accessToken) {
     if (Boolean.FALSE.equals(debtPositionDTO.getFlagPagoPaPayment())) {
-      return wfClient.synchronizeNoPagoPADPSync(debtPositionDTO, paymentEventType);
+      return wfClient.synchronizeNoPagoPADP(debtPositionDTO, paymentEventType);
     }
 
     return switch (interactionModelRetrieverService.retrieveInteractionModel(debtPositionDTO.getOrganizationId(), accessToken)) {
@@ -27,9 +27,9 @@ public class DebtPositionSyncService {
       case SYNC_ACA ->
         wfClient.synchronizeDPSyncAca(debtPositionDTO, paymentEventType);
       case SYNC_GPDPRELOAD ->
-        wfClient.synchronizeDPSyncGpdPreload(debtPositionDTO, paymentEventType);
+        wfClient.synchronizeDPSyncGpdPreLoad(debtPositionDTO, paymentEventType);
       case SYNC_ACA_GPDPRELOAD ->
-        wfClient.synchronizeDPSyncAcaGpdPreload(debtPositionDTO, paymentEventType);
+        wfClient.synchronizeDPSyncAcaGpdPreLoad(debtPositionDTO, paymentEventType);
       case ASYNC_GPD ->
         massive ? null : wfClient.synchronizeDPAsyncGpd(debtPositionDTO, paymentEventType);
     };

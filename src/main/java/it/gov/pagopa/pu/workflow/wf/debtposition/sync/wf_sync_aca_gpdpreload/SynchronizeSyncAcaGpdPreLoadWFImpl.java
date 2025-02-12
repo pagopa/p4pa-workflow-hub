@@ -12,10 +12,10 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPosi
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@WorkflowImpl(taskQueues = SynchronizeSyncAcaGpdPreLoadWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF)
+@WorkflowImpl(taskQueues = SynchronizeSyncAcaGpdPreLoadWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_GPDPRELOAD_WF)
 public class SynchronizeSyncAcaGpdPreLoadWFImpl extends BaseDPSynchronizeWf implements SynchronizeSyncAcaGpdPreLoadWF {
 
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF = "SynchronizeDP_SYNC+ACA_WF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_GPDPRELOAD_WF = "SynchronizeDP_SYNC+ACA+GPDPRELOAD_WF";
 
   private SynchronizeInstallmentAcaActivity synchronizeInstallmentAcaActivity;
   private SynchronizeInstallmentGpdPreLoadActivity synchronizeInstallmentGpdPreLoadActivity;
