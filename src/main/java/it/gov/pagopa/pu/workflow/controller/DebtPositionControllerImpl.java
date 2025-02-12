@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.controller;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
+import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
 import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;

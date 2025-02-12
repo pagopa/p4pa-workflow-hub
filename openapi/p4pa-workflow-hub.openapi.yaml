@@ -24,7 +24,7 @@ paths:
           description: If provided, it will publish into Kafka queue the DebtPosition.
           required: false
           schema:
-            type: PaymentEventType
+            $ref: '#/components/schemas/PaymentEventType'
       requestBody:
         required: true
         content:
@@ -241,3 +241,10 @@ components:
           type: string
         status:
           type: string
+    PaymentEventType:
+      type: string
+      enum:
+        - DP_CREATED
+        - DP_UPDATED
+        - RT_RECEIVED
+        - SYNC_ERROR

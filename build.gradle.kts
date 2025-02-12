@@ -165,7 +165,6 @@ openApiGenerate {
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
   typeMappings.set(mapOf(
     "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
-    "PaymentEventType" to "it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",

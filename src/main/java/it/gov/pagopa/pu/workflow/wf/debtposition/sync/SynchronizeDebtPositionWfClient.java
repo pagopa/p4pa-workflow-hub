@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 
 public interface SynchronizeDebtPositionWfClient {
   String synchronizeNoPagoPADP(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType);
