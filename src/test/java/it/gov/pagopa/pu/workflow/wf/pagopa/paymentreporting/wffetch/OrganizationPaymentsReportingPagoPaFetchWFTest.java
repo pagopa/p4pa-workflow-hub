@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,6 +78,22 @@ class OrganizationPaymentsReportingPagoPaFetchWFTest {
 
     // When
     assertThrows(NotRetryableActivityException.class, () -> wf.retrieve(organizationId));
+    verify(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieve(organizationId);
+  }
+
+  @Test
+  void givenEmptyListWhenRetrieveThenSkipActiviy() {
+    // Given
+    Long organizationId = 1L;
+    List<PaymentsReportingIdDTO> paymentsReportingIds = Collections.emptyList();
+
+    when(organizationPaymentsReportingPagoPaListRetrieverActivityMock.retrieve(organizationId))
+      .thenReturn(paymentsReportingIds);
+
+    // When
+    wf.retrieve(organizationId);
+
+    // Then
     verify(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieve(organizationId);
   }
 }

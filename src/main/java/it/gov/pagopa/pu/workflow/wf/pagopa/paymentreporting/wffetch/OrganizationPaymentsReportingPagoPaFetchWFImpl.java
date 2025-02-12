@@ -36,12 +36,16 @@ public class OrganizationPaymentsReportingPagoPaFetchWFImpl implements Organizat
 
   @Override
   public void retrieve(Long organizationId) {
-    log.info("Handling PagoPA PaymentsReporting for organizationId {}", organizationId);
+    log.info("Fetching new PaymentsReporting for organizationId {} from PagoPA", organizationId);
 
     List<PaymentsReportingIdDTO> paymentsReportingIds = organizationPaymentsReportingPagoPaListRetrieverActivity.retrieve(organizationId);
     log.info("PagoPA PaymentsReporting retrieved for organization with ID {} are: {}", organizationId,
       String.join(", ", paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName).toList()));
-    organizationPaymentsReportingPagoPaRetrieverActivity.fetch(organizationId, paymentsReportingIds);
-    log.info("PagoPA PaymentsReporting completed for organization with ID {}", organizationId);
+    if (paymentsReportingIds.isEmpty()) {
+      log.info("Skip OrganizationPaymentsReportingPagoPaRetrieverActivity - nothing new to fetch from PagoPA for the organization with ID {}", organizationId);
+    } else {
+      organizationPaymentsReportingPagoPaRetrieverActivity.fetch(organizationId, paymentsReportingIds);
+    }
+    log.info("Fetch of PaymentsReporting completed for organization with ID {} from PagoPA", organizationId);
   }
 }
