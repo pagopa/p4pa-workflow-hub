@@ -5,16 +5,11 @@ import io.temporal.workflow.WorkflowMethod;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
 
-/**
- * Workflow interface for creating an Aca Sync Debt Position Workflow
- * */
+/** @see #synchronizeDPSyncAca(DebtPositionDTO, PaymentEventType) */
 @WorkflowInterface
 public interface SynchronizeSyncAcaWF {
 
-  /**
-   * Workflow method for the Aca Sync Debt Position Workflow
-   * @param debtPosition the debt position to be synchronized in Aca
-   * */
+  /** Workflow method to synchronize a SYNC ACA DebtPosition */
   @WorkflowMethod
   void synchronizeDPSyncAca(DebtPositionDTO debtPosition, PaymentEventType paymentEventType);
 }

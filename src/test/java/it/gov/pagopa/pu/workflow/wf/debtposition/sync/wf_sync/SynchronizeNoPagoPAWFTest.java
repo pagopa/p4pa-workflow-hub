@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 @ExtendWith(MockitoExtension.class)
-class SynchronizeSyncWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncWF> {
+class SynchronizeNoPagoPAWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncWF> {
 
   @Override
   protected SynchronizeSyncWF configureMockAndCreateWf(ApplicationContext applicationContextMock) {
@@ -18,7 +18,12 @@ class SynchronizeSyncWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncWF> {
   }
 
   @Override
-  protected void configureSync(DebtPositionDTO debtPosition, Throwable expectedException) {
+  protected void configureIUDSyncOk(DebtPositionDTO debtPosition, String iud) {
+    // No Sync ops
+  }
+
+  @Override
+  protected void configureIUDSyncKo(DebtPositionDTO debtPosition, String iud, Throwable expectedException) {
     // No Sync ops
   }
 

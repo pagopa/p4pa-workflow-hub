@@ -31,17 +31,19 @@ class SynchronizeSyncAcaWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncAc
   }
 
   @Override
-  protected void configureSync(DebtPositionDTO debtPosition, Throwable expectedException) {
+  protected void configureIUDSyncOk(DebtPositionDTO debtPosition, String iud) {
     Mockito.doNothing()
       .when(synchronizeInstallmentAcaActivityMock)
-      .synchronizeInstallmentAca(Mockito.same(debtPosition), Mockito.eq(SYNC_IUD));
+      .synchronizeInstallmentAca(Mockito.same(debtPosition), Mockito.eq(iud));
+  }
 
+  @Override
+  protected void configureIUDSyncKo(DebtPositionDTO debtPosition, String iud, Throwable expectedException) {
     Mockito.doThrow(expectedException)
       .when(synchronizeInstallmentAcaActivityMock)
       .synchronizeInstallmentAca(
-        Mockito.same(debtPosition), Mockito.eq(SYNC_IUD_ERROR)
+        Mockito.same(debtPosition), Mockito.eq(iud)
       );
-
   }
 
   @Override
