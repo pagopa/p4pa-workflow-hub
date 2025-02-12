@@ -4,7 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaListRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaRetrieverActivity;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.config.PaymentsReportingPagoPaWfConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +28,7 @@ public class OrganizationPaymentsReportingPagoPaFetchWFImpl implements Organizat
    */
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    PaymentsReportingPagoPaWfConfig wfConfig = applicationContext.getBean(PaymentsReportingPagoPaWfConfig.class);
+    OrganizationPaymentsReportingPagoPaFetchWfConfig wfConfig = applicationContext.getBean(OrganizationPaymentsReportingPagoPaFetchWfConfig.class);
 
     organizationPaymentsReportingPagoPaListRetrieverActivity = wfConfig.buildOrganizationPaymentsReportingPagoPaListRetrieverActivityStub();
     organizationPaymentsReportingPagoPaRetrieverActivity = wfConfig.buildOrganizationPaymentsReportingPagoPaRetrieverActivityStub();

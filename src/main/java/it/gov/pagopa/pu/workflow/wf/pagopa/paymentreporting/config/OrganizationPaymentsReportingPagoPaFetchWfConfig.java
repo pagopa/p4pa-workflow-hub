@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "workflow.payments-reporting-pago-pa")
-public class PaymentsReportingPagoPaWfConfig extends BaseWfConfig {
+public class OrganizationPaymentsReportingPagoPaFetchWfConfig extends BaseWfConfig {
 
   public OrganizationPaymentsReportingPagoPaListRetrieverActivity buildOrganizationPaymentsReportingPagoPaListRetrieverActivityStub() {
     return Workflow.newActivityStub(OrganizationPaymentsReportingPagoPaListRetrieverActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));

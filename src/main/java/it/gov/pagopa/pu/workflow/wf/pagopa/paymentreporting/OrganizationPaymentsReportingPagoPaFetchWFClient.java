@@ -11,10 +11,10 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Slf4j
 @Service
-public class PaymentsReportingPagoPaWFClient {
+public class OrganizationPaymentsReportingPagoPaFetchWFClient {
   private final WorkflowService workflowService;
 
-  public PaymentsReportingPagoPaWFClient(WorkflowService workflowService) {
+  public OrganizationPaymentsReportingPagoPaFetchWFClient(WorkflowService workflowService) {
     this.workflowService = workflowService;
   }
 

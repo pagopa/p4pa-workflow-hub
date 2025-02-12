@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPa
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaRetrieverActivity;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.config.PaymentsReportingPagoPaWfConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,12 +31,12 @@ class OrganizationPaymentsReportingPagoPaFetchWFTest {
 
   @BeforeEach
   void setUp() {
-    PaymentsReportingPagoPaWfConfig paymentsReportingPagoPaWfConfigMock = mock(PaymentsReportingPagoPaWfConfig.class);
+    OrganizationPaymentsReportingPagoPaFetchWfConfig organizationPaymentsReportingPagoPaFetchWfConfigMock = mock(OrganizationPaymentsReportingPagoPaFetchWfConfig.class);
     ApplicationContext applicationContextMock = mock(ApplicationContext.class);
-    when(paymentsReportingPagoPaWfConfigMock.buildOrganizationPaymentsReportingPagoPaListRetrieverActivityStub()).thenReturn(organizationPaymentsReportingPagoPaListRetrieverActivityMock);
-    when(paymentsReportingPagoPaWfConfigMock.buildOrganizationPaymentsReportingPagoPaRetrieverActivityStub()).thenReturn(organizationPaymentsReportingPagoPaRetrieverActivityMock);
+    when(organizationPaymentsReportingPagoPaFetchWfConfigMock.buildOrganizationPaymentsReportingPagoPaListRetrieverActivityStub()).thenReturn(organizationPaymentsReportingPagoPaListRetrieverActivityMock);
+    when(organizationPaymentsReportingPagoPaFetchWfConfigMock.buildOrganizationPaymentsReportingPagoPaRetrieverActivityStub()).thenReturn(organizationPaymentsReportingPagoPaRetrieverActivityMock);
 
-    when(applicationContextMock.getBean(PaymentsReportingPagoPaWfConfig.class)).thenReturn(paymentsReportingPagoPaWfConfigMock);
+    when(applicationContextMock.getBean(OrganizationPaymentsReportingPagoPaFetchWfConfig.class)).thenReturn(organizationPaymentsReportingPagoPaFetchWfConfigMock);
 
     wf = new OrganizationPaymentsReportingPagoPaFetchWFImpl();
     wf.setApplicationContext(applicationContextMock);

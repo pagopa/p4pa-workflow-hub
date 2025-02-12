@@ -24,11 +24,11 @@ class OrganizationPaymentsReportingPagoPaFetchWFClientTest {
   @Mock
   private OrganizationPaymentsReportingPagoPaFetchWF wfMock;
 
-  private PaymentsReportingPagoPaWFClient client;
+  private OrganizationPaymentsReportingPagoPaFetchWFClient client;
 
   @BeforeEach
   void setUp() {
-    client = new PaymentsReportingPagoPaWFClient(workflowServiceMock);
+    client = new OrganizationPaymentsReportingPagoPaFetchWFClient(workflowServiceMock);
   }
 
   @AfterEach
