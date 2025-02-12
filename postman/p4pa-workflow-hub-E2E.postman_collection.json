@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "b230daac-a83a-4ae4-959c-f58cd285f7eb",
+		"_postman_id": "f295e619-079d-4fca-ae64-3ca447133d44",
 		"name": "Workflow-Hub-e2e",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15747968",
-		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-b230daac-a83a-4ae4-959c-f58cd285f7eb?action=share&source=collection_link&creator=15747968"
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-f295e619-079d-4fca-ae64-3ca447133d44?action=share&source=collection_link&creator=15747968"
 	},
 	"item": [
 		{
@@ -175,7 +175,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{workflowHubBaseUrl}}/workflowhub/workflow/debt-position/sync",
+									"raw": "{{workflowHubBaseUrl}}/workflowhub/workflow/debt-position/sync?paymentEventType=DP_CREATED",
 									"host": [
 										"{{workflowHubBaseUrl}}"
 									],
@@ -184,6 +184,12 @@
 										"workflow",
 										"debt-position",
 										"sync"
+									],
+									"query": [
+										{
+											"key": "paymentEventType",
+											"value": "DP_CREATED"
+										}
 									]
 								}
 							},
@@ -191,158 +197,6 @@
 						},
 						{
 							"name": "01_status_workflow",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm=instrumentPmMethod(pm);\r",
-											"\r",
-											"pm.test(\"Payhub - 01_status_workflow - Responses with 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"pm.test(`Payhub - 01_status_workflow - Verify response body: Status = ${pm.response.json().status}`, function () {\r",
-											"    let jsonResponse = pm.response.json();\r",
-											"\r",
-											"    pm.expect(jsonResponse).have.property(\"workflowId\")\r",
-											"    pm.expect(jsonResponse).have.property(\"status\")\r",
-											"    pm.expect(jsonResponse.status).to.be.oneOf([\r",
-											"        \"WORKFLOW_EXECUTION_STATUS_COMPLETED\",\r",
-											"        \"WORKFLOW_EXECUTION_STATUS_RUNNING\"\r",
-											"    ]);\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{accessToken}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{workflowHubBaseUrl}}/workflowhub/workflows/{{workflowId}}/status",
-									"host": [
-										"{{workflowHubBaseUrl}}"
-									],
-									"path": [
-										"workflowhub",
-										"workflows",
-										"{{workflowId}}",
-										"status"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "02_alignDpSyncAca",
-					"item": [
-						{
-							"name": "02_align_dp_sync",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm=instrumentPmMethod(pm);\r",
-											"\r",
-											"pm.test(\"Payhub - 01_align_dp_sync - Responses with 200\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"pm.test(\"Payhub - 01_align_dp_sync - Verify response body\", function () {\r",
-											"    let jsonResponse = pm.response.json();\r",
-											"\r",
-											"    pm.expect(jsonResponse).have.property(\"workflowId\")\r",
-											"});\r",
-											"\r",
-											"let jsonResponse = pm.response.json();\r",
-											"pm.collectionVariables.set(\"workflowId\", jsonResponse.workflowId);\r",
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"function generateRandomNumber() {\r",
-											"    let randomNumber = '';\r",
-											"    for (let i = 0; i < 10; i++) {\r",
-											"        randomNumber += Math.floor(Math.random() * 10).toString();\r",
-											"    }\r",
-											"    return randomNumber;\r",
-											"}\r",
-											"\r",
-											"let randomNumber = generateRandomNumber();\r",
-											"\r",
-											"pm.collectionVariables.set(\"randomNumber\", randomNumber);\r",
-											"pm.collectionVariables.set(\"fiscalCode\", `AAAAAA69A45A602A`);\r",
-											"pm.collectionVariables.set(\"debtPositionId\", `${randomNumber}`);\r",
-											"pm.collectionVariables.set(\"organizationId\", `3`);\r",
-											"pm.collectionVariables.set(\"debtPositionTypeOrgId\", `8077`);"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{accessToken}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"debtPositionId\": {{debtPositionId}},\r\n  \"iupdOrg\": \"iupdOrg\",\r\n  \"description\": \"description\",\r\n  \"status\": \"TO_SYNC\",\r\n  \"debtPositionOrigin\": \"ORDINARY\",\r\n  \"ingestionFlowFileId\": 1,\r\n  \"ingestionFlowFileLineNumber\": 1,\r\n  \"organizationId\": {{organizationId}},\r\n  \"debtPositionTypeOrgId\": {{debtPositionTypeOrgId}},\r\n  \"notificationDate\": \"2024-05-15T10:30:00+02:00\",\r\n  \"validityDate\": \"2024-05-15T10:30:00+02:00\",\r\n  \"flagIuvVolatile\": false,\r\n  \"creationDate\": \"2024-05-15T10:30:00+02:00\",\r\n  \"updateDate\": \"2024-05-15T10:30:00+02:00\",\r\n  \"paymentOptions\": [\r\n    {\r\n      \"paymentOptionId\": 1,\r\n      \"debtPositionId\": 1,\r\n      \"totalAmountCents\": 1,\r\n      \"status\": \"TO_SYNC\",\r\n      \"multiDebtor\": false,\r\n      \"dueDate\": \"2024-05-15T10:30:00+02:00\",\r\n      \"description\": \"description\",\r\n      \"paymentOptionType\": \"DOWN_PAYMENT\",\r\n      \"installments\": [\r\n        {\r\n          \"installmentId\": 1,\r\n          \"paymentOptionId\": 1,\r\n          \"status\": \"TO_SYNC\",\r\n          \"syncStatus\": {\r\n            \"syncStatusFrom\": \"DRAFT\",\r\n            \"syncStatusTo\": \"UNPAID\"\r\n          },\r\n          \"iupdPagopa\": \"iupdPagopa\",\r\n          \"iud\": \"iud\",\r\n          \"iuv\": \"iuv\",\r\n          \"iur\": \"iur\",\r\n          \"iuf\": \"iuf\",\r\n          \"nav\": \"nav\",\r\n          \"dueDate\": \"2024-05-15T10:30:00+02:00\",\r\n          \"paymentTypeCode\": \"paymentTypeCode\",\r\n          \"amountCents\": 100,\r\n          \"notificationFeeCents\": 100,\r\n          \"remittanceInformation\": \"remittanceInformation\",\r\n          \"humanFriendlyRemittanceInformation\": \"humanFriendlyRemittanceInformation\",\r\n          \"balance\": \"balance\",\r\n          \"legacyPaymentMetadata\": \"legacyPaymentMetadata\",\r\n          \"debtor\": {\r\n            \"entityType\": \"F\",\r\n            \"fiscalCode\": \"{{fiscalCode}}\",\r\n            \"fullName\": \"fullName\",\r\n            \"address\": \"address\",\r\n            \"civic\": \"civic\",\r\n            \"postalCode\": \"postalCode\",\r\n            \"location\": \"location\",\r\n            \"province\": \"province\",\r\n            \"nation\": \"nation\",\r\n            \"email\": \"email@test.it\"\r\n          },\r\n          \"transfers\": [\r\n            {\r\n              \"transferId\": 1,\r\n              \"installmentId\": 1,\r\n              \"orgFiscalCode\": \"orgFiscalCode\",\r\n              \"orgName\": \"orgName\",\r\n              \"amountCents\": 100,\r\n              \"remittanceInformation\": \"remittanceInformation\",\r\n              \"stampType\": \"stampType\",\r\n              \"stampHashDocument\": \"stampHashDocument\",\r\n              \"stampProvincialResidence\": \"stampProvincialResidence\",\r\n              \"iban\": \"iban\",\r\n              \"postalIban\": \"postalIban\",\r\n              \"category\": \"category\",\r\n              \"transferIndex\": 1\r\n            }\r\n          ],\r\n          \"creationDate\": \"2024-05-15T10:30:00+02:00\",\r\n          \"updateDate\": \"2024-05-15T10:30:00+02:00\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{workflowHubBaseUrl}}/workflowhub/workflow/debt-position/aca",
-									"host": [
-										"{{workflowHubBaseUrl}}"
-									],
-									"path": [
-										"workflowhub",
-										"workflow",
-										"debt-position",
-										"aca"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "02_status_workflow",
 							"event": [
 								{
 									"listen": "test",
