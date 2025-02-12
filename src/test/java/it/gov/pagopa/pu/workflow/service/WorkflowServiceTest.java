@@ -255,4 +255,33 @@ class WorkflowServiceTest {
     assertEquals(workflowId, capturedOptions.getWorkflowId());
   }
 
+  @Test
+  void whenCancelWorkflowThenOk(){
+    // Given
+    String workflowId = "WFID";
+    WorkflowStub stubMock = Mockito.mock(WorkflowStub.class);
+
+    when(workflowClientMock.newUntypedWorkflowStub(workflowId))
+      .thenReturn(stubMock);
+
+    // When
+    workflowService.cancelWorkflow(workflowId);
+
+    // Then
+    Mockito.verify(stubMock).cancel();
+  }
+
+  @Test
+  void givenNotExistentWfWhenCancelWorkflowThenDoNothing(){
+    // Given
+    String workflowId = "WFID";
+
+    io.temporal.client.WorkflowNotFoundException workflowNotFoundException = new io.temporal.client.WorkflowNotFoundException(mock(WorkflowExecution.class), null, null);
+    when(workflowClientMock.newUntypedWorkflowStub(workflowId))
+      .thenThrow(workflowNotFoundException);
+
+    // When
+    Assertions.assertDoesNotThrow(() -> workflowService.cancelWorkflow(workflowId));
+  }
+
 }

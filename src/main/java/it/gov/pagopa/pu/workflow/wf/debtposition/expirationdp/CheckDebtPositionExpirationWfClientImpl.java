@@ -46,4 +46,11 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
     WorkflowClient.start(workflow::checkDpExpiration, debtPositionId);
   }
 
+  @Override
+  public void cancelScheduling(Long debtPositionId) {
+    String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF);
+    log.info("Cancelling next scheduling of workflow {}", workflowId);
+    workflowService.cancelWorkflow(workflowId);
+  }
+
 }

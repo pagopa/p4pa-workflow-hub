@@ -86,4 +86,12 @@ class CheckDebtPositionExpirationWfClientTest {
     // Then
     Mockito.verify(checkDebtPositionExpirationWFMock).checkDpExpiration(debtPositionId);
   }
+
+  @Test
+  void whenCancelNextScheduleThenInvokeWfService(){
+    client.cancelScheduling(1L);
+
+    Mockito.verify(workflowServiceMock)
+      .cancelWorkflow("CheckDebtPositionExpirationWF-1");
+  }
 }

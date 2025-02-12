@@ -2,9 +2,9 @@ package it.gov.pagopa.pu.workflow.service.debtposition;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.aligndp.SynchronizeSyncAcaWfClient;
+import it.gov.pagopa.pu.workflow.event.payments.enums.PaymentEventType;
+import it.gov.pagopa.pu.workflow.service.debtposition.sync.DebtPositionSyncService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.handledp.HandleDebtPositionWfClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,28 +12,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class DebtPositionServiceImpl implements DebtPositionService {
 
-  private final HandleDebtPositionWfClient handleDebtPositionWfClient;
-  private final SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClient;
+  private final DebtPositionSyncService debtPositionSyncService;
   private final CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient;
 
-  public DebtPositionServiceImpl(HandleDebtPositionWfClient handleDebtPositionWfClient, SynchronizeSyncAcaWfClient synchronizeSyncAcaWfClient, CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient) {
-    this.handleDebtPositionWfClient = handleDebtPositionWfClient;
-    this.synchronizeSyncAcaWfClient = synchronizeSyncAcaWfClient;
+  public DebtPositionServiceImpl(DebtPositionSyncService debtPositionSyncService, CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient) {
+    this.debtPositionSyncService = debtPositionSyncService;
     this.checkDebtPositionExpirationWfClient = checkDebtPositionExpirationWfClient;
   }
 
   @Override
-  public WorkflowCreatedDTO handleDPSync(DebtPositionDTO debtPositionDTO) {
-    log.debug("Starting workflow to handle debt position sync with debtPositionId: {}", debtPositionDTO.getDebtPositionId());
-    String workflowId = handleDebtPositionWfClient.handleDPSync(debtPositionDTO);
-
-    return buildWorkflowCreatedDTO(workflowId);
-  }
-
-  @Override
-  public WorkflowCreatedDTO alignDpSyncAca(DebtPositionDTO debtPositionDTO) {
-    log.debug("Starting workflow for creation debt position sync on ACA with debtPositionId: {}", debtPositionDTO.getDebtPositionId());
-    String workflowId = synchronizeSyncAcaWfClient.synchronizeDPSyncAca(debtPositionDTO);
+  public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, boolean massive, String accessToken) {
+    log.debug("Starting workflow to sync DebtPosition: {} (massive context: {})", debtPositionDTO.getDebtPositionId(), massive);
+    String workflowId = debtPositionSyncService.invokeWorkflow(debtPositionDTO, paymentEventType, massive, accessToken);
 
     return buildWorkflowCreatedDTO(workflowId);
   }

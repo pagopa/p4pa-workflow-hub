@@ -20,4 +20,6 @@ public interface WorkflowService {
   <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, LocalDateTime dateTime);
 
   <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, OffsetDateTime dateTime);
+
+    void  cancelWorkflow(String workflowId);
 }
