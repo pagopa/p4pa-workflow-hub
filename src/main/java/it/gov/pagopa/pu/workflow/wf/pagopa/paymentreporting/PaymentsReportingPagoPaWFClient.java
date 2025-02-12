@@ -19,7 +19,7 @@ public class PaymentsReportingPagoPaWFClient {
   }
 
   public String retrieve(Long organizationId) {
-    log.info("Starting payments reporting ingestion flow file having id {}", organizationId);
+    log.info("Starting fetch PagoPA payments reporting for the organization having id {}", organizationId);
     String workflowId = generateWorkflowId(organizationId, OrganizationPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH);
     OrganizationPaymentsReportingPagoPaFetchWF workflow = workflowService.buildWorkflowStub(
       OrganizationPaymentsReportingPagoPaFetchWF.class,
