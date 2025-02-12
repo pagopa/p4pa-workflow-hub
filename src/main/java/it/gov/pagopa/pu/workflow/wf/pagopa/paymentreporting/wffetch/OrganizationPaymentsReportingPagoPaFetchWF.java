@@ -5,10 +5,10 @@ import io.temporal.workflow.WorkflowMethod;
 
 /**
  * Workflow interface for the Pago PA Payments Reporting Workflow
+ *
  * */
-
 @WorkflowInterface
-public interface PaymentsReportingPagoPaWF {
+public interface OrganizationPaymentsReportingPagoPaFetchWF {
 
   /**
    * Workflow method for the Pago PA Payments Reporting Workflow

@@ -13,9 +13,9 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.List;
 
 @Slf4j
-@WorkflowImpl(taskQueues = PaymentsReportingPagoPaWFImpl.TASK_QUEUE)
-public class PaymentsReportingPagoPaWFImpl implements PaymentsReportingPagoPaWF, ApplicationContextAware {
-  public static final String TASK_QUEUE = "PaymentsReportingPagoPaWF";
+@WorkflowImpl(taskQueues = OrganizationPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH)
+public class OrganizationPaymentsReportingPagoPaFetchWFImpl implements OrganizationPaymentsReportingPagoPaFetchWF, ApplicationContextAware {
+  public static final String TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH = "OrganizationPaymentsReportingPagoPaFetchWF";
 
   private OrganizationPaymentsReportingPagoPaListRetrieverActivity organizationPaymentsReportingPagoPaListRetrieverActivity;
   private OrganizationPaymentsReportingPagoPaRetrieverActivity organizationPaymentsReportingPagoPaRetrieverActivity;
@@ -39,6 +39,8 @@ public class PaymentsReportingPagoPaWFImpl implements PaymentsReportingPagoPaWF,
     log.info("Handling PagoPA PaymentsReporting for organizationId {}", organizationId);
 
     List<PaymentsReportingIdDTO> paymentsReportingIds = organizationPaymentsReportingPagoPaListRetrieverActivity.retrieve(organizationId);
+    log.info("PagoPA PaymentsReporting retrieved for organization with ID {} are: {}", organizationId,
+      String.join(", ", paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName).toList()));
     organizationPaymentsReportingPagoPaRetrieverActivity.fetch(organizationId, paymentsReportingIds);
     log.info("PagoPA PaymentsReporting completed for organization with ID {}", organizationId);
   }

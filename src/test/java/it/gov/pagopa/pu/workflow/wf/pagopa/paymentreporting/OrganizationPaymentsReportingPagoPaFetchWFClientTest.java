@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.wffetch.PaymentsReportingPagoPaWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.wffetch.PaymentsReportingPagoPaWFImpl;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.wffetch.OrganizationPaymentsReportingPagoPaFetchWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.wffetch.OrganizationPaymentsReportingPagoPaFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentsReportingPagoPaWFClientTest {
+class OrganizationPaymentsReportingPagoPaFetchWFClientTest {
 
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
-  private PaymentsReportingPagoPaWF wfMock;
+  private OrganizationPaymentsReportingPagoPaFetchWF wfMock;
 
   private PaymentsReportingPagoPaWFClient client;
 
@@ -40,14 +40,14 @@ class PaymentsReportingPagoPaWFClientTest {
   void testRetrieve() {
     // Given
     long organizationId = 1L;
-    String expectedWorkflowId = "PaymentsReportingPagoPaWF-1";
+    String expectedWorkflowId = "OrganizationPaymentsReportingPagoPaFetchWF-1";
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(organizationId, PaymentsReportingPagoPaWFImpl.TASK_QUEUE))
+        .when(() -> Utilities.generateWorkflowId(organizationId, OrganizationPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH))
         .thenReturn(expectedWorkflowId);
 
-      Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingPagoPaWF.class, PaymentsReportingPagoPaWFImpl.TASK_QUEUE, expectedWorkflowId))
+      Mockito.when(workflowServiceMock.buildWorkflowStub(OrganizationPaymentsReportingPagoPaFetchWF.class, OrganizationPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH, expectedWorkflowId))
         .thenReturn(wfMock);
 
       // When
