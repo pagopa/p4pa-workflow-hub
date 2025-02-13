@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.config;
+package it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaListRetrieverActivity;
@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "workflow.payments-reporting-pago-pa")
+@ConfigurationProperties(prefix = "workflow.organization-payments-reporting-pago-pa")
 public class OrganizationPaymentsReportingPagoPaFetchWfConfig extends BaseWfConfig {
 
   public OrganizationPaymentsReportingPagoPaListRetrieverActivity buildOrganizationPaymentsReportingPagoPaListRetrieverActivityStub() {

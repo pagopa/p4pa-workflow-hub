@@ -1,9 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting;
+package it.gov.pagopa.pu.workflow.wf.paymentreporting.pagopa;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.wffetch.OrganizationPaymentsReportingPagoPaFetchWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.wffetch.OrganizationPaymentsReportingPagoPaFetchWFImpl;
+import it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.OrganizationPaymentsReportingPagoPaFetchWFClient;
+import it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.wffetch.OrganizationPaymentsReportingPagoPaFetchWF;
+import it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.wffetch.OrganizationPaymentsReportingPagoPaFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

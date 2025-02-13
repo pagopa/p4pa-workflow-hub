@@ -1,10 +1,11 @@
-package it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.wffetch;
+package it.gov.pagopa.pu.workflow.wf.paymentreporting.pagopa.wffetch;
 
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaListRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaRetrieverActivity;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
+import it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
+import it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.wffetch.OrganizationPaymentsReportingPagoPaFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
