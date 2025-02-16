@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
-import it.gov.pagopa.payhub.activities.activity.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;

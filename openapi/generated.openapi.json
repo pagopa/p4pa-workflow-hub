@@ -257,7 +257,7 @@
         } ],
         "responses" : {
           "201" : {
-            "description" : "Treasury OPI Ingestion Workflow created successfully",
+            "description" : "Transfer classification workflow created successfully",
             "content" : {
               "application/json" : {
                 "schema" : {
