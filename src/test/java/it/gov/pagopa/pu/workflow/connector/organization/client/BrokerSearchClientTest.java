@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ExtendWith(MockitoExtension.class)
 class BrokerSearchClientTest {
@@ -50,5 +52,23 @@ class BrokerSearchClientTest {
 
     // Then
     Assertions.assertSame(expectedResult, result);
+  }
+
+  @Test
+  void givenNotExistentOrganizationWhenFindByBrokeredOrganizationIdThenNull() {
+    // Given
+    String accessToken = "ACCESSTOKEN";
+    String orgId = "1";
+
+    Mockito.when(organizationApisHolderMock.getBrokerSearchControllerApi(accessToken))
+      .thenReturn(brokerSearchControllerApiMock);
+    Mockito.when(brokerSearchControllerApiMock.crudBrokersFindByBrokeredOrganizationId(orgId))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+    // When
+    Broker result = brokerSearchClient.findByBrokeredOrganizationId(Long.valueOf(orgId), accessToken);
+
+    // Then
+    Assertions.assertNull(result);
   }
 }

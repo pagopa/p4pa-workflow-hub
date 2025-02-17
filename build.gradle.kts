@@ -51,7 +51,7 @@ val micrometerVersion = "1.4.1"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
 val bouncycastleVersion = "1.79"
-val activitiesVersion = "1.51.1"
+val activitiesVersion = "1.55.0"
 val mapStructVersion = "1.6.3"
 
 dependencies {
@@ -105,6 +105,16 @@ dependencies {
 tasks.withType<Test> {
   useJUnitPlatform()
   finalizedBy(tasks.jacocoTestReport)
+}
+
+val mockitoAgent = configurations.create("mockitoAgent")
+dependencies {
+  mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
+}
+tasks {
+  test {
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
+  }
 }
 
 tasks.jacocoTestReport {
@@ -215,10 +225,4 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
 
 tasks.withType<Copy> {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-configurations.all {
-  resolutionStrategy {
-    force("org.glassfish.jaxb:jaxb-core:4.0.5")
-  }
 }
