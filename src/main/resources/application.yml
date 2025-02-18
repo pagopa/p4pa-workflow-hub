@@ -163,6 +163,24 @@ workflow:
     retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
+  organization-payments-reporting-pago-pa:
+    start-to-close-timeout-in-seconds: "\${ORGANIZATION_PAYMENTS_REPORTING_PAGO_PA_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${ORGANIZATION_PAYMENTS_REPORTING_PAGO_PA_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${ORGANIZATION_PAYMENTS_REPORTING_PAGO_PA_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${ORGANIZATION_PAYMENTS_REPORTING_PAGO_PA_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  organizations-brokered:
+    start-to-close-timeout-in-seconds: "\${ORGANIZATIONS_BROKERED_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${ORGANIZATIONS_BROKERED_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${ORGANIZATIONS_BROKERED_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${ORGANIZATIONS_BROKERED_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+schedule:
+  payments-reporting-pagopa:
+    schedule-id: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_ID:payments-reporting-pagopa-schedule}"
+    # Duration of the schedule in hours
+    schedule-duration: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_DURATION:6}"
+
 springdoc:
   writer-with-default-pretty-printer: true
 
