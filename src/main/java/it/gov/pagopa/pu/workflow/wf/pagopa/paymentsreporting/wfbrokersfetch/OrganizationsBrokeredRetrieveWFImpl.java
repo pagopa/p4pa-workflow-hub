@@ -1,12 +1,12 @@
-package it.gov.pagopa.pu.workflow.wf.paymentsreporting.broker.wfretrieve;
+package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.organization.BrokersRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.organization.OrganizationBrokeredRetrieverActivity;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.broker.activity.ChainOrganizationsBrokered2OrganizationPaymentsReportingActivity;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.broker.config.OrganizationsBrokeredRetrieveWFConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.config.OrganizationsBrokeredRetrieveWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -18,11 +18,15 @@ import java.util.List;
 @WorkflowImpl(taskQueues = {OrganizationsBrokeredRetrieveWFImpl.TASK_QUEUE_ORGANIZATIONS_BROKERED_RETRIEVE})
 public class OrganizationsBrokeredRetrieveWFImpl implements OrganizationsBrokeredRetrieveWF, ApplicationContextAware {
   public static final String TASK_QUEUE_ORGANIZATIONS_BROKERED_RETRIEVE = "OrganizationsBrokeredRetrieveWF";
-  public static final String TASK_QUEUE_ORGANIZATIONS_BROKERED_RETRIEVE_LOCAL_ACTIVITY = "OrganizationsBrokeredRetrieveWF_LOCAL";
+
+  private final OrganizationPaymentsReportingPagoPaFetchWFClient organizationPaymentsReportingPagoPaFetchWFClient;
 
   private BrokersRetrieverActivity brokersRetrieverActivity;
   private OrganizationBrokeredRetrieverActivity organizationBrokeredRetrieverActivity;
-  private ChainOrganizationsBrokered2OrganizationPaymentsReportingActivity chainOrganizationsBrokered2OrganizationPaymentsReportingActivity;
+
+  public OrganizationsBrokeredRetrieveWFImpl(OrganizationPaymentsReportingPagoPaFetchWFClient organizationPaymentsReportingPagoPaFetchWFClient) {
+    this.organizationPaymentsReportingPagoPaFetchWFClient = organizationPaymentsReportingPagoPaFetchWFClient;
+  }
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -36,7 +40,6 @@ public class OrganizationsBrokeredRetrieveWFImpl implements OrganizationsBrokere
 
     brokersRetrieverActivity = wfConfig.buildBrokersRetrieverActivityStub();
     organizationBrokeredRetrieverActivity = wfConfig.buildOrganizationBrokeredRetrieverActivityStub();
-    chainOrganizationsBrokered2OrganizationPaymentsReportingActivity = wfConfig.buildChainBrokeredOrganizations2OrganizationPaymentsReportingActivityStub();
   }
 
   @Override
@@ -47,15 +50,16 @@ public class OrganizationsBrokeredRetrieveWFImpl implements OrganizationsBrokere
       .stream()
       .map(Broker::getBrokerId)
       .toList();
-    log.info("Fetched brokers ID: {}", String.join(", ", brokersId.stream().map(String::valueOf).toList()));
+    log.info("Fetched brokers ID: {}", brokersId);
 
-    List<Long> organizationsId = brokersId.stream()
-      .flatMap(id -> organizationBrokeredRetrieverActivity.retrieve(id).stream())
-      .map(Organization::getOrganizationId)
-      .toList();
-    log.info("Fetched organizations ID: {}", String.join(", ", organizationsId.stream().map(String::valueOf).toList()));
-
-    organizationsId.forEach(chainOrganizationsBrokered2OrganizationPaymentsReportingActivity::chain);
+    for (Long brokerId : brokersId) {
+      List<Long> organizationsId = organizationBrokeredRetrieverActivity.retrieve(brokerId)
+        .stream()
+        .map(Organization::getOrganizationId)
+        .toList();
+      log.info("Fetched Organizations for Broked ID: {} - {}", brokersId, organizationsId);
+      organizationsId.forEach(organizationPaymentsReportingPagoPaFetchWFClient::retrieve);
+    }
     log.info("Retrieving completed");
   }
 }

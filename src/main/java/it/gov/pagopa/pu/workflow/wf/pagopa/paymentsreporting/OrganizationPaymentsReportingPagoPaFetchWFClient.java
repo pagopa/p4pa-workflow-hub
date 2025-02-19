@@ -1,9 +1,9 @@
-package it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa;
+package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
 import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.wffetch.OrganizationPaymentsReportingPagoPaFetchWF;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.wffetch.OrganizationPaymentsReportingPagoPaFetchWFImpl;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.OrganizationPaymentsReportingPagoPaFetchWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.OrganizationPaymentsReportingPagoPaFetchWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

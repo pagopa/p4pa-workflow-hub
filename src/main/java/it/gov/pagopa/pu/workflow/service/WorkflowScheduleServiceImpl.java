@@ -10,15 +10,15 @@ import java.util.Collections;
 
 @Service
 @Slf4j
-public class ScheduleServiceImpl implements ScheduleService {
+public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
   private final ScheduleClient scheduleClient;
 
-  public ScheduleServiceImpl(ScheduleClient scheduleClient) {
+  public WorkflowScheduleServiceImpl(ScheduleClient scheduleClient) {
     this.scheduleClient = scheduleClient;
   }
 
   @Override
-  public ScheduleHandle buildSchedule(Class<?> workflowInterface, String taskQueue, String workflowId, String scheduleId, Duration startEvery) {
+  public ScheduleHandle buildSchedule(Class<?> workflowInterface, String taskQueue, String workflowId, String scheduleId, Duration scheduleFrequency) {
     WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
       .setWorkflowId(workflowId)
       .setTaskQueue(taskQueue)
@@ -26,7 +26,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     ScheduleSpec scheduleSpec = ScheduleSpec.newBuilder()
       .setIntervals(
-        Collections.singletonList(new ScheduleIntervalSpec(startEvery)))
+        Collections.singletonList(new ScheduleIntervalSpec(scheduleFrequency)))
       .build();
 
     Schedule schedule = Schedule.newBuilder()

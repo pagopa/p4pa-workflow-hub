@@ -1,10 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.wffetch;
+package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaListRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaRetrieverActivity;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.pagopa.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

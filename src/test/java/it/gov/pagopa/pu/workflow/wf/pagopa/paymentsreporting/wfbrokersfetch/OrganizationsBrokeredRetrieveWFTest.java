@@ -1,11 +1,11 @@
-package it.gov.pagopa.pu.workflow.wf.paymentsreporting.broker.wfretrieve;
+package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch;
 
 import it.gov.pagopa.payhub.activities.activity.organization.BrokersRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.organization.OrganizationBrokeredRetrieverActivity;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.broker.activity.ChainOrganizationsBrokered2OrganizationPaymentsReportingActivity;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.broker.config.OrganizationsBrokeredRetrieveWFConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.config.OrganizationsBrokeredRetrieveWFConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class OrganizationsBrokeredRetrieveWFTest {
   private OrganizationBrokeredRetrieverActivity organizationBrokeredRetrieverActivityMock;
 
   @Mock
-  private ChainOrganizationsBrokered2OrganizationPaymentsReportingActivity chainOrganizationsBrokered2OrganizationPaymentsReportingActivityMock;
+  private OrganizationPaymentsReportingPagoPaFetchWFClient organizationPaymentsReportingPagoPaFetchWFClientMock;
 
   private OrganizationsBrokeredRetrieveWFImpl workflow;
 
@@ -40,17 +40,16 @@ class OrganizationsBrokeredRetrieveWFTest {
     ApplicationContext applicationContextMock = mock(ApplicationContext.class);
     when(configMock.buildBrokersRetrieverActivityStub()).thenReturn(brokersRetrieverActivityMock);
     when(configMock.buildOrganizationBrokeredRetrieverActivityStub()).thenReturn(organizationBrokeredRetrieverActivityMock);
-    when(configMock.buildChainBrokeredOrganizations2OrganizationPaymentsReportingActivityStub()).thenReturn(chainOrganizationsBrokered2OrganizationPaymentsReportingActivityMock);
 
     when(applicationContextMock.getBean(OrganizationsBrokeredRetrieveWFConfig.class)).thenReturn(configMock);
 
-    workflow = new OrganizationsBrokeredRetrieveWFImpl();
+    workflow = new OrganizationsBrokeredRetrieveWFImpl(organizationPaymentsReportingPagoPaFetchWFClientMock);
     workflow.setApplicationContext(applicationContextMock);
   }
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(brokersRetrieverActivityMock, organizationBrokeredRetrieverActivityMock, chainOrganizationsBrokered2OrganizationPaymentsReportingActivityMock);
+    verifyNoMoreInteractions(brokersRetrieverActivityMock, organizationBrokeredRetrieverActivityMock, organizationPaymentsReportingPagoPaFetchWFClientMock);
   }
 
   @Test
@@ -63,12 +62,14 @@ class OrganizationsBrokeredRetrieveWFTest {
 
     when(brokersRetrieverActivityMock.fetchAll()).thenReturn(List.of(broker));
     when(organizationBrokeredRetrieverActivityMock.retrieve(1L)).thenReturn(List.of(organization));
+    when(organizationPaymentsReportingPagoPaFetchWFClientMock.retrieve(organization.getOrganizationId()))
+      .thenReturn("workflowId");
 
     workflow.retrieve();
 
     verify(brokersRetrieverActivityMock, times(1)).fetchAll();
     verify(organizationBrokeredRetrieverActivityMock, times(1)).retrieve(1L);
-    verify(chainOrganizationsBrokered2OrganizationPaymentsReportingActivityMock, times(1)).chain(1L);
+    verify(organizationPaymentsReportingPagoPaFetchWFClientMock, times(1)).retrieve(organization.getOrganizationId());
   }
 
   @Test
@@ -79,7 +80,7 @@ class OrganizationsBrokeredRetrieveWFTest {
 
     verify(brokersRetrieverActivityMock, times(1)).fetchAll();
     verify(organizationBrokeredRetrieverActivityMock, never()).retrieve(anyLong());
-    verify(chainOrganizationsBrokered2OrganizationPaymentsReportingActivityMock, never()).chain(anyLong());
+    verify(organizationPaymentsReportingPagoPaFetchWFClientMock, never()).retrieve(anyLong());
   }
 
   @Test
@@ -93,7 +94,7 @@ class OrganizationsBrokeredRetrieveWFTest {
 
     verify(brokersRetrieverActivityMock, times(1)).fetchAll();
     verify(organizationBrokeredRetrieverActivityMock, times(1)).retrieve(1L);
-    verify(chainOrganizationsBrokered2OrganizationPaymentsReportingActivityMock, never()).chain(anyLong());
+    verify(organizationPaymentsReportingPagoPaFetchWFClientMock, never()).retrieve(anyLong());
   }
 
   @Test
@@ -104,7 +105,7 @@ class OrganizationsBrokeredRetrieveWFTest {
 
     verify(brokersRetrieverActivityMock, times(1)).fetchAll();
     verify(organizationBrokeredRetrieverActivityMock, never()).retrieve(anyLong());
-    verify(chainOrganizationsBrokered2OrganizationPaymentsReportingActivityMock, never()).chain(anyLong());
+    verify(organizationPaymentsReportingPagoPaFetchWFClientMock, never()).retrieve(anyLong());
   }
 
   @Test
@@ -118,6 +119,6 @@ class OrganizationsBrokeredRetrieveWFTest {
 
     verify(brokersRetrieverActivityMock, times(1)).fetchAll();
     verify(organizationBrokeredRetrieverActivityMock, times(1)).retrieve(1L);
-    verify(chainOrganizationsBrokered2OrganizationPaymentsReportingActivityMock, never()).chain(anyLong());
+    verify(organizationPaymentsReportingPagoPaFetchWFClientMock, never()).retrieve(anyLong());
   }
 }

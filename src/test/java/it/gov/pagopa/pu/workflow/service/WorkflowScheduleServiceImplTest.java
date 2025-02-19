@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.service;
 
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.schedules.*;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.broker.wfretrieve.OrganizationsBrokeredRetrieveWF;
-import it.gov.pagopa.pu.workflow.wf.paymentsreporting.broker.wfretrieve.OrganizationsBrokeredRetrieveWFImpl;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.OrganizationsBrokeredRetrieveWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.OrganizationsBrokeredRetrieveWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,15 +18,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ScheduleServiceImplTest {
+class WorkflowScheduleServiceImplTest {
   @Mock
   private ScheduleClient scheduleClientMock;
 
-  private ScheduleService scheduleService;
+  private WorkflowScheduleService workflowScheduleService;
 
   @BeforeEach
   void setUp() {
-    scheduleService = new ScheduleServiceImpl(scheduleClientMock);
+    workflowScheduleService = new WorkflowScheduleServiceImpl(scheduleClientMock);
   }
 
   @AfterEach
@@ -53,7 +53,7 @@ class ScheduleServiceImplTest {
     .thenReturn(expectedHandle);
 
     // When
-    ScheduleHandle actualHandle = scheduleService.buildSchedule(
+    ScheduleHandle actualHandle = workflowScheduleService.buildSchedule(
       workflowInterface, taskQueue, workflowId, scheduleId, startEvery);
 
     // Then
@@ -70,7 +70,7 @@ class ScheduleServiceImplTest {
       .thenReturn(expectedHandle);
 
     // When
-    ScheduleHandle actualHandle = scheduleService.getSchedule(scheduleId);
+    ScheduleHandle actualHandle = workflowScheduleService.getSchedule(scheduleId);
 
     // Then
     assertSame(expectedHandle, actualHandle);

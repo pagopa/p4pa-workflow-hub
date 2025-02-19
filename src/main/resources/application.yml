@@ -174,7 +174,7 @@ workflow:
     retry-backoff-coefficient: "\${ORGANIZATION_PAYMENTS_REPORTING_PAGO_PA_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${ORGANIZATION_PAYMENTS_REPORTING_PAGO_PA_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  organizations-brokered:
+  payments-reporting-pagopa-fetch:
     start-to-close-timeout-in-seconds: "\${ORGANIZATIONS_BROKERED_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${ORGANIZATIONS_BROKERED_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${ORGANIZATIONS_BROKERED_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -182,9 +182,9 @@ workflow:
 
 schedule:
   payments-reporting-pagopa:
-    schedule-id: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_ID:payments-reporting-pagopa-schedule}"
+    name: "\${SCHEDULE_PAYMENTS_REPORTING_NAME:payments-reporting-pagopa-schedule}"
     # Duration of the schedule in hours
-    schedule-duration: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_DURATION:6}"
+    frequency-hour: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_FREQUENCY_HOUR:6}"
 
 springdoc:
   writer-with-default-pretty-printer: true
