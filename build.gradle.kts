@@ -107,6 +107,16 @@ tasks.withType<Test> {
   finalizedBy(tasks.jacocoTestReport)
 }
 
+val mockitoAgent = configurations.create("mockitoAgent")
+dependencies {
+  mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
+}
+tasks {
+  test {
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
+  }
+}
+
 tasks.jacocoTestReport {
   dependsOn(tasks.test)
   reports {
@@ -215,10 +225,4 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
 
 tasks.withType<Copy> {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-configurations.all {
-  resolutionStrategy {
-    force("org.glassfish.jaxb:jaxb-core:4.0.5")
-  }
 }
