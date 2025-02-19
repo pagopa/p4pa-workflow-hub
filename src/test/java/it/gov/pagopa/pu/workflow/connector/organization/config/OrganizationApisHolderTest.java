@@ -1,10 +1,10 @@
 package it.gov.pagopa.pu.workflow.connector.organization.config;
 
-import it.gov.pagopa.pu.workflow.connector.BaseApiHolderTest;
+import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApiClientConfig;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.organization.dto.generated.Taxonomy;
-import it.gov.pagopa.pu.organization.generated.ApiClient;
+import it.gov.pagopa.pu.workflow.connector.BaseApiHolderTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,37 +17,36 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @ExtendWith(MockitoExtension.class)
 class OrganizationApisHolderTest extends BaseApiHolderTest {
-    @Mock
-    private RestTemplateBuilder restTemplateBuilderMock;
+  @Mock
+  private RestTemplateBuilder restTemplateBuilderMock;
 
-    private OrganizationApisHolder organizationApisHolder;
+  private OrganizationApisHolder organizationApisHolder;
 
-    @BeforeEach
-    void setUp() {
-        Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
-        Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
-        ApiClient apiClient = new ApiClient(restTemplateMock);
-        String baseUrl = "http://example.com";
-        apiClient.setBasePath(baseUrl);
-        organizationApisHolder = new OrganizationApisHolder(baseUrl, restTemplateBuilderMock);
-    }
+  @BeforeEach
+  void setUp() {
+    Mockito.when(restTemplateBuilderMock.build()).thenReturn(restTemplateMock);
+    Mockito.when(restTemplateMock.getUriTemplateHandler()).thenReturn(new DefaultUriBuilderFactory());
+    OrganizationApiClientConfig clientConfig = new OrganizationApiClientConfig();
+    clientConfig.setBaseUrl("http://example.com");
+    organizationApisHolder = new OrganizationApisHolder(clientConfig, restTemplateBuilderMock);
+  }
 
-    @AfterEach
-    void verifyNoMoreInteractions() {
-        Mockito.verifyNoMoreInteractions(
-                restTemplateBuilderMock,
-                restTemplateMock
-        );
-    }
+  @AfterEach
+  void verifyNoMoreInteractions() {
+    Mockito.verifyNoMoreInteractions(
+      restTemplateBuilderMock,
+      restTemplateMock
+    );
+  }
 
-    @Test
-    void whenGetOrganizationSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
-        assertAuthenticationShouldBeSetInThreadSafeMode(
-                accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
-                        .crudOrganizationsFindByIpaCode("ORGIPACODE"),
-                Organization.class,
-                organizationApisHolder::unload);
-    }
+  @Test
+  void whenGetOrganizationSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
+    assertAuthenticationShouldBeSetInThreadSafeMode(
+      accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
+        .crudOrganizationsFindByIpaCode("ORGIPACODE"),
+      Organization.class,
+      organizationApisHolder::unload);
+  }
 
   @Test
   void whenGetTaxonomyCodeDtoSearchControllerApiThenAuthenticationShouldBeSetInThreadSafeMode() throws InterruptedException {
