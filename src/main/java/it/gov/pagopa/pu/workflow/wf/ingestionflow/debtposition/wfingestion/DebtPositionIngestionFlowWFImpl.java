@@ -47,19 +47,24 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
   public void ingest(Long ingestionFlowFileId) {
     log.info("Acquiring lock for ingestionFlowFileId {}", ingestionFlowFileId);
 
-    Workflow.await(Duration.ofSeconds(5),
-      () -> {
-        boolean result = ingestionFlowFileProcessingLockerActivity.acquireProcessingLock(ingestionFlowFileId);
-        if (!result) {
-          log.info("Lock not acquired, will retry for ingestionFlowFileId {}", ingestionFlowFileId);
-          return false;
-        }
-        return true;
-      }
-    );
+    int attemptCounter = 0;
+//    int maxAttemptsBeforeContinueAsNew = 5000;
+    while (!ingestionFlowFileProcessingLockerActivity.acquireProcessingLock(ingestionFlowFileId)) {
+      attemptCounter++;
+//
+//      if (attemptCounter >= maxAttemptsBeforeContinueAsNew) {
+//        log.info("Max attempts reached, continuing as new for ingestionFlowFileId {}", ingestionFlowFileId);
+//        Workflow.continueAsNew(ingestionFlowFileId);
+//        return;
+//      }
+// TODO: evaluate to continueAsNew the WF when activity is called too many times in order to avoid to incur on max events limit
+
+      log.info("Lock not acquired, retrying for ingestionFlowFileId {}", ingestionFlowFileId);
+      Workflow.sleep(Duration.ofSeconds(5));
+    }
 
     log.info("Lock successfully acquired for ingestionFlowFileId {}", ingestionFlowFileId);
-    InstallmentIngestionFlowFileResult ingestionResult = installmentIngestionFlowFileActivity.processFile(ingestionFlowFileId);
+    InstallmentIngestionFlowFileResult ingestionResult = processFile(ingestionFlowFileId);
     boolean success = StringUtils.isEmpty(ingestionResult.getErrorDescription());
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
@@ -72,5 +77,20 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
     log.info("Debt Position ingestion with ID {} is completed", ingestionFlowFileId);
+  }
+
+  private InstallmentIngestionFlowFileResult processFile(Long ingestionFlowFileId) {
+    InstallmentIngestionFlowFileResult ingestionResult;
+    try {
+      ingestionResult = installmentIngestionFlowFileActivity.processFile(ingestionFlowFileId);
+    } catch (Exception e) {
+      ingestionResult = new InstallmentIngestionFlowFileResult(
+        null,
+        null,
+        "Unexpected error when processing DebtPositionIngestion file: " + e.getMessage(),
+        null
+      );
+    }
+    return ingestionResult;
   }
 }
