@@ -2,7 +2,9 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.InstallmentIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,5 +20,13 @@ public class DebtPositionIngestionFlowWfConfig extends BaseWfConfig {
 
   public InstallmentIngestionFlowFileActivity buildInstallmentIngestionFlowFileActivityStub() {
     return Workflow.newActivityStub(InstallmentIngestionFlowFileActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public UpdateIngestionFlowStatusActivity buildUpdateIngestionFlowStatusActivityStub() {
+    return Workflow.newActivityStub(UpdateIngestionFlowStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public SendEmailIngestionFlowActivity buildSendEmailIngestionFlowActivityStub() {
+    return Workflow.newActivityStub(SendEmailIngestionFlowActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 }
