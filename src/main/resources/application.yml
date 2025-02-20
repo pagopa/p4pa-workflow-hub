@@ -119,6 +119,11 @@ logging:
     org.springframework.boot.availability: "\${LOG_LEVEL_SPRING_BOOT_AVAILABILITY:DEBUG}"
     org.springframework.kafka: "\${LOG_LEVEL_SPRING_KAFKA:INFO}"
     org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: "\${LOG_LEVEL_KAFKA_CONSUMER_COORDINATOR:WARN}"
+    it.gov.pagopa.pu.workflow.exception.WorkflowExceptionHandler: "\${LOGGING_LEVEL_API_REQUEST_EXCEPTION:INFO}"
+    org.springdoc.core.utils.SpringDocAnnotationsUtils: "\${LOG_LEVEL_SPRING_DOC:ERROR}"
+    PERFORMANCE_LOG: "\${LOG_LEVEL_PERFORMANCE_LOG:INFO}"
+    PERFORMANCE_LOG.API_REQUEST: "\${LOG_LEVEL_PERFORMANCE_LOG_API_REQUEST:\${logging.level.PERFORMANCE_LOG}}"
+    PERFORMANCE_LOG.REST_INVOKE: "\${LOG_LEVEL_PERFORMANCE_LOG_REST_INVOKE:\${logging.level.PERFORMANCE_LOG}}"
 
 workflow:
   default:
