@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "workflow.payments-reporting-pagopa-brokers-fetch")
-public class OrganizationsBrokeredRetrieveWFConfig extends BaseWfConfig {
+public class BrokersPaymentsReportingPagoPaFetchWfConfig extends BaseWfConfig {
 
   public BrokersRetrieverActivity buildBrokersRetrieverActivityStub() {
     return Workflow.newActivityStub(BrokersRetrieverActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));

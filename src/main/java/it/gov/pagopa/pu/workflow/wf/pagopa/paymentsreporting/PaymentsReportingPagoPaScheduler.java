@@ -2,11 +2,10 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
 import io.temporal.client.schedules.*;
 import it.gov.pagopa.pu.workflow.service.WorkflowScheduleService;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.OrganizationsBrokeredRetrieveWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.OrganizationsBrokeredRetrieveWFImpl;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.BrokersPaymentsReportingPagoPaFetchWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.BrokersPaymentsReportingPagoPaFetchWFImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -14,21 +13,14 @@ import java.time.Duration;
 @Slf4j
 @Component
 public class PaymentsReportingPagoPaScheduler {
-  private final WorkflowScheduleService workflowScheduleService;
-  private final Long scheduleDuration;
-  private final String scheduleId;
 
   public PaymentsReportingPagoPaScheduler(WorkflowScheduleService workflowScheduleService,
-                                          @Value("${schedule.payments-reporting-pagopa.name}") String scheduleId,
                                           @Value("${schedule.payments-reporting-pagopa.frequency-hour}") Long frequencyHour) {
-    this.workflowScheduleService = workflowScheduleService;
-    this.scheduleId = scheduleId;
-    this.scheduleDuration = frequencyHour;
+    init(workflowScheduleService, Duration.ofHours(frequencyHour), "payments-reporting-pagopa");
   }
 
-  @PostConstruct
-  public void init() {
-    log.info("Scheduling OrganizationsBrokeredRetrieveWF");
+  private void init(WorkflowScheduleService workflowScheduleService, Duration scheduleDuration, String scheduleId) {
+    log.info("Scheduling BrokersPaymentsReportingPagoPaFetchWF");
     ScheduleHandle handle = workflowScheduleService.getSchedule(scheduleId);
     log.debug("ScheduleHandle {}", handle);
     try {
@@ -38,11 +30,11 @@ public class PaymentsReportingPagoPaScheduler {
       log.info("Creating a new schedule");
 
       handle = workflowScheduleService.buildSchedule(
-        OrganizationsBrokeredRetrieveWF.class,
-        OrganizationsBrokeredRetrieveWFImpl.TASK_QUEUE_ORGANIZATIONS_BROKERED_RETRIEVE,
-        OrganizationsBrokeredRetrieveWFImpl.TASK_QUEUE_ORGANIZATIONS_BROKERED_RETRIEVE,
+        BrokersPaymentsReportingPagoPaFetchWF.class,
+        BrokersPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH,
+        BrokersPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH,
         scheduleId,
-        Duration.ofHours(scheduleDuration));
+        scheduleDuration);
       log.info("Created schedule {}", handle.describe());
     }
   }

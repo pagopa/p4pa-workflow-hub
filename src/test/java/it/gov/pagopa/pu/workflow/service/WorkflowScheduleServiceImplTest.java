@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.service;
 
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.schedules.*;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.OrganizationsBrokeredRetrieveWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.OrganizationsBrokeredRetrieveWFImpl;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.BrokersPaymentsReportingPagoPaFetchWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.BrokersPaymentsReportingPagoPaFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +37,8 @@ class WorkflowScheduleServiceImplTest {
   @Test
   void buildSchedule() {
     // Given
-    Class<?> workflowInterface = OrganizationsBrokeredRetrieveWF.class;
-    String taskQueue = OrganizationsBrokeredRetrieveWFImpl.TASK_QUEUE_ORGANIZATIONS_BROKERED_RETRIEVE;
+    Class<?> workflowInterface = BrokersPaymentsReportingPagoPaFetchWF.class;
+    String taskQueue = BrokersPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH;
     String workflowId = "test-workflow-id";
     String scheduleId = "test-schedule-id";
     Duration startEvery = Duration.ofSeconds(10);

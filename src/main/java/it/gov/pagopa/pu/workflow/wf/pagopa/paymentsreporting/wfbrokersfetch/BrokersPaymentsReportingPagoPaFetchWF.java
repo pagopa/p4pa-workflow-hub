@@ -8,7 +8,7 @@ import io.temporal.workflow.WorkflowMethod;
  *
  * */
 @WorkflowInterface
-public interface OrganizationsBrokeredRetrieveWF {
+public interface BrokersPaymentsReportingPagoPaFetchWF {
 
   /**
    * Workflow method for the Brokered Organizations Retrieve Workflow

@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.organization.OrganizationBrokere
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.config.OrganizationsBrokeredRetrieveWFConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.config.BrokersPaymentsReportingPagoPaFetchWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class OrganizationsBrokeredRetrieveWFTest {
+class BrokersPaymentsReportingPagoPaFetchWFTest {
 
   @Mock
   private BrokersRetrieverActivity brokersRetrieverActivityMock;
@@ -32,18 +32,18 @@ class OrganizationsBrokeredRetrieveWFTest {
   @Mock
   private OrganizationPaymentsReportingPagoPaFetchWFClient organizationPaymentsReportingPagoPaFetchWFClientMock;
 
-  private OrganizationsBrokeredRetrieveWFImpl workflow;
+  private BrokersPaymentsReportingPagoPaFetchWFImpl workflow;
 
   @BeforeEach
   void setUp() {
-    OrganizationsBrokeredRetrieveWFConfig configMock = mock(OrganizationsBrokeredRetrieveWFConfig.class);
+    BrokersPaymentsReportingPagoPaFetchWfConfig configMock = mock(BrokersPaymentsReportingPagoPaFetchWfConfig.class);
     ApplicationContext applicationContextMock = mock(ApplicationContext.class);
     when(configMock.buildBrokersRetrieverActivityStub()).thenReturn(brokersRetrieverActivityMock);
     when(configMock.buildOrganizationBrokeredRetrieverActivityStub()).thenReturn(organizationBrokeredRetrieverActivityMock);
+    when(applicationContextMock.getBean(OrganizationPaymentsReportingPagoPaFetchWFClient.class)).thenReturn(organizationPaymentsReportingPagoPaFetchWFClientMock);
+    when(applicationContextMock.getBean(BrokersPaymentsReportingPagoPaFetchWfConfig.class)).thenReturn(configMock);
 
-    when(applicationContextMock.getBean(OrganizationsBrokeredRetrieveWFConfig.class)).thenReturn(configMock);
-
-    workflow = new OrganizationsBrokeredRetrieveWFImpl(organizationPaymentsReportingPagoPaFetchWFClientMock);
+    workflow = new BrokersPaymentsReportingPagoPaFetchWFImpl();
     workflow.setApplicationContext(applicationContextMock);
   }
 
