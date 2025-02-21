@@ -171,6 +171,49 @@
         } ]
       }
     },
+    "/workflowhub/ingestion-flow/receipt/pagopa/{ingestionFlowFileId}" : {
+      "post" : {
+        "tags" : [ "IngestionFlow" ],
+        "summary" : "Receipt Pagopa ingestion",
+        "description" : "It will start the Receipt Pagopa ingestion returning its workflowId",
+        "operationId" : "ingestReceiptPagopa",
+        "parameters" : [ {
+          "name" : "ingestionFlowFileId",
+          "in" : "path",
+          "description" : "The unique identifier of the ingestion flow File.",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Receipt Pagopa Ingestion Workflow created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
     "/workflowhub/ingestion-flow/payments-reporting/{ingestionFlowFileId}" : {
       "post" : {
         "tags" : [ "IngestionFlow" ],

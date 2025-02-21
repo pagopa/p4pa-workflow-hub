@@ -159,6 +159,12 @@ workflow:
     retry-backoff-coefficient: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
+  receipt-pagopa-ingestion:
+    start-to-close-timeout-in-seconds: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
   # classification
   iuf-classification:
     start-to-close-timeout-in-seconds: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
