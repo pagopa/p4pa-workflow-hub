@@ -81,6 +81,12 @@ dependencies {
 
   compileOnly("org.projectlombok:lombok")
 
+  /**
+   * Mapstruct
+   * https://mapstruct.org/
+   * mapstruct dependencies must always be placed after the lombok dependency
+   * or the generated mappers will return an empty object
+   **/
   annotationProcessor("org.projectlombok:lombok")
   annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
   testAnnotationProcessor("org.projectlombok:lombok")
