@@ -1,10 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.wffetch;
+package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch;
 
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaListRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaRetrieverActivity;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentreporting.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class OrganizationPaymentsReportingPagoPaFetchWFTest {
+class PaymentsReportingPagoPaOrganizationFetchWFTest {
 
   @Mock
   private OrganizationPaymentsReportingPagoPaListRetrieverActivity organizationPaymentsReportingPagoPaListRetrieverActivityMock;
   @Mock
   private OrganizationPaymentsReportingPagoPaRetrieverActivity organizationPaymentsReportingPagoPaRetrieverActivityMock;
 
-  private OrganizationPaymentsReportingPagoPaFetchWFImpl wf;
+  private PaymentsReportingPagoPaOrganizationFetchWFImpl wf;
 
   @BeforeEach
   void setUp() {
@@ -39,7 +39,7 @@ class OrganizationPaymentsReportingPagoPaFetchWFTest {
 
     when(applicationContextMock.getBean(OrganizationPaymentsReportingPagoPaFetchWfConfig.class)).thenReturn(organizationPaymentsReportingPagoPaFetchWfConfigMock);
 
-    wf = new OrganizationPaymentsReportingPagoPaFetchWFImpl();
+    wf = new PaymentsReportingPagoPaOrganizationFetchWFImpl();
     wf.setApplicationContext(applicationContextMock);
   }
 

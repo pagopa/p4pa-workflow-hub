@@ -76,7 +76,8 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
       ingestionResult.getDiscardedFileName());
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
-    log.info("Debt Position ingestion with ID {} is completed, with success {}", ingestionFlowFileId, success);
+    log.info("Debt Position ingestion with ID {} is completed, with success {} and error_description {}",
+      ingestionFlowFileId, success, ingestionResult.getErrorDescription());
   }
 
   private InstallmentIngestionFlowFileResult processFile(Long ingestionFlowFileId) {

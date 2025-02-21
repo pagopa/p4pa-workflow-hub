@@ -51,7 +51,7 @@ val micrometerVersion = "1.4.1"
 val temporalVersion = "1.27.0"
 val protobufJavaVersion = "3.25.5"
 val bouncycastleVersion = "1.79"
-val activitiesVersion = "1.56.1"
+val activitiesVersion = "1.59.0"
 val mapStructVersion = "1.6.3"
 
 dependencies {
@@ -67,29 +67,30 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
   implementation("org.mapstruct:mapstruct:$mapStructVersion")
-  //security
-  implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
-  // updated for security reason
-  implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
-  implementation("it.gov.pagopa.payhub:p4pa-payhub-activities:$activitiesVersion") {
-    exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
-  }
   implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion"){
     exclude(group = "com.google.protobuf", module = "protobuf-java")
   }
+  implementation("it.gov.pagopa.payhub:p4pa-payhub-activities:$activitiesVersion") {
+    exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
+  }
+
+
+  // updated for security reason
+  implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
+  implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
 
   compileOnly("org.projectlombok:lombok")
-  annotationProcessor("org.projectlombok:lombok")
+
   /**
    * Mapstruct
    * https://mapstruct.org/
    * mapstruct dependencies must always be placed after the lombok dependency
    * or the generated mappers will return an empty object
    **/
+  annotationProcessor("org.projectlombok:lombok")
   annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
-
-  testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
   testAnnotationProcessor("org.projectlombok:lombok")
+  testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
   //	Testing
   testImplementation("org.springframework.boot:spring-boot-starter-test")

@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_SCHEDULE_CHECK_DP_EXPIRATION_LOCAL_ACTIVITY)
+@ActivityImpl(taskQueues = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DP_EXPIRATION_LOCAL_ACTIVITY)
 public class ScheduleCheckDpExpirationActivityImpl implements ScheduleCheckDpExpirationActivity {
 
   private final CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient;

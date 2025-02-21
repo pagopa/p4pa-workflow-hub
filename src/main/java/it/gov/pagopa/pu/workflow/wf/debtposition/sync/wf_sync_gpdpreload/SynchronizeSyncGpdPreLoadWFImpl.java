@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @WorkflowImpl(taskQueues = SynchronizeSyncGpdPreLoadWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_GPDPRELOAD_WF)
 public class SynchronizeSyncGpdPreLoadWFImpl extends BaseDPSynchronizeWf implements SynchronizeSyncGpdPreLoadWF {
 
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_GPDPRELOAD_WF = "SynchronizeDP_SYNC+GPDPRELOAD_WF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_GPDPRELOAD_WF = "DebtPositionSynchronize_SYNC+GPDPRELOAD_WF";
 
   private SynchronizeInstallmentGpdPreLoadActivity synchronizeInstallmentGpdPreLoadActivity;
 
