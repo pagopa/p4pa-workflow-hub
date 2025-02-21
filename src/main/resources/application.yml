@@ -132,29 +132,26 @@ workflow:
     retryBackoffCoefficient: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:1.5}"
     retryMaximumAttempts: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:30}"
 
-  transfer-classification:
-    start-to-close-timeout-in-seconds: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
-    retry-initial-interval-in-millis: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+  # debt position
+  debt-position-expiration:
+    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  payments-reporting-ingestion:
-    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
-    retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
-
+  # debt position sync
   debt-position-synchronize:
     start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  iuf-classification:
-    start-to-close-timeout-in-seconds: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
-    retry-initial-interval-in-millis: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+  # ingestion flow
+  payments-reporting-ingestion:
+    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   treasury-opi-ingestion:
     start-to-close-timeout-in-seconds: "\${TREASURY_OPI_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
@@ -162,27 +159,35 @@ workflow:
     retry-backoff-coefficient: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  debt-position-expiration:
-    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
-    retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+  # classification
+  iuf-classification:
+    start-to-close-timeout-in-seconds: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  transfer-classification:
+    start-to-close-timeout-in-seconds: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # pagopa payments reporting
+  payments-reporting-pagopa-brokers-fetch:
+    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   payments-reporting-pagopa-organization-fetch:
-    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH _START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  payments-reporting-pagopa-fetch:
-    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
-    retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_PAGOPA_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${PAYMENTS_REPORTING_PAGOPA_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
-
 schedule:
-    # Duration of the schedule in hours
-    frequency-hour: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_FREQUENCY_HOUR:6}"
+  payments-reporting-pagopa-brokers-fetch:
+    cron-expression: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_CRON:0 1/6 * * *}" # each day, 01:00-07:00-13:00-19:00 (Europe/Rome)
 
 springdoc:
   writer-with-default-pretty-printer: true

@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class BrokersPaymentsReportingPagoPaFetchWFTest {
+class PaymentsReportingPagoPaBrokersFetchWFTest {
 
   @Mock
   private BrokersRetrieverActivity brokersRetrieverActivityMock;
@@ -32,7 +32,7 @@ class BrokersPaymentsReportingPagoPaFetchWFTest {
   @Mock
   private OrganizationPaymentsReportingPagoPaFetchWFClient organizationPaymentsReportingPagoPaFetchWFClientMock;
 
-  private BrokersPaymentsReportingPagoPaFetchWFImpl workflow;
+  private PaymentsReportingPagoPaBrokersFetchWFImpl workflow;
 
   @BeforeEach
   void setUp() {
@@ -43,7 +43,7 @@ class BrokersPaymentsReportingPagoPaFetchWFTest {
     when(applicationContextMock.getBean(OrganizationPaymentsReportingPagoPaFetchWFClient.class)).thenReturn(organizationPaymentsReportingPagoPaFetchWFClientMock);
     when(applicationContextMock.getBean(BrokersPaymentsReportingPagoPaFetchWfConfig.class)).thenReturn(configMock);
 
-    workflow = new BrokersPaymentsReportingPagoPaFetchWFImpl();
+    workflow = new PaymentsReportingPagoPaBrokersFetchWFImpl();
     workflow.setApplicationContext(applicationContextMock);
   }
 

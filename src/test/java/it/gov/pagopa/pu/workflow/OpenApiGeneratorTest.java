@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow;
 
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.schedules.ScheduleClient;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,11 @@ class OpenApiGeneratorTest {
   private MockMvc mockMvc;
 
   @MockitoBean
-  private WorkflowClient workflowClient;
+  private WorkflowClient workflowClientMock;
+  @MockitoBean
+  private ScheduleClient scheduleClientMock;
+  @MockitoBean
+  private PaymentsReportingPagoPaBrokersFetchScheduler paymentsReportingPagoPaBrokersFetchSchedulerMock;
 
   @Test
   void generateAndVerifyCommit() throws Exception {

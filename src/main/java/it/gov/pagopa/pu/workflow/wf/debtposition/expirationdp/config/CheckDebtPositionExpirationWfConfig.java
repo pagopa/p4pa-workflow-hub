@@ -20,7 +20,7 @@ public class CheckDebtPositionExpirationWfConfig extends BaseWfConfig {
 
   public ScheduleCheckDpExpirationActivity buildScheduleCheckDpExpirationActivityStub() {
     return Workflow.newActivityStub(ScheduleCheckDpExpirationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-      CheckDebtPositionExpirationWFImpl.TASK_QUEUE_SCHEDULE_CHECK_DP_EXPIRATION_LOCAL_ACTIVITY,
+      CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DP_EXPIRATION_LOCAL_ACTIVITY,
       this));
   }
 }

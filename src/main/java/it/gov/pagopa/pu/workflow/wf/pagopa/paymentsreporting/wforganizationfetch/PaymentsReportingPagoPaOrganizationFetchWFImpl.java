@@ -13,9 +13,9 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.List;
 
 @Slf4j
-@WorkflowImpl(taskQueues = OrganizationPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH)
-public class OrganizationPaymentsReportingPagoPaFetchWFImpl implements OrganizationPaymentsReportingPagoPaFetchWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH = "OrganizationPaymentsReportingPagoPaFetchWF";
+@WorkflowImpl(taskQueues = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH)
+public class PaymentsReportingPagoPaOrganizationFetchWFImpl implements PaymentsReportingPagoPaOrganizationFetchWF, ApplicationContextAware {
+  public static final String TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH = "PaymentsReportingPagoPaOrganizationFetchWF";
 
   private OrganizationPaymentsReportingPagoPaListRetrieverActivity organizationPaymentsReportingPagoPaListRetrieverActivity;
   private OrganizationPaymentsReportingPagoPaRetrieverActivity organizationPaymentsReportingPagoPaRetrieverActivity;
@@ -41,11 +41,13 @@ public class OrganizationPaymentsReportingPagoPaFetchWFImpl implements Organizat
     List<PaymentsReportingIdDTO> paymentsReportingIds = organizationPaymentsReportingPagoPaListRetrieverActivity.retrieve(organizationId);
     log.info("PagoPA PaymentsReporting retrieved for organization with ID {} are: {}", organizationId,
       String.join(", ", paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName).toList()));
+
     if (paymentsReportingIds.isEmpty()) {
       log.info("Skip OrganizationPaymentsReportingPagoPaRetrieverActivity - nothing new to fetch from PagoPA for the organization with ID {}", organizationId);
     } else {
       organizationPaymentsReportingPagoPaRetrieverActivity.fetch(organizationId, paymentsReportingIds);
     }
+
     log.info("Fetch of PaymentsReporting completed for organization with ID {} from PagoPA", organizationId);
   }
 }

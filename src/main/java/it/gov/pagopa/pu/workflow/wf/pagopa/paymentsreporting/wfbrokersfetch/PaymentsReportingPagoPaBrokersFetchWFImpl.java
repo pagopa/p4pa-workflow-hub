@@ -15,9 +15,9 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.List;
 
 @Slf4j
-@WorkflowImpl(taskQueues = {BrokersPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH})
-public class BrokersPaymentsReportingPagoPaFetchWFImpl implements BrokersPaymentsReportingPagoPaFetchWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH = "BrokersPaymentsReportingPagoPaFetchWF";
+@WorkflowImpl(taskQueues = {PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH})
+public class PaymentsReportingPagoPaBrokersFetchWFImpl implements PaymentsReportingPagoPaBrokersFetchWF, ApplicationContextAware {
+  public static final String TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH = "PaymentsReportingPagoPaBrokersFetchWF";
 
   private BrokersRetrieverActivity brokersRetrieverActivity;
   private OrganizationBrokeredRetrieverActivity organizationBrokeredRetrieverActivity;
@@ -53,6 +53,7 @@ public class BrokersPaymentsReportingPagoPaFetchWFImpl implements BrokersPayment
         .map(Organization::getOrganizationId)
         .forEach(organizationPaymentsReportingPagoPaFetchWFClient::retrieve);
     }
+
     log.info("Retrieving completed");
   }
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 @WorkflowImpl(taskQueues = SynchronizeNoPagoPAWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_NO_PAGOPA_WF)
 public class SynchronizeNoPagoPAWFImpl extends BaseDPSynchronizeWf implements SynchronizeNoPagoPAWF {
 
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_NO_PAGOPA_WF = "SynchronizeDP_NoPagoPA_WF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_DP_NO_PAGOPA_WF = "DebtPositionSynchronize_NoPagoPA_WF";
 
   @Override
   public void synchronizeDPNoPagoPA(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {

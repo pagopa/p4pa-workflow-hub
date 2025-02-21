@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class OrganizationPaymentsReportingPagoPaFetchWFTest {
+class PaymentsReportingPagoPaOrganizationFetchWFTest {
 
   @Mock
   private OrganizationPaymentsReportingPagoPaListRetrieverActivity organizationPaymentsReportingPagoPaListRetrieverActivityMock;
   @Mock
   private OrganizationPaymentsReportingPagoPaRetrieverActivity organizationPaymentsReportingPagoPaRetrieverActivityMock;
 
-  private OrganizationPaymentsReportingPagoPaFetchWFImpl wf;
+  private PaymentsReportingPagoPaOrganizationFetchWFImpl wf;
 
   @BeforeEach
   void setUp() {
@@ -39,7 +39,7 @@ class OrganizationPaymentsReportingPagoPaFetchWFTest {
 
     when(applicationContextMock.getBean(OrganizationPaymentsReportingPagoPaFetchWfConfig.class)).thenReturn(organizationPaymentsReportingPagoPaFetchWfConfigMock);
 
-    wf = new OrganizationPaymentsReportingPagoPaFetchWFImpl();
+    wf = new PaymentsReportingPagoPaOrganizationFetchWFImpl();
     wf.setApplicationContext(applicationContextMock);
   }
 

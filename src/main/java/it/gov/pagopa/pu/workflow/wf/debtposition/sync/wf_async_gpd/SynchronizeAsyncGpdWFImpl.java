@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @WorkflowImpl(taskQueues = SynchronizeAsyncGpdWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_ASYNC_GPD_WF)
 public class SynchronizeAsyncGpdWFImpl extends BaseDPSynchronizeWf implements SynchronizeAsyncGpdWF {
 
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_ASYNC_GPD_WF = "SynchronizeDP_ASYNC_GPD_WF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_DP_ASYNC_GPD_WF = "DebtPositionSynchronize_ASYNC_GPD_WF";
 
   private SynchronizeInstallmentGpdActivity synchronizeInstallmentGpdActivity;
 

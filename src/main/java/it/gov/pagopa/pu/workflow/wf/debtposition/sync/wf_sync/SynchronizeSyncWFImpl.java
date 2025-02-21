@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @WorkflowImpl(taskQueues = SynchronizeSyncWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF)
 public class SynchronizeSyncWFImpl extends BaseDPSynchronizeWf implements SynchronizeSyncWF {
 
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF = "SynchronizeDP_SYNC_WF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF = "DebtPositionSynchronize_SYNC_WF";
 
   @Override
   public void synchronizeDPSync(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {

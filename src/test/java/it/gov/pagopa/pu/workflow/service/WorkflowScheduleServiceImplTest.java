@@ -1,21 +1,23 @@
 package it.gov.pagopa.pu.workflow.service;
 
-import io.temporal.client.WorkflowOptions;
-import io.temporal.client.schedules.*;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.BrokersPaymentsReportingPagoPaFetchWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.BrokersPaymentsReportingPagoPaFetchWFImpl;
+import io.temporal.client.schedules.ScheduleActionStartWorkflow;
+import io.temporal.client.schedules.ScheduleClient;
+import io.temporal.client.schedules.ScheduleHandle;
+import io.temporal.client.schedules.ScheduleSpec;
+import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
-import java.util.Collections;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
 class WorkflowScheduleServiceImplTest {
@@ -30,31 +32,39 @@ class WorkflowScheduleServiceImplTest {
   }
 
   @AfterEach
-  void tearDown() {
-    verifyNoMoreInteractions(scheduleClientMock);
+  void verifyNoMoreInteractions() {
+    Mockito.verifyNoMoreInteractions(scheduleClientMock);
   }
 
   @Test
   void buildSchedule() {
     // Given
-    Class<?> workflowInterface = BrokersPaymentsReportingPagoPaFetchWF.class;
-    String taskQueue = BrokersPaymentsReportingPagoPaFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH;
+    Class<?> workflowInterface = PaymentsReportingPagoPaBrokersFetchWF.class;
+    String taskQueue = PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH;
     String workflowId = "test-workflow-id";
     String scheduleId = "test-schedule-id";
-    Duration startEvery = Duration.ofSeconds(10);
-    ScheduleHandle expectedHandle = mock(ScheduleHandle.class);
-    Schedule schedule = prepareSchedule(workflowInterface, taskQueue, workflowId, startEvery);
+    String cronExpression = "0/5 * * * *";
+    ScheduleHandle expectedHandle = Mockito.mock(ScheduleHandle.class);
 
-    lenient().when(scheduleClientMock.createSchedule(
-      eq(scheduleId),
-      argThat(arg -> schedule.getAction().equals(arg.getAction()) && schedule.getSpec().equals(arg.getSpec())),
-      argThat(options -> ScheduleOptions.newBuilder().build().equals(options))
+    ScheduleSpec expectedScheduleSpec = ScheduleSpec.newBuilder()
+      .setCronExpressions(List.of(cronExpression))
+      .setTimeZoneName(Utilities.ZONEID.getId())
+      .build();
+
+    Mockito.when(scheduleClientMock.createSchedule(
+        Mockito.eq(scheduleId),
+        Mockito.argThat(schedule -> schedule.getAction() instanceof ScheduleActionStartWorkflow scheduleAction &&
+          scheduleAction.getWorkflowType().equals(workflowInterface.getSimpleName()) &&
+          scheduleAction.getOptions().getTaskQueue().equals(taskQueue) &&
+          scheduleAction.getOptions().getWorkflowId().equals(workflowId)
+          && schedule.getSpec().equals(expectedScheduleSpec)),
+        Mockito.any()
     ))
     .thenReturn(expectedHandle);
 
     // When
     ScheduleHandle actualHandle = workflowScheduleService.buildSchedule(
-      workflowInterface, taskQueue, workflowId, scheduleId, startEvery);
+      workflowInterface, taskQueue, workflowId, scheduleId, cronExpression);
 
     // Then
     assertSame(expectedHandle, actualHandle);
@@ -64,9 +74,9 @@ class WorkflowScheduleServiceImplTest {
   void getSchedule() {
     // Given
     String scheduleId = "test-schedule-id";
-    ScheduleHandle expectedHandle = mock(ScheduleHandle.class);
+    ScheduleHandle expectedHandle = Mockito.mock(ScheduleHandle.class);
 
-    lenient().when(scheduleClientMock.getHandle(scheduleId))
+    Mockito.when(scheduleClientMock.getHandle(scheduleId))
       .thenReturn(expectedHandle);
 
     // When
@@ -74,25 +84,5 @@ class WorkflowScheduleServiceImplTest {
 
     // Then
     assertSame(expectedHandle, actualHandle);
-  }
-
-  private Schedule prepareSchedule(Class<?> workflowInterface, String taskQueue, String workflowId, Duration startEvery) {
-    WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
-      .setWorkflowId(workflowId)
-      .setTaskQueue(taskQueue)
-      .build();
-
-    ScheduleSpec scheduleSpec = ScheduleSpec.newBuilder()
-      .setIntervals(
-        Collections.singletonList(new ScheduleIntervalSpec(startEvery)))
-      .build();
-
-    return Schedule.newBuilder()
-      .setAction(ScheduleActionStartWorkflow.newBuilder()
-        .setWorkflowType(workflowInterface)
-        .setOptions(workflowOptions)
-        .build())
-      .setSpec(scheduleSpec)
-      .build();
   }
 }

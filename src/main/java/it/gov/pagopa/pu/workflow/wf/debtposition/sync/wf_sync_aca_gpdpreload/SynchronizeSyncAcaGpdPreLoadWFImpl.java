@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @WorkflowImpl(taskQueues = SynchronizeSyncAcaGpdPreLoadWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_GPDPRELOAD_WF)
 public class SynchronizeSyncAcaGpdPreLoadWFImpl extends BaseDPSynchronizeWf implements SynchronizeSyncAcaGpdPreLoadWF {
 
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_GPDPRELOAD_WF = "SynchronizeDP_SYNC+ACA+GPDPRELOAD_WF";
+  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_GPDPRELOAD_WF = "DebtPositionSynchronize_SYNC+ACA+GPDPRELOAD_WF";
 
   private SynchronizeInstallmentAcaActivity synchronizeInstallmentAcaActivity;
   private SynchronizeInstallmentGpdPreLoadActivity synchronizeInstallmentGpdPreLoadActivity;

@@ -2,15 +2,16 @@ package it.gov.pagopa.pu.workflow.service;
 
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.schedules.*;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.util.Collections;
+import java.util.List;
 
 @Service
 @Slf4j
 public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
+
   private final ScheduleClient scheduleClient;
 
   public WorkflowScheduleServiceImpl(ScheduleClient scheduleClient) {
@@ -18,15 +19,15 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
   }
 
   @Override
-  public ScheduleHandle buildSchedule(Class<?> workflowInterface, String taskQueue, String workflowId, String scheduleId, Duration scheduleFrequency) {
+  public ScheduleHandle buildSchedule(Class<?> workflowInterface, String taskQueue, String workflowId, String scheduleId, String cronExpression) {
     WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
       .setWorkflowId(workflowId)
       .setTaskQueue(taskQueue)
       .build();
 
     ScheduleSpec scheduleSpec = ScheduleSpec.newBuilder()
-      .setIntervals(
-        Collections.singletonList(new ScheduleIntervalSpec(scheduleFrequency)))
+      .setCronExpressions(List.of(cronExpression))
+      .setTimeZoneName(Utilities.ZONEID.getId())
       .build();
 
     Schedule schedule = Schedule.newBuilder()
