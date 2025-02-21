@@ -61,7 +61,8 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
       ingestionResult.getDiscardedFileName());
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
-    log.info("Treasury OPI ingestion with ID {} is completed", ingestionFlowFileId);
+    log.info("Treasury OPI ingestion with ID {} with success {}, errorDescription {} and discardFileName {}",
+      ingestionFlowFileId, success, ingestionResult.getErrorDescription(), ingestionResult.getDiscardedFileName());
   }
 
   private TreasuryIufIngestionFlowFileResult processFile(Long ingestionFlowFileId) {

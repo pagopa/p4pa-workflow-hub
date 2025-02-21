@@ -59,7 +59,8 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
       null);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
-    log.info("PaymentsReporting Ingestion completed for file with ID {}", ingestionFlowFileId);
+    log.info("PaymentsReporting Ingestion completed for file with ID {} with success {} and errorDescription {}",
+      ingestionFlowFileId, success, errorDescription);
   }
 
   private String processFile(Long ingestionFlowFileId) {
