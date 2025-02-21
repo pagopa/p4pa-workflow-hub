@@ -21,7 +21,7 @@ import java.time.Duration;
 @WorkflowImpl(taskQueues = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW)
 public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlowWF, ApplicationContextAware {
   public static final String TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW = "DebtPositionIngestionFlowWF";
-  private static final Duration SLEEP_DURATION = Duration.ofSeconds(5);
+  private static final Duration SLEEP_BETWEEN_ACQUIRE_LOCK = Duration.ofSeconds(5);
 
   private IngestionFlowFileProcessingLockerActivity ingestionFlowFileProcessingLockerActivity;
   private InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivity;
@@ -60,7 +60,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
 //      }
 
       log.info("Lock not acquired, retrying for ingestionFlowFileId {}", ingestionFlowFileId);
-      Workflow.sleep(SLEEP_DURATION);
+      Workflow.sleep(SLEEP_BETWEEN_ACQUIRE_LOCK);
     }
 
     log.info("Lock successfully acquired for ingestionFlowFileId {}", ingestionFlowFileId);
@@ -76,7 +76,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
       ingestionResult.getDiscardedFileName());
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
-    log.info("Debt Position ingestion with ID {} is completed", ingestionFlowFileId);
+    log.info("Debt Position ingestion with ID {} is completed, with success {}", ingestionFlowFileId, success);
   }
 
   private InstallmentIngestionFlowFileResult processFile(Long ingestionFlowFileId) {
@@ -84,10 +84,12 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     try {
       ingestionResult = installmentIngestionFlowFileActivity.processFile(ingestionFlowFileId);
     } catch (Exception e) {
+      String error = "Unexpected error when processing DebtPositionIngestion file: " + e.getMessage();
+      log.error(error);
       ingestionResult = new InstallmentIngestionFlowFileResult(
         null,
         null,
-        "Unexpected error when processing DebtPositionIngestion file: " + e.getMessage(),
+        error,
         null
       );
     }
