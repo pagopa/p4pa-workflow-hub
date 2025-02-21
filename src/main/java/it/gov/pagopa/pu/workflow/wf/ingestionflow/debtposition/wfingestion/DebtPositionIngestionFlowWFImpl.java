@@ -21,6 +21,7 @@ import java.time.Duration;
 @WorkflowImpl(taskQueues = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW)
 public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlowWF, ApplicationContextAware {
   public static final String TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW = "DebtPositionIngestionFlowWF";
+  private static final Duration SLEEP_DURATION = Duration.ofSeconds(5);
 
   private IngestionFlowFileProcessingLockerActivity ingestionFlowFileProcessingLockerActivity;
   private InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivity;
@@ -51,16 +52,15 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
 //    int maxAttemptsBeforeContinueAsNew = 5000;
     while (!ingestionFlowFileProcessingLockerActivity.acquireProcessingLock(ingestionFlowFileId)) {
       attemptCounter++;
-//
+// TODO: evaluate to continueAsNew the WF when activity is called too many times in order to avoid to incur on max events limit
 //      if (attemptCounter >= maxAttemptsBeforeContinueAsNew) {
 //        log.info("Max attempts reached, continuing as new for ingestionFlowFileId {}", ingestionFlowFileId);
 //        Workflow.continueAsNew(ingestionFlowFileId);
 //        return;
 //      }
-// TODO: evaluate to continueAsNew the WF when activity is called too many times in order to avoid to incur on max events limit
 
       log.info("Lock not acquired, retrying for ingestionFlowFileId {}", ingestionFlowFileId);
-      Workflow.sleep(Duration.ofSeconds(5));
+      Workflow.sleep(SLEEP_DURATION);
     }
 
     log.info("Lock successfully acquired for ingestionFlowFileId {}", ingestionFlowFileId);
