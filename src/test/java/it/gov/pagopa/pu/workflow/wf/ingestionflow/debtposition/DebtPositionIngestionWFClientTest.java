@@ -1,9 +1,9 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWF;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,18 +17,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentsReportingIngestionWFClientTest {
+class DebtPositionIngestionWFClientTest {
 
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
-  private PaymentsReportingIngestionWF wfMock;
+  private DebtPositionIngestionFlowWF wfMock;
 
-  private PaymentsReportingIngestionWFClient client;
+  private DebtPositionIngestionWFClient client;
 
   @BeforeEach
   void init(){
-    client = new PaymentsReportingIngestionWFClient(workflowServiceMock);
+    client = new DebtPositionIngestionWFClient(workflowServiceMock);
   }
 
   @AfterEach
@@ -40,15 +40,15 @@ class PaymentsReportingIngestionWFClientTest {
   void whenIngestThenOk(){
     // Given
     long ingestionFlowFileId = 1L;
-    String taskQueue = PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF;
-    String expectedWorkflowId = "PaymentsReportingIngestionWF-1";
+    String taskQueue = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW;
+    String expectedWorkflowId = "DebtPositionIngestionWF-1";
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
         .when(() -> Utilities.generateWorkflowId(ingestionFlowFileId, taskQueue))
         .thenReturn(expectedWorkflowId);
 
-      Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingIngestionWF.class, taskQueue, expectedWorkflowId))
+      Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionIngestionFlowWF.class, taskQueue, expectedWorkflowId))
         .thenReturn(wfMock);
 
       // When

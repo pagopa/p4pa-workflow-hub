@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.Insta
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.workflow.utilities.Constants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,12 @@ import java.time.Duration;
 @WorkflowImpl(taskQueues = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW)
 public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlowWF, ApplicationContextAware {
   public static final String TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW = "DebtPositionIngestionFlowWF";
+
   private static final Duration SLEEP_BETWEEN_ACQUIRE_LOCK = Duration.ofSeconds(5);
+  /**
+   * The lock acquire max attempts before to clear Temporal history.
+   * The threshold is very high ({@link Constants#THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW}), lock acquire is the first activity called, we are not interested on WF history, we will clear it before real limit */
+  private static final int LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY = 1000;
 
   private IngestionFlowFileProcessingLockerActivity ingestionFlowFileProcessingLockerActivity;
   private InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivity;
@@ -49,15 +55,13 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     log.info("Acquiring lock for ingestionFlowFileId {}", ingestionFlowFileId);
 
     int attemptCounter = 0;
-//    int maxAttemptsBeforeContinueAsNew = 5000;
     while (!ingestionFlowFileProcessingLockerActivity.acquireProcessingLock(ingestionFlowFileId)) {
       attemptCounter++;
-// TODO: evaluate to continueAsNew the WF when activity is called too many times in order to avoid to incur on max events limit
-//      if (attemptCounter >= maxAttemptsBeforeContinueAsNew) {
-//        log.info("Max attempts reached, continuing as new for ingestionFlowFileId {}", ingestionFlowFileId);
-//        Workflow.continueAsNew(ingestionFlowFileId);
-//        return;
-//      }
+
+      if (attemptCounter >= LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY) {
+        log.info("Max attempts reached, continuing as new for ingestionFlowFileId {}", ingestionFlowFileId);
+        Workflow.continueAsNew(ingestionFlowFileId);
+      }
 
       log.info("Lock not acquired, retrying for ingestionFlowFileId {}", ingestionFlowFileId);
       Workflow.sleep(SLEEP_BETWEEN_ACQUIRE_LOCK);

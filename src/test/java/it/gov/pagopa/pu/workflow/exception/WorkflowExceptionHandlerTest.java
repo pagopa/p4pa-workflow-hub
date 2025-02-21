@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.config.JsonConfig;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
@@ -100,27 +101,38 @@ class WorkflowExceptionHandlerTest {
     return mockMvc.perform(requestBuilder);
   }
 
-    @Test
-    void handleNotFoundWorkflowError() throws Exception {
-        doThrow(new WorkflowNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+  @Test
+  void handleNotFoundWorkflowError() throws Exception {
+    doThrow(new WorkflowNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
-        performRequest(DATA, MediaType.APPLICATION_JSON)
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
 
-    }
+  }
 
-    @Test
-    void handleInternalError() throws Exception {
-        doThrow(new WorkflowInternalErrorException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+  @Test
+  void handleIngestionFlowTypeNotSupportedException() throws Exception {
+    doThrow(new IngestionFlowTypeNotSupportedException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
-      performRequest(DATA, MediaType.APPLICATION_JSON)
-                .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isBadRequest())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
 
-    }
+  }
+
+  @Test
+  void handleInternalError() throws Exception {
+    doThrow(new WorkflowInternalErrorException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isInternalServerError())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+
+  }
 
   @Test
   void handleMissingServletRequestParameterException() throws Exception {
