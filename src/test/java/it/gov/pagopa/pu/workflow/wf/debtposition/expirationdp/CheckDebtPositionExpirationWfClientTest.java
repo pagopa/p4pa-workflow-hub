@@ -44,16 +44,17 @@ class CheckDebtPositionExpirationWfClientTest {
   void whenCheckDpExpirationThenSuccess() {
     // Given
     Long debtPositionId = 1L;
+    String taskQueue = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
     String expectedWorkflowId = "CheckDebtPositionExpirationWF-1";
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF))
+        .when(() -> Utilities.generateWorkflowId(debtPositionId, taskQueue))
         .thenReturn(expectedWorkflowId);
 
       Mockito.when(workflowServiceMock.buildWorkflowStub(
           CheckDebtPositionExpirationWF.class,
-          CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF,
+          taskQueue,
           expectedWorkflowId))
         .thenReturn(checkDebtPositionExpirationWFMock);
 

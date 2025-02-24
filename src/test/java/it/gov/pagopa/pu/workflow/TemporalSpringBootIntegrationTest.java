@@ -55,6 +55,7 @@ import static org.mockito.Mockito.*;
 })
 class TemporalSpringBootIntegrationTest {
 
+  /** <a href="https://docs.temporal.io/workflows#status">Closed statuses</a> */
   private final Set<WorkflowExecutionStatus> wfTerminationStatuses = Set.of(
     WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED,
     WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_FAILED,

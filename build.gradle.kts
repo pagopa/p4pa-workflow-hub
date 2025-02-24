@@ -172,6 +172,7 @@ openApiGenerate {
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
   typeMappings.set(mapOf(
     "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+    "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",

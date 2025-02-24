@@ -128,98 +128,12 @@
         } ]
       }
     },
-    "/workflowhub/ingestion-flow/treasury/opi/{ingestionFlowFileId}" : {
+    "/workflowhub/ingestion-flow/{ingestionFlowFileId}" : {
       "post" : {
         "tags" : [ "IngestionFlow" ],
-        "summary" : "Treasury OPI ingestion",
-        "description" : "It will start the Treasury OPI ingestion returning its workflowId",
-        "operationId" : "ingestTreasuryOpi",
-        "parameters" : [ {
-          "name" : "ingestionFlowFileId",
-          "in" : "path",
-          "description" : "The unique identifier of the ingestion flow File.",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Treasury OPI Ingestion Workflow created successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "BearerAuth" : [ ]
-        } ]
-      }
-    },
-    "/workflowhub/ingestion-flow/receipt/pagopa/{ingestionFlowFileId}" : {
-      "post" : {
-        "tags" : [ "IngestionFlow" ],
-        "summary" : "Receipt Pagopa ingestion",
-        "description" : "It will start the Receipt Pagopa ingestion returning its workflowId",
-        "operationId" : "ingestReceiptPagopa",
-        "parameters" : [ {
-          "name" : "ingestionFlowFileId",
-          "in" : "path",
-          "description" : "The unique identifier of the ingestion flow File.",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Receipt Pagopa Ingestion Workflow created successfully",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Internal Server Error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "BearerAuth" : [ ]
-        } ]
-      }
-    },
-    "/workflowhub/ingestion-flow/payments-reporting/{ingestionFlowFileId}" : {
-      "post" : {
-        "tags" : [ "IngestionFlow" ],
-        "summary" : "Payments reporting flow file ingestion",
-        "description" : "It will start the Payments Reporting flow file ingestion returning its workflowId",
-        "operationId" : "ingestPaymentsReportingFile",
+        "summary" : "Flow file ingestion",
+        "description" : "It will start the flow file ingestion returning its workflowId",
+        "operationId" : "ingestFlowFile",
         "parameters" : [ {
           "name" : "ingestionFlowFileId",
           "in" : "path",
@@ -228,6 +142,15 @@
           "schema" : {
             "type" : "integer",
             "format" : "int64"
+          }
+        }, {
+          "name" : "ingestionFlowFileType",
+          "in" : "query",
+          "description" : "IngestionFlowFileType",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "RECEIPT", "RECEIPT_PAGOPA", "PAYMENTS_REPORTING", "PAYMENTS_REPORTING_PAGOPA", "TREASURY_OPI", "TREASURY_CSV", "TREASURY_XLS", "TREASURY_POSTE", "DP_INSTALLMENTS" ]
           }
         } ],
         "responses" : {
@@ -393,7 +316,7 @@
         "properties" : {
           "code" : {
             "type" : "string",
-            "enum" : [ "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR" ]
+            "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR" ]
           },
           "message" : {
             "type" : "string"

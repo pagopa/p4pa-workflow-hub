@@ -20,10 +20,12 @@ public class OrganizationPaymentsReportingPagoPaFetchWFClient {
 
   public String retrieve(Long organizationId) {
     log.info("Starting fetch PagoPA payments reporting for the organization having id {}", organizationId);
-    String workflowId = generateWorkflowId(organizationId, PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH);
+    String taskQueue = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH;
+    String workflowId = generateWorkflowId(organizationId, taskQueue);
+
     PaymentsReportingPagoPaOrganizationFetchWF workflow = workflowService.buildWorkflowStub(
       PaymentsReportingPagoPaOrganizationFetchWF.class,
-      PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH,
+      taskQueue,
       workflowId);
     WorkflowClient.start(workflow::retrieve, organizationId);
     return workflowId;

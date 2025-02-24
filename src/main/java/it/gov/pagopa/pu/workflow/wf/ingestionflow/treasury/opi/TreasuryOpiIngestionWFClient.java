@@ -21,10 +21,12 @@ public class TreasuryOpiIngestionWFClient {
 
   public String ingest(Long ingestionFlowFileId) {
     log.info("Starting treasury OPI ingestion flow file having id {}", ingestionFlowFileId);
-    String workflowId = generateWorkflowId(ingestionFlowFileId, TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF);
+    String taskQueue = TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF;
+    String workflowId = generateWorkflowId(ingestionFlowFileId, taskQueue);
+
     TreasuryOpiIngestionWF workflow = workflowService.buildWorkflowStub(
       TreasuryOpiIngestionWF.class,
-      TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF,
+      taskQueue,
       workflowId);
     WorkflowClient.start(workflow::ingest, ingestionFlowFileId);
     return workflowId;

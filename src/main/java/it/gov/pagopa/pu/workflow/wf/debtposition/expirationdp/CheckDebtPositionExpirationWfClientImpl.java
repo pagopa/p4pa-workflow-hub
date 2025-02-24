@@ -24,10 +24,12 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
   @Override
   public String checkDpExpiration(Long debtPositionId) {
     log.info("Starting check debt position expiration WF: {}", debtPositionId);
-    String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF);
+    String taskQueue = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
+    String workflowId = generateWorkflowId(debtPositionId, taskQueue);
+
     CheckDebtPositionExpirationWF workflow = workflowService.buildWorkflowStub(
       CheckDebtPositionExpirationWF.class,
-      CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF,
+      taskQueue,
       workflowId);
     WorkflowClient.start(workflow::checkDpExpiration, debtPositionId);
     return workflowId;

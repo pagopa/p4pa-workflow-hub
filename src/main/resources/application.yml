@@ -159,6 +159,12 @@ workflow:
     retry-backoff-coefficient: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
+  debt-position-ingestion:
+    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:3600}"
+    retry-initial-interval-in-millis: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
   receipt-pagopa-ingestion:
     start-to-close-timeout-in-seconds: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
@@ -195,12 +201,6 @@ schedule:
   payments-reporting-pagopa-brokers-fetch:
     cron-expression: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_CRON:0 1/6 * * *}" # each day, 01:00-07:00-13:00-19:00 (Europe/Rome)
 
-  debt-position-ingestion:
-    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:3600}"
-    retry-initial-interval-in-millis: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
-
 springdoc:
   writer-with-default-pretty-printer: true
 
@@ -215,3 +215,4 @@ jwt:
                 odND6HPvvvmgbK1/2qTHn/HJjWUm11LUC73BszR32BKbdEEhxPQnnwswVekWzPi1
                 IwIDAQAB
                 -----END PUBLIC KEY-----}"
+
