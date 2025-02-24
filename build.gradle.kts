@@ -2,7 +2,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
   java
-  id("org.springframework.boot") version "3.4.1"
+  id("org.springframework.boot") version "3.4.3"
   id("io.spring.dependency-management") version "1.1.7"
   jacoco
   id("org.sonarqube") version "6.0.1.5171"
@@ -45,14 +45,15 @@ dependencyManagement {
   }
 }
 
-val springDocOpenApiVersion = "2.7.0"
+val springDocOpenApiVersion = "2.8.5"
 val openApiToolsVersion = "0.2.6"
-val micrometerVersion = "1.4.1"
-val temporalVersion = "1.27.0"
-val protobufJavaVersion = "3.25.5"
-val bouncycastleVersion = "1.79"
-val activitiesVersion = "1.60.0"
+val micrometerVersion = "1.4.3"
+val bouncycastleVersion = "1.80"
 val mapStructVersion = "1.6.3"
+val temporalVersion = "1.27.1"
+val protobufJavaVersion = "4.29.3"
+val guavaVersion = "33.4.0-jre"
+val activitiesVersion = "1.60.1"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -67,17 +68,17 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
   implementation("org.mapstruct:mapstruct:$mapStructVersion")
-  implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion"){
-    exclude(group = "com.google.protobuf", module = "protobuf-java")
-  }
+  implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
   implementation("it.gov.pagopa.payhub:p4pa-payhub-activities:$activitiesVersion") {
     exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
   }
-
-
-  // updated for security reason
-  implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
+  // Temporal
+  implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion"){
+    exclude(group = "com.google.protobuf", module = "protobuf-java")
+    exclude(group = "com.google.guava", module = "guava")
+  }
   implementation("com.google.protobuf:protobuf-java:$protobufJavaVersion")
+  implementation("com.google.guava:guava:$guavaVersion")
 
   compileOnly("org.projectlombok:lombok")
 
