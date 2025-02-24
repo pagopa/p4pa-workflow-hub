@@ -36,7 +36,7 @@ public class WorkflowExceptionHandler {
 
   @ExceptionHandler(IngestionFlowTypeNotSupportedException.class)
   public ResponseEntity<WorkflowErrorDTO> handleIngestionFlowTypeNotSupportedException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.BAD_REQUEST);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INGESTION_FLOW_FILE_NOT_SUPPORTED);
   }
 
   @ExceptionHandler({WorkflowNotFoundException.class})

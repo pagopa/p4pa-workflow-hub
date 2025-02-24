@@ -118,7 +118,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
 
   }
