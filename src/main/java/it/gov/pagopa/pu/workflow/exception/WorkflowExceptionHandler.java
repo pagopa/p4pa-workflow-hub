@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowErrorDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
@@ -32,6 +33,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class WorkflowExceptionHandler {
+
+  @ExceptionHandler(IngestionFlowTypeNotSupportedException.class)
+  public ResponseEntity<WorkflowErrorDTO> handleIngestionFlowTypeNotSupportedException(Exception ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.BAD_REQUEST);
+  }
 
   @ExceptionHandler({WorkflowNotFoundException.class})
   public ResponseEntity<WorkflowErrorDTO> handleNotFoundWorkflowError(RuntimeException ex, HttpServletRequest request){

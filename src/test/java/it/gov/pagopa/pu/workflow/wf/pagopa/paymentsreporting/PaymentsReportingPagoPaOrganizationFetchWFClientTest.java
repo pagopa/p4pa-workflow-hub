@@ -40,14 +40,15 @@ class PaymentsReportingPagoPaOrganizationFetchWFClientTest {
   void testRetrieve() {
     // Given
     long organizationId = 1L;
+    String taskQueue = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH;
     String expectedWorkflowId = "OrganizationPaymentsReportingPagoPaFetchWF-1";
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(organizationId, PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH))
+        .when(() -> Utilities.generateWorkflowId(organizationId, taskQueue))
         .thenReturn(expectedWorkflowId);
 
-      Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingPagoPaOrganizationFetchWF.class, PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH, expectedWorkflowId))
+      Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingPagoPaOrganizationFetchWF.class, taskQueue, expectedWorkflowId))
         .thenReturn(wfMock);
 
       // When

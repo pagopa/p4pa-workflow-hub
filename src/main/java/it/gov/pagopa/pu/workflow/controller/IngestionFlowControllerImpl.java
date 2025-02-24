@@ -1,50 +1,35 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.controller.generated.IngestionFlowApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
+import it.gov.pagopa.pu.workflow.service.ingestionflowfile.IngestionFlowFileStarterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
 public class IngestionFlowControllerImpl implements IngestionFlowApi {
 
-    private final PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient;
-    private final TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient;
+  private final IngestionFlowFileStarterService service;
 
-    public IngestionFlowControllerImpl(PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient,
-                                       TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient) {
-        this.paymentsReportingIngestionWFClient = paymentsReportingIngestionWFClient;
-        this.treasuryOpiIngestionWFClient = treasuryOpiIngestionWFClient;
-    }
+  public IngestionFlowControllerImpl(IngestionFlowFileStarterService service) {
+    this.service = service;
+  }
 
-    @Override
-    public ResponseEntity<WorkflowCreatedDTO> ingestPaymentsReportingFile(Long ingestionFlowFileId) {
-        log.info("Creating Payments Reporting Ingestion Workflow for ingestionFlowFileId: {}", ingestionFlowFileId);
+  @Override
+  public ResponseEntity<WorkflowCreatedDTO> ingestFlowFile(Long ingestionFlowFileId, IngestionFlowFile.FlowFileTypeEnum flowFileType) {
+    log.info("Creating IngestionFlowFile Workflow for ingestionFlowFileId {} of type {}", ingestionFlowFileId, flowFileType);
 
-        String workflowId = paymentsReportingIngestionWFClient.ingest(ingestionFlowFileId);
+    String workflowId = service.ingest(ingestionFlowFileId, flowFileType);
 
-        WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-        response.setWorkflowId(workflowId);
+    WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
+    response.setWorkflowId(workflowId);
 
-        log.info("Payments Reporting Ingestion workflow {} created successfully for ingestionFileId: {}", workflowId, ingestionFlowFileId);
+    log.info("Ingestion workflow {} created successfully for ingestionFileId {} of type {}", workflowId, ingestionFlowFileId, flowFileType);
 
-        return ResponseEntity.status(201).body(response);
-    }
+    return ResponseEntity.status(201).body(response);
+  }
 
-    @Override
-    public ResponseEntity<WorkflowCreatedDTO> ingestTreasuryOpi(Long ingestionFlowFileId) {
-        log.info("Creating Treasury OPI Ingestion Workflow for ingestionFlowFileId: {}", ingestionFlowFileId);
-        String workflowId = treasuryOpiIngestionWFClient.ingest(ingestionFlowFileId);
-
-        WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-        response.setWorkflowId(workflowId);
-
-        log.info("Treasury OPI Ingestion workflow {} created successfully for ingestionFlowFileId: {}", workflowId, ingestionFlowFileId);
-        return ResponseEntity.status(201).body(response);
-    }
 }

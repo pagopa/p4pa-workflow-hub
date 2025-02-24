@@ -39,15 +39,16 @@ class TreasuryOpiIngestionWFClientTest {
   void whenIngestThenOk(){
     // Given
     long ingestionFlowFileId = 1L;
+    String taskQueue = TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF;
     String expectedWorkflowId = "TreasuryIngestionWF-1";
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(ingestionFlowFileId, TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF))
+        .when(() -> Utilities.generateWorkflowId(ingestionFlowFileId, taskQueue))
         .thenReturn(expectedWorkflowId);
 
       doReturn(wfMock).when(workflowServiceMock)
-        .buildWorkflowStub(TreasuryOpiIngestionWF.class, TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF, expectedWorkflowId);
+        .buildWorkflowStub(TreasuryOpiIngestionWF.class, taskQueue, expectedWorkflowId);
 
       // When
       String workflowId = client.ingest(ingestionFlowFileId);
