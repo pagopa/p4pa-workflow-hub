@@ -51,7 +51,7 @@ val micrometerVersion = "1.4.3"
 val bouncycastleVersion = "1.80"
 val mapStructVersion = "1.6.3"
 val temporalVersion = "1.27.1"
-val protobufJavaVersion = "4.29.3"
+val protobufJavaVersion = "3.25.5"
 val guavaVersion = "33.4.0-jre"
 val activitiesVersion = "1.60.1"
 
@@ -71,6 +71,8 @@ dependencies {
   implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
   implementation("it.gov.pagopa.payhub:p4pa-payhub-activities:$activitiesVersion") {
     exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
+    exclude(group = "com.google.protobuf", module = "protobuf-java")
+    exclude(group = "com.google.guava", module = "guava")
   }
   // Temporal
   implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion"){
