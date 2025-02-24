@@ -51,7 +51,7 @@ public class PaymentsReportingPagoPaBrokersFetchWFImpl implements PaymentsReport
       organizationBrokeredRetrieverActivity.retrieve(brokerId)
         .stream()
         .map(Organization::getOrganizationId)
-        .forEach(organizationPaymentsReportingPagoPaFetchWFClient::retrieve);
+        .forEach(organizationPaymentsReportingPagoPaFetchWFClient::retrieveAsyncStart);
     }
 
     log.info("Retrieving completed");

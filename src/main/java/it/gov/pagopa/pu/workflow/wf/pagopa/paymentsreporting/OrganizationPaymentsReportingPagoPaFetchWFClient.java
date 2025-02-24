@@ -5,7 +5,11 @@ import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWFImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
@@ -30,4 +34,11 @@ public class OrganizationPaymentsReportingPagoPaFetchWFClient {
     WorkflowClient.start(workflow::retrieve, organizationId);
     return workflowId;
   }
+
+  /** Cannot invoke a WF from WF thread, using Async to use an external thread instead */
+  @Async
+  public Future<String> retrieveAsyncStart(Long organizationId) {
+    return CompletableFuture.completedFuture(retrieve(organizationId));
+  }
+
 }
