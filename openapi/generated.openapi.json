@@ -1,5 +1,5 @@
 {
-  "openapi" : "3.0.1",
+  "openapi" : "3.1.0",
   "info" : {
     "title" : "p4pa-workflow-hub",
     "description" : "Api and Models",
@@ -311,7 +311,6 @@
         }
       },
       "WorkflowErrorDTO" : {
-        "required" : [ "code", "message" ],
         "type" : "object",
         "properties" : {
           "code" : {
@@ -321,7 +320,8 @@
           "message" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "code", "message" ]
       },
       "DebtPositionDTO" : {
         "type" : "object",
@@ -612,7 +612,6 @@
         }
       },
       "WorkflowStatusDTO" : {
-        "required" : [ "workflowId" ],
         "type" : "object",
         "properties" : {
           "workflowId" : {
@@ -621,7 +620,8 @@
           "status" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "workflowId" ]
       }
     },
     "securitySchemes" : {
