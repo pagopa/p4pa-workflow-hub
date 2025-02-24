@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowType
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -27,6 +28,8 @@ class IngestionFlowFileStarterServiceTest {
   private TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClientMock;
   @Mock
   private DebtPositionIngestionWFClient debtPositionIngestionWFClientMock;
+  @Mock
+  private ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClientMock;
 
   private IngestionFlowFileStarterService service;
 
@@ -37,12 +40,14 @@ class IngestionFlowFileStarterServiceTest {
     this.service = new IngestionFlowFileStarterServiceImpl(
       paymentsReportingIngestionWFClientMock,
       treasuryOpiIngestionWFClientMock,
-      debtPositionIngestionWFClientMock);
+      debtPositionIngestionWFClientMock,
+      receiptPagopaIngestionWFClientMock);
 
     flowFileType2ClientInvoker = Map.of(
       IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClientMock::ingest,
       IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClientMock::ingest,
-      IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest
+      IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest,
+      IngestionFlowFile.FlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClientMock::ingest
     );
   }
 
@@ -51,7 +56,8 @@ class IngestionFlowFileStarterServiceTest {
     Mockito.verifyNoMoreInteractions(
       paymentsReportingIngestionWFClientMock,
       treasuryOpiIngestionWFClientMock,
-      debtPositionIngestionWFClientMock
+      debtPositionIngestionWFClientMock,
+      receiptPagopaIngestionWFClientMock
     );
   }
 

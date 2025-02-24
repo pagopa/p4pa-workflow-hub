@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowType
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +16,16 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
 
   private final Map<IngestionFlowFile.FlowFileTypeEnum, Function<Long, String>> ingestionFlowFileType2WfStarter;
 
-  public IngestionFlowFileStarterServiceImpl(PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient, TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient, DebtPositionIngestionWFClient debtPositionIngestionWFClient) {
+  public IngestionFlowFileStarterServiceImpl(
+    PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient,
+    TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient,
+    DebtPositionIngestionWFClient debtPositionIngestionWFClient,
+    ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient) {
     ingestionFlowFileType2WfStarter = Map.of(
       IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClient::ingest,
       IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest,
-      IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest
+      IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest,
+      IngestionFlowFile.FlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest
     );
   }
 
