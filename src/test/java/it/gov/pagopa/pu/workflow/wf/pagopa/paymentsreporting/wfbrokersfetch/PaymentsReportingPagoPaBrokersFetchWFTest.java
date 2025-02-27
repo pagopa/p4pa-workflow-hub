@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -62,14 +63,14 @@ class PaymentsReportingPagoPaBrokersFetchWFTest {
 
     when(brokersRetrieverActivityMock.fetchAll()).thenReturn(List.of(broker));
     when(organizationBrokeredRetrieverActivityMock.retrieve(1L)).thenReturn(List.of(organization));
-    when(organizationPaymentsReportingPagoPaFetchWFClientMock.retrieve(organization.getOrganizationId()))
-      .thenReturn("workflowId");
+    when(organizationPaymentsReportingPagoPaFetchWFClientMock.retrieveAsyncStart(organization.getOrganizationId()))
+      .thenReturn(CompletableFuture.completedFuture("workflowId"));
 
     workflow.retrieve();
 
     verify(brokersRetrieverActivityMock, times(1)).fetchAll();
     verify(organizationBrokeredRetrieverActivityMock, times(1)).retrieve(1L);
-    verify(organizationPaymentsReportingPagoPaFetchWFClientMock, times(1)).retrieve(organization.getOrganizationId());
+    verify(organizationPaymentsReportingPagoPaFetchWFClientMock, times(1)).retrieveAsyncStart(organization.getOrganizationId());
   }
 
   @Test
