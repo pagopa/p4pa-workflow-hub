@@ -240,6 +240,197 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "02_checkDpExpiration",
+					"item": [
+						{
+							"name": "02_find_latest_dp",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"DebtPosition - 02_findTopByOrderByCreationDateDesc - Responses with 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"DebtPosition - 02_findTopByOrderByCreationDateDesc - Verify response body\", function () {\r",
+											"    let jsonResponse = pm.response.json();\r",
+											"    \r",
+											"    pm.expect(jsonResponse).to.have.property(\"_embedded\");\r",
+											"    pm.expect(jsonResponse._embedded).to.have.property(\"debtPositions\");\r",
+											"    \r",
+											"    pm.expect(jsonResponse._embedded.debtPositions).to.be.an(\"array\").that.is.not.empty;\r",
+											"    \r",
+											"    let firstDebtPosition = jsonResponse._embedded.debtPositions[0];\r",
+											"    pm.expect(firstDebtPosition).to.have.property(\"debtPositionId\");\r",
+											"    \r",
+											"    pm.collectionVariables.set(\"debtPositionId\", firstDebtPosition.debtPositionId);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{debtPositionBaseUrl}}/crud/debt-positions?page=0&size=1&sort=creationDate,desc",
+									"host": [
+										"{{debtPositionBaseUrl}}"
+									],
+									"path": [
+										"crud",
+										"debt-positions"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "size",
+											"value": "1"
+										},
+										{
+											"key": "sort",
+											"value": "creationDate,desc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "02_check_dp_expiration",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
+											"pm.test(\"Payhub - 02_check_dp_expiration - Responses with 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(`Payhub - 02_check_dp_expiration - Verify response body: Status = ${pm.response.json().status}`, function () {\r",
+											"    let jsonResponse = pm.response.json();\r",
+											"\r",
+											"    pm.expect(jsonResponse).have.property(\"workflowId\")\r",
+											"});\r",
+											"\r",
+											"let jsonResponse = pm.response.json();\r",
+											"pm.collectionVariables.set(\"workflowId\", jsonResponse.workflowId);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{workflowHubBaseUrl}}/workflowhub/workflow/debt-position/{{debtPositionId}}/check-expiration",
+									"host": [
+										"{{workflowHubBaseUrl}}"
+									],
+									"path": [
+										"workflowhub",
+										"workflow",
+										"debt-position",
+										"{{debtPositionId}}",
+										"check-expiration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "02_status_workflow",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
+											"pm.test(\"Payhub - 02_status_workflow - Responses with 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(`Payhub - 02_status_workflow - Verify response body: Status = ${pm.response.json().status}`, function () {\r",
+											"    let jsonResponse = pm.response.json();\r",
+											"\r",
+											"    pm.expect(jsonResponse).have.property(\"workflowId\")\r",
+											"    pm.expect(jsonResponse).have.property(\"status\")\r",
+											"    pm.expect(jsonResponse.status).to.be.oneOf([\r",
+											"        \"WORKFLOW_EXECUTION_STATUS_COMPLETED\",\r",
+											"        \"WORKFLOW_EXECUTION_STATUS_RUNNING\"\r",
+											"    ]);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accessToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{workflowHubBaseUrl}}/workflowhub/workflows/{{workflowId}}/status",
+									"host": [
+										"{{workflowHubBaseUrl}}"
+									],
+									"path": [
+										"workflowhub",
+										"workflows",
+										"{{workflowId}}",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
@@ -336,6 +527,11 @@
 		{
 			"key": "workflowId",
 			"value": ""
+		},
+		{
+			"key": "debtPositionId",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
