@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.Check
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 
 @Service
 @Slf4j
@@ -20,7 +20,7 @@ public class ScheduleCheckDpExpirationActivityImpl implements ScheduleCheckDpExp
   }
 
   @Override
-  public void scheduleNextCheckDpExpiration(Long debtPositionId, OffsetDateTime dateTime) {
-    checkDebtPositionExpirationWfClient.scheduleNextCheckDpExpiration(debtPositionId, dateTime);
+  public void scheduleNextCheckDpExpiration(Long debtPositionId, LocalDate nextDueDate) {
+    checkDebtPositionExpirationWfClient.scheduleNextCheckDpExpiration(debtPositionId, nextDueDate);
   }
 }

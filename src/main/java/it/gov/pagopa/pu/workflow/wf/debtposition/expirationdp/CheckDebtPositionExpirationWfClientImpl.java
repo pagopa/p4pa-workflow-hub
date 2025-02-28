@@ -7,7 +7,7 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.Check
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
@@ -36,14 +36,14 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
   }
 
   @Override
-  public void scheduleNextCheckDpExpiration(Long debtPositionId, OffsetDateTime dateTime) {
-    log.info("Start of scheduling the next check debt position expiration WF: {}, on {}", debtPositionId, dateTime);
+  public void scheduleNextCheckDpExpiration(Long debtPositionId, LocalDate nextDueDate) {
+    log.info("Start of scheduling the next check debt position expiration WF: {}, on {}", debtPositionId, nextDueDate);
     String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF);
     CheckDebtPositionExpirationWF workflow = workflowService.buildWorkflowStubScheduled(
       CheckDebtPositionExpirationWF.class,
       CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF,
       workflowId,
-      dateTime
+      nextDueDate
     );
     WorkflowClient.start(workflow::checkDpExpiration, debtPositionId);
   }

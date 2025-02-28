@@ -26,10 +26,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -52,7 +49,7 @@ class WorkflowServiceTest {
 
   @BeforeEach
   void init() {
-    workflowService = new WorkflowServiceImpl(workflowClientMock);
+    workflowService = Mockito.spy(new WorkflowServiceImpl(workflowClientMock));
   }
 
   @AfterEach
@@ -196,6 +193,31 @@ class WorkflowServiceTest {
   }
 
   @Test
+  void testBuildWorkflowScheduledWithLocalDate() {
+    String taskQueue = "test-task-queue";
+    String workflowId = "test-workflow-id";
+
+    LocalDate localDate = LocalDate.now().plusDays(1);
+
+
+    CheckDebtPositionExpirationWF expectedResult = mock(CheckDebtPositionExpirationWF.class);
+    doReturn(expectedResult)
+      .when(workflowService)
+      .buildWorkflowStubScheduled(
+        CheckDebtPositionExpirationWF.class,
+        taskQueue,
+        workflowId,
+        LocalDateTime.of(localDate, LocalTime.MIDNIGHT)
+      );
+
+    CheckDebtPositionExpirationWF result = workflowService.buildWorkflowStubScheduled(CheckDebtPositionExpirationWF.class,
+      taskQueue, workflowId, localDate);
+
+    Assertions.assertSame(expectedResult, result);
+
+  }
+
+  @Test
   void testBuildWorkflowScheduledWithLocalDateTime() {
     String taskQueue = "test-task-queue";
     String workflowId = "test-workflow-id";
@@ -256,7 +278,7 @@ class WorkflowServiceTest {
   }
 
   @Test
-  void whenCancelWorkflowThenOk(){
+  void whenCancelWorkflowThenOk() {
     // Given
     String workflowId = "WFID";
     WorkflowStub stubMock = Mockito.mock(WorkflowStub.class);
@@ -272,7 +294,7 @@ class WorkflowServiceTest {
   }
 
   @Test
-  void givenNotExistentWfWhenCancelWorkflowThenDoNothing(){
+  void givenNotExistentWfWhenCancelWorkflowThenDoNothing() {
     // Given
     String workflowId = "WFID";
 

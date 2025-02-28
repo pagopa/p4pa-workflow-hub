@@ -7,8 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.verify;
@@ -29,7 +28,7 @@ class ScheduleCheckDpExpirationActivityTest {
   @Test
   void testScheduleNextCheckDpExpiration(){
     Long debtPositionId = 1L;
-    OffsetDateTime dateTime = OffsetDateTime.of(2025,1,1,9,12,0, 0, ZoneOffset.UTC);
+    LocalDate dateTime = LocalDate.of(2025,1,1);
     assertDoesNotThrow(() -> activity.scheduleNextCheckDpExpiration(debtPositionId, dateTime));
 
     verify(checkDebtPositionExpirationWfClientMock).scheduleNextCheckDpExpiration(debtPositionId, dateTime);

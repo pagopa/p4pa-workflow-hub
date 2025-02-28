@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +93,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     DebtPositionDTO debtPositionRequested = buildDebtPositionToSync();
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
 
-    OffsetDateTime ancientDueDate = OffsetDateTime.now().minusDays(10);
+    LocalDate ancientDueDate = LocalDate.now().minusDays(10);
     DebtPositionDTO debtPositionFinalized = buildFinalizedDebtPosition(ancientDueDate, InstallmentDTO.StatusEnum.UNPAID);
     Map<String, IupdSyncStatusUpdateDTO> iudSyncFinalizationMap = Map.of(
       SYNC_IUD, buildExpectedIupdSyncStatusUpdateDTO()
@@ -165,7 +165,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     InstallmentDTO secondInstallment = InstallmentFaker.buildInstallmentDTO()
       .iud("IUD_NOT_TO_SYNC")
-      .dueDate(OffsetDateTime.MIN)
+      .dueDate(LocalDate.MIN)
       .status(InstallmentDTO.StatusEnum.UNPAID);
 
     InstallmentDTO thirdInstallment = InstallmentFaker.buildInstallmentDTO()
@@ -177,7 +177,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     return debtPosition;
   }
 
-  protected DebtPositionDTO buildFinalizedDebtPosition(OffsetDateTime ancientDueDate, InstallmentDTO.StatusEnum installmentStatus) {
+  protected DebtPositionDTO buildFinalizedDebtPosition(LocalDate ancientDueDate, InstallmentDTO.StatusEnum installmentStatus) {
     DebtPositionDTO debtPositionFinalized = buildDebtPositionDTO();
     InstallmentDTO firstFinalizedInstallment = debtPositionFinalized.getPaymentOptions().getFirst().getInstallments().getFirst();
     firstFinalizedInstallment.setStatus(installmentStatus);

@@ -12,8 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
 
 @ExtendWith(MockitoExtension.class)
 class CheckDebtPositionExpirationWFTest {
@@ -70,17 +69,17 @@ class CheckDebtPositionExpirationWFTest {
   void givenCheckDpExpirationWithNextSchedulingThenSuccess() {
     // Given
     Long debtPositionId = 1L;
-    OffsetDateTime dateTime = OffsetDateTime.of(2025, 1, 1, 9, 12, 0, 0, ZoneOffset.UTC);
+    LocalDate date = LocalDate.of(2025, 1, 1);
 
     Mockito.when(debtPositionExpirationActivityMock
-      .checkAndUpdateInstallmentExpiration(debtPositionId)).thenReturn(dateTime);
+      .checkAndUpdateInstallmentExpiration(debtPositionId)).thenReturn(date);
 
-    Mockito.doNothing().when(scheduleCheckDpExpirationActivityMock).scheduleNextCheckDpExpiration(debtPositionId, dateTime.plusDays(1));
+    Mockito.doNothing().when(scheduleCheckDpExpirationActivityMock).scheduleNextCheckDpExpiration(debtPositionId, date.plusDays(1));
     // When
     wf.checkDpExpiration(debtPositionId);
 
     // Then
     Mockito.verify(debtPositionExpirationActivityMock).checkAndUpdateInstallmentExpiration(debtPositionId);
-    Mockito.verify(scheduleCheckDpExpirationActivityMock).scheduleNextCheckDpExpiration(debtPositionId, dateTime.plusDays(1));
+    Mockito.verify(scheduleCheckDpExpirationActivityMock).scheduleNextCheckDpExpiration(debtPositionId, date.plusDays(1));
   }
 }
