@@ -354,7 +354,7 @@
           },
           "validityDate" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date"
           },
           "flagIuvVolatile" : {
             "type" : "boolean"
@@ -419,7 +419,7 @@
           },
           "dueDate" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date"
           },
           "paymentTypeCode" : {
             "type" : "string"
@@ -506,7 +506,7 @@
           },
           "dueDate" : {
             "type" : "string",
-            "format" : "date-time"
+            "format" : "date"
           },
           "description" : {
             "type" : "string"
