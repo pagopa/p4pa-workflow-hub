@@ -2,11 +2,8 @@ package it.gov.pagopa.pu.workflow.utils;
 
 import org.junit.jupiter.api.Assertions;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,14 +25,8 @@ public class TestUtils {
       f -> !excludedFieldsSet.contains(f.getName()));
   }
 
-  public static final Date DATE = Date.from(
-    LocalDateTime.of(2024, 5, 15, 10, 30, 0)
-      .atZone(ZoneId.systemDefault())
-      .toInstant()
-  );
-
-  public static final OffsetDateTime OFFSET_DATE_TIME = OffsetDateTime.ofInstant(
-    DATE.toInstant(),
-    ZoneId.systemDefault());
+  public static final LocalDate DATE = LocalDate.of(2024, 5, 15);
+  public static final LocalDateTime DATETIME = LocalDateTime.of(DATE, LocalTime.of(10, 30, 0));
+  public static final OffsetDateTime OFFSET_DATE_TIME = DATETIME.atZone(ZoneId.systemDefault()).toOffsetDateTime();
 
 }

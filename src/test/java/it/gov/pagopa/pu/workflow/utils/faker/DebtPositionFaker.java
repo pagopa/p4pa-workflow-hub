@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 
 import java.util.List;
 
+import static it.gov.pagopa.pu.workflow.utils.TestUtils.DATE;
 import static it.gov.pagopa.pu.workflow.utils.TestUtils.OFFSET_DATE_TIME;
 import static it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker.buildPaymentOptionDTO;
 
@@ -18,7 +19,7 @@ public class DebtPositionFaker {
       .debtPositionOrigin(DebtPositionDTO.DebtPositionOriginEnum.ORDINARY)
       .organizationId(1L)
       .debtPositionTypeOrgId(1L)
-      .validityDate(OFFSET_DATE_TIME)
+      .validityDate(DATE)
       .flagIuvVolatile(false)
       .multiDebtor(false)
       .flagPagoPaPayment(false)

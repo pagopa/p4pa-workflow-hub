@@ -14,8 +14,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mockStatic;
@@ -71,7 +70,7 @@ class CheckDebtPositionExpirationWfClientTest {
   void whenScheduleNextCheckDpExpirationThenSuccess() {
     // Given
     Long debtPositionId = 1L;
-    OffsetDateTime offsetDateTime = OffsetDateTime.of(2025,1,1,9,12,0, 0, ZoneOffset.UTC);
+    LocalDate offsetDateTime = LocalDate.of(2025,1,1);
     String expectedWorkflowId = "DebtPositionExpirationWF-1";
 
     Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(

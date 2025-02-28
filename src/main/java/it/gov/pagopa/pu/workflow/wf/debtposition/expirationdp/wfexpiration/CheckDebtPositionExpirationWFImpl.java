@@ -9,7 +9,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 
 import static it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
 
@@ -40,7 +40,7 @@ public class CheckDebtPositionExpirationWFImpl implements CheckDebtPositionExpir
   @Override
   public void checkDpExpiration(Long debtPositionId) {
     log.info("Starting workflow to check expiration of DebtPosition with ID: {}", debtPositionId);
-    OffsetDateTime nextDueDate = debtPositionExpirationActivity.checkAndUpdateInstallmentExpiration(debtPositionId);
+    LocalDate nextDueDate = debtPositionExpirationActivity.checkAndUpdateInstallmentExpiration(debtPositionId);
     log.info("Checked expiration of DebtPosition with ID: {}, and retrieved the next due date: {}", debtPositionId, nextDueDate);
     if (nextDueDate != null) {
       log.info("Start scheduling the next check expiration of DebtPosition with ID: {}", debtPositionId);

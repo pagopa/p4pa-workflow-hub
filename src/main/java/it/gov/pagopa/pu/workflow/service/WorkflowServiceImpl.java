@@ -15,9 +15,7 @@ import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.*;
 
 @Service
 @Slf4j
@@ -91,6 +89,11 @@ public class WorkflowServiceImpl implements WorkflowService {
         .setWorkflowId(workflowId)
         .setStartDelay(startDelay)
         .build());
+  }
+
+  @Override
+  public <T> T buildWorkflowStubScheduled(Class<T> workflowClass, String taskQueue, String workflowId, LocalDate date) {
+    return buildWorkflowStubScheduled(workflowClass, taskQueue, workflowId, LocalDateTime.of(date, LocalTime.MIDNIGHT));
   }
 
   @Override

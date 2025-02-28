@@ -19,7 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -142,7 +142,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
 
   protected void scheduleExpirationWF(DebtPositionDTO finalizedDebtPositionDTO, Long debtPositionId) {
     cancelCheckDpExpirationScheduleActivity.cancel(debtPositionId);
-    OffsetDateTime nextDueDate = DebtPositionUtilities.calcDebtPositionNextDueDate(finalizedDebtPositionDTO);
+    LocalDate nextDueDate = DebtPositionUtilities.calcDebtPositionNextDueDate(finalizedDebtPositionDTO);
     if (nextDueDate != null) {
       scheduleCheckDpExpirationActivity.scheduleNextCheckDpExpiration(debtPositionId, nextDueDate.plusDays(1));
     }
