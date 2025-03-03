@@ -197,9 +197,18 @@ workflow:
     retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
+  # pagopa taxonomy synchronization
+  synchronize-taxonomy-pagopa-fetch:
+    start-to-close-timeout-in-seconds: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
 schedule:
   payments-reporting-pagopa-brokers-fetch:
-    cron-expression: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_CRON:0 1/6 * * *}" # each day, 01:00-07:00-13:00-19:00 (Europe/Rome)
+    cron-expression: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_CRON:0 1/6 * * *}" # each day, 01:00-07:00-13:00-19:00 (Europe/Rome)payments-reporting-pagopa-brokers-fetch:
+  synchronize-taxonomy-pagopa-fetch:
+    cron-expression: "\${SCHEDULE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_CRON:0 0 * * *}" # each day, 00:00 (Europe/Rome)
 
 springdoc:
   writer-with-default-pretty-printer: true

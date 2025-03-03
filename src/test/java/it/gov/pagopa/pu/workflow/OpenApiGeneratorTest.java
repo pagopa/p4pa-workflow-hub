@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.schedules.ScheduleClient;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
+import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFetchScheduler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,8 @@ class OpenApiGeneratorTest {
   private ScheduleClient scheduleClientMock;
   @MockitoBean
   private PaymentsReportingPagoPaBrokersFetchScheduler paymentsReportingPagoPaBrokersFetchSchedulerMock;
+  @MockitoBean
+  private SynchronizeTaxonomyPagoPaFetchScheduler synchronizeTaxonomyPagoPaFetchSchedulerMock;
 
   @Test
   void generateAndVerifyCommit() throws Exception {

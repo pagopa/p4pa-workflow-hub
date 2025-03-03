@@ -18,6 +18,7 @@ import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
+import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFetchScheduler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -69,6 +70,9 @@ class TemporalSpringBootIntegrationTest {
   // disabling scheduling due to temporal test server not support
   @MockitoBean
   private PaymentsReportingPagoPaBrokersFetchScheduler paymentsReportingPagoPaBrokersFetchSchedulerMock;
+
+  @MockitoBean
+  private SynchronizeTaxonomyPagoPaFetchScheduler synchronizeTaxonomyPagoPaFetchSchedulerMock;
 
   @MockitoBean("fileActivityMock")
   private PaymentsReportingIngestionFlowFileActivityImpl fileActivityMock;
