@@ -97,10 +97,10 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
       signalDTO.getIuf());
     log.info("IUF receipt classification cleared cleared {} records for {}", clearedResult, signalDTO);
 
-    List<Transfer2ClassifyDTO> transfer2ClassifyDTOList = new ArrayList<>();
+    List<Transfer2ClassifyDTO> transfer2ClassifyDTOList = new ArrayList<>(signalDTO.getTransfers().size());
     for (PaymentsReportingTransferDTO transfer : signalDTO.getTransfers()) {
       if (PAYMENT_OUTCOME_CODES_FOR_DUMMY_RECEIPT.contains(transfer.getPaymentOutcomeCode())) {
-        log.info("Invoke PaymentsReportingImplicitReceiptHandlerActivity to generate dummy receipt for transfer: {}", transfer);
+        log.info("Invoke PaymentsReportingImplicitReceiptHandlerActivity to generate implicit receipt for transfer: {}", transfer);
         paymentsReportingImplicitReceiptHandlerActivity.handle(transfer);
       }
       transfer2ClassifyDTOList.add(Transfer2ClassifyDTO.builder()
@@ -115,5 +115,4 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
       .transfers2classify(transfer2ClassifyDTOList)
       .build());
   }
-
 }
