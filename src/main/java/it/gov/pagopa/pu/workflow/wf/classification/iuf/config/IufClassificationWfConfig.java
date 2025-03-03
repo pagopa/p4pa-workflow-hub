@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.config;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.*;
 
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsReportingImplicitReceiptHandlerActivity;
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
@@ -21,6 +22,10 @@ public class IufClassificationWfConfig extends BaseWfConfig {
 
   public IufClassificationActivity buildIufClassificationActivityStub() {
     return Workflow.newActivityStub(IufClassificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public PaymentsReportingImplicitReceiptHandlerActivity buildPaymentsReportingImplicitReceiptHandlerActivityStub() {
+    return Workflow.newActivityStub(PaymentsReportingImplicitReceiptHandlerActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
   public StartTransferClassificationActivity buildStartTransferClassificationActivityStub() {

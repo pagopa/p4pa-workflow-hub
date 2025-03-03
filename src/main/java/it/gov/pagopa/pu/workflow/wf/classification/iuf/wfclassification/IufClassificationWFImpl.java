@@ -3,7 +3,9 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsReportingImplicitReceiptHandlerActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
+import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
@@ -26,8 +28,11 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
   public static final String TASK_QUEUE_IUF_CLASSIFICATION_WF = "IufClassificationWF";
   public static final String TASK_QUEUE_IUF_CLASSIFICATION_LOCAL_ACTIVITY = "IufClassificationWF_LOCAL";
 
+  private static final List<String> PAYMENT_OUTCOME_CODES_FOR_IMPLICIT_RECEIPT = List.of("8", "9");
+
   private ClearClassifyIufActivity clearClassifyIufActivity;
   private IufClassificationActivity iufClassificationActivity;
+  private PaymentsReportingImplicitReceiptHandlerActivity paymentsReportingImplicitReceiptHandlerActivity;
 
   private StartTransferClassificationActivity startTransferClassificationActivity;
 
@@ -46,6 +51,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
     clearClassifyIufActivity = wfConfig.buildClearClassifyIufActivityStub();
     iufClassificationActivity = wfConfig.buildIufClassificationActivityStub();
+    paymentsReportingImplicitReceiptHandlerActivity = wfConfig.buildPaymentsReportingImplicitReceiptHandlerActivityStub();
 
     startTransferClassificationActivity = wfConfig.buildStartTransferClassificationActivityStub();
 
@@ -89,20 +95,24 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
     Long clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
       signalDTO.getOrganizationId(),
       signalDTO.getIuf());
-
     log.info("IUF receipt classification cleared cleared {} records for {}", clearedResult, signalDTO);
-    List<Transfer2ClassifyDTO> transfer2ClassifyDTOList = signalDTO.getTransfers().stream()
-      .map(transfer -> Transfer2ClassifyDTO.builder()
+
+    List<Transfer2ClassifyDTO> transfer2ClassifyDTOList = new ArrayList<>(signalDTO.getTransfers().size());
+    for (PaymentsReportingTransferDTO transfer : signalDTO.getTransfers()) {
+      if (PAYMENT_OUTCOME_CODES_FOR_IMPLICIT_RECEIPT.contains(transfer.getPaymentOutcomeCode())) {
+        log.info("Invoke PaymentsReportingImplicitReceiptHandlerActivity to generate implicit receipt for transfer: {}", transfer);
+        paymentsReportingImplicitReceiptHandlerActivity.handle(transfer);
+      }
+      transfer2ClassifyDTOList.add(Transfer2ClassifyDTO.builder()
         .iur(transfer.getIur())
         .iuv(transfer.getIuv())
         .transferIndex(transfer.getTransferIndex())
-        .build()
-      ).toList();
+        .build());
+    }
 
     toNotify.add(IufClassificationActivityResult.builder()
       .organizationId(signalDTO.getOrganizationId())
       .transfers2classify(transfer2ClassifyDTOList)
       .build());
   }
-
 }
