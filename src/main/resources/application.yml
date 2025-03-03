@@ -206,7 +206,7 @@ workflow:
 
 schedule:
   payments-reporting-pagopa-brokers-fetch:
-    cron-expression: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_CRON:0 1/6 * * *}" # each day, 01:00-07:00-13:00-19:00 (Europe/Rome)payments-reporting-pagopa-brokers-fetch:
+    cron-expression: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_CRON:0 1/6 * * *}" # each day, 01:00-07:00-13:00-19:00 (Europe/Rome)
   synchronize-taxonomy-pagopa-fetch:
     cron-expression: "\${SCHEDULE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_CRON:0 0 * * *}" # each day, 00:00 (Europe/Rome)
 
