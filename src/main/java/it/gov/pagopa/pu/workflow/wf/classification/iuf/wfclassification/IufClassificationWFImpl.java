@@ -51,6 +51,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
     clearClassifyIufActivity = wfConfig.buildClearClassifyIufActivityStub();
     iufClassificationActivity = wfConfig.buildIufClassificationActivityStub();
+    paymentsReportingImplicitReceiptHandlerActivity = wfConfig.buildPaymentsReportingImplicitReceiptHandlerActivityStub();
 
     startTransferClassificationActivity = wfConfig.buildStartTransferClassificationActivityStub();
 
