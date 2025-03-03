@@ -19,9 +19,32 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
   }
 
   @Override
-  public ScheduleHandle buildSchedule(Class<?> workflowInterface, String taskQueue, String workflowId, String scheduleId, String cronExpression) {
+  public ScheduleHandle schedule(String scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression) {
+    log.info("Scheduling {}", taskQueue);
+
+    ScheduleHandle handle = getSchedule(scheduleId);
+    log.debug("ScheduleHandle {}", handle);
+
+    try {
+      ScheduleDescription describe = handle.describe();
+      log.info("Found an existing schedule {}", describe);
+    } catch (ScheduleException e) {
+      log.info("Creating a new schedule");
+
+      handle = scheduleInner(
+        workflowInterface,
+        taskQueue,
+        scheduleId,
+        cronExpression);
+      log.info("Created schedule {}", handle.describe());
+    }
+
+    return handle;
+  }
+
+  private ScheduleHandle scheduleInner(Class<?> workflowInterface, String taskQueue, String scheduleId, String cronExpression) {
     WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
-      .setWorkflowId(workflowId)
+      .setWorkflowId(scheduleId)
       .setTaskQueue(taskQueue)
       .build();
 

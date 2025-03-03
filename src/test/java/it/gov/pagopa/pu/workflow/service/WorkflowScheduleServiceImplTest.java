@@ -1,9 +1,6 @@
 package it.gov.pagopa.pu.workflow.service;
 
-import io.temporal.client.schedules.ScheduleActionStartWorkflow;
-import io.temporal.client.schedules.ScheduleClient;
-import io.temporal.client.schedules.ScheduleHandle;
-import io.temporal.client.schedules.ScheduleSpec;
+import io.temporal.client.schedules.*;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWFImpl;
@@ -37,13 +34,13 @@ class WorkflowScheduleServiceImplTest {
   }
 
   @Test
-  void buildSchedule() {
+  void givenNewScheduleWhenScheduleThenCreateIt() {
     // Given
     Class<?> workflowInterface = PaymentsReportingPagoPaBrokersFetchWF.class;
     String taskQueue = PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH;
-    String workflowId = "test-workflow-id";
     String scheduleId = "test-schedule-id";
     String cronExpression = "0/5 * * * *";
+    ScheduleHandle previousHandle = Mockito.mock(ScheduleHandle.class);
     ScheduleHandle expectedHandle = Mockito.mock(ScheduleHandle.class);
 
     ScheduleSpec expectedScheduleSpec = ScheduleSpec.newBuilder()
@@ -51,27 +48,52 @@ class WorkflowScheduleServiceImplTest {
       .setTimeZoneName(Utilities.ZONEID.getId())
       .build();
 
+    Mockito.when(previousHandle.describe())
+        .thenThrow(new ScheduleException(null));
+    Mockito.when(scheduleClientMock.getHandle(scheduleId))
+      .thenReturn(previousHandle);
+
     Mockito.when(scheduleClientMock.createSchedule(
         Mockito.eq(scheduleId),
         Mockito.argThat(schedule -> schedule.getAction() instanceof ScheduleActionStartWorkflow scheduleAction &&
           scheduleAction.getWorkflowType().equals(workflowInterface.getSimpleName()) &&
           scheduleAction.getOptions().getTaskQueue().equals(taskQueue) &&
-          scheduleAction.getOptions().getWorkflowId().equals(workflowId)
+          scheduleAction.getOptions().getWorkflowId().equals(scheduleId)
           && schedule.getSpec().equals(expectedScheduleSpec)),
         Mockito.any()
     ))
     .thenReturn(expectedHandle);
 
     // When
-    ScheduleHandle actualHandle = workflowScheduleService.buildSchedule(
-      workflowInterface, taskQueue, workflowId, scheduleId, cronExpression);
+    ScheduleHandle actualHandle = workflowScheduleService.schedule(scheduleId, workflowInterface, taskQueue, cronExpression);
 
     // Then
     assertSame(expectedHandle, actualHandle);
   }
 
   @Test
-  void getSchedule() {
+  void givenAlreadyExistentScheduleWhenScheduleThenReturnIt() {
+    // Given
+    Class<?> workflowInterface = PaymentsReportingPagoPaBrokersFetchWF.class;
+    String taskQueue = PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH;
+    String scheduleId = "test-schedule-id";
+    String cronExpression = "0/5 * * * *";
+    ScheduleHandle previousHandle = Mockito.mock(ScheduleHandle.class);
+
+    Mockito.when(previousHandle.describe())
+      .thenReturn(Mockito.mock(ScheduleDescription.class));
+    Mockito.when(scheduleClientMock.getHandle(scheduleId))
+      .thenReturn(previousHandle);
+
+    // When
+    ScheduleHandle actualHandle = workflowScheduleService.schedule(scheduleId, workflowInterface, taskQueue, cronExpression);
+
+    // Then
+    assertSame(previousHandle, actualHandle);
+  }
+
+  @Test
+  void whenGetScheduleThenInvokeClient() {
     // Given
     String scheduleId = "test-schedule-id";
     ScheduleHandle expectedHandle = Mockito.mock(ScheduleHandle.class);

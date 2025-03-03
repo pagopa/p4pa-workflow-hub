@@ -8,6 +8,6 @@ import io.temporal.client.schedules.ScheduleHandle;
  * */
 public interface WorkflowScheduleService {
 
-  ScheduleHandle buildSchedule(Class<?> workflowInterface, String taskQueue, String workflowId, String scheduleId, String cronExpression);
+  ScheduleHandle schedule(String scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression);
   ScheduleHandle getSchedule(String scheduleId);
 }
