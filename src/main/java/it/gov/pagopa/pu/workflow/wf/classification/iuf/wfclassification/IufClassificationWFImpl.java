@@ -28,7 +28,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
   public static final String TASK_QUEUE_IUF_CLASSIFICATION_WF = "IufClassificationWF";
   public static final String TASK_QUEUE_IUF_CLASSIFICATION_LOCAL_ACTIVITY = "IufClassificationWF_LOCAL";
 
-  private static final List<String> PAYMENT_OUTCOME_CODES_FOR_DUMMY_RECEIPT = List.of("8", "9");
+  private static final List<String> PAYMENT_OUTCOME_CODES_FOR_IMPLICIT_RECEIPT = List.of("8", "9");
 
   private ClearClassifyIufActivity clearClassifyIufActivity;
   private IufClassificationActivity iufClassificationActivity;
@@ -99,7 +99,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
     List<Transfer2ClassifyDTO> transfer2ClassifyDTOList = new ArrayList<>(signalDTO.getTransfers().size());
     for (PaymentsReportingTransferDTO transfer : signalDTO.getTransfers()) {
-      if (PAYMENT_OUTCOME_CODES_FOR_DUMMY_RECEIPT.contains(transfer.getPaymentOutcomeCode())) {
+      if (PAYMENT_OUTCOME_CODES_FOR_IMPLICIT_RECEIPT.contains(transfer.getPaymentOutcomeCode())) {
         log.info("Invoke PaymentsReportingImplicitReceiptHandlerActivity to generate implicit receipt for transfer: {}", transfer);
         paymentsReportingImplicitReceiptHandlerActivity.handle(transfer);
       }
