@@ -1,9 +1,6 @@
 package it.gov.pagopa.pu.workflow.connector.organization.config;
 
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApiClientConfig;
-import it.gov.pagopa.pu.organization.dto.generated.Broker;
-import it.gov.pagopa.pu.organization.dto.generated.Organization;
-import it.gov.pagopa.pu.organization.dto.generated.Taxonomy;
 import it.gov.pagopa.pu.workflow.connector.BaseApiHolderTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +42,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
     assertAuthenticationShouldBeSetInThreadSafeMode(
       accessToken -> organizationApisHolder.getOrganizationSearchControllerApi(accessToken)
         .crudOrganizationsFindByIpaCode("ORGIPACODE"),
-      Organization.class,
+      new ParameterizedTypeReference<>() {},
       organizationApisHolder::unload);
   }
 
@@ -53,7 +51,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
     assertAuthenticationShouldBeSetInThreadSafeMode(
       accessToken -> organizationApisHolder.getTaxonomyCodeDtoSearchControllerApi(accessToken)
         .crudTaxonomiesFindByTaxonomyCode("TAXONOMYCODE"),
-      Taxonomy.class,
+      new ParameterizedTypeReference<>() {},
       organizationApisHolder::unload);
   }
 
@@ -62,7 +60,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
     assertAuthenticationShouldBeSetInThreadSafeMode(
       accessToken -> organizationApisHolder.getOrganizationEntityControllerApi(accessToken)
         .crudGetOrganization("ORGID"),
-      Organization.class,
+      new ParameterizedTypeReference<>() {},
       organizationApisHolder::unload);
   }
 
@@ -71,7 +69,7 @@ class OrganizationApisHolderTest extends BaseApiHolderTest {
     assertAuthenticationShouldBeSetInThreadSafeMode(
       accessToken -> organizationApisHolder.getBrokerSearchControllerApi(accessToken)
         .crudBrokersFindByBrokeredOrganizationId("ORGID"),
-      Broker.class,
+      new ParameterizedTypeReference<>() {},
       organizationApisHolder::unload);
   }
 
