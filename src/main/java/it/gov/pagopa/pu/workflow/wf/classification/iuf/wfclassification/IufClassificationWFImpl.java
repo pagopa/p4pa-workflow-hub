@@ -19,6 +19,8 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF;
 
@@ -36,7 +38,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
   private StartTransferClassificationActivity startTransferClassificationActivity;
 
-  private final List<IufClassificationActivityResult> toNotify = new ArrayList<>();
+  private final Queue<IufClassificationActivityResult> toNotify = new ConcurrentLinkedQueue<>();
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid
@@ -70,7 +72,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
       String iuv = transfer2ClassifyDTO.getIuv();
       String iur = transfer2ClassifyDTO.getIur();
       int transferIndex = transfer2ClassifyDTO.getTransferIndex();
-      startTransferClassificationActivity.signalTransferClassificationWithStart(toNotify.getFirst().getOrganizationId(), iuv, iur, transferIndex);
+      startTransferClassificationActivity.signalTransferClassificationWithStart(toNotify.element().getOrganizationId(), iuv, iur, transferIndex);
     });
   }
 
