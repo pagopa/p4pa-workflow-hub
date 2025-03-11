@@ -11,7 +11,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TransferClassificationWFImpl.TASK_QUEUE_TRANSFER_CLASSIFICATION_WF)
@@ -20,7 +21,7 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
 
   private TransferClassificationActivity transferClassificationActivity;
 
-  private final List<TransferSemanticKeyDTO> toClassify = new ArrayList<>();
+  private final Collection<TransferSemanticKeyDTO> toClassify = new ConcurrentLinkedQueue<>();
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
