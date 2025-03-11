@@ -9,6 +9,7 @@ plugins {
   id("com.github.ben-manes.versions") version "0.51.0"
   id("org.openapi.generator") version "7.10.0"
   id("org.ajoberstar.grgit") version "5.3.0"
+  id("com.gorylenko.gradle-git-properties") version "2.5.0"
 }
 
 group = "it.gov.pagopa.payhub"
@@ -75,7 +76,7 @@ dependencies {
     exclude(group = "com.google.guava", module = "guava")
   }
   // Temporal
-  implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion"){
+  implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion") {
     exclude(group = "com.google.protobuf", module = "protobuf-java")
     exclude(group = "com.google.guava", module = "guava")
   }
@@ -164,6 +165,7 @@ configure<SourceSetContainer> {
 }
 
 springBoot {
+  buildInfo()
   mainClass.value("it.gov.pagopa.pu.workflow.WorkflowApplication")
 }
 

@@ -80,6 +80,10 @@ spring:
               startOffset: "\${KAFKA_PAYMENTS_REQUEST_START_OFFSET:\${KAFKA_CONSUMER_CONFIG_START_OFFSET:earliest}}"
 
 management:
+  info:
+    build.enabled: true
+    java.enabled: true
+    git.enabled: true
   endpoints:
     jmx:
       exposure.include: "*"
