@@ -82,6 +82,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   @Override
   public <T> T buildWorkflowStubDelayed(Class<T> workflowClass, String taskQueue, String workflowId, Duration startDelay) {
+    if(startDelay.isNegative()){
+      startDelay = Duration.ZERO;
+    }
     return workflowClient.newWorkflowStub(
       workflowClass,
       WorkflowOptions.newBuilder()
