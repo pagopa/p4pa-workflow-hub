@@ -98,5 +98,35 @@ class SendNotificationProcessWFImplTest {
     Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
     Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).notificationStatus(sendNotificationId);
   }
+
+  @Test
+  void givenStatusNullWhenSendNotificationProcessThenRetries() {
+    String sendNotificationId = "testId";
+    NewNotificationRequestStatusResponseV24DTO expectedResponse = new NewNotificationRequestStatusResponseV24DTO();
+    expectedResponse.setNotificationRequestStatus(null);
+
+    Mockito.when(notificationStatusActivityMock.notificationStatus(sendNotificationId))
+      .thenReturn(expectedResponse);
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      Exception exception = assertThrows(
+        WorkflowInternalErrorException.class,
+        () -> wf.sendNotificationProcess(sendNotificationId)
+      );
+
+      assertEquals(
+        "Max retries reached: notification status not ACCEPTED for sendNotificationId " + sendNotificationId + ". Last status was: null",
+        exception.getMessage()
+      );
+    }
+
+    Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
+    Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).notificationStatus(sendNotificationId);
+  }
 }
 
