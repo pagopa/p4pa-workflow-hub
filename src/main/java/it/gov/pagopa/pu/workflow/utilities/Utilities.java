@@ -20,6 +20,10 @@ public class Utilities {
     return String.format("%s-%d", workflow, id);
   }
 
+  public static String generateWorkflowId(String id, String workflow) {
+    return String.format("%s-%s", workflow, id);
+  }
+
   @Named("offsetDateTimeToInstant")
   public static Instant offsetDateTimeToInstant(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toInstant() : null;
