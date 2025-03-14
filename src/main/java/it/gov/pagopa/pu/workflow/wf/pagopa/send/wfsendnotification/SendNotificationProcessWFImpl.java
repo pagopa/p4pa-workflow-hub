@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.sendnotification.wfsendnotification;
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.PreloadSendFile
 import it.gov.pagopa.payhub.activities.activity.sendnotification.UploadSendFileActivity;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
-import it.gov.pagopa.pu.workflow.wf.sendnotification.config.SendNotificationProcessWfConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -53,6 +53,10 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     uploadSendFileActivity.uploadSendFile(sendNotificationId);
     deliveryNotificationActivity.deliveryNotification(sendNotificationId);
 
+    waitDeliveryAcceptance(sendNotificationId);
+  }
+
+  private void waitDeliveryAcceptance(String sendNotificationId) {
     int attemptCounter = 0;
     String notificationRequestStatus = null;
 

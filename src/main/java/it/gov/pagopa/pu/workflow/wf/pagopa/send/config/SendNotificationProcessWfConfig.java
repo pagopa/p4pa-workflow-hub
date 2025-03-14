@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.sendnotification.config;
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.DeliveryNotificationActivity;

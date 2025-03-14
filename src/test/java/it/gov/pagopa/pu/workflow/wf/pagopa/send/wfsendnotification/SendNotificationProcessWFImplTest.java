@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.sendnotification.wfsendnotification;
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.DeliveryNotificationActivity;
@@ -7,7 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.PreloadSendFile
 import it.gov.pagopa.payhub.activities.activity.sendnotification.UploadSendFileActivity;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NewNotificationRequestStatusResponseV24DTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
-import it.gov.pagopa.pu.workflow.wf.sendnotification.config.SendNotificationProcessWfConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
