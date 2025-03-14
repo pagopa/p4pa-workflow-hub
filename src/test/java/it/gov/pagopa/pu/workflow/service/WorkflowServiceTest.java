@@ -178,16 +178,37 @@ class WorkflowServiceTest {
     String taskQueue = "test-task-queue";
     String workflowId = "test-workflow-id";
 
+    Duration duration = Duration.ofDays(1);
     when(workflowClientMock.newWorkflowStub(
       Mockito.eq(CheckDebtPositionExpirationWF.class),
       Mockito.<WorkflowOptions>argThat(options -> taskQueue.equals(options.getTaskQueue()) &&
-        workflowId.equals(options.getWorkflowId()) && Duration.ofDays(1).equals(options.getStartDelay()))
+        workflowId.equals(options.getWorkflowId()) && duration.equals(options.getStartDelay()))
     )).thenReturn(checkDebtPositionExpirationWFMock);
 
     CheckDebtPositionExpirationWF result = workflowService.buildWorkflowStubDelayed(CheckDebtPositionExpirationWF.class,
       taskQueue,
       workflowId,
-      Duration.ofDays(1));
+      duration);
+
+    Assertions.assertSame(checkDebtPositionExpirationWFMock, result);
+  }
+
+  @Test
+  void givenNegativeDurationWhenBuildWorkflowDelayedThenDurationZERO() {
+    String taskQueue = "test-task-queue";
+    String workflowId = "test-workflow-id";
+
+    Duration expectedDuration = Duration.ZERO;
+    when(workflowClientMock.newWorkflowStub(
+      Mockito.eq(CheckDebtPositionExpirationWF.class),
+      Mockito.<WorkflowOptions>argThat(options -> taskQueue.equals(options.getTaskQueue()) &&
+        workflowId.equals(options.getWorkflowId()) && expectedDuration.equals(options.getStartDelay()))
+    )).thenReturn(checkDebtPositionExpirationWFMock);
+
+    CheckDebtPositionExpirationWF result = workflowService.buildWorkflowStubDelayed(CheckDebtPositionExpirationWF.class,
+      taskQueue,
+      workflowId,
+      Duration.between(LocalDateTime.now(), LocalDateTime.now().minusDays(1)));
 
     Assertions.assertSame(checkDebtPositionExpirationWFMock, result);
   }
