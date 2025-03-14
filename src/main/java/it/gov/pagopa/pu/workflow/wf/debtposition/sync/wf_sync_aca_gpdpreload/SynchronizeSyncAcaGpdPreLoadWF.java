@@ -5,11 +5,12 @@ import io.temporal.workflow.WorkflowMethod;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 
-/** @see #synchronizeDPSyncAcaGpdPreLoad(DebtPositionDTO, PaymentEventType) */
+/**
+ * Workflow to synchronize a SYNC ACA+GPD PreLoad DebtPosition
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1485308613/Sincronizzazione+Posizione+Debitoria#3.2.1.5.-Sincrona-%2B-ACA-%2B-GPD-Preload>Confluence page</a>
+ */
 @WorkflowInterface
 public interface SynchronizeSyncAcaGpdPreLoadWF {
-
-  /** Workflow method to synchronize a SYNC ACA+GPD PreLoad DebtPosition */
   @WorkflowMethod
   void synchronizeDPSyncAcaGpdPreLoad(DebtPositionDTO debtPosition, PaymentEventType paymentEventType);
 }

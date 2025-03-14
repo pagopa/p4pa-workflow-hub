@@ -56,17 +56,17 @@ class PaymentsReportingPagoPaOrganizationFetchWFTest {
     Long organizationId = 1L;
     List<PaymentsReportingIdDTO> paymentsReportingIds = List.of(new PaymentsReportingIdDTO());
 
-    when(organizationPaymentsReportingPagoPaListRetrieverActivityMock.retrieve(organizationId))
+    when(organizationPaymentsReportingPagoPaListRetrieverActivityMock.retrieveNotImportedPagoPaPaymentsReportingIds(organizationId))
       .thenReturn(paymentsReportingIds);
-    when(organizationPaymentsReportingPagoPaRetrieverActivityMock.fetch(organizationId, paymentsReportingIds))
+    when(organizationPaymentsReportingPagoPaRetrieverActivityMock.fetchPagoPaPaymentsReportingFiles(organizationId, paymentsReportingIds))
       .thenReturn(List.of(1L));
 
     // When
     wf.retrieve(organizationId);
 
     // Then
-    verify(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieve(organizationId);
-    verify(organizationPaymentsReportingPagoPaRetrieverActivityMock).fetch(organizationId, paymentsReportingIds);
+    verify(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieveNotImportedPagoPaPaymentsReportingIds(organizationId);
+    verify(organizationPaymentsReportingPagoPaRetrieverActivityMock).fetchPagoPaPaymentsReportingFiles(organizationId, paymentsReportingIds);
   }
 
   @Test
@@ -74,11 +74,11 @@ class PaymentsReportingPagoPaOrganizationFetchWFTest {
     // Given
     Long organizationId = 1L;
     doThrow(new NotRetryableActivityException("Test exception"))
-      .when(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieve(organizationId);
+      .when(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieveNotImportedPagoPaPaymentsReportingIds(organizationId);
 
     // When
     assertThrows(NotRetryableActivityException.class, () -> wf.retrieve(organizationId));
-    verify(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieve(organizationId);
+    verify(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieveNotImportedPagoPaPaymentsReportingIds(organizationId);
   }
 
   @Test
@@ -87,13 +87,13 @@ class PaymentsReportingPagoPaOrganizationFetchWFTest {
     Long organizationId = 1L;
     List<PaymentsReportingIdDTO> paymentsReportingIds = Collections.emptyList();
 
-    when(organizationPaymentsReportingPagoPaListRetrieverActivityMock.retrieve(organizationId))
+    when(organizationPaymentsReportingPagoPaListRetrieverActivityMock.retrieveNotImportedPagoPaPaymentsReportingIds(organizationId))
       .thenReturn(paymentsReportingIds);
 
     // When
     wf.retrieve(organizationId);
 
     // Then
-    verify(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieve(organizationId);
+    verify(organizationPaymentsReportingPagoPaListRetrieverActivityMock).retrieveNotImportedPagoPaPaymentsReportingIds(organizationId);
   }
 }

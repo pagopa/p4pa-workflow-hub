@@ -14,6 +14,7 @@ import io.temporal.workflow.WorkflowMethod;
  * The process is designed to handle sending operations, implementing
  * retry mechanisms if the notification is not accepted.
  * </p>
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1601241160/Notifica+SEND>Confluence page</a>
  * */
 @WorkflowInterface
 public interface SendNotificationProcessWF {

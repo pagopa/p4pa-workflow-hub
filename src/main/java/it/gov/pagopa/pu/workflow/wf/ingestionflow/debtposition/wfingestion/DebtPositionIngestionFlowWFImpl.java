@@ -53,19 +53,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
   @Override
   public void ingest(Long ingestionFlowFileId) {
     log.info("Acquiring lock for ingestionFlowFileId {}", ingestionFlowFileId);
-
-    int attemptCounter = 0;
-    while (!ingestionFlowFileProcessingLockerActivity.acquireProcessingLock(ingestionFlowFileId)) {
-      attemptCounter++;
-
-      if (attemptCounter >= LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY) {
-        log.info("Max attempts reached, continuing as new for ingestionFlowFileId {}", ingestionFlowFileId);
-        Workflow.continueAsNew(ingestionFlowFileId);
-      }
-
-      log.info("Lock not acquired, retrying for ingestionFlowFileId {}", ingestionFlowFileId);
-      Workflow.sleep(SLEEP_BETWEEN_ACQUIRE_LOCK);
-    }
+    acquireLock(ingestionFlowFileId);
 
     log.info("Lock successfully acquired for ingestionFlowFileId {}", ingestionFlowFileId);
     InstallmentIngestionFlowFileResult ingestionResult = processFile(ingestionFlowFileId);
@@ -82,6 +70,21 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
 
     log.info("Debt Position ingestion with ID {} is completed, with success {} and error_description {}",
       ingestionFlowFileId, success, ingestionResult.getErrorDescription());
+  }
+
+  private void acquireLock(Long ingestionFlowFileId) {
+    int attemptCounter = 0;
+    while (!ingestionFlowFileProcessingLockerActivity.acquireProcessingLock(ingestionFlowFileId)) {
+      attemptCounter++;
+
+      if (attemptCounter >= LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY) {
+        log.info("Max attempts reached, continuing as new for ingestionFlowFileId {}", ingestionFlowFileId);
+        Workflow.continueAsNew(ingestionFlowFileId);
+      }
+
+      log.info("Lock not acquired, retrying for ingestionFlowFileId {}", ingestionFlowFileId);
+      Workflow.sleep(SLEEP_BETWEEN_ACQUIRE_LOCK);
+    }
   }
 
   private InstallmentIngestionFlowFileResult processFile(Long ingestionFlowFileId) {

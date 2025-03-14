@@ -5,11 +5,12 @@ import io.temporal.workflow.WorkflowMethod;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 
-/** @see #synchronizeDPNoPagoPA(DebtPositionDTO, PaymentEventType) */
+/**
+ * Workflow to synchronize a No pagoPA handled DebtPosition
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1485308613/Sincronizzazione+Posizione+Debitoria#3.1.-Pagamento-non-pagoPA>Confluence page</a>
+ */
 @WorkflowInterface
 public interface SynchronizeNoPagoPAWF {
-
-  /** Workflow method to synchronize a not PagoPA DebtPosition */
   @WorkflowMethod
   void synchronizeDPNoPagoPA(DebtPositionDTO debtPosition, PaymentEventType paymentEventType);
 }

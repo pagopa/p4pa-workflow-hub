@@ -4,16 +4,11 @@ import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
 /**
- * Workflow interface for the Treasury OPI Ingestion
- * */
-
+ * Workflow to ingest Treasury OPI file
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1339031693/Classificazione+incassi#3.4.1.-Tesoreria-IUFs>Confluence page</a>
+ */
 @WorkflowInterface
 public interface TreasuryOpiIngestionWF {
-
-  /**
-   * Workflow method for the Treasury OPI Ingestion
-   * @param ingestionFlowFileId the id of the ingestion flow file to ingest
-   * */
   @WorkflowMethod
   void ingest(Long ingestionFlowFileId);
 }

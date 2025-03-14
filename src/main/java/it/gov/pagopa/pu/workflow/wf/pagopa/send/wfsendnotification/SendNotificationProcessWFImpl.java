@@ -63,7 +63,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     while (attemptCounter < MAX_RETRIES) {
       attemptCounter++;
 
-      notificationRequestStatus = notificationStatusActivity.notificationStatus(sendNotificationId).getNotificationRequestStatus();
+      notificationRequestStatus = notificationStatusActivity.getSendNotificationStatus(sendNotificationId).getNotificationRequestStatus();
 
       if (notificationRequestStatus != null && notificationRequestStatus.equalsIgnoreCase("ACCEPTED")) {
         log.info("Notification status is ACCEPTED for sendNotificationId {}", sendNotificationId);

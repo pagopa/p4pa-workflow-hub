@@ -58,7 +58,7 @@ class SendNotificationProcessWFImplTest {
     NewNotificationRequestStatusResponseV24DTO expectedResponse = new NewNotificationRequestStatusResponseV24DTO();
     expectedResponse.setNotificationRequestStatus("ACCEPTED");
 
-    Mockito.when(notificationStatusActivityMock.notificationStatus(sendNotificationId))
+    Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
       .thenReturn(expectedResponse);
 
     wf.sendNotificationProcess(sendNotificationId);
@@ -66,7 +66,7 @@ class SendNotificationProcessWFImplTest {
     Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
     Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
-    Mockito.verify(notificationStatusActivityMock).notificationStatus(sendNotificationId);
+    Mockito.verify(notificationStatusActivityMock).getSendNotificationStatus(sendNotificationId);
   }
 
   @Test
@@ -75,7 +75,7 @@ class SendNotificationProcessWFImplTest {
     NewNotificationRequestStatusResponseV24DTO expectedResponse = new NewNotificationRequestStatusResponseV24DTO();
     expectedResponse.setNotificationRequestStatus("NOT_ACCEPTED");
 
-    Mockito.when(notificationStatusActivityMock.notificationStatus(sendNotificationId))
+    Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
       .thenReturn(expectedResponse);
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -96,7 +96,7 @@ class SendNotificationProcessWFImplTest {
     Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
     Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
-    Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).notificationStatus(sendNotificationId);
+    Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).getSendNotificationStatus(sendNotificationId);
   }
 
   @Test
@@ -105,7 +105,7 @@ class SendNotificationProcessWFImplTest {
     NewNotificationRequestStatusResponseV24DTO expectedResponse = new NewNotificationRequestStatusResponseV24DTO();
     expectedResponse.setNotificationRequestStatus(null);
 
-    Mockito.when(notificationStatusActivityMock.notificationStatus(sendNotificationId))
+    Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
       .thenReturn(expectedResponse);
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -126,7 +126,7 @@ class SendNotificationProcessWFImplTest {
     Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
     Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
-    Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).notificationStatus(sendNotificationId);
+    Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).getSendNotificationStatus(sendNotificationId);
   }
 }
 

@@ -4,16 +4,11 @@ import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
 /**
- * Workflow interface for the Receipt Pagopa Ingestion
+ * Workflow to ingest RT originated from PagoPA
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1473806561/Ricevute+RT>Confluence page</a>
  * */
-
 @WorkflowInterface
 public interface ReceiptPagopaIngestionWF {
-
-  /**
-   * Workflow method for the Receipt Pagopa Ingestion
-   * @param ingestionFlowFileId the id of the ingestion flow file to ingest
-   * */
   @WorkflowMethod
   void ingest(Long ingestionFlowFileId);
 }
