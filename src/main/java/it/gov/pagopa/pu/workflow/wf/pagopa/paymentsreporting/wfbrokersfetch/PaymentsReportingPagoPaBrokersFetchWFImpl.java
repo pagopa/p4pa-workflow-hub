@@ -41,14 +41,14 @@ public class PaymentsReportingPagoPaBrokersFetchWFImpl implements PaymentsReport
   public void retrieve() {
     log.info("Retrieve all Brokered Organization");
 
-    List<Long> brokersId = brokersRetrieverActivity.fetchAll()
+    List<Long> brokersId = brokersRetrieverActivity.fetchAllBrokers()
       .stream()
       .map(Broker::getBrokerId)
       .toList();
     log.info("Fetched brokers ID: {}", brokersId);
 
     for (Long brokerId : brokersId) {
-      organizationBrokeredRetrieverActivity.retrieve(brokerId)
+      organizationBrokeredRetrieverActivity.retrieveBrokeredOrganizations(brokerId)
         .stream()
         .map(Organization::getOrganizationId)
         .forEach(organizationPaymentsReportingPagoPaFetchWFClient::retrieveAsyncStart);

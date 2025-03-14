@@ -103,7 +103,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
     for (PaymentsReportingTransferDTO transfer : signalDTO.getTransfers()) {
       if (PAYMENT_OUTCOME_CODES_FOR_IMPLICIT_RECEIPT.contains(transfer.getPaymentOutcomeCode())) {
         log.info("Invoke PaymentsReportingImplicitReceiptHandlerActivity to generate implicit receipt for transfer: {}", transfer);
-        paymentsReportingImplicitReceiptHandlerActivity.handle(transfer);
+        paymentsReportingImplicitReceiptHandlerActivity.handleImplicitReceipt(transfer);
       }
       transfer2ClassifyDTOList.add(Transfer2ClassifyDTO.builder()
         .iur(transfer.getIur())

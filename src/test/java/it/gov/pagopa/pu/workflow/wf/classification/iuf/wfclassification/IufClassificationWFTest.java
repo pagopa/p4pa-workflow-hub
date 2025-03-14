@@ -137,7 +137,7 @@ class IufClassificationWFTest {
     Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1L);
 
     if (PAYMENT_OUTCOME_CODES_FOR_DUMMY_RECEIPT.contains(paymentOutcomeCode)) {
-      Mockito.doNothing().when(paymentsReportingImplicitReceiptHandlerActivityMock).handle(signalDTO.getTransfers().getFirst());
+      Mockito.doNothing().when(paymentsReportingImplicitReceiptHandlerActivityMock).handleImplicitReceipt(signalDTO.getTransfers().getFirst());
     }
     // When
     wf.notifyPaymentsReporting(signalDTO);

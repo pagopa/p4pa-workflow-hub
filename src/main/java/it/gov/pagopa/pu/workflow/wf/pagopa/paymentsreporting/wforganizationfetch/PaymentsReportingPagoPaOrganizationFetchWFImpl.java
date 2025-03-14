@@ -38,14 +38,14 @@ public class PaymentsReportingPagoPaOrganizationFetchWFImpl implements PaymentsR
   public void retrieve(Long organizationId) {
     log.info("Fetching new PaymentsReporting for organizationId {} from PagoPA", organizationId);
 
-    List<PaymentsReportingIdDTO> paymentsReportingIds = organizationPaymentsReportingPagoPaListRetrieverActivity.retrieve(organizationId);
+    List<PaymentsReportingIdDTO> paymentsReportingIds = organizationPaymentsReportingPagoPaListRetrieverActivity.retrieveNotImportedPagoPaPaymentsReportingIds(organizationId);
     log.info("PagoPA PaymentsReporting retrieved for organization with ID {} are: {}", organizationId,
       String.join(", ", paymentsReportingIds.stream().map(PaymentsReportingIdDTO::getPaymentsReportingFileName).toList()));
 
     if (paymentsReportingIds.isEmpty()) {
       log.info("Skip OrganizationPaymentsReportingPagoPaRetrieverActivity - nothing new to fetch from PagoPA for the organization with ID {}", organizationId);
     } else {
-      organizationPaymentsReportingPagoPaRetrieverActivity.fetch(organizationId, paymentsReportingIds);
+      organizationPaymentsReportingPagoPaRetrieverActivity.fetchPagoPaPaymentsReportingFiles(organizationId, paymentsReportingIds);
     }
 
     log.info("Fetch of PaymentsReporting completed for organization with ID {} from PagoPA", organizationId);

@@ -7,5 +7,5 @@ import io.temporal.activity.ActivityMethod;
 @ActivityInterface
 public interface CancelCheckDpExpirationScheduleActivity {
   @ActivityMethod
-  void cancel(Long debtPositionId);
+  void cancelExpirationSchedule(Long debtPositionId);
 }

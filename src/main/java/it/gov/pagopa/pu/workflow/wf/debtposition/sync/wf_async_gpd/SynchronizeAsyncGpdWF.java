@@ -5,11 +5,12 @@ import io.temporal.workflow.WorkflowMethod;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 
-/** @see #synchronizeDPAsyncGpd(DebtPositionDTO, PaymentEventType)  */
+/**
+ * Workflow to synchronize a GPD DebtPosition
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1485308613/Sincronizzazione+Posizione+Debitoria#3.2.1.2.-GPD>Confluence page</a>
+ */
 @WorkflowInterface
 public interface SynchronizeAsyncGpdWF {
-
-  /** Workflow method to synchronize a GPD DebtPosition */
   @WorkflowMethod
   void synchronizeDPAsyncGpd(DebtPositionDTO debtPosition, PaymentEventType paymentEventType);
 }
