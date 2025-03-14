@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 
 /**
  * A class exception that handles errors related to workflows.
- *
  */
 @RestControllerAdvice
 @Slf4j
@@ -40,12 +40,12 @@ public class WorkflowExceptionHandler {
   }
 
   @ExceptionHandler({WorkflowNotFoundException.class})
-  public ResponseEntity<WorkflowErrorDTO> handleNotFoundWorkflowError(RuntimeException ex, HttpServletRequest request){
+  public ResponseEntity<WorkflowErrorDTO> handleNotFoundWorkflowError(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CodeEnum.NOT_FOUND);
   }
 
   @ExceptionHandler({WorkflowInternalErrorException.class})
-  public ResponseEntity<WorkflowErrorDTO> handleInternalError(RuntimeException ex, HttpServletRequest request){
+  public ResponseEntity<WorkflowErrorDTO> handleInternalError(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.GENERIC_ERROR);
   }
 
@@ -60,7 +60,7 @@ public class WorkflowExceptionHandler {
     WorkflowErrorDTO.CodeEnum errorCode = WorkflowErrorDTO.CodeEnum.GENERIC_ERROR;
     if (ex instanceof ErrorResponse errorResponse) {
       httpStatus = errorResponse.getStatusCode();
-      if(httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
+      if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
         errorCode = WorkflowErrorDTO.CodeEnum.NOT_FOUND;
       } else if (httpStatus.is4xxClientError()) {
         errorCode = WorkflowErrorDTO.CodeEnum.BAD_REQUEST;
@@ -85,19 +85,24 @@ public class WorkflowExceptionHandler {
   }
 
   private static void logException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus) {
-    log.info("A {} occurred handling request {}: HttpStatus {} - {}",
-      ex.getClass(),
-      getRequestDetails(request),
-      httpStatus.value(),
-      ex.getMessage());
-    if(log.isDebugEnabled() && ex.getCause()!=null){
+    boolean printStackTrace = httpStatus.is5xxServerError();
+    Level logLevel = printStackTrace ? Level.ERROR : Level.INFO;
+    log.makeLoggingEventBuilder(logLevel)
+      .log("A {} occurred handling request {}: HttpStatus {} - {}",
+        ex.getClass(),
+        getRequestDetails(request),
+        httpStatus.value(),
+        ex.getMessage(),
+        printStackTrace ? ex : null
+      );
+    if (!printStackTrace && log.isDebugEnabled() && ex.getCause() != null) {
       log.debug("CausedBy: ", ex.getCause());
     }
   }
 
   private static String buildReturnedMessage(Exception ex) {
     if (ex instanceof HttpMessageNotReadableException) {
-      if(ex.getCause() instanceof JsonMappingException jsonMappingException){
+      if (ex.getCause() instanceof JsonMappingException jsonMappingException) {
         return "Cannot parse body: " +
           jsonMappingException.getPath().stream()
             .map(JsonMappingException.Reference::getFieldName)
@@ -110,7 +115,7 @@ public class WorkflowExceptionHandler {
         methodArgumentNotValidException.getBindingResult()
           .getAllErrors().stream()
           .map(e -> " " +
-            (e instanceof FieldError fieldError? fieldError.getField(): e.getObjectName()) +
+            (e instanceof FieldError fieldError ? fieldError.getField() : e.getObjectName()) +
             ": " + e.getDefaultMessage())
           .sorted()
           .collect(Collectors.joining(";"));
