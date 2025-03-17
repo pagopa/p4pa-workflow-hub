@@ -89,7 +89,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
           } catch (Exception e) {
             String errorMessage = "Error occurred while synchronizing Installment with IUD: " + installment.getIud() + " for DebtPosition ID: " + debtPosition.getDebtPositionId() + ". Error: " + e.getMessage();
             log.error(errorMessage, e);
-            publishPaymentEventActivity.publish(debtPosition, PaymentEventType.SYNC_ERROR, errorMessage);
+            publishPaymentEventActivity.publishErrorEvent(debtPosition, PaymentEventType.SYNC_ERROR, errorMessage);
             return null;
           }
         }
@@ -126,7 +126,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
   protected void publishEvent(PaymentEventType paymentEventType, DebtPositionDTO finalizedDebtPositionDTO) {
     if (paymentEventType != null) {
       log.info("Publishing event {} on debtPosition {}", paymentEventType, finalizedDebtPositionDTO.getDebtPositionId());
-      publishPaymentEventActivity.publish(finalizedDebtPositionDTO, paymentEventType, null);
+      publishPaymentEventActivity.publishErrorEvent(finalizedDebtPositionDTO, paymentEventType, null);
     }
   }
 
@@ -134,14 +134,14 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     if (!CollectionUtils.isEmpty(iupdSyncStatusUpdateDTOMap)) {
       log.info("Calling notifyIO activity on debtPosition {} (organizationId {}, debtPositionTypeOrgId {})", debtPositionId, requestedDebtPosition.getOrganizationId(), requestedDebtPosition.getDebtPositionTypeOrgId());
-      sendDebtPositionIONotificationActivity.sendMessage(requestedDebtPosition, iupdSyncStatusUpdateDTOMap);
+      sendDebtPositionIONotificationActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap);
     } else {
       log.info("Nothing to notifyIO on debtPosition {}", debtPositionId);
     }
   }
 
   protected void scheduleExpirationWF(DebtPositionDTO finalizedDebtPositionDTO, Long debtPositionId) {
-    cancelCheckDpExpirationScheduleActivity.cancel(debtPositionId);
+    cancelCheckDpExpirationScheduleActivity.cancelExpirationSchedule(debtPositionId);
     LocalDate nextDueDate = DebtPositionUtilities.calcDebtPositionNextDueDate(finalizedDebtPositionDTO);
     if (nextDueDate != null) {
       scheduleCheckDpExpirationActivity.scheduleNextCheckDpExpiration(debtPositionId, nextDueDate.plusDays(1));

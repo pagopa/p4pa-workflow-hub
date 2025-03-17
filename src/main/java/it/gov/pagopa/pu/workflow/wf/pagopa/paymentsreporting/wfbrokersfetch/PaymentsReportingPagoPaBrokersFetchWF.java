@@ -4,14 +4,12 @@ import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
 /**
- * Workflow interface for the Brokered Organizations Retrieve Workflow
- * */
+ * Workflow to start PaymentsReporting files retrieve from PagoPA by Broker
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1339031693/Classificazione+incassi#3.3.-Rendicontazione>Confluence page</a>
+ */
 @WorkflowInterface
 public interface PaymentsReportingPagoPaBrokersFetchWF {
 
-  /**
-   * Workflow method for the Brokered Organizations Retrieve Workflow
-   * */
   @WorkflowMethod
   void retrieve();
 }

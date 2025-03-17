@@ -4,15 +4,12 @@ import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
 /**
- * Workflow interface for the Pago PA Payments Reporting Workflow per Organization
- * */
+ * Workflow to fetch PaymentsReporting files from PagoPA for a given organizationId
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1339031693/Classificazione+incassi#3.3.-Rendicontazione>Confluence page</a>
+ */
 @WorkflowInterface
 public interface PaymentsReportingPagoPaOrganizationFetchWF {
 
-  /**
-   * Workflow method for the Pago PA Payments Reporting Workflow per Organization
-   * @param organizationId the ID of the organization
-   * */
   @WorkflowMethod
   void retrieve(Long organizationId);
 }

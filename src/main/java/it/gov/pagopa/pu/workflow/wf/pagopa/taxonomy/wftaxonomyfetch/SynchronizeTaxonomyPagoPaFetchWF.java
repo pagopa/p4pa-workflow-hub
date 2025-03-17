@@ -6,17 +6,12 @@ import io.temporal.workflow.WorkflowMethod;
 
 
 /**
- * Workflow interface for the Synchronize Taxonomy Fetch Workflow
+ * Workflow to synchronize Taxonomy with PagoPa
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1519386843/Aggiornamento+Tassonomia>Confluence page</a>
  */
 
 @WorkflowInterface
 public interface SynchronizeTaxonomyPagoPaFetchWF {
-
-
-  /**
-   * Workflow method for the Synchronize Taxonomy Fetch Workflow
-   */
-
   @WorkflowMethod
   void synchronize();
 }
