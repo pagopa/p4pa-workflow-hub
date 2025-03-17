@@ -252,6 +252,7 @@ components:
       enum:
         - DP_CREATED
         - DP_UPDATED
+        - DP_CANCELLED
         - DPI_ADDED
         - DPI_UPDATED
         - DPI_CANCELLED
