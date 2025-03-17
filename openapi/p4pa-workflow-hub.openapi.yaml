@@ -183,6 +183,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/send-notification/{sendNotificationId}/start:
+    get:
+      tags:
+        - SendNotification
+      operationId: sendNotificationProcess
+      description: Start send notification process (preloadFile, uploadFile, delivery and status).
+      parameters:
+        - name: sendNotificationId
+          in: path
+          required: true
+          description: The id of send notification.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Notification delivery status handled"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+
 security:
   - BearerAuth: [ ]
 components:
@@ -225,6 +252,7 @@ components:
       enum:
         - DP_CREATED
         - DP_UPDATED
+        - DP_CANCELLED
         - DPI_ADDED
         - DPI_UPDATED
         - DPI_CANCELLED

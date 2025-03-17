@@ -16,6 +16,9 @@
     "name" : "IngestionFlow",
     "description" : "the IngestionFlow API"
   }, {
+    "name" : "SendNotification",
+    "description" : "the SendNotification API"
+  }, {
     "name" : "Classification",
     "description" : "the Classification API"
   }, {
@@ -279,6 +282,47 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workflowhub/workflow/send-notification/{sendNotificationId}/start" : {
+      "get" : {
+        "tags" : [ "SendNotification" ],
+        "description" : "Start send notification process (preloadFile, uploadFile, delivery and status).",
+        "operationId" : "sendNotificationProcess",
+        "parameters" : [ {
+          "name" : "sendNotificationId",
+          "in" : "path",
+          "description" : "The id of send notification.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Notification delivery status handled",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
                 }
               }
             }
