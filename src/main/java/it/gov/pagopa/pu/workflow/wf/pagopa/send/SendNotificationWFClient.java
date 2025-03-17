@@ -20,7 +20,7 @@ public class SendNotificationWFClient {
   }
 
   public String sendNotificationProcess(String sendNotificationId) {
-    log.info("Starting send notification process having id {}", sendNotificationId);
+    log.debug("Starting send notification process having id {}", sendNotificationId);
     String taskQueue = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS;
     String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
 
