@@ -74,4 +74,11 @@ class UtilitiesTest {
 
     assertEquals("The ID or the workflow must not be null", exception.getMessage());
   }
+
+  @Test
+  void whenGenerateWorkflowStringIdThenOk(){
+    String workflowId = Utilities.generateWorkflowId("00000020f51bb4362eee2a4d", "workflow");
+
+    assertEquals("workflow-00000020f51bb4362eee2a4d", workflowId);
+  }
 }
