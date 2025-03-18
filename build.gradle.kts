@@ -63,7 +63,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-validation")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
+    exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
+  }
   implementation("org.springframework.boot:spring-boot-starter-data-rest")
   implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
