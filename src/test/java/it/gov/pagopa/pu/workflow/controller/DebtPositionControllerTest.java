@@ -3,8 +3,9 @@ package it.gov.pagopa.pu.workflow.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.JsonConfig;
-import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.dto.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,7 @@ class DebtPositionControllerTest {
     String workflowId = "workflow-1";
     String accessToken = "ACCESSTOKEN";
     DebtPositionDTO debtPositionRequestDTO = buildDebtPositionDTO();
+    SyncDebtPositionRequestDTO request = new SyncDebtPositionRequestDTO(debtPositionRequestDTO, null);
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
     WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
@@ -60,7 +62,7 @@ class DebtPositionControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .param("massive", "true")
             .param("paymentEventType", paymentEventType.name())
-            .content(objectMapper.writeValueAsString(debtPositionRequestDTO)))
+            .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andReturn();
 
