@@ -54,7 +54,8 @@ val mapStructVersion = "1.6.3"
 val temporalVersion = "1.27.1"
 val protobufJavaVersion = "3.25.5"
 val guavaVersion = "33.4.0-jre"
-val activitiesVersion = "1.77.1"
+
+val activitiesVersion = "1.78.4"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")

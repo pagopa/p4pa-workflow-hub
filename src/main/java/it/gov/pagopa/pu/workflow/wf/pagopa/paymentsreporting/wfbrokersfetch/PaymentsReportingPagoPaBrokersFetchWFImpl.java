@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.organization.BrokersRetrieverActivity;
-import it.gov.pagopa.payhub.activities.activity.organization.OrganizationBrokeredRetrieverActivity;
+import it.gov.pagopa.payhub.activities.activity.organization.OrganizationBrokeredActiveRetrieverActivity;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
@@ -20,7 +20,7 @@ public class PaymentsReportingPagoPaBrokersFetchWFImpl implements PaymentsReport
   public static final String TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH = "PaymentsReportingPagoPaBrokersFetchWF";
 
   private BrokersRetrieverActivity brokersRetrieverActivity;
-  private OrganizationBrokeredRetrieverActivity organizationBrokeredRetrieverActivity;
+  private OrganizationBrokeredActiveRetrieverActivity organizationBrokeredActiveRetrieverActivity;
   private OrganizationPaymentsReportingPagoPaFetchWFClient organizationPaymentsReportingPagoPaFetchWFClient;
 
   /**
@@ -33,7 +33,7 @@ public class PaymentsReportingPagoPaBrokersFetchWFImpl implements PaymentsReport
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     BrokersPaymentsReportingPagoPaFetchWfConfig wfConfig = applicationContext.getBean(BrokersPaymentsReportingPagoPaFetchWfConfig.class);
     brokersRetrieverActivity = wfConfig.buildBrokersRetrieverActivityStub();
-    organizationBrokeredRetrieverActivity = wfConfig.buildOrganizationBrokeredRetrieverActivityStub();
+    organizationBrokeredActiveRetrieverActivity = wfConfig.buildOrganizationBrokeredActiveRetrieverActivityStub();
     organizationPaymentsReportingPagoPaFetchWFClient = applicationContext.getBean(OrganizationPaymentsReportingPagoPaFetchWFClient.class);
   }
 
@@ -48,7 +48,7 @@ public class PaymentsReportingPagoPaBrokersFetchWFImpl implements PaymentsReport
     log.info("Fetched brokers ID: {}", brokersId);
 
     for (Long brokerId : brokersId) {
-      organizationBrokeredRetrieverActivity.retrieveBrokeredOrganizations(brokerId)
+      organizationBrokeredActiveRetrieverActivity.retrieveBrokeredOrganizations(brokerId)
         .stream()
         .map(Organization::getOrganizationId)
         .forEach(organizationPaymentsReportingPagoPaFetchWFClient::retrieveAsyncStart);

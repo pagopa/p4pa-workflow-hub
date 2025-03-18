@@ -91,7 +91,7 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "enum" : [ "DP_CREATED", "DP_UPDATED", "DPI_ADDED", "DPI_UPDATED", "DPI_CANCELLED", "RT_RECEIVED", "SYNC_ERROR" ]
+            "enum" : [ "DP_CREATED", "DP_UPDATED", "DP_CANCELLED", "DPI_ADDED", "DPI_UPDATED", "DPI_CANCELLED", "RT_RECEIVED", "SYNC_ERROR" ]
           }
         } ],
         "requestBody" : {
