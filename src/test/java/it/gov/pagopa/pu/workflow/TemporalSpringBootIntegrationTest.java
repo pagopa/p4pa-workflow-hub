@@ -41,6 +41,11 @@ import static org.mockito.Mockito.*;
   // loading real implementation to test NotRetryable extension
   UpdateIngestionFlowStatusActivityImpl.class})
 @TestPropertySource(properties = {
+  "spring.datasource.driver-class-name=org.h2.Driver",
+  "spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1",
+  "spring.datasource.username=sa",
+  "spring.datasource.password=sa",
+
   "spring.temporal.test-server.enabled: true",
   "spring.temporal.workers[0].task-queue: PaymentsReportingIngestionWF",
   "spring.temporal.workers[0].name: mock",

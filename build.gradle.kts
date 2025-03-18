@@ -54,6 +54,7 @@ val mapStructVersion = "1.6.3"
 val temporalVersion = "1.27.1"
 val protobufJavaVersion = "3.25.5"
 val guavaVersion = "33.4.0-jre"
+val postgresJdbcVersion = "42.7.5"
 
 val activitiesVersion = "1.78.4"
 
@@ -62,6 +63,10 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-validation")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
+    exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
+  }
+  implementation("org.springframework.boot:spring-boot-starter-data-rest")
   implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
@@ -71,6 +76,7 @@ dependencies {
   implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
   implementation("org.mapstruct:mapstruct:$mapStructVersion")
   implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
+  implementation("org.postgresql:postgresql:$postgresJdbcVersion")
   implementation("it.gov.pagopa.payhub:p4pa-payhub-activities:$activitiesVersion") {
     exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
     exclude(group = "com.google.protobuf", module = "protobuf-java")
@@ -102,6 +108,7 @@ dependencies {
   testImplementation("org.mockito:mockito-core")
   testImplementation("org.projectlombok:lombok")
   testImplementation("io.temporal:temporal-testing")
+  testImplementation("com.h2database:h2")
 }
 
 tasks.withType<Test> {

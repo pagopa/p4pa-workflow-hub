@@ -6,6 +6,18 @@ spring:
   threads:
     virtual:
       enabled: "\${VIRTUAL_THREADS_ENABLED:true}"
+  jpa:
+    show-sql: "\${SHOW_SQL:false}"
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: "\${WORKFLOW_HUB_DB_URL:jdbc:postgresql://\${WORKFLOW_HUB_DB_HOST:localhost}:\${WORKFLOW_HUB_DB_PORT:5432}/\${WORKFLOW_HUB_DB_NAME:payhub}?currentSchema=workflow_hub}"
+    username: "\${WORKFLOW_HUB_DB_USER}"
+    password: "\${WORKFLOW_HUB_DB_PASSWORD}"
+    driverClassName: org.postgresql.Driver
+  data:
+    rest:
+      basePath: crud
   temporal:
     connection:
       enable-https: "\${TEMPORAL_SERVER_ENABLE_HTTPS:false}"
