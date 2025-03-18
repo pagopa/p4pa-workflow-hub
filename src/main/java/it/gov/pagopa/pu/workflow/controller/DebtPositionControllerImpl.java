@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.controller;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
+import it.gov.pagopa.pu.workflow.dto.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
@@ -24,11 +24,11 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> syncDebtPosition(DebtPositionDTO debtPositionDTO, Boolean massive, PaymentEventType paymentEventType) {
-    log.info("Starting workflow to synchronize DebtPosition: {} (massive context: {})", debtPositionDTO.getDebtPositionId(), massive);
+  public ResponseEntity<WorkflowCreatedDTO> syncDebtPosition(SyncDebtPositionRequestDTO syncDebtPositionRequest, Boolean massive, Boolean partialChange, PaymentEventType paymentEventType) {
+    log.info("Starting workflow to synchronize DebtPosition: {} (massive context: {})", syncDebtPositionRequest.getDebtPosition().getDebtPositionId(), massive);
     return ResponseEntity.ok(
       service.syncDebtPosition(
-        debtPositionDTO, paymentEventType,
+        syncDebtPositionRequest.getDebtPosition(), paymentEventType,
         Optional.ofNullable(massive).orElse(false),
         SecurityUtils.getAccessToken()));
   }

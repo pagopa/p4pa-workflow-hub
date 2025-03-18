@@ -184,7 +184,7 @@ openApiGenerate {
   apiPackage.set("it.gov.pagopa.pu.workflow.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
   typeMappings.set(mapOf(
-    "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+    "SyncDebtPositionRequestDTO" to "it.gov.pagopa.pu.workflow.dto.SyncDebtPositionRequestDTO",
     "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum"
   ))
   configOptions.set(mapOf(
