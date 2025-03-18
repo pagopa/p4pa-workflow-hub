@@ -1619,8 +1619,9 @@
             "type" : "string",
             "format" : "date"
           },
-          "paymentTypeCode" : {
-            "type" : "string"
+          "notificationFeeCents" : {
+            "type" : "integer",
+            "format" : "int64"
           },
           "amountCents" : {
             "type" : "integer",
@@ -1701,10 +1702,6 @@
           "status" : {
             "type" : "string",
             "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
-          },
-          "dueDate" : {
-            "type" : "string",
-            "format" : "date"
           },
           "description" : {
             "type" : "string"
