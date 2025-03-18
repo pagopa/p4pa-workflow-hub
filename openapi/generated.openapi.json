@@ -862,6 +862,14 @@
             "type" : "boolean"
           }
         }, {
+          "name" : "partialChange",
+          "in" : "query",
+          "description" : "Indicates if the operation is a cumulative operation (true), which at the end of the process will invoke again the API with the parameter set to false, or complete (false).",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
           "name" : "paymentEventType",
           "in" : "query",
           "description" : "If provided, it will publish into Kafka queue the DebtPosition.",
@@ -875,7 +883,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/DebtPositionDTO"
+                "$ref" : "#/components/schemas/SyncDebtPositionRequestDTO"
               }
             }
           },
@@ -1752,6 +1760,18 @@
             "type" : "string"
           }
         }
+      },
+      "SyncDebtPositionRequestDTO" : {
+        "type" : "object",
+        "properties" : {
+          "debtPosition" : {
+            "$ref" : "#/components/schemas/DebtPositionDTO"
+          },
+          "executionConfig" : {
+            "$ref" : "#/components/schemas/WfExecutionConfig"
+          }
+        },
+        "required" : [ "debtPosition" ]
       },
       "TransferDTO" : {
         "type" : "object",

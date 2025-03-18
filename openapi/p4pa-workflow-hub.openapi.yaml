@@ -19,6 +19,12 @@ paths:
           required: false
           schema:
             type: boolean
+        - name: partialChange
+          in: query
+          description: Indicates if the operation is a cumulative operation (true), which at the end of the process will invoke again the API with the parameter set to false, or complete (false).
+          required: false
+          schema:
+            type: boolean
         - name: paymentEventType
           in: query
           description: If provided, it will publish into Kafka queue the DebtPosition.
@@ -30,7 +36,7 @@ paths:
         content:
           application/json:
             schema:
-              type: 'DebtPositionDTO'
+              type: 'SyncDebtPositionRequestDTO'
       responses:
         '200':
           description: "Debt position created"
