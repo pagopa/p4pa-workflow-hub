@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.controller;
 
 import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
-import it.gov.pagopa.pu.workflow.dto.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.generated.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.DebtPositionService;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;

@@ -184,8 +184,9 @@ openApiGenerate {
   apiPackage.set("it.gov.pagopa.pu.workflow.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
   typeMappings.set(mapOf(
-    "SyncDebtPositionRequestDTO" to "it.gov.pagopa.pu.workflow.dto.SyncDebtPositionRequestDTO",
-    "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum"
+    "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+    "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum",
+    "WfExecutionConfig" to "it.gov.pagopa.pu.workflow.model.executionconfig.WfExecutionConfig"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",

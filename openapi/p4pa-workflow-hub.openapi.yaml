@@ -36,7 +36,7 @@ paths:
         content:
           application/json:
             schema:
-              type: 'SyncDebtPositionRequestDTO'
+              $ref: '#/components/schemas/SyncDebtPositionRequestDTO'
       responses:
         '200':
           description: "Debt position created"
@@ -264,3 +264,14 @@ components:
         - DPI_CANCELLED
         - RT_RECEIVED
         - SYNC_ERROR
+    SyncDebtPositionRequestDTO:
+      type: object
+      required:
+        - debtPosition
+      properties:
+        debtPosition:
+          type: 'DebtPositionDTO'
+        executionConfig:
+          type: 'WfExecutionConfig'
+
+
