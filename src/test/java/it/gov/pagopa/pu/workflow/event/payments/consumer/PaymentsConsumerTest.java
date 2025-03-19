@@ -43,6 +43,7 @@ class PaymentsConsumerTest {
   void givenExpectedEventWhenAcceptThenInvokeClient() {
     // Given
     PaymentEventDTO paymentEventDTO = new PaymentEventDTO(
+      "EVENTID",
       buildPaidDebtPosition(),
       PaymentEventType.RT_RECEIVED,
       ""
@@ -64,6 +65,7 @@ class PaymentsConsumerTest {
   void givenNotHandledEventWhenAcceptThenInvokeClient() {
     // Given
     PaymentEventDTO paymentEventDTO = new PaymentEventDTO(
+      "EVENTID",
       buildPaidDebtPosition(),
       PaymentEventType.SYNC_ERROR,
       ""
