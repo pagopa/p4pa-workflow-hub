@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.service.debtposition.sync;
+package it.gov.pagopa.pu.workflow.service.debtposition.sync.generic;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
@@ -16,18 +16,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.function.BiFunction;
 
 @ExtendWith(MockitoExtension.class)
-class DebtPositionSyncServiceTest {
+class DebtPositionGenericSyncServiceTest {
 
   @Mock
   private PagoPASyncInteractionModelRetrieverService interactionModelRetrieverServiceMock;
   @Mock
   private SynchronizeDebtPositionWfClient wfClientMock;
 
-  private DebtPositionSyncService service;
+  private DebtPositionGenericSyncService service;
 
   @BeforeEach
   void init() {
-    service = new DebtPositionSyncService(interactionModelRetrieverServiceMock, wfClientMock);
+    service = new DebtPositionGenericSyncService(interactionModelRetrieverServiceMock, wfClientMock);
   }
 
   @AfterEach

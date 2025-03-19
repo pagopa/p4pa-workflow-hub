@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.service.debtposition;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
-import it.gov.pagopa.pu.workflow.service.debtposition.sync.DebtPositionSyncService;
+import it.gov.pagopa.pu.workflow.service.debtposition.sync.DebtPositionGenericSyncService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DebtPositionServiceTest {
 
   @Mock
-  private DebtPositionSyncService debtPositionSyncServiceMock;
+  private DebtPositionGenericSyncService debtPositionGenericSyncServiceMock;
   @Mock
   private CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClientMock;
 
@@ -32,12 +32,12 @@ class DebtPositionServiceTest {
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(debtPositionSyncServiceMock, checkDebtPositionExpirationWfClientMock);
+    service = new DebtPositionServiceImpl(debtPositionGenericSyncServiceMock, checkDebtPositionExpirationWfClientMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(debtPositionSyncServiceMock, checkDebtPositionExpirationWfClientMock);
+    Mockito.verifyNoMoreInteractions(debtPositionGenericSyncServiceMock, checkDebtPositionExpirationWfClientMock);
   }
 
   @Test
@@ -52,7 +52,7 @@ class DebtPositionServiceTest {
       .workflowId("WFID")
       .build();
 
-    Mockito.when(debtPositionSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(massive), Mockito.same(accessToken)))
+    Mockito.when(debtPositionGenericSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(massive), Mockito.same(accessToken)))
       .thenReturn("WFID");
 
     // When

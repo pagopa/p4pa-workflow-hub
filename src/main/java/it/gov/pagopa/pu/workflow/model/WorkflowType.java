@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.model;
 
-import it.gov.pagopa.pu.workflow.model.executionconfig.WfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
