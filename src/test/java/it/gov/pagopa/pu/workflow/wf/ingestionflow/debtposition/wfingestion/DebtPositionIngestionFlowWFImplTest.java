@@ -111,7 +111,9 @@ class DebtPositionIngestionFlowWFImplTest {
       wf.ingest(ingestionFlowFileId);
 
       String errorDescription = """
-        There were errors during the synchronization of the ingested Debt Position
+        ERROR DURING SYNC
+
+        There were errors during the synchronization of the ingested Debt Position:
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
@@ -149,6 +151,7 @@ class DebtPositionIngestionFlowWFImplTest {
 
       String errorDescription = """
         Unexpected error when processing DebtPositionIngestion file: DUMMY
+        There were errors during the synchronization of the ingested Debt Position:
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
@@ -178,6 +181,9 @@ class DebtPositionIngestionFlowWFImplTest {
       .thenReturn(false)
       .thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
+
+    Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
+      .thenReturn("");
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);

@@ -18,7 +18,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.time.Duration;
-import java.util.Arrays;
 
 @Slf4j
 @WorkflowImpl(taskQueues = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW)
@@ -28,7 +27,8 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
   private static final Duration SLEEP_BETWEEN_ACQUIRE_LOCK = Duration.ofSeconds(5);
   /**
    * The lock acquire max attempts before to clear Temporal history.
-   * The threshold is very high ({@link Constants#THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW}), lock acquire is the first activity called, we are not interested on WF history, we will clear it before real limit */
+   * The threshold is very high ({@link Constants#THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW}), lock acquire is the first activity called, we are not interested on WF history, we will clear it before real limit
+   */
   private static final int LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY = 1000;
 
   private IngestionFlowFileProcessingLockerActivity ingestionFlowFileProcessingLockerActivity;
@@ -62,16 +62,10 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     log.info("Lock successfully acquired for ingestionFlowFileId {}", ingestionFlowFileId);
     InstallmentIngestionFlowFileResult ingestionResult = processFile(ingestionFlowFileId);
 
-    String error = synchronizeIngestedDebtPositionActivity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
+    String additionalError
+      = synchronizeIngestedDebtPositionActivity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-    String errorDescription = StringUtils.join(
-        Arrays.asList(StringUtils.isEmpty(ingestionResult.getErrorDescription()) && !StringUtils.isEmpty(error)
-            ? "There were errors during the synchronization of the ingested Debt Position"
-            : ingestionResult.getErrorDescription(),
-          error), ""
-      ).trim();
-
-    errorDescription = StringUtils.isEmpty(errorDescription) ? null : errorDescription;
+    String errorDescription = mergeErrorDescriptions(ingestionResult.getErrorDescription(), additionalError);
     boolean success = errorDescription == null;
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
@@ -117,5 +111,24 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
       );
     }
     return ingestionResult;
+  }
+
+  private String mergeErrorDescriptions(String ingestionResultErrorDescription, String additionalError) {
+    if (StringUtils.isNotEmpty(additionalError)) {
+      additionalError = StringUtils.join("\nThere were errors during the synchronization of the ingested Debt Position:",
+        additionalError);
+
+      if (StringUtils.isEmpty(ingestionResultErrorDescription)){
+        ingestionResultErrorDescription = "ERROR DURING SYNC\n";
+      }
+    }
+
+    String errorDescription = StringUtils.join(ingestionResultErrorDescription, additionalError).trim();
+
+    if (StringUtils.isNotEmpty(errorDescription)) {
+      return errorDescription;
+    } else {
+      return null;
+    }
   }
 }
