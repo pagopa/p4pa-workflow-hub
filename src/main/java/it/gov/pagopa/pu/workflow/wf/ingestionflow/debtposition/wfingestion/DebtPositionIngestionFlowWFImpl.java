@@ -101,7 +101,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     try {
       ingestionResult = installmentIngestionFlowFileActivity.processFile(ingestionFlowFileId);
     } catch (Exception e) {
-      String error = "Unexpected error when processing DebtPositionIngestion file: " + e.getMessage() + "\n";
+      String error = "Unexpected error when processing DebtPositionIngestion file: " + e.getMessage();
       log.error(error);
       ingestionResult = new InstallmentIngestionFlowFileResult(
         null,
@@ -114,17 +114,11 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
   }
 
   private String mergeErrorDescriptions(String ingestionResultErrorDescription, String additionalError) {
-    if (StringUtils.isNotEmpty(additionalError)) {
-      additionalError = StringUtils.join("\n", "There were errors during the synchronization of the ingested Debt Position:",
-        additionalError);
-
-      if (StringUtils.isEmpty(ingestionResultErrorDescription)){
-        ingestionResultErrorDescription = "ERROR DURING SYNC\n";
-      }
+    if(StringUtils.isEmpty(additionalError)){
+      return ingestionResultErrorDescription;
+    } else {
+      return (ingestionResultErrorDescription == null ? "" : ingestionResultErrorDescription)
+        + "\n\nThere were errors during the synchronization of the ingested Debt Position:" + additionalError;
     }
-
-    String errorDescription = StringUtils.join(ingestionResultErrorDescription, additionalError).trim();
-
-    return StringUtils.isNotEmpty(errorDescription) ? errorDescription : null;
   }
 }

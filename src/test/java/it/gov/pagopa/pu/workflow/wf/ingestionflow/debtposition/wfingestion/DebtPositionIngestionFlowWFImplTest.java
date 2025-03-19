@@ -111,7 +111,7 @@ class DebtPositionIngestionFlowWFImplTest {
       wf.ingest(ingestionFlowFileId);
 
       String errorDescription = """
-        ERROR DURING SYNC
+
 
         There were errors during the synchronization of the ingested Debt Position:
         Error on synchronizeIngestedDebtPositionActivity
