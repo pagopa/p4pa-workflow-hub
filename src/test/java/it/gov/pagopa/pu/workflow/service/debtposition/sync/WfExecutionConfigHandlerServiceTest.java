@@ -112,6 +112,7 @@ class WfExecutionConfigHandlerServiceTest {
 
     WfExecutionConfig defaultConfig = Mockito.mock(WfExecutionConfig.class);
     WorkflowTypeOrg wfOrgDefaultConfig = new WorkflowTypeOrg();
+    wfOrgDefaultConfig.setDebtPositionTypeOrgId(2L);
     wfOrgDefaultConfig.setDefaultExecutionConfig(defaultConfig);
 
     WfExecutionConfig expectedResult = new GenericWfExecutionConfig();

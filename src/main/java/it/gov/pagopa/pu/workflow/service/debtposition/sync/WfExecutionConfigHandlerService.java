@@ -46,7 +46,7 @@ public class WfExecutionConfigHandlerService {
   private void saveWfExecutionConfig(DebtPositionDTO debtPositionDTO, Optional<WorkflowTypeOrg> workflowTypeOrg, WfExecutionConfig wfExecutionConfig) {
     DebtPositionWorkflowType entity = new DebtPositionWorkflowType();
     entity.setDebtPositionId(debtPositionDTO.getDebtPositionId());
-    entity.setWorkflowTypeOrgId(workflowTypeOrg.map(WorkflowTypeOrg::getWorkflowTypeOrgId).orElse(null));
+    entity.setWorkflowTypeOrgId(workflowTypeOrg.map(WorkflowTypeOrg::getDebtPositionTypeOrgId).orElse(null));
     entity.setExecutionConfig(wfExecutionConfig);
 
     debtPositionWorkflowTypeRepository.save(entity);
