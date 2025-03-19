@@ -151,6 +151,7 @@ class DebtPositionIngestionFlowWFImplTest {
 
       String errorDescription = """
         Unexpected error when processing DebtPositionIngestion file: DUMMY
+
         There were errors during the synchronization of the ingested Debt Position:
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
