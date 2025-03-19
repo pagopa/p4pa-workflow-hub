@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositio
 import it.gov.pagopa.payhub.activities.activity.debtposition.aca.SynchronizeInstallmentAcaActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.gpd.SynchronizeInstallmentGpdActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.CancelCheckDpExpirationScheduleActivity;
@@ -28,8 +28,8 @@ public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
         TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY, this));
   }
 
-  public SendDebtPositionIONotificationActivity buildSendDebtPositionIONotificationActivityStub() {
-    return Workflow.newActivityStub(SendDebtPositionIONotificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  public IONotificationDebtPositionActivity buildIONotificationDebtPositionActivityStub() {
+    return Workflow.newActivityStub(IONotificationDebtPositionActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
   public CancelCheckDpExpirationScheduleActivity buildCancelCheckDpExpirationScheduleActivityStub() {

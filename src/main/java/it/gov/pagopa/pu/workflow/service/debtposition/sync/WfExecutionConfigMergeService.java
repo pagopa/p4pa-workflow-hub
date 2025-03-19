@@ -14,7 +14,7 @@ public class WfExecutionConfigMergeService {
     this.objectMapper = objectMapper;
   }
 
-  public WfExecutionConfig mergeWfExecutionConfigs(WfExecutionConfig defaultConfig, WfExecutionConfig wfExecutionConfig) {
+  public WfExecutionConfig merge(WfExecutionConfig defaultConfig, WfExecutionConfig wfExecutionConfig) {
     if(defaultConfig == null && wfExecutionConfig == null){
       return null;
     } else if(defaultConfig == null){
@@ -22,7 +22,7 @@ public class WfExecutionConfigMergeService {
     } else if(wfExecutionConfig == null){
       return clone(defaultConfig);
     } else {
-
+      return mergeInner(defaultConfig, wfExecutionConfig);
     }
   }
 
@@ -31,6 +31,15 @@ public class WfExecutionConfigMergeService {
       return objectMapper.readValue(objectMapper.writeValueAsString(wfConfig), wfConfig.getClass());
     } catch (JsonProcessingException e) {
       throw new IllegalStateException("Cannot clone WfExecutionConfig class " + wfConfig.getClass(), e);
+    }
+  }
+
+  private WfExecutionConfig mergeInner(WfExecutionConfig defaultConfig, WfExecutionConfig wfExecutionConfig) {
+    try {
+      return objectMapper.readerForUpdating(clone(defaultConfig))
+        .readValue(objectMapper.writeValueAsString(wfExecutionConfig));
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException("Cannot merge WfExecutionConfig from class " + wfExecutionConfig.getClass() + " to class " + defaultConfig, e);
     }
   }
 }

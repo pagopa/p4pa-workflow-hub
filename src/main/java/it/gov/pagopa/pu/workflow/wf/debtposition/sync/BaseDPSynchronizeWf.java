@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 
 import com.nimbusds.jose.util.Pair;
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
@@ -32,7 +32,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
 
   protected FinalizeDebtPositionSyncStatusActivity finalizeDebtPositionSyncStatusActivity;
   protected PublishPaymentEventActivity publishPaymentEventActivity;
-  protected SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivity;
+  protected IONotificationDebtPositionActivity ioNotificationDebtPositionActivity;
   protected CancelCheckDpExpirationScheduleActivity cancelCheckDpExpirationScheduleActivity;
   protected ScheduleCheckDpExpirationActivity scheduleCheckDpExpirationActivity;
 
@@ -47,7 +47,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     SynchronizeDebtPositionWfConfig wfConfig = applicationContext.getBean(SynchronizeDebtPositionWfConfig.class);
     finalizeDebtPositionSyncStatusActivity = wfConfig.buildFinalizeDebtPositionSyncStatusActivityStub();
     publishPaymentEventActivity = wfConfig.buildPublishPaymentEventActivityStub();
-    sendDebtPositionIONotificationActivity = wfConfig.buildSendDebtPositionIONotificationActivityStub();
+    ioNotificationDebtPositionActivity = wfConfig.buildIONotificationDebtPositionActivityStub();
     cancelCheckDpExpirationScheduleActivity = wfConfig.buildCancelCheckDpExpirationScheduleActivityStub();
 
     CheckDebtPositionExpirationWfConfig debtPositionExpirationWfConfig = applicationContext.getBean(CheckDebtPositionExpirationWfConfig.class);
@@ -134,7 +134,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     if (!CollectionUtils.isEmpty(iupdSyncStatusUpdateDTOMap)) {
       log.info("Calling notifyIO activity on debtPosition {} (organizationId {}, debtPositionTypeOrgId {})", debtPositionId, requestedDebtPosition.getOrganizationId(), requestedDebtPosition.getDebtPositionTypeOrgId());
-      sendDebtPositionIONotificationActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap);
+      ioNotificationDebtPositionActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap);
     } else {
       log.info("Nothing to notifyIO on debtPosition {}", debtPositionId);
     }

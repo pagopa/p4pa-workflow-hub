@@ -18,10 +18,12 @@ public class WfExecutionConfigHandlerService {
 
   private final DebtPositionWorkflowTypeRepository debtPositionWorkflowTypeRepository;
   private final WorkflowTypeOrgRepository workflowTypeOrgRepository;
+  private final WfExecutionConfigMergeService mergeService;
 
-  public WfExecutionConfigHandlerService(DebtPositionWorkflowTypeRepository debtPositionWorkflowTypeRepository, WorkflowTypeOrgRepository workflowTypeOrgRepository) {
+  public WfExecutionConfigHandlerService(DebtPositionWorkflowTypeRepository debtPositionWorkflowTypeRepository, WorkflowTypeOrgRepository workflowTypeOrgRepository, WfExecutionConfigMergeService mergeService) {
     this.debtPositionWorkflowTypeRepository = debtPositionWorkflowTypeRepository;
     this.workflowTypeOrgRepository = workflowTypeOrgRepository;
+    this.mergeService = mergeService;
   }
 
   public void persistAndConfigure(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters){
@@ -33,7 +35,7 @@ public class WfExecutionConfigHandlerService {
       Optional<WorkflowTypeOrg> workflowTypeOrg = workflowTypeOrgRepository.findById(debtPositionDTO.getDebtPositionTypeOrgId());
       WfExecutionConfig defaultConfig = workflowTypeOrg.map(WorkflowTypeOrg::getDefaultExecutionConfig)
         .orElse(null);
-      wfExecutionParameters.setWfExecutionConfig(WfExecutionConfigMergeService.mergeWfExecutionConfigs(defaultConfig, wfExecutionParameters.getWfExecutionConfig()));
+      wfExecutionParameters.setWfExecutionConfig(mergeService.merge(defaultConfig, wfExecutionParameters.getWfExecutionConfig()));
 
       if(wfExecutionParameters.getWfExecutionConfig()!=null){
         saveWfExecutionConfig(debtPositionDTO, workflowTypeOrg, wfExecutionParameters.getWfExecutionConfig());

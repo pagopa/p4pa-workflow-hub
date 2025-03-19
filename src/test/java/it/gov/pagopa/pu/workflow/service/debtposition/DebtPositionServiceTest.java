@@ -1,9 +1,10 @@
 package it.gov.pagopa.pu.workflow.service.debtposition;
 
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
-import it.gov.pagopa.pu.workflow.service.debtposition.sync.DebtPositionGenericSyncService;
+import it.gov.pagopa.pu.workflow.service.debtposition.sync.DebtPositionSyncService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DebtPositionServiceTest {
 
   @Mock
-  private DebtPositionGenericSyncService debtPositionGenericSyncServiceMock;
+  private DebtPositionSyncService debtPositionSyncServiceMock;
   @Mock
   private CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClientMock;
 
@@ -32,12 +33,12 @@ class DebtPositionServiceTest {
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(debtPositionGenericSyncServiceMock, checkDebtPositionExpirationWfClientMock);
+    service = new DebtPositionServiceImpl(debtPositionSyncServiceMock, checkDebtPositionExpirationWfClientMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(debtPositionGenericSyncServiceMock, checkDebtPositionExpirationWfClientMock);
+    Mockito.verifyNoMoreInteractions(debtPositionSyncServiceMock, checkDebtPositionExpirationWfClientMock);
   }
 
   @Test
@@ -46,17 +47,17 @@ class DebtPositionServiceTest {
     String accessToken = "ACCESSTOKEN";
     DebtPositionDTO debtPosition = new DebtPositionDTO();
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
-    Boolean massive = Boolean.TRUE;
+    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
       .build();
 
-    Mockito.when(debtPositionGenericSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(massive), Mockito.same(accessToken)))
+    Mockito.when(debtPositionSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(wfExecutionParameters), Mockito.same(accessToken)))
       .thenReturn("WFID");
 
     // When
-    WorkflowCreatedDTO result = service.syncDebtPosition(debtPosition, paymentEventType, massive, accessToken);
+    WorkflowCreatedDTO result = service.syncDebtPosition(debtPosition, paymentEventType, wfExecutionParameters, accessToken);
 
     // Then
     Assertions.assertEquals(expectedResult, result);
