@@ -29,7 +29,7 @@ public class InstallmentFaker {
       .nav("nav")
       .iupdPagopa("iupdPagopa")
       .dueDate(DATE)
-      .paymentTypeCode("paymentTypeCode")
+      .notificationFeeCents(1000L)
       .amountCents(100L)
       .remittanceInformation("remittanceInformation")
       .balance("balance")
