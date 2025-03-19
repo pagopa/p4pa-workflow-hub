@@ -5,6 +5,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.InstallmentIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -17,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 @Slf4j
 @WorkflowImpl(taskQueues = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW)
@@ -33,6 +35,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
   private InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
+  private SynchronizeIngestedDebtPositionActivity synchronizeIngestedDebtPositionActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -48,6 +51,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     installmentIngestionFlowFileActivity = wfConfig.buildInstallmentIngestionFlowFileActivityStub();
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
     sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
+    synchronizeIngestedDebtPositionActivity = wfConfig.buildSynchronizeIngestedDebtPositionActivityStub();
   }
 
   @Override
@@ -57,14 +61,25 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
 
     log.info("Lock successfully acquired for ingestionFlowFileId {}", ingestionFlowFileId);
     InstallmentIngestionFlowFileResult ingestionResult = processFile(ingestionFlowFileId);
-    boolean success = StringUtils.isEmpty(ingestionResult.getErrorDescription());
+
+    String error = synchronizeIngestedDebtPositionActivity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
+
+    String errorDescription = StringUtils.join(
+        Arrays.asList(StringUtils.isEmpty(ingestionResult.getErrorDescription()) && !StringUtils.isEmpty(error)
+            ? "There were errors during the synchronization of the ingested Debt Position"
+            : ingestionResult.getErrorDescription(),
+          error), ""
+      ).trim();
+
+    errorDescription = StringUtils.isEmpty(errorDescription) ? null : errorDescription;
+    boolean success = errorDescription == null;
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
       IngestionFlowFile.StatusEnum.PROCESSING,
       success
         ? IngestionFlowFile.StatusEnum.COMPLETED
         : IngestionFlowFile.StatusEnum.ERROR,
-      ingestionResult.getErrorDescription(),
+      errorDescription,
       ingestionResult.getDiscardedFileName());
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 

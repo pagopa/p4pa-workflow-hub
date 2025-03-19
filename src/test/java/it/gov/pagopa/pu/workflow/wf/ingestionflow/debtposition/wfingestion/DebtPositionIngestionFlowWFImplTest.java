@@ -4,6 +4,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.InstallmentIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -27,9 +28,11 @@ class DebtPositionIngestionFlowWFImplTest {
   @Mock
   private InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivityMock;
   @Mock
-  private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
+  private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivityMock;
   @Mock
-  private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
+  private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivityMock;
+  @Mock
+  private SynchronizeIngestedDebtPositionActivity synchronizeIngestedDebtPositionActivityMock;
 
   private DebtPositionIngestionFlowWFImpl wf;
 
@@ -43,9 +46,11 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildInstallmentIngestionFlowFileActivityStub())
       .thenReturn(installmentIngestionFlowFileActivityMock);
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildUpdateIngestionFlowStatusActivityStub())
-      .thenReturn(updateIngestionFlowStatusActivity);
+      .thenReturn(updateIngestionFlowStatusActivityMock);
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildSendEmailIngestionFlowActivityStub())
-      .thenReturn(sendEmailIngestionFlowActivity);
+      .thenReturn(sendEmailIngestionFlowActivityMock);
+    Mockito.when(debtPositionIngestionFlowWfConfigMock.buildSynchronizeIngestedDebtPositionActivityStub())
+      .thenReturn(synchronizeIngestedDebtPositionActivityMock);
 
     Mockito.when(applicationContextMock.getBean(DebtPositionIngestionFlowWfConfig.class))
       .thenReturn(debtPositionIngestionFlowWfConfigMock);
@@ -65,6 +70,9 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
+    Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
+      .thenReturn("");
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
 
@@ -72,14 +80,51 @@ class DebtPositionIngestionFlowWFImplTest {
 
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(updateIngestionFlowStatusActivity).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFile.StatusEnum.PROCESSING),
         Mockito.eq(IngestionFlowFile.StatusEnum.COMPLETED),
         Mockito.isNull(),
         Mockito.isNull()
       );
-      Mockito.verify(sendEmailIngestionFlowActivity).sendEmail(ingestionFlowFileId, true);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
+    }
+  }
+
+  @Test
+  void givenErrorsOnSynchronizeIngestedDebtPositionWhenIngestThenKo() {
+    long ingestionFlowFileId = 1L;
+
+    InstallmentIngestionFlowFileResult installmentIngestionFlowFileResult = new InstallmentIngestionFlowFileResult();
+    installmentIngestionFlowFileResult.setProcessedRows(5L);
+    installmentIngestionFlowFileResult.setTotalRows(10L);
+
+    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
+    Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
+
+    Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
+      .thenReturn("\nError on synchronizeIngestedDebtPositionActivity");
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
+
+      wf.ingest(ingestionFlowFileId);
+
+      String errorDescription = """
+        There were errors during the synchronization of the ingested Debt Position
+        Error on synchronizeIngestedDebtPositionActivity
+        """.stripTrailing();
+
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+        ingestionFlowFileId,
+        IngestionFlowFile.StatusEnum.PROCESSING,
+        IngestionFlowFile.StatusEnum.ERROR,
+        errorDescription,
+        null
+      );
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
     }
   }
 
@@ -94,24 +139,31 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenThrow(new RuntimeException("DUMMY"));
 
+    Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
+      .thenReturn("\nError on synchronizeIngestedDebtPositionActivity");
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
 
       wf.ingest(ingestionFlowFileId);
 
+      String errorDescription = """
+        Unexpected error when processing DebtPositionIngestion file: DUMMY
+        Error on synchronizeIngestedDebtPositionActivity
+        """.stripTrailing();
+
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(updateIngestionFlowStatusActivity).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
         ingestionFlowFileId,
         IngestionFlowFile.StatusEnum.PROCESSING,
         IngestionFlowFile.StatusEnum.ERROR,
-        "Unexpected error when processing DebtPositionIngestion file: DUMMY",
+        errorDescription,
         null
       );
-      Mockito.verify(sendEmailIngestionFlowActivity).sendEmail(ingestionFlowFileId, false);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
     }
   }
-
 
   @Test
   void testIngestWithLockRetries() {
@@ -134,14 +186,14 @@ class DebtPositionIngestionFlowWFImplTest {
 
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock, Mockito.times(3)).acquireProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(updateIngestionFlowStatusActivity).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFile.StatusEnum.PROCESSING),
         Mockito.eq(IngestionFlowFile.StatusEnum.COMPLETED),
         Mockito.isNull(),
         Mockito.isNull()
       );
-      Mockito.verify(sendEmailIngestionFlowActivity).sendEmail(ingestionFlowFileId, true);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
     }
   }
 }
