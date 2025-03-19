@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 public class WfExecutionConfigMergeService {
 
@@ -37,8 +39,8 @@ public class WfExecutionConfigMergeService {
   private WfExecutionConfig mergeInner(WfExecutionConfig defaultConfig, WfExecutionConfig wfExecutionConfig) {
     try {
       return objectMapper.readerForUpdating(clone(defaultConfig))
-        .readValue(objectMapper.writeValueAsString(wfExecutionConfig));
-    } catch (JsonProcessingException e) {
+        .readValue(objectMapper.writeValueAsString(wfExecutionConfig), defaultConfig.getClass());
+    } catch (IOException e) {
       throw new IllegalStateException("Cannot merge WfExecutionConfig from class " + wfExecutionConfig.getClass() + " to class " + defaultConfig, e);
     }
   }
