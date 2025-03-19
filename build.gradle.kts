@@ -56,7 +56,7 @@ val protobufJavaVersion = "3.25.5"
 val guavaVersion = "33.4.0-jre"
 val postgresJdbcVersion = "42.7.5"
 
-val activitiesVersion = "1.78.8"
+val activitiesVersion = "1.78.6"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
