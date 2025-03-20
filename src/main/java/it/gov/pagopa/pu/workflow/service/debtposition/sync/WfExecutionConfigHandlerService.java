@@ -7,12 +7,16 @@ import it.gov.pagopa.pu.workflow.model.DebtPositionWorkflowType;
 import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;
 import it.gov.pagopa.pu.workflow.repository.DebtPositionWorkflowTypeRepository;
 import it.gov.pagopa.pu.workflow.repository.WorkflowTypeOrgRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
 
-/** @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1582792753/Scelta+del+Workflow+da+eseguire>Confluence page </a> */
+/**
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1582792753/Scelta+del+Workflow+da+eseguire>Confluence page </a>
+ */
+@Slf4j
 @Service
 public class WfExecutionConfigHandlerService {
 
@@ -26,18 +30,34 @@ public class WfExecutionConfigHandlerService {
     this.mergeService = mergeService;
   }
 
-  public void persistAndConfigure(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters){
-    Optional<DebtPositionWorkflowType> storedExecutionConfig = debtPositionWorkflowTypeRepository.findById(Objects.requireNonNull(debtPositionDTO.getDebtPositionId()));
+  public void persistAndConfigure(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters) {
+    Optional<WfExecutionConfig> storedExecutionConfig = debtPositionWorkflowTypeRepository
+      .findById(Objects.requireNonNull(debtPositionDTO.getDebtPositionId()))
+      .map(DebtPositionWorkflowType::getExecutionConfig);
 
-    if(storedExecutionConfig.isPresent()){
-      wfExecutionParameters.setWfExecutionConfig(storedExecutionConfig.get().getExecutionConfig());
+    if (storedExecutionConfig.isPresent()) {
+      WfExecutionConfig stored = storedExecutionConfig.get();
+      if (wfExecutionParameters.getWfExecutionConfig() == null) {
+        log.info("WfExecutionConfig already persisted for DebtPosition {}, setting them ({})"
+          , debtPositionDTO.getDebtPositionId()
+          , stored.getClass());
+      } else {
+        log.warn("WfExecutionConfig already persisted for DebtPosition {}, setting them ignoring provided input (storedType: {}, providedType: {})"
+          , debtPositionDTO.getDebtPositionId()
+          , stored.getClass()
+          , wfExecutionParameters.getWfExecutionConfig().getClass());
+      }
+      wfExecutionParameters.setWfExecutionConfig(stored);
     } else {
       Optional<WorkflowTypeOrg> workflowTypeOrg = workflowTypeOrgRepository.findById(debtPositionDTO.getDebtPositionTypeOrgId());
       WfExecutionConfig defaultConfig = workflowTypeOrg.map(WorkflowTypeOrg::getDefaultExecutionConfig)
         .orElse(null);
       wfExecutionParameters.setWfExecutionConfig(mergeService.merge(defaultConfig, wfExecutionParameters.getWfExecutionConfig()));
 
-      if(wfExecutionParameters.getWfExecutionConfig()!=null){
+      if (wfExecutionParameters.getWfExecutionConfig() != null) {
+        log.info("Persisting WfExecutionConfig for DebtPosition {} ({})"
+          , debtPositionDTO.getDebtPositionId()
+          , wfExecutionParameters.getWfExecutionConfig().getClass());
         saveWfExecutionConfig(debtPositionDTO, workflowTypeOrg, wfExecutionParameters.getWfExecutionConfig());
       }
     }
