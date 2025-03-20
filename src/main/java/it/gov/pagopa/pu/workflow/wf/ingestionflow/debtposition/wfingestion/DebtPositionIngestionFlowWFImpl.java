@@ -5,6 +5,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.InstallmentIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
@@ -26,13 +27,15 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
   private static final Duration SLEEP_BETWEEN_ACQUIRE_LOCK = Duration.ofSeconds(5);
   /**
    * The lock acquire max attempts before to clear Temporal history.
-   * The threshold is very high ({@link Constants#THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW}), lock acquire is the first activity called, we are not interested on WF history, we will clear it before real limit */
+   * The threshold is very high ({@link Constants#THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW}), lock acquire is the first activity called, we are not interested on WF history, we will clear it before real limit
+   */
   private static final int LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY = 1000;
 
   private IngestionFlowFileProcessingLockerActivity ingestionFlowFileProcessingLockerActivity;
   private InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
+  private SynchronizeIngestedDebtPositionActivity synchronizeIngestedDebtPositionActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -48,6 +51,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     installmentIngestionFlowFileActivity = wfConfig.buildInstallmentIngestionFlowFileActivityStub();
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
     sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
+    synchronizeIngestedDebtPositionActivity = wfConfig.buildSynchronizeIngestedDebtPositionActivityStub();
   }
 
   @Override
@@ -57,14 +61,19 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
 
     log.info("Lock successfully acquired for ingestionFlowFileId {}", ingestionFlowFileId);
     InstallmentIngestionFlowFileResult ingestionResult = processFile(ingestionFlowFileId);
-    boolean success = StringUtils.isEmpty(ingestionResult.getErrorDescription());
+
+    String additionalError
+      = synchronizeIngestedDebtPositionActivity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
+
+    String errorDescription = mergeErrorDescriptions(ingestionResult.getErrorDescription(), additionalError);
+    boolean success = errorDescription == null;
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
       IngestionFlowFile.StatusEnum.PROCESSING,
       success
         ? IngestionFlowFile.StatusEnum.COMPLETED
         : IngestionFlowFile.StatusEnum.ERROR,
-      ingestionResult.getErrorDescription(),
+      errorDescription,
       ingestionResult.getDiscardedFileName());
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
@@ -103,4 +112,14 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     }
     return ingestionResult;
   }
+
+  private String mergeErrorDescriptions(String ingestionResultErrorDescription, String additionalError) {
+    if (StringUtils.isEmpty(additionalError)) {
+      return ingestionResultErrorDescription;
+    } else {
+      return (ingestionResultErrorDescription == null ? "" : ingestionResultErrorDescription + "\n\n") +
+        "There were errors during the synchronization of the ingested Debt Position:" + additionalError;
+    }
+  }
+
 }
