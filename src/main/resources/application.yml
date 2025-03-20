@@ -251,3 +251,5 @@ jwt:
                 IwIDAQAB
                 -----END PUBLIC KEY-----}"
 
+data-cipher:
+  encrypt-psw: "\${CIPHER_DP_SYNC_WF_CONFIG_ENCRYPT_PSW:dpSyncWfConfigEncryptPsw}"
