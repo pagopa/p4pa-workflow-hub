@@ -114,11 +114,13 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
   }
 
   private String mergeErrorDescriptions(String ingestionResultErrorDescription, String additionalError) {
-    if(StringUtils.isEmpty(additionalError)){
+    if (StringUtils.isEmpty(additionalError)) {
       return ingestionResultErrorDescription;
     } else {
-      return (ingestionResultErrorDescription == null ? "" : ingestionResultErrorDescription)
-        + "\n\nThere were errors during the synchronization of the ingested Debt Position:" + additionalError;
+      return (ingestionResultErrorDescription == null || ingestionResultErrorDescription.isEmpty() ? ""
+        : ingestionResultErrorDescription + "\n\n") +
+        "There were errors during the synchronization of the ingested Debt Position:" + additionalError;
     }
   }
+
 }

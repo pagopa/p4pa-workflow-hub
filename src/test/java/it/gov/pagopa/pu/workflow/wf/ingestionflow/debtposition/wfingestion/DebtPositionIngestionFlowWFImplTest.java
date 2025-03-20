@@ -111,8 +111,6 @@ class DebtPositionIngestionFlowWFImplTest {
       wf.ingest(ingestionFlowFileId);
 
       String errorDescription = """
-
-
         There were errors during the synchronization of the ingested Debt Position:
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
