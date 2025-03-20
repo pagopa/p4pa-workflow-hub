@@ -117,8 +117,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     if (StringUtils.isEmpty(additionalError)) {
       return ingestionResultErrorDescription;
     } else {
-      return (ingestionResultErrorDescription == null || ingestionResultErrorDescription.isEmpty() ? ""
-        : ingestionResultErrorDescription + "\n\n") +
+      return (ingestionResultErrorDescription == null ? "" : ingestionResultErrorDescription + "\n\n") +
         "There were errors during the synchronization of the ingested Debt Position:" + additionalError;
     }
   }
