@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca_gpdpreload;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.aca.SynchronizeInstallmentAcaActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWFTest;
@@ -118,8 +119,8 @@ class SynchronizeSyncAcaGpdPreLoadWFTest extends BaseDPSynchronizeWFTest<Synchro
   }
 
   @Override
-  protected void invokeWF(SynchronizeSyncAcaGpdPreLoadWF synchronizeSyncAcaWF, DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
-    synchronizeSyncAcaWF.synchronizeDPSyncAcaGpdPreLoad(debtPosition, paymentEventType);
+  protected void invokeWF(SynchronizeSyncAcaGpdPreLoadWF synchronizeSyncAcaWF, DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
+    synchronizeSyncAcaWF.synchronizeDPSyncAcaGpdPreLoad(debtPosition, paymentEventType, wfExecutionConfig);
   }
 
 }

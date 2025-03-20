@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.model;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -27,7 +27,6 @@ public class WorkflowType extends BaseEntity implements Serializable {
   @NotNull
   private String description;
   @NotNull
-  private String workflowTypeName;
   @JdbcTypeCode(SqlTypes.JSON)
   private WfExecutionConfig defaultExecutionConfig;
 }

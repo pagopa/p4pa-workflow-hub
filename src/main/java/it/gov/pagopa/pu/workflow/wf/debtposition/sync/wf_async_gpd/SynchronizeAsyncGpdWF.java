@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 
@@ -12,5 +13,5 @@ import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 @WorkflowInterface
 public interface SynchronizeAsyncGpdWF {
   @WorkflowMethod
-  void synchronizeDPAsyncGpd(DebtPositionDTO debtPosition, PaymentEventType paymentEventType);
+  void synchronizeDPAsyncGpd(DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig);
 }

@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
-import it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.custom.DebtPositionCustomWfSyncService;
@@ -52,7 +52,7 @@ class DebtPositionCompleteChangeSyncServiceTest {
     String accessToken = "accessToken";
 
     String expectedWfId = "WFID";
-    Mockito.when(genericWfSyncService.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventType), Mockito.same(wfExecutionParameters), Mockito.same(accessToken)))
+    Mockito.when(genericWfSyncService.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventType), Mockito.eq(false), Mockito.same(wfExecutionConfig), Mockito.same(accessToken)))
       .thenReturn(expectedWfId);
 
     // When

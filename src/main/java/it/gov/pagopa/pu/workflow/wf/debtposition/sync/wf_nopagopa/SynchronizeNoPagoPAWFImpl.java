@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_nopagopa;
 
 import io.temporal.spring.boot.WorkflowImpl;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
@@ -17,8 +18,8 @@ public class SynchronizeNoPagoPAWFImpl extends BaseDPSynchronizeWf implements Sy
   public static final String TASK_QUEUE_SYNCHRONIZE_DP_NO_PAGOPA_WF = "DebtPositionSynchronize_NoPagoPA_WF";
 
   @Override
-  public void synchronizeDPNoPagoPA(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
-    synchronizeDebtPosition(debtPosition, paymentEventType);
+  public void synchronizeDPNoPagoPA(DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
+    synchronizeDebtPosition(debtPosition, paymentEventType, wfExecutionConfig);
   }
 
   @Override
@@ -28,7 +29,7 @@ public class SynchronizeNoPagoPAWFImpl extends BaseDPSynchronizeWf implements Sy
   }
 
   @Override
-  protected void callIONotificationActivity(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+  protected void callIONotificationActivity(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
     // Do Nothing
   }
 }

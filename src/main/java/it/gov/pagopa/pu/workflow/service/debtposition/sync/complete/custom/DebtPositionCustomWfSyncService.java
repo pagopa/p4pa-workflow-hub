@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.custom;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import lombok.extern.slf4j.Slf4j;

@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.aca.SynchronizeInstallmentAcaActivity;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
@@ -24,8 +25,8 @@ public class SynchronizeSyncAcaWFImpl extends BaseDPSynchronizeWf implements Syn
   }
 
   @Override
-  public void synchronizeDPSyncAca(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
-    synchronizeDebtPosition(debtPosition, paymentEventType);
+  public void synchronizeDPSyncAca(DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
+    synchronizeDebtPosition(debtPosition, paymentEventType, wfExecutionConfig);
   }
 
   @Override

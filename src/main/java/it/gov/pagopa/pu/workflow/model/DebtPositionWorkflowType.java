@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.model;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;

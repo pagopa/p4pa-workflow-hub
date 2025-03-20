@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 import com.nimbusds.jose.util.Pair;
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
@@ -66,14 +67,14 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
    * For each TO_SYNC installment, it will call {@link #synchronizeInstallment(DebtPositionDTO, InstallmentDTO)} method, publishing an event in case of error.<BR />
    * Next it will call {@link #finalizeDebtPositionSyncStatusActivity}
    */
-  protected void synchronizeDebtPosition(DebtPositionDTO requestedDebtPosition, PaymentEventType paymentEventType) {
+  protected void synchronizeDebtPosition(DebtPositionDTO requestedDebtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     log.info("Synchronizing DebtPosition {} using Activity class {}", debtPositionId, getClass().getSimpleName());
 
     Map<String, IupdSyncStatusUpdateDTO> finalizeStatusRequest = processToSyncInstallments(requestedDebtPosition);
     DebtPositionDTO finalizedDebtPositionDTO = finalizeSyncStatus(requestedDebtPosition, finalizeStatusRequest);
     publishEvent(paymentEventType, finalizedDebtPositionDTO);
-    callIONotificationActivity(requestedDebtPosition, finalizeStatusRequest);
+    callIONotificationActivity(requestedDebtPosition, finalizeStatusRequest, wfExecutionConfig.getIoMessages());
     scheduleExpirationWF(finalizedDebtPositionDTO, debtPositionId);
 
     log.info("DebtPosition synchronized {}", debtPositionId);
@@ -130,11 +131,11 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     }
   }
 
-  protected void callIONotificationActivity(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+  protected void callIONotificationActivity(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     if (!CollectionUtils.isEmpty(iupdSyncStatusUpdateDTOMap)) {
       log.info("Calling notifyIO activity on debtPosition {} (organizationId {}, debtPositionTypeOrgId {})", debtPositionId, requestedDebtPosition.getOrganizationId(), requestedDebtPosition.getDebtPositionTypeOrgId());
-      ioNotificationDebtPositionActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap);
+      ioNotificationDebtPositionActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap, ioMessages);
     } else {
       log.info("Nothing to notifyIO on debtPosition {}", debtPositionId);
     }
