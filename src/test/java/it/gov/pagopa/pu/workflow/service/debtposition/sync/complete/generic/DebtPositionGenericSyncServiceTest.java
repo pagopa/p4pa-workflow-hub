@@ -1,5 +1,7 @@
-package it.gov.pagopa.pu.workflow.service.debtposition.sync.generic;
+package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.generic;
 
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -41,7 +43,7 @@ class DebtPositionGenericSyncServiceTest {
     String accessToken = "ACCESSTOKEN";
     DebtPositionDTO debtPosition = new DebtPositionDTO();
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
-    Boolean massive = Boolean.TRUE;
+    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(true, false, null);
 
     debtPosition.setFlagPagoPaPayment(false);
     String expectedWorkflowId = "WFID";
@@ -49,7 +51,7 @@ class DebtPositionGenericSyncServiceTest {
       .thenReturn(expectedWorkflowId);
 
     // When
-    String result = service.invokeWorkflow(debtPosition, paymentEventType, massive, accessToken);
+    String result = service.invokeWorkflow(debtPosition, paymentEventType, wfExecutionParameters, accessToken);
 
     // Then
     Assertions.assertSame(expectedWorkflowId, result);
@@ -98,9 +100,10 @@ class DebtPositionGenericSyncServiceTest {
       Mockito.when(expectedWfClientInvoke.apply(Mockito.same(debtPosition), Mockito.same(paymentEventType)))
         .thenReturn(expectedWorkflowId);
     }
+    GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
 
     // When
-    String result = service.invokeWorkflow(debtPosition, paymentEventType, massive, accessToken);
+    String result = service.invokeWorkflow(debtPosition, paymentEventType, new WfExecutionParameters(massive, false, wfExecutionConfig), accessToken);
 
     // Then
     Assertions.assertSame(expectedWorkflowId, result);

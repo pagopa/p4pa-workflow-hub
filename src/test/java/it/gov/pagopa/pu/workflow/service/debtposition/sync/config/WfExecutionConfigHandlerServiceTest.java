@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.service.debtposition.sync;
+package it.gov.pagopa.pu.workflow.service.debtposition.sync.config;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
