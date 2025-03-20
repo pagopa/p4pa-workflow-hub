@@ -50,11 +50,18 @@ class WfExecutionConfigHandlerServiceTest {
   }
 
   @Test
-  void givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnId(){
+  void givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnIt(){
+    givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnId(null);
+  }
+  @Test
+  void givenAlreadyPersistedWfExecutionConfigAndProvidedNewOneWhenPersistAndConfigureThenIgnoreInputAndReturnStored(){
+    givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnId(new GenericWfExecutionConfig());
+  }
+  void givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnId(WfExecutionConfig providedExecutionConfig){
     // Given
     DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
     debtPositionDTO.setDebtPositionId(1L);
-    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(true, false, new GenericWfExecutionConfig());
+    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(true, false, providedExecutionConfig);
 
     WfExecutionConfig expectedResult = Mockito.mock(WfExecutionConfig.class);
     DebtPositionWorkflowType storedDpWfConfig = new DebtPositionWorkflowType();
@@ -136,5 +143,28 @@ class WfExecutionConfigHandlerServiceTest {
     Assertions.assertSame(expectedResult, wfExecutionParameters.getWfExecutionConfig());
     Mockito.verify(debtPositionWorkflowTypeRepositoryMock)
       .save(expectedStored);
+  }
+
+  @Test
+  void givenNoWfExecutionConfigWhenPersistAndConfigureThenDoNothing(){
+    // Given
+    DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
+    debtPositionDTO.setDebtPositionId(1L);
+    debtPositionDTO.setDebtPositionTypeOrgId(2L);
+
+    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(true, false, null);
+
+    Mockito.when(debtPositionWorkflowTypeRepositoryMock.findById(1L))
+      .thenReturn(Optional.empty());
+    Mockito.when(workflowTypeOrgRepositoryMock.findById(2L))
+      .thenReturn(Optional.empty());
+    Mockito.when(mergeServiceMock.merge(Mockito.isNull(), Mockito.isNull()))
+      .thenReturn(null);
+
+    // When
+    service.persistAndConfigure(debtPositionDTO, wfExecutionParameters);
+
+    // Then
+    Assertions.assertNull(wfExecutionParameters.getWfExecutionConfig());
   }
 }
