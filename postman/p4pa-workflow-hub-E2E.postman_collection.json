@@ -375,7 +375,7 @@
 											"pm=instrumentPmMethod(pm);\r",
 											"\r",
 											"pm.test(\"Payhub - 02_check_dp_expiration - Responses with 200 or 409\", function () {\r",
-											"    pm.expect(pm.response.code).to.be.oneOf([200,500]);\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200,409]);\r",
 											"});\r",
 											"\r",
 											"pm.test(`Payhub - 02_check_dp_expiration - Verify response body`, function () {\r",
