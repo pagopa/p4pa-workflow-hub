@@ -136,8 +136,6 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionToSync();
     debtPosition.getPaymentOptions().forEach(po -> po.getInstallments().forEach(i -> i.setDueDate(null)));
-    GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
-    wfExecutionConfig.setIoMessages(new GenericWfExecutionConfig.IONotificationBaseOpsMessages());
 
     if(isSyncErrorPossible()) {
       configureIUDSyncKo(debtPosition, SYNC_IUD, new RuntimeException("Error"));
@@ -147,7 +145,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     }
 
     // When, Then
-    invokeWF(wf, debtPosition, null, wfExecutionConfig);
+    invokeWF(wf, debtPosition, null, null);
 
     if(isSyncErrorPossible()){
       Mockito.verify(publishPaymentEventActivityMock)
