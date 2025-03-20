@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.service.debtposition.sync.generic;
+package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.generic;
 
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.workflow.connector.organization.service.BrokerService;

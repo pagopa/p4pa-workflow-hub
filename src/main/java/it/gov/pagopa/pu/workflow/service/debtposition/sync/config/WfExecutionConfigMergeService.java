@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.service.debtposition.sync;
+package it.gov.pagopa.pu.workflow.service.debtposition.sync.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
