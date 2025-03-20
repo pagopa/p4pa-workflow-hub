@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.service.debtposition;
 
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -46,17 +47,17 @@ class DebtPositionServiceTest {
     String accessToken = "ACCESSTOKEN";
     DebtPositionDTO debtPosition = new DebtPositionDTO();
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
-    Boolean massive = Boolean.TRUE;
+    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters();
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
       .build();
 
-    Mockito.when(debtPositionSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(massive), Mockito.same(accessToken)))
+    Mockito.when(debtPositionSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(wfExecutionParameters), Mockito.same(accessToken)))
       .thenReturn("WFID");
 
     // When
-    WorkflowCreatedDTO result = service.syncDebtPosition(debtPosition, paymentEventType, massive, accessToken);
+    WorkflowCreatedDTO result = service.syncDebtPosition(debtPosition, paymentEventType, wfExecutionParameters, accessToken);
 
     // Then
     Assertions.assertEquals(expectedResult, result);

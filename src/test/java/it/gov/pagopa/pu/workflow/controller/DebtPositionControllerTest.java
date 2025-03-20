@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.JsonConfig;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -44,13 +46,19 @@ class DebtPositionControllerTest {
     String workflowId = "workflow-1";
     String accessToken = "ACCESSTOKEN";
     DebtPositionDTO debtPositionRequestDTO = buildDebtPositionDTO();
-    SyncDebtPositionRequestDTO request = new SyncDebtPositionRequestDTO(debtPositionRequestDTO, null);
+    GenericWfExecutionConfig executionConfig = GenericWfExecutionConfig.builder()
+      .ioMessages(GenericWfExecutionConfig.IONotificationBaseMessages.builder()
+        .created("CREATED")
+        .updated("UPDATED")
+        .build())
+      .build();
+    SyncDebtPositionRequestDTO request = new SyncDebtPositionRequestDTO(debtPositionRequestDTO, executionConfig);
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
     WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.syncDebtPosition(debtPositionRequestDTO, paymentEventType, true, accessToken))
+    Mockito.when(service.syncDebtPosition(debtPositionRequestDTO, paymentEventType, new WfExecutionParameters(true, false, executionConfig), accessToken))
       .thenReturn(expected);
 
     try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -61,6 +69,7 @@ class DebtPositionControllerTest {
           post("/workflowhub/workflow/debt-position/sync")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .param("massive", "true")
+            .param("partialChange", "false")
             .param("paymentEventType", paymentEventType.name())
             .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())

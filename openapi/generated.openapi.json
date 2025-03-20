@@ -1206,9 +1206,18 @@
         }
       },
       "WfExecutionConfig" : {
-        "type" : "object"
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "workflowTypeName"
+        },
+        "properties" : {
+          "workflowTypeName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "workflowTypeName" ]
       },
-      "WorkflowType" : {
+      "DebtPositionWorkflowType" : {
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1222,24 +1231,22 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
-          "workflowTypeId" : {
+          "debtPositionId" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "description" : {
-            "type" : "string"
+          "workflowTypeOrgId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "workflowTypeName" : {
-            "type" : "string"
-          },
-          "defaultExecutionConfig" : {
+          "executionConfig" : {
             "$ref" : "#/components/schemas/WfExecutionConfig"
           },
           "_links" : {
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "description", "workflowTypeName" ]
+        "required" : [ "debtPositionId" ]
       },
       "PageMetadata" : {
         "type" : "object",
@@ -1261,67 +1268,6 @@
             "format" : "int64"
           }
         }
-      },
-      "PagedModelWorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "workflowTypes" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/WorkflowType"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "DebtPositionWorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateOperatorExternalId" : {
-            "type" : "string"
-          },
-          "debtPositionWorkflowTypeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "debtPositionId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "workflowTypeOrgId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "workflowId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "executionConfig" : {
-            "$ref" : "#/components/schemas/WfExecutionConfig"
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        },
-        "required" : [ "debtPositionId", "workflowId" ]
       },
       "PagedModelDebtPositionWorkflowType" : {
         "type" : "object",
@@ -1359,15 +1305,11 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
-          "workflowTypeOrgId" : {
+          "debtPositionTypeOrgId" : {
             "type" : "integer",
             "format" : "int64"
           },
           "workflowTypeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "debtPositionTypeOrgId" : {
             "type" : "integer",
             "format" : "int64"
           },
@@ -1402,6 +1344,61 @@
           }
         }
       },
+      "WorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "workflowTypeId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "workflowTypeName" : {
+            "type" : "string"
+          },
+          "defaultExecutionConfig" : {
+            "$ref" : "#/components/schemas/WfExecutionConfig"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        },
+        "required" : [ "description", "workflowTypeName" ]
+      },
+      "PagedModelWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypes" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowType"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
       "DebtPositionWorkflowTypeRequestBody" : {
         "type" : "object",
         "properties" : {
@@ -1416,10 +1413,6 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
-          "debtPositionWorkflowTypeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "debtPositionId" : {
             "type" : "integer",
             "format" : "int64"
@@ -1428,15 +1421,11 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "workflowId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "executionConfig" : {
             "$ref" : "#/components/schemas/WfExecutionConfig"
           }
         },
-        "required" : [ "debtPositionId", "workflowId" ]
+        "required" : [ "debtPositionId" ]
       },
       "WorkflowTypeOrgRequestBody" : {
         "type" : "object",
@@ -1452,15 +1441,11 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
-          "workflowTypeOrgId" : {
+          "debtPositionTypeOrgId" : {
             "type" : "integer",
             "format" : "int64"
           },
           "workflowTypeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "debtPositionTypeOrgId" : {
             "type" : "integer",
             "format" : "int64"
           },

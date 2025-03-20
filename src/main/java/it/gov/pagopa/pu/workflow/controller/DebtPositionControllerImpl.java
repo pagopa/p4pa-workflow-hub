@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.SyncDebtPositionRequestDTO;
@@ -10,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -25,11 +24,20 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
 
   @Override
   public ResponseEntity<WorkflowCreatedDTO> syncDebtPosition(SyncDebtPositionRequestDTO syncDebtPositionRequest, Boolean massive, Boolean partialChange, PaymentEventType paymentEventType) {
-    log.info("Starting workflow to synchronize DebtPosition: {} (massive context: {})", syncDebtPositionRequest.getDebtPosition().getDebtPositionId(), massive);
+    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(
+      Boolean.TRUE.equals(massive),
+      Boolean.TRUE.equals(partialChange),
+      syncDebtPositionRequest.getExecutionConfig());
+
+    log.info("Starting workflow to synchronize DebtPosition: {} (massive: {}, partial: {})",
+      syncDebtPositionRequest.getDebtPosition().getDebtPositionId(),
+      wfExecutionParameters.isMassive(),
+      wfExecutionParameters.isPartialChange());
+
     return ResponseEntity.ok(
       service.syncDebtPosition(
         syncDebtPositionRequest.getDebtPosition(), paymentEventType,
-        Optional.ofNullable(massive).orElse(false),
+        wfExecutionParameters,
         SecurityUtils.getAccessToken()));
   }
 

@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.SendDebtPositionIONotificationActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
@@ -37,7 +37,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
   @Mock
   protected FinalizeDebtPositionSyncStatusActivity finalizeDebtPositionSyncStatusActivityMock;
   @Mock
-  protected SendDebtPositionIONotificationActivity sendDebtPositionIONotificationActivityMock;
+  protected IONotificationDebtPositionActivity ioNotificationDebtPositionActivityMock;
   @Mock
   protected PublishPaymentEventActivity publishPaymentEventActivityMock;
   @Mock
@@ -54,8 +54,8 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     Mockito.when(wfConfigMock.buildFinalizeDebtPositionSyncStatusActivityStub())
       .thenReturn(finalizeDebtPositionSyncStatusActivityMock);
-    Mockito.when(wfConfigMock.buildSendDebtPositionIONotificationActivityStub())
-      .thenReturn(sendDebtPositionIONotificationActivityMock);
+    Mockito.when(wfConfigMock.buildIONotificationDebtPositionActivityStub())
+      .thenReturn(ioNotificationDebtPositionActivityMock);
     Mockito.when(wfConfigMock.buildPublishPaymentEventActivityStub())
       .thenReturn(publishPaymentEventActivityMock);
     Mockito.when(wfConfigMock.buildCancelCheckDpExpirationScheduleActivityStub())
@@ -81,7 +81,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
   protected final void verifyNoMoreInteractionsBaseClass() {
     Mockito.verifyNoMoreInteractions(
       finalizeDebtPositionSyncStatusActivityMock,
-      sendDebtPositionIONotificationActivityMock,
+      ioNotificationDebtPositionActivityMock,
       publishPaymentEventActivityMock,
       cancelCheckDpExpirationScheduleActivityMock,
       scheduleCheckDpExpirationActivityMock);
@@ -112,7 +112,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     // Then
     if(isNotifyIoInvolved()) {
-      Mockito.verify(sendDebtPositionIONotificationActivityMock)
+      Mockito.verify(ioNotificationDebtPositionActivityMock)
         .sendIoNotification(Mockito.same(debtPositionRequested), Mockito.eq(iudSyncFinalizationMap));
     }
     Mockito.verify(publishPaymentEventActivityMock)

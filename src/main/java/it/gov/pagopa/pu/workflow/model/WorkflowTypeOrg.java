@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.workflow.model;
 
-import it.gov.pagopa.pu.workflow.model.executionconfig.WfExecutionConfig;
-import jakarta.persistence.*;
+import it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,13 +23,10 @@ import java.io.Serializable;
 public class WorkflowTypeOrg extends BaseEntity implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "workflow_type_org_generator")
-  @SequenceGenerator(name = "workflow_type_org_generator", sequenceName = "workflow_type_org_seq", allocationSize = 1)
-  private Long workflowTypeOrgId;
-  @NotNull
-  private Long workflowTypeId;
   @NotNull
   private Long debtPositionTypeOrgId;
+  @NotNull
+  private Long workflowTypeId;
   @JdbcTypeCode(SqlTypes.JSON)
   private WfExecutionConfig defaultExecutionConfig;
 }

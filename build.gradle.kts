@@ -55,8 +55,9 @@ val temporalVersion = "1.27.1"
 val protobufJavaVersion = "3.25.5"
 val guavaVersion = "33.4.0-jre"
 val postgresJdbcVersion = "42.7.5"
+val podamVersion = "8.0.2.RELEASE"
 
-val activitiesVersion = "1.78.10"
+val activitiesVersion = "1.78.11"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -109,6 +110,7 @@ dependencies {
   testImplementation("org.projectlombok:lombok")
   testImplementation("io.temporal:temporal-testing")
   testImplementation("com.h2database:h2")
+  testImplementation("uk.co.jemos.podam:podam:$podamVersion")
 }
 
 tasks.withType<Test> {
@@ -186,7 +188,7 @@ openApiGenerate {
   typeMappings.set(mapOf(
     "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
     "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum",
-    "WfExecutionConfig" to "it.gov.pagopa.pu.workflow.model.executionconfig.WfExecutionConfig"
+    "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",

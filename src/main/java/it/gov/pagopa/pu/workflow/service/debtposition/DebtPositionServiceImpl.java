@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.service.debtposition;
 
+import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -21,9 +22,9 @@ public class DebtPositionServiceImpl implements DebtPositionService {
   }
 
   @Override
-  public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, boolean massive, String accessToken) {
-    log.debug("Starting workflow to sync DebtPosition: {} (massive context: {})", debtPositionDTO.getDebtPositionId(), massive);
-    String workflowId = debtPositionSyncService.invokeWorkflow(debtPositionDTO, paymentEventType, massive, accessToken);
+  public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, WfExecutionParameters wfExecutionParameters, String accessToken) {
+    log.debug("Starting workflow to sync DebtPosition: {} (massive: {}, partial: {})", debtPositionDTO.getDebtPositionId(), wfExecutionParameters.isMassive(), wfExecutionParameters.isPartialChange());
+    String workflowId = debtPositionSyncService.invokeWorkflow(debtPositionDTO, paymentEventType, wfExecutionParameters, accessToken);
 
     return buildWorkflowCreatedDTO(workflowId);
   }
