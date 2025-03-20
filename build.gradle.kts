@@ -57,7 +57,7 @@ val guavaVersion = "33.4.0-jre"
 val postgresJdbcVersion = "42.7.5"
 val podamVersion = "8.0.2.RELEASE"
 
-val activitiesVersion = "1.78.13"
+val activitiesVersion = "1.79.0"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -188,7 +188,7 @@ openApiGenerate {
   typeMappings.set(mapOf(
     "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
     "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.FlowFileTypeEnum",
-    "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig"
+    "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",

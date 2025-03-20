@@ -2,7 +2,8 @@ package it.gov.pagopa.pu.workflow.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.JsonConfig;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -47,9 +48,9 @@ class DebtPositionControllerTest {
     String accessToken = "ACCESSTOKEN";
     DebtPositionDTO debtPositionRequestDTO = buildDebtPositionDTO();
     GenericWfExecutionConfig executionConfig = GenericWfExecutionConfig.builder()
-      .ioMessages(GenericWfExecutionConfig.IONotificationBaseMessages.builder()
-        .created("CREATED")
-        .updated("UPDATED")
+      .ioMessages(GenericWfExecutionConfig.IONotificationBaseOpsMessages.builder()
+        .created(new IONotificationMessage("CREATED_SUBJECT", "CREATED_MESSAGE"))
+        .updated(new IONotificationMessage("UPDATED_SUBJECT", "UPDATED_MESSAGE"))
         .build())
       .build();
     SyncDebtPositionRequestDTO request = new SyncDebtPositionRequestDTO(debtPositionRequestDTO, executionConfig);

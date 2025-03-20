@@ -1,12 +1,13 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.sync.config;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
-import it.gov.pagopa.payhub.activities.dto.debtposition.WfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import it.gov.pagopa.pu.workflow.config.JsonConfig;
 import it.gov.pagopa.pu.workflow.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class WfExecutionConfigMergeServiceTest {
 
@@ -49,7 +50,7 @@ class WfExecutionConfigMergeServiceTest {
   void givenNotExpectedOverrideTypeWhenMergeThenReturnDefaultClone(){
     // Given
     GenericWfExecutionConfig defaultConfig = TestUtils.getPodamFactory().manufacturePojo(GenericWfExecutionConfig.class);
-    WfExecutionConfig unexpectedConfigType = Mockito.mock(WfExecutionConfig.class);
+    WfExecutionConfig unexpectedConfigType = TestUtils.getPodamFactory().manufacturePojo(FineWfExecutionConfig.class);
 
     // When
     WfExecutionConfig result = service.merge(defaultConfig, unexpectedConfigType);
@@ -68,8 +69,9 @@ class WfExecutionConfigMergeServiceTest {
     GenericWfExecutionConfig defaultConfig = TestUtils.getPodamFactory().manufacturePojo(GenericWfExecutionConfig.class);
 
     GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
-    wfExecutionConfig.setIoMessages(GenericWfExecutionConfig.IONotificationBaseMessages.builder()
-        .created("OVERRIDE")
+    IONotificationMessage createdMessageOverride = new IONotificationMessage(null, "OVERRIDE_MESSAGE");
+    wfExecutionConfig.setIoMessages(GenericWfExecutionConfig.IONotificationBaseOpsMessages.builder()
+        .created(createdMessageOverride)
       .build());
 
     // When
@@ -81,8 +83,20 @@ class WfExecutionConfigMergeServiceTest {
     GenericWfExecutionConfig castedResult = (GenericWfExecutionConfig) result;
     Assertions.assertNotSame(defaultConfig.getIoMessages(), castedResult.getIoMessages());
 
-    Assertions.assertEquals("OVERRIDE", castedResult.getIoMessages().getCreated());
+    Assertions.assertEquals(new IONotificationMessage(defaultConfig.getIoMessages().getCreated().getSubject(), createdMessageOverride.getMessage()), castedResult.getIoMessages().getCreated());
     Assertions.assertEquals(defaultConfig.getIoMessages().getUpdated(), castedResult.getIoMessages().getUpdated());
     Assertions.assertEquals(defaultConfig.getIoMessages().getDeleted(), castedResult.getIoMessages().getDeleted());
+  }
+
+  @Test
+  void givenNoDefaultAndNotExpectedDefaultWhenMergeThenReturnNull(){
+    // Given
+    WfExecutionConfig unexpectedConfigType = TestUtils.getPodamFactory().manufacturePojo(FineWfExecutionConfig.class);
+
+    // When
+    WfExecutionConfig result = service.merge(null, unexpectedConfigType);
+
+    // Then
+    Assertions.assertNull(result);
   }
 }

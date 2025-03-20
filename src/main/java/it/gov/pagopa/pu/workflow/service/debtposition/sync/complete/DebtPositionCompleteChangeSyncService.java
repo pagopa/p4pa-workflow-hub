@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.custom.DebtPositionCustomWfSyncService;
@@ -25,7 +25,7 @@ public class DebtPositionCompleteChangeSyncService {
     log.debug("Requested complete change on debtPosition {} (paymentEventType {})", debtPositionDTO.getDebtPositionId(), paymentEventType);
 
     if(wfExecutionParameters.getWfExecutionConfig() == null || wfExecutionParameters.getWfExecutionConfig() instanceof GenericWfExecutionConfig) {
-      return genericWfSyncService.invokeWorkflow(debtPositionDTO, paymentEventType, wfExecutionParameters, accessToken);
+      return genericWfSyncService.invokeWorkflow(debtPositionDTO, paymentEventType, wfExecutionParameters.isMassive(), (GenericWfExecutionConfig)wfExecutionParameters.getWfExecutionConfig(), accessToken);
     } else {
       return customWfSyncService.invokeWorkflow(debtPositionDTO, paymentEventType, wfExecutionParameters);
     }

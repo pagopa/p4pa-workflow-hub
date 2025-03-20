@@ -1,11 +1,12 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.generic;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.payhub.activities.dto.debtposition.GenericWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.SynchronizeDebtPositionWfClient;
+import org.apache.commons.lang3.function.TriFunction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.function.BiFunction;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionGenericSyncServiceTest {
@@ -43,15 +42,15 @@ class DebtPositionGenericSyncServiceTest {
     String accessToken = "ACCESSTOKEN";
     DebtPositionDTO debtPosition = new DebtPositionDTO();
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
-    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(true, false, null);
+    GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
 
     debtPosition.setFlagPagoPaPayment(false);
     String expectedWorkflowId = "WFID";
-    Mockito.when(wfClientMock.synchronizeNoPagoPADP(Mockito.same(debtPosition), Mockito.same(paymentEventType)))
+    Mockito.when(wfClientMock.synchronizeNoPagoPADP(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(wfExecutionConfig)))
       .thenReturn(expectedWorkflowId);
 
     // When
-    String result = service.invokeWorkflow(debtPosition, paymentEventType, wfExecutionParameters, accessToken);
+    String result = service.invokeWorkflow(debtPosition, paymentEventType, false, wfExecutionConfig, accessToken);
 
     // Then
     Assertions.assertSame(expectedWorkflowId, result);
@@ -82,13 +81,14 @@ class DebtPositionGenericSyncServiceTest {
     testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.ASYNC_GPD, true, null);
   }
 
-  private void testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum interactionModel, boolean massive, BiFunction<DebtPositionDTO, PaymentEventType, String> expectedWfClientInvoke) {
+  private void testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum interactionModel, boolean massive, TriFunction<DebtPositionDTO, PaymentEventType, GenericWfExecutionConfig, String> expectedWfClientInvoke) {
     // Given
     String accessToken = "ACCESSTOKEN";
     long organizationId = 1L;
     DebtPositionDTO debtPosition = new DebtPositionDTO();
     debtPosition.setOrganizationId(organizationId);
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
 
     Mockito.when(interactionModelRetrieverServiceMock.retrieveInteractionModel(organizationId, accessToken))
       .thenReturn(interactionModel);
@@ -97,13 +97,12 @@ class DebtPositionGenericSyncServiceTest {
     String expectedWorkflowId = null;
     if (expectedWfClientInvoke != null) {
       expectedWorkflowId = "WFID";
-      Mockito.when(expectedWfClientInvoke.apply(Mockito.same(debtPosition), Mockito.same(paymentEventType)))
+      Mockito.when(expectedWfClientInvoke.apply(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(wfExecutionConfig)))
         .thenReturn(expectedWorkflowId);
     }
-    GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
 
     // When
-    String result = service.invokeWorkflow(debtPosition, paymentEventType, new WfExecutionParameters(massive, false, wfExecutionConfig), accessToken);
+    String result = service.invokeWorkflow(debtPosition, paymentEventType, massive, wfExecutionConfig, accessToken);
 
     // Then
     Assertions.assertSame(expectedWorkflowId, result);

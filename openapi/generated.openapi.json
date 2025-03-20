@@ -1205,6 +1205,124 @@
           }
         }
       },
+      "WorkflowTypeOrg" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "debtPositionTypeOrgId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "workflowTypeId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "defaultExecutionConfig" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        },
+        "required" : [ "debtPositionTypeOrgId", "workflowTypeId" ]
+      },
+      "FineWfExecutionConfig" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/WfExecutionConfig"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "discountDays" : {
+              "type" : "integer",
+              "format" : "int64"
+            },
+            "expirationDays" : {
+              "type" : "integer",
+              "format" : "int64"
+            },
+            "ioMessages" : {
+              "$ref" : "#/components/schemas/IONotificationFineWfMessages"
+            }
+          }
+        } ]
+      },
+      "IONotificationFineWfMessages" : {
+        "type" : "object",
+        "properties" : {
+          "notified" : {
+            "$ref" : "#/components/schemas/IONotificationMessage"
+          },
+          "reductionExpired" : {
+            "$ref" : "#/components/schemas/IONotificationMessage"
+          }
+        }
+      },
+      "IONotificationMessage" : {
+        "type" : "object",
+        "properties" : {
+          "subject" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "PagedModelWorkflowTypeOrg" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypeOrgs" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
       "WfExecutionConfig" : {
         "type" : "object",
         "discriminator" : {
@@ -1212,10 +1330,10 @@
         },
         "properties" : {
           "workflowTypeName" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "fineWf" ]
           }
-        },
-        "required" : [ "workflowTypeName" ]
+        }
       },
       "DebtPositionWorkflowType" : {
         "type" : "object",
@@ -1240,34 +1358,15 @@
             "format" : "int64"
           },
           "executionConfig" : {
-            "$ref" : "#/components/schemas/WfExecutionConfig"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
           },
           "_links" : {
             "$ref" : "#/components/schemas/Links"
           }
         },
         "required" : [ "debtPositionId" ]
-      },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
       },
       "PagedModelDebtPositionWorkflowType" : {
         "type" : "object",
@@ -1279,59 +1378,6 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/DebtPositionWorkflowType"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "WorkflowTypeOrg" : {
-        "type" : "object",
-        "properties" : {
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateOperatorExternalId" : {
-            "type" : "string"
-          },
-          "debtPositionTypeOrgId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "workflowTypeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "defaultExecutionConfig" : {
-            "$ref" : "#/components/schemas/WfExecutionConfig"
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        },
-        "required" : [ "debtPositionTypeOrgId", "workflowTypeId" ]
-      },
-      "PagedModelWorkflowTypeOrg" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "workflowTypeOrgs" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
                 }
               }
             }
@@ -1369,7 +1415,9 @@
             "type" : "string"
           },
           "defaultExecutionConfig" : {
-            "$ref" : "#/components/schemas/WfExecutionConfig"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
           },
           "_links" : {
             "$ref" : "#/components/schemas/Links"
@@ -1422,7 +1470,9 @@
             "format" : "int64"
           },
           "executionConfig" : {
-            "$ref" : "#/components/schemas/WfExecutionConfig"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
           }
         },
         "required" : [ "debtPositionId" ]
@@ -1450,7 +1500,9 @@
             "format" : "int64"
           },
           "defaultExecutionConfig" : {
-            "$ref" : "#/components/schemas/WfExecutionConfig"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
           }
         },
         "required" : [ "debtPositionTypeOrgId", "workflowTypeId" ]
@@ -1480,7 +1532,9 @@
             "type" : "string"
           },
           "defaultExecutionConfig" : {
-            "$ref" : "#/components/schemas/WfExecutionConfig"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
           }
         },
         "required" : [ "description", "workflowTypeName" ]
@@ -1750,7 +1804,9 @@
             "$ref" : "#/components/schemas/DebtPositionDTO"
           },
           "executionConfig" : {
-            "$ref" : "#/components/schemas/WfExecutionConfig"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
           }
         },
         "required" : [ "debtPosition" ]

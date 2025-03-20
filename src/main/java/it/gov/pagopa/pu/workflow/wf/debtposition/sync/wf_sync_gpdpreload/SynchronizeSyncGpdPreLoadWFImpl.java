@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_gpdpreload;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
@@ -24,8 +25,8 @@ public class SynchronizeSyncGpdPreLoadWFImpl extends BaseDPSynchronizeWf impleme
   }
 
   @Override
-  public void synchronizeDPSyncGpdPreLoad(DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
-    synchronizeDebtPosition(debtPosition, paymentEventType);
+  public void synchronizeDPSyncGpdPreLoad(DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
+    synchronizeDebtPosition(debtPosition, paymentEventType, wfExecutionConfig);
   }
 
   @Override

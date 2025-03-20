@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_nopagopa;
 
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWFTest;
@@ -38,8 +39,8 @@ class SynchronizeNoPagoPAWFTest extends BaseDPSynchronizeWFTest<SynchronizeNoPag
   }
 
   @Override
-  protected void invokeWF(SynchronizeNoPagoPAWF wf, DebtPositionDTO debtPosition, PaymentEventType paymentEventType) {
-    wf.synchronizeDPNoPagoPA(debtPosition, paymentEventType);
+  protected void invokeWF(SynchronizeNoPagoPAWF wf, DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
+    wf.synchronizeDPNoPagoPA(debtPosition, paymentEventType, wfExecutionConfig);
   }
 
 }

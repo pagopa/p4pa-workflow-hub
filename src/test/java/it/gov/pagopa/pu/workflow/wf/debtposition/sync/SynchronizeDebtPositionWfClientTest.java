@@ -1,5 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 
+import io.temporal.workflow.Functions;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
@@ -15,7 +17,7 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca_gpdpreload.Syn
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca_gpdpreload.SynchronizeSyncAcaGpdPreLoadWFImpl;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_gpdpreload.SynchronizeSyncGpdPreLoadWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_gpdpreload.SynchronizeSyncGpdPreLoadWFImpl;
-import org.apache.logging.log4j.util.TriConsumer;
+import org.apache.commons.lang3.function.TriFunction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +26,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.function.BiFunction;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 
@@ -104,13 +104,15 @@ class SynchronizeDebtPositionWfClientTest {
   private <T> void testInvokeWF(
     String taskQueue,
     Class<T> wfInterfaceClass,
-    BiFunction<DebtPositionDTO, PaymentEventType, String> clientInvoke,
-    TriConsumer<T, DebtPositionDTO, PaymentEventType> wfInvokeVerifier) {
+    TriFunction<DebtPositionDTO, PaymentEventType, GenericWfExecutionConfig, String> clientInvoke,
+    Functions.Proc4<T, DebtPositionDTO, PaymentEventType, GenericWfExecutionConfig> wfInvokeVerifier) {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
     debtPosition.setDebtPositionId(1L);
     String expectedWorkflowId = taskQueue+"-1";
     PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    GenericWfExecutionConfig genericWfExecutionConfig = new GenericWfExecutionConfig();
+    genericWfExecutionConfig.setIoMessages(new GenericWfExecutionConfig.IONotificationBaseOpsMessages());
 
     T wf = Mockito.mock(wfInterfaceClass);
 
@@ -121,10 +123,10 @@ class SynchronizeDebtPositionWfClientTest {
       .thenReturn(wf);
 
     // When
-    String workflowId = clientInvoke.apply(debtPosition, paymentEventType);
+    String workflowId = clientInvoke.apply(debtPosition, paymentEventType, genericWfExecutionConfig);
 
     // Then
     Assertions.assertEquals(expectedWorkflowId, workflowId);
-    wfInvokeVerifier.accept(Mockito.verify(wf), debtPosition, paymentEventType);
+    wfInvokeVerifier.apply(Mockito.verify(wf), debtPosition, paymentEventType, genericWfExecutionConfig);
   }
 }
