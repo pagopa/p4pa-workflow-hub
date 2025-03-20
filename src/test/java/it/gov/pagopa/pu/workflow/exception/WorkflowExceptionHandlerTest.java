@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.config.JsonConfig;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -102,6 +105,16 @@ class WorkflowExceptionHandlerTest {
   }
 
   @Test
+  void handleWorkflowExecutionAlreadyStarted() throws Exception {
+    doThrow(new WorkflowExecutionAlreadyStarted(Mockito.mock(WorkflowExecution.class), null, null)).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isConflict())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_CONFLICT"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("workflowId='null', runId='null"));
+  }
+
+  @Test
   void handleNotFoundWorkflowError() throws Exception {
     doThrow(new WorkflowNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
@@ -109,7 +122,6 @@ class WorkflowExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.status().isNotFound())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
-
   }
 
   @Test
@@ -120,7 +132,6 @@ class WorkflowExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
-
   }
 
   @Test
@@ -131,7 +142,6 @@ class WorkflowExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
-
   }
 
   @Test
@@ -140,7 +150,6 @@ class WorkflowExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Required request parameter 'data' for method parameter type String is not present"));
-
   }
 
   @Test
