@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.workflow.model.DebtPositionWorkflowType;
 import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;
 import it.gov.pagopa.pu.workflow.repository.DebtPositionWorkflowTypeRepository;
 import it.gov.pagopa.pu.workflow.repository.WorkflowTypeOrgRepository;
+import it.gov.pagopa.pu.workflow.service.DataCipherService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,8 @@ import java.util.Optional;
 class WfExecutionConfigHandlerServiceTest {
 
   @Mock
+  private DataCipherService dataCipherServiceMock;
+  @Mock
   private DebtPositionWorkflowTypeRepository debtPositionWorkflowTypeRepositoryMock;
   @Mock
   private WorkflowTypeOrgRepository workflowTypeOrgRepositoryMock;
@@ -34,6 +37,7 @@ class WfExecutionConfigHandlerServiceTest {
   @BeforeEach
   void init(){
     service = new WfExecutionConfigHandlerService(
+      dataCipherServiceMock,
       debtPositionWorkflowTypeRepositoryMock,
       workflowTypeOrgRepositoryMock,
       mergeServiceMock
@@ -51,24 +55,27 @@ class WfExecutionConfigHandlerServiceTest {
 
   @Test
   void givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnIt(){
-    givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnId(null);
+    givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnIt(null);
   }
   @Test
   void givenAlreadyPersistedWfExecutionConfigAndProvidedNewOneWhenPersistAndConfigureThenIgnoreInputAndReturnStored(){
-    givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnId(new GenericWfExecutionConfig());
+    givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnIt(new GenericWfExecutionConfig());
   }
-  void givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnId(WfExecutionConfig providedExecutionConfig){
+  void givenAlreadyPersistedWfExecutionConfigWhenPersistAndConfigureThenReturnIt(WfExecutionConfig providedExecutionConfig){
     // Given
     DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
     debtPositionDTO.setDebtPositionId(1L);
     WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(true, false, providedExecutionConfig);
 
+    byte[] cipheredDpWfExecutionConfig = new byte[0];
     WfExecutionConfig expectedResult = Mockito.mock(WfExecutionConfig.class);
     DebtPositionWorkflowType storedDpWfConfig = new DebtPositionWorkflowType();
-    storedDpWfConfig.setExecutionConfig(expectedResult);
+    storedDpWfConfig.setExecutionConfig(cipheredDpWfExecutionConfig);
 
     Mockito.when(debtPositionWorkflowTypeRepositoryMock.findById(1L))
       .thenReturn(Optional.of(storedDpWfConfig));
+    Mockito.when(dataCipherServiceMock.decryptObj(Mockito.same(cipheredDpWfExecutionConfig), Mockito.eq(WfExecutionConfig.class)))
+      .thenReturn(expectedResult);
 
     // When
     service.persistAndConfigure(debtPositionDTO, wfExecutionParameters);
@@ -87,9 +94,10 @@ class WfExecutionConfigHandlerServiceTest {
     GenericWfExecutionConfig expectedResult = new GenericWfExecutionConfig();
     WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(true, false, expectedResult);
 
+    byte[] cipheredDpWfExecutionConfig = new byte[0];
     DebtPositionWorkflowType expectedStored = new DebtPositionWorkflowType();
     expectedStored.setDebtPositionId(1L);
-    expectedStored.setExecutionConfig(expectedResult);
+    expectedStored.setExecutionConfig(cipheredDpWfExecutionConfig);
 
     Mockito.when(debtPositionWorkflowTypeRepositoryMock.findById(1L))
       .thenReturn(Optional.empty());
@@ -97,6 +105,8 @@ class WfExecutionConfigHandlerServiceTest {
       .thenReturn(Optional.empty());
     Mockito.when(mergeServiceMock.merge(null, expectedResult))
       .thenReturn(expectedResult);
+    Mockito.when(dataCipherServiceMock.encryptObj(Mockito.same(expectedResult)))
+      .thenReturn(cipheredDpWfExecutionConfig);
 
     // When
     service.persistAndConfigure(debtPositionDTO, wfExecutionParameters);
@@ -122,11 +132,12 @@ class WfExecutionConfigHandlerServiceTest {
     wfOrgDefaultConfig.setDebtPositionTypeOrgId(2L);
     wfOrgDefaultConfig.setDefaultExecutionConfig(defaultConfig);
 
+    byte[] cipheredDpWfExecutionConfig = new byte[0];
     WfExecutionConfig expectedResult = new GenericWfExecutionConfig();
     DebtPositionWorkflowType expectedStored = new DebtPositionWorkflowType();
     expectedStored.setDebtPositionId(1L);
     expectedStored.setWorkflowTypeOrgId(2L);
-    expectedStored.setExecutionConfig(expectedResult);
+    expectedStored.setExecutionConfig(cipheredDpWfExecutionConfig);
 
 
     Mockito.when(debtPositionWorkflowTypeRepositoryMock.findById(1L))
@@ -135,6 +146,8 @@ class WfExecutionConfigHandlerServiceTest {
       .thenReturn(Optional.of(wfOrgDefaultConfig));
     Mockito.when(mergeServiceMock.merge(Mockito.same(defaultConfig), Mockito.same(dpWfConfig)))
       .thenReturn(expectedResult);
+    Mockito.when(dataCipherServiceMock.encryptObj(Mockito.same(expectedResult)))
+      .thenReturn(cipheredDpWfExecutionConfig);
 
     // When
     service.persistAndConfigure(debtPositionDTO, wfExecutionParameters);

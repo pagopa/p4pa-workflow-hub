@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.workflow.model.DebtPositionWorkflowType;
 import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;
 import it.gov.pagopa.pu.workflow.repository.DebtPositionWorkflowTypeRepository;
 import it.gov.pagopa.pu.workflow.repository.WorkflowTypeOrgRepository;
+import it.gov.pagopa.pu.workflow.service.DataCipherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,17 @@ import java.util.Optional;
 @Service
 public class WfExecutionConfigHandlerService {
 
+  private final DataCipherService dataCipherService;
   private final DebtPositionWorkflowTypeRepository debtPositionWorkflowTypeRepository;
   private final WorkflowTypeOrgRepository workflowTypeOrgRepository;
   private final WfExecutionConfigMergeService mergeService;
 
-  public WfExecutionConfigHandlerService(DebtPositionWorkflowTypeRepository debtPositionWorkflowTypeRepository, WorkflowTypeOrgRepository workflowTypeOrgRepository, WfExecutionConfigMergeService mergeService) {
+  public WfExecutionConfigHandlerService(
+    DataCipherService dataCipherService,
+    DebtPositionWorkflowTypeRepository debtPositionWorkflowTypeRepository,
+    WorkflowTypeOrgRepository workflowTypeOrgRepository,
+    WfExecutionConfigMergeService mergeService) {
+    this.dataCipherService = dataCipherService;
     this.debtPositionWorkflowTypeRepository = debtPositionWorkflowTypeRepository;
     this.workflowTypeOrgRepository = workflowTypeOrgRepository;
     this.mergeService = mergeService;
@@ -33,7 +40,8 @@ public class WfExecutionConfigHandlerService {
   public void persistAndConfigure(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters) {
     Optional<WfExecutionConfig> storedExecutionConfig = debtPositionWorkflowTypeRepository
       .findById(Objects.requireNonNull(debtPositionDTO.getDebtPositionId()))
-      .map(DebtPositionWorkflowType::getExecutionConfig);
+      .map(DebtPositionWorkflowType::getExecutionConfig)
+      .map(cipherData -> dataCipherService.decryptObj(cipherData, WfExecutionConfig.class));
 
     if (storedExecutionConfig.isPresent()) {
       WfExecutionConfig stored = storedExecutionConfig.get();
@@ -67,7 +75,7 @@ public class WfExecutionConfigHandlerService {
     DebtPositionWorkflowType entity = new DebtPositionWorkflowType();
     entity.setDebtPositionId(debtPositionDTO.getDebtPositionId());
     entity.setWorkflowTypeOrgId(workflowTypeOrg.map(WorkflowTypeOrg::getDebtPositionTypeOrgId).orElse(null));
-    entity.setExecutionConfig(wfExecutionConfig);
+    entity.setExecutionConfig(dataCipherService.encryptObj(wfExecutionConfig));
 
     debtPositionWorkflowTypeRepository.save(entity);
   }

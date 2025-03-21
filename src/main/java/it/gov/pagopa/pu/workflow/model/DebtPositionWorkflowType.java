@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.workflow.model;
 
-import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -9,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 
@@ -26,6 +23,6 @@ public class DebtPositionWorkflowType extends BaseEntity implements Serializable
   @NotNull
   private Long debtPositionId;
   private Long workflowTypeOrgId;
-  @JdbcTypeCode(SqlTypes.JSON)
-  private WfExecutionConfig executionConfig;
+  @NotNull
+  private byte[] executionConfig;
 }

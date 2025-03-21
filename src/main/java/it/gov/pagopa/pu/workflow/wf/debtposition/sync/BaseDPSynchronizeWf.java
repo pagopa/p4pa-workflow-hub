@@ -74,7 +74,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     Map<String, IupdSyncStatusUpdateDTO> finalizeStatusRequest = processToSyncInstallments(requestedDebtPosition);
     DebtPositionDTO finalizedDebtPositionDTO = finalizeSyncStatus(requestedDebtPosition, finalizeStatusRequest);
     publishEvent(paymentEventType, finalizedDebtPositionDTO);
-    callIONotificationActivity(requestedDebtPosition, finalizeStatusRequest, wfExecutionConfig.getIoMessages());
+    callIONotificationActivity(requestedDebtPosition, finalizeStatusRequest, wfExecutionConfig!=null? wfExecutionConfig.getIoMessages() : null);
     scheduleExpirationWF(finalizedDebtPositionDTO, debtPositionId);
 
     log.info("DebtPosition synchronized {}", debtPositionId);
