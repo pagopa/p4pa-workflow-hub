@@ -1,9 +1,8 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.generic;
 
-import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.organization.dto.generated.Broker;
+import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.SynchronizeDebtPositionWfClient;
 import org.apache.commons.lang3.function.TriFunction;
@@ -58,30 +57,30 @@ class DebtPositionGenericSyncServiceTest {
 
   @Test
   void givenSYNCWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.SYNC, false, wfClientMock::synchronizeDPSync);
+    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.SYNC, false, wfClientMock::synchronizeDPSync);
   }
   @Test
   void givenSYNC_ACAWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.SYNC_ACA, false, wfClientMock::synchronizeDPSyncAca);
+    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.SYNC_ACA, false, wfClientMock::synchronizeDPSyncAca);
   }
   @Test
   void givenSYNC_ACA_GPDPRELOADWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.SYNC_ACA_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncAcaGpdPreLoad);
+    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.SYNC_ACA_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncAcaGpdPreLoad);
   }
   @Test
   void givenSYNC_GPDPRELOADWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.SYNC_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncGpdPreLoad);
+    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.SYNC_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncGpdPreLoad);
   }
   @Test
   void givenASYNC_GPDWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.ASYNC_GPD, false, wfClientMock::synchronizeDPAsyncGpd);
+    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.ASYNC_GPD, false, wfClientMock::synchronizeDPAsyncGpd);
   }
   @Test
   void givenMassiveASYNC_GPDWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum.ASYNC_GPD, true, null);
+    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel .ASYNC_GPD, true, null);
   }
 
-  private void testInvokeWorkflowThenInvokeWfClient(Broker.PagoPaInteractionModelEnum interactionModel, boolean massive, TriFunction<DebtPositionDTO, PaymentEventType, GenericWfExecutionConfig, String> expectedWfClientInvoke) {
+  private void testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel  interactionModel, boolean massive, TriFunction<DebtPositionDTO, PaymentEventType, GenericWfExecutionConfig, String> expectedWfClientInvoke) {
     // Given
     String accessToken = "ACCESSTOKEN";
     long organizationId = 1L;
