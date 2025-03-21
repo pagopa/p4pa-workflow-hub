@@ -119,7 +119,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
         .sendIoNotification(Mockito.same(debtPositionRequested), Mockito.eq(iudSyncFinalizationMap), Mockito.same(wfExecutionConfig.getIoMessages()));
     }
     Mockito.verify(publishPaymentEventActivityMock)
-      .publishErrorEvent(Mockito.same(debtPositionFinalized), Mockito.same(paymentEventType), Mockito.isNull());
+      .publishEvent(Mockito.same(debtPositionFinalized), Mockito.same(paymentEventType));
     Mockito.verify(cancelCheckDpExpirationScheduleActivityMock)
         .cancelExpirationSchedule(Mockito.same(debtPositionFinalized.getDebtPositionId()));
     Mockito.verify(scheduleCheckDpExpirationActivityMock)

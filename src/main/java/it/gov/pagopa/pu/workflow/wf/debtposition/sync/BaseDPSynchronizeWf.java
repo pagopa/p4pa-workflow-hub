@@ -127,7 +127,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
   protected void publishEvent(PaymentEventType paymentEventType, DebtPositionDTO finalizedDebtPositionDTO) {
     if (paymentEventType != null) {
       log.info("Publishing event {} on debtPosition {}", paymentEventType, finalizedDebtPositionDTO.getDebtPositionId());
-      publishPaymentEventActivity.publishErrorEvent(finalizedDebtPositionDTO, paymentEventType, null);
+      publishPaymentEventActivity.publishEvent(finalizedDebtPositionDTO, paymentEventType);
     }
   }
 

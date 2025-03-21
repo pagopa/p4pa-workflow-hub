@@ -71,7 +71,7 @@ class CheckDebtPositionExpirationWfClientTest {
     // Given
     Long debtPositionId = 1L;
     LocalDate offsetDateTime = LocalDate.of(2025,1,1);
-    String expectedWorkflowId = "DebtPositionExpirationWF-1";
+    String expectedWorkflowId = "CheckDebtPositionExpirationWF-1";
 
     Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(
         CheckDebtPositionExpirationWF.class,
@@ -92,6 +92,6 @@ class CheckDebtPositionExpirationWfClientTest {
     client.cancelScheduling(1L);
 
     Mockito.verify(workflowServiceMock)
-      .cancelWorkflow("DebtPositionExpirationWF-1");
+      .cancelWorkflow("CheckDebtPositionExpirationWF-1");
   }
 }
