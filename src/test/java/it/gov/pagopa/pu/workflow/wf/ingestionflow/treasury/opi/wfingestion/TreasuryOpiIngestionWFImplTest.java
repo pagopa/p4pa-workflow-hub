@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIng
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,11 +73,11 @@ class TreasuryOpiIngestionWFImplTest {
 
     // Then
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowId, true);
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+      .updateStatus(ingestionFlowId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, null, null);
 
     verify(notifyTreasuryToIufClassificationActivityMock).signalIufClassificationWithStart(organizationId, iuf, treasuryId);
   }
@@ -95,11 +95,11 @@ class TreasuryOpiIngestionWFImplTest {
 
     // Then
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, false);
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.ERROR, "error", "discardedFileName");
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, "error", "discardedFileName");
   }
 
   @Test
@@ -115,10 +115,10 @@ class TreasuryOpiIngestionWFImplTest {
 
     // Then
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, false);
     verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.ERROR, "Unexpected error when processing TreasuryOPI file: DUMMY", null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, "Unexpected error when processing TreasuryOPI file: DUMMY", null);
   }
 }

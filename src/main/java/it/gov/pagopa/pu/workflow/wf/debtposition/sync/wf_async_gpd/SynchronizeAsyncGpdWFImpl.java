@@ -32,8 +32,7 @@ public class SynchronizeAsyncGpdWFImpl extends BaseDPSynchronizeWf implements Sy
   @Override
   protected IupdSyncStatusUpdateDTO synchronizeInstallment(DebtPositionDTO debtPosition, InstallmentDTO installment) {
     log.info("Synchronizing Installment with IUD: {} for DebtPosition ID: {} on GPD", installment.getIud(), debtPosition.getDebtPositionId());
-    String iupdPagoPa = synchronizeInstallmentGpdActivity.synchronizeInstallmentGpd(debtPosition, installment.getIud());
-    return buildIupdSyncStatusUpdateDTO(installment)
-      .iupdPagopa(iupdPagoPa);
+    synchronizeInstallmentGpdActivity.synchronizeInstallmentGpd(debtPosition, installment.getIud());
+    return buildIupdSyncStatusUpdateDTO(installment);
   }
 }

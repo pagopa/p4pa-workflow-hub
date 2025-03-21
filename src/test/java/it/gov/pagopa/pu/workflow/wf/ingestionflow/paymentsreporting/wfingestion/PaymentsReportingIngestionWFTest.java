@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -93,12 +93,12 @@ class PaymentsReportingIngestionWFTest {
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
 
     Mockito.verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, true);
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, null, null);
 
     Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock)
       .signalIufClassificationWithStart(organizationId, "iuf-1", List.of(paymentsReportingTransferDTO));
@@ -117,11 +117,11 @@ class PaymentsReportingIngestionWFTest {
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     Mockito.verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, false);
 
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.ERROR, "DUMMY", null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, "DUMMY", null);
   }
 }

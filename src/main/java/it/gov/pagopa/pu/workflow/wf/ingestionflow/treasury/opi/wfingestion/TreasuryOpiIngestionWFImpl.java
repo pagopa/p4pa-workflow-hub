@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury.TreasuryOpiIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -48,15 +48,15 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     log.info("Handling Treasury OPI ingestionFlowFileId {}", ingestionFlowFileId);
     TreasuryIufIngestionFlowFileResult ingestionResult;
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     ingestionResult = processFile(ingestionFlowFileId);
     boolean success = StringUtils.isEmpty(ingestionResult.getErrorDescription());
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
-      IngestionFlowFile.StatusEnum.PROCESSING,
+      IngestionFlowFileStatus.PROCESSING,
       success
-        ? IngestionFlowFile.StatusEnum.COMPLETED
-        : IngestionFlowFile.StatusEnum.ERROR,
+        ? IngestionFlowFileStatus.COMPLETED
+        : IngestionFlowFileStatus.ERROR,
       ingestionResult.getErrorDescription(),
       ingestionResult.getDiscardedFileName());
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);

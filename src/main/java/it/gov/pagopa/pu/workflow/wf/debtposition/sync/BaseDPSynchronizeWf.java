@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
@@ -83,7 +84,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
   protected Map<String, IupdSyncStatusUpdateDTO> processToSyncInstallments(DebtPositionDTO debtPosition) {
     return debtPosition.getPaymentOptions().stream()
       .flatMap(paymentOption -> paymentOption.getInstallments().stream())
-      .filter(installment -> InstallmentDTO.StatusEnum.TO_SYNC.equals(installment.getStatus()))
+      .filter(installment -> InstallmentStatus.TO_SYNC.equals(installment.getStatus()))
       .map(installment -> {
           try {
             return Pair.of(installment.getIud(), synchronizeInstallment(debtPosition, installment));
@@ -104,7 +105,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
    */
   protected IupdSyncStatusUpdateDTO buildIupdSyncStatusUpdateDTO(InstallmentDTO installmentDTO) {
     return IupdSyncStatusUpdateDTO.builder()
-      .newStatus(IupdSyncStatusUpdateDTO.NewStatusEnum.valueOf(Objects.requireNonNull(installmentDTO.getSyncStatus()).getSyncStatusTo().name()))
+      .newStatus(Objects.requireNonNull(installmentDTO.getSyncStatus()).getSyncStatusTo())
       .build();
   }
 

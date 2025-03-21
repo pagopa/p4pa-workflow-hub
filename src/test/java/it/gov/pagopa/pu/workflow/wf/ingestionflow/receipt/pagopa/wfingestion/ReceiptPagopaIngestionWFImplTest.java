@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptPagopaIngestionFlowFil
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,9 +71,9 @@ class ReceiptPagopaIngestionWFImplTest {
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, null, null);
     Mockito.verify(receiptPagopaSendEmailActivityMock, Mockito.times(1))
       .sendEmail(receiptDTO, installmentDTO);
     Mockito.verify(receiptPagopaNotifySilActivityMock, Mockito.times(1))
@@ -93,9 +93,9 @@ class ReceiptPagopaIngestionWFImplTest {
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.ERROR, "error processing receipt id[1]: DUMMY", null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, "error processing receipt id[1]: DUMMY", null);
     Mockito.verifyNoInteractions(receiptPagopaNotifySilActivityMock, receiptPagopaSendEmailActivityMock);
   }
 
@@ -117,9 +117,9 @@ class ReceiptPagopaIngestionWFImplTest {
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
-      .updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.PROCESSING, IngestionFlowFile.StatusEnum.COMPLETED, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, null, null);
     Mockito.verify(receiptPagopaSendEmailActivityMock, Mockito.times(1))
       .sendEmail(receiptDTO, installmentDTO);
     Mockito.verify(receiptPagopaNotifySilActivityMock, Mockito.times(1))

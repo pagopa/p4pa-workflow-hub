@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -46,15 +46,15 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
   public void ingest(Long ingestionFlowFileId) {
     log.info("Handling PaymentsReporting IngestingFlowFileId {}", ingestionFlowFileId);
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     String errorDescription = processFile(ingestionFlowFileId);
 
     boolean success = errorDescription==null;
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
-      IngestionFlowFile.StatusEnum.PROCESSING,
+      IngestionFlowFileStatus.PROCESSING,
       success
-        ? IngestionFlowFile.StatusEnum.COMPLETED
-        : IngestionFlowFile.StatusEnum.ERROR,
+        ? IngestionFlowFileStatus.COMPLETED
+        : IngestionFlowFileStatus.ERROR,
       errorDescription,
       null);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);

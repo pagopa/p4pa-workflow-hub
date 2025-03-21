@@ -1,9 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
@@ -81,13 +78,13 @@ class PaymentsConsumerTest {
     DebtPositionDTO out = DebtPositionFaker.buildDebtPositionDTO();
     out.setPaymentOptions(List.of(
       buildPaymentOption(List.of(
-        buildInstallment(InstallmentDTO.StatusEnum.PAID, "iuv1", "iur1"),
-        buildInstallment(InstallmentDTO.StatusEnum.UNPAID, "iuv2", null),
-        buildInstallment(InstallmentDTO.StatusEnum.PAID, "iuv3", "iur2")
+        buildInstallment(InstallmentStatus.PAID, "iuv1", "iur1"),
+        buildInstallment(InstallmentStatus.UNPAID, "iuv2", null),
+        buildInstallment(InstallmentStatus.PAID, "iuv3", "iur2")
       )),
       buildPaymentOption(List.of(
-        buildInstallment(InstallmentDTO.StatusEnum.UNPAID, "iuv4", null),
-        buildInstallment(InstallmentDTO.StatusEnum.PAID, "iuv5", "iur1")
+        buildInstallment(InstallmentStatus.UNPAID, "iuv4", null),
+        buildInstallment(InstallmentStatus.PAID, "iuv5", "iur1")
       ))
     ));
     return out;
@@ -99,7 +96,7 @@ class PaymentsConsumerTest {
     return out;
   }
 
-  private static InstallmentDTO buildInstallment(InstallmentDTO.StatusEnum status, String iuv, String iur) {
+  private static InstallmentDTO buildInstallment(InstallmentStatus status, String iuv, String iur) {
     InstallmentDTO out = InstallmentFaker.buildInstallmentDTO();
     out.setStatus(status);
     out.setIuv(iuv);

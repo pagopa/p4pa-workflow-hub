@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.utils.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 
@@ -20,8 +21,8 @@ public class InstallmentFaker {
     return InstallmentDTO.builder()
       .installmentId(1L)
       .paymentOptionId(1L)
-      .status(InstallmentDTO.StatusEnum.TO_SYNC)
-      .syncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentSyncStatus.SyncStatusFromEnum.TO_SYNC).syncStatusTo(InstallmentSyncStatus.SyncStatusToEnum.UNPAID).build())
+      .status(InstallmentStatus.TO_SYNC)
+      .syncStatus(InstallmentSyncStatus.builder().syncStatusFrom(InstallmentStatus.TO_SYNC).syncStatusTo(InstallmentStatus.UNPAID).build())
       .iud("iud")
       .iuv("iuv")
       .iur("iur")

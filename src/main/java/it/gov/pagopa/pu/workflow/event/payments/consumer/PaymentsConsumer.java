@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
@@ -28,7 +28,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO> {
       log.info("Event RT_RECEIVED occurred on DebtPosition {}", paymentEventDTO.getPayload().getDebtPositionId());
       paymentEventDTO.getPayload().getPaymentOptions().stream()
         .flatMap((PaymentOptionDTO paymentOptionDTO) -> paymentOptionDTO.getInstallments().stream())
-        .filter(i -> InstallmentDTO.StatusEnum.PAID.equals(i.getStatus()))
+        .filter(i -> InstallmentStatus.PAID.equals(i.getStatus()))
         .forEach(i -> i.getTransfers()
           .forEach(t ->
             // Once the IUD classification is ready, this should call the IUD Classification if there is a IUD

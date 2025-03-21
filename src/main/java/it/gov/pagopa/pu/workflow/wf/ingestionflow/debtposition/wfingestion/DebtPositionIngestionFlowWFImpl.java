@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.Insta
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.utilities.Constants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -69,10 +69,10 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     boolean success = errorDescription == null;
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
-      IngestionFlowFile.StatusEnum.PROCESSING,
+      IngestionFlowFileStatus.PROCESSING,
       success
-        ? IngestionFlowFile.StatusEnum.COMPLETED
-        : IngestionFlowFile.StatusEnum.ERROR,
+        ? IngestionFlowFileStatus.COMPLETED
+        : IngestionFlowFileStatus.ERROR,
       errorDescription,
       ingestionResult.getDiscardedFileName());
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);

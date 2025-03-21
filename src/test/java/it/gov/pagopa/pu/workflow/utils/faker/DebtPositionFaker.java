@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.utils.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionStatus;
 
 import java.util.List;
 
@@ -15,8 +17,8 @@ public class DebtPositionFaker {
       .debtPositionId(1L)
       .iupdOrg("iupdOrg")
       .description("description")
-      .status(DebtPositionDTO.StatusEnum.TO_SYNC)
-      .debtPositionOrigin(DebtPositionDTO.DebtPositionOriginEnum.ORDINARY)
+      .status(DebtPositionStatus.TO_SYNC)
+      .debtPositionOrigin(DebtPositionOrigin.ORDINARY)
       .organizationId(1L)
       .debtPositionTypeOrgId(1L)
       .validityDate(DATE)

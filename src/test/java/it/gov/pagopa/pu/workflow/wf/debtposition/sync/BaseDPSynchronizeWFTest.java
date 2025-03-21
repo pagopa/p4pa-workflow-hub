@@ -3,10 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
@@ -97,7 +94,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     wfExecutionConfig.setIoMessages(new GenericWfExecutionConfig.IONotificationBaseOpsMessages());
 
     LocalDate ancientDueDate = LocalDate.now().minusDays(10);
-    DebtPositionDTO debtPositionFinalized = buildFinalizedDebtPosition(ancientDueDate, InstallmentDTO.StatusEnum.UNPAID);
+    DebtPositionDTO debtPositionFinalized = buildFinalizedDebtPosition(ancientDueDate, InstallmentStatus.UNPAID);
     Map<String, IupdSyncStatusUpdateDTO> iudSyncFinalizationMap = Map.of(
       SYNC_IUD, buildExpectedIupdSyncStatusUpdateDTO()
     );
@@ -141,7 +138,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
       configureIUDSyncKo(debtPosition, SYNC_IUD, new RuntimeException("Error"));
       configureIUDSyncKo(debtPosition, SYNC_IUD_ERROR, new RuntimeException("Error"));
     } else {
-      debtPosition.getPaymentOptions().forEach(po -> po.getInstallments().forEach(i -> i.setStatus(InstallmentDTO.StatusEnum.UNPAID)));
+      debtPosition.getPaymentOptions().forEach(po -> po.getInstallments().forEach(i -> i.setStatus(InstallmentStatus.UNPAID)));
     }
 
     // When, Then
@@ -163,24 +160,24 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     InstallmentDTO firstInstallment = InstallmentFaker.buildInstallmentDTO()
       .iud(SYNC_IUD)
-      .status(InstallmentDTO.StatusEnum.TO_SYNC)
-      .syncStatus(new InstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.DRAFT, InstallmentSyncStatus.SyncStatusToEnum.UNPAID));
+      .status(InstallmentStatus.TO_SYNC)
+      .syncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID));
 
     InstallmentDTO secondInstallment = InstallmentFaker.buildInstallmentDTO()
       .iud("IUD_NOT_TO_SYNC")
       .dueDate(LocalDate.MIN)
-      .status(InstallmentDTO.StatusEnum.UNPAID);
+      .status(InstallmentStatus.UNPAID);
 
     InstallmentDTO thirdInstallment = InstallmentFaker.buildInstallmentDTO()
       .iud(SYNC_IUD_ERROR)
-      .status(isSyncErrorPossible()? InstallmentDTO.StatusEnum.TO_SYNC : InstallmentDTO.StatusEnum.PAID)
-      .syncStatus(new InstallmentSyncStatus(InstallmentSyncStatus.SyncStatusFromEnum.DRAFT, InstallmentSyncStatus.SyncStatusToEnum.UNPAID));
+      .status(isSyncErrorPossible()? InstallmentStatus.TO_SYNC : InstallmentStatus.PAID)
+      .syncStatus(new InstallmentSyncStatus(InstallmentStatus.DRAFT, InstallmentStatus.UNPAID));
 
     debtPosition.getPaymentOptions().getFirst().setInstallments(List.of(firstInstallment, secondInstallment, thirdInstallment));
     return debtPosition;
   }
 
-  protected DebtPositionDTO buildFinalizedDebtPosition(LocalDate ancientDueDate, InstallmentDTO.StatusEnum installmentStatus) {
+  protected DebtPositionDTO buildFinalizedDebtPosition(LocalDate ancientDueDate, InstallmentStatus installmentStatus) {
     DebtPositionDTO debtPositionFinalized = buildDebtPositionDTO();
     InstallmentDTO firstFinalizedInstallment = debtPositionFinalized.getPaymentOptions().getFirst().getInstallments().getFirst();
     firstFinalizedInstallment.setStatus(installmentStatus);
@@ -189,7 +186,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
   }
 
   protected IupdSyncStatusUpdateDTO buildExpectedIupdSyncStatusUpdateDTO() {
-    return new IupdSyncStatusUpdateDTO(IupdSyncStatusUpdateDTO.NewStatusEnum.UNPAID, null);
+    return new IupdSyncStatusUpdateDTO(InstallmentStatus.UNPAID);
   }
 
   protected abstract void configureIUDSyncOk(DebtPositionDTO debtPosition, String iud);

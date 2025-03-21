@@ -1570,10 +1570,10 @@
             "type" : "string"
           },
           "status" : {
-            "$ref" : "#/components/schemas/StatusEnum"
+            "$ref" : "#/components/schemas/DebtPositionStatus"
           },
           "debtPositionOrigin" : {
-            "$ref" : "#/components/schemas/DebtPositionOriginEnum"
+            "$ref" : "#/components/schemas/DebtPositionOrigin"
           },
           "organizationId" : {
             "type" : "integer",
@@ -1612,9 +1612,13 @@
           }
         }
       },
-      "DebtPositionOriginEnum" : {
+      "DebtPositionOrigin" : {
         "type" : "string",
         "enum" : [ "ORDINARY", "ORDINARY_SIL", "SPONTANEOUS", "SECONDARY_ORG", "RECEIPT_FILE", "RECEIPT_PAGOPA", "REPORTING_PAGOPA" ]
+      },
+      "DebtPositionStatus" : {
+        "type" : "string",
+        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "EXPIRED", "UNPAID", "DRAFT" ]
       },
       "EntityTypeEnum" : {
         "type" : "string",
@@ -1632,7 +1636,7 @@
             "format" : "int64"
           },
           "status" : {
-            "$ref" : "#/components/schemas/StatusEnum"
+            "$ref" : "#/components/schemas/InstallmentStatus"
           },
           "syncStatus" : {
             "$ref" : "#/components/schemas/InstallmentSyncStatus"
@@ -1711,14 +1715,18 @@
           }
         }
       },
+      "InstallmentStatus" : {
+        "type" : "string",
+        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
+      },
       "InstallmentSyncStatus" : {
         "type" : "object",
         "properties" : {
           "syncStatusFrom" : {
-            "$ref" : "#/components/schemas/SyncStatusFromEnum"
+            "$ref" : "#/components/schemas/InstallmentStatus"
           },
           "syncStatusTo" : {
-            "$ref" : "#/components/schemas/SyncStatusToEnum"
+            "$ref" : "#/components/schemas/InstallmentStatus"
           }
         }
       },
@@ -1738,7 +1746,7 @@
             "format" : "int64"
           },
           "status" : {
-            "$ref" : "#/components/schemas/StatusEnum"
+            "$ref" : "#/components/schemas/PaymentOptionStatus"
           },
           "description" : {
             "type" : "string"
@@ -1757,6 +1765,10 @@
             }
           }
         }
+      },
+      "PaymentOptionStatus" : {
+        "type" : "string",
+        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
       },
       "PaymentOptionTypeEnum" : {
         "type" : "string",
@@ -1797,10 +1809,6 @@
           }
         }
       },
-      "StatusEnum" : {
-        "type" : "string",
-        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
-      },
       "SyncDebtPositionRequestDTO" : {
         "type" : "object",
         "properties" : {
@@ -1814,14 +1822,6 @@
           }
         },
         "required" : [ "debtPosition" ]
-      },
-      "SyncStatusFromEnum" : {
-        "type" : "string",
-        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
-      },
-      "SyncStatusToEnum" : {
-        "type" : "string",
-        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
       },
       "TransferDTO" : {
         "type" : "object",

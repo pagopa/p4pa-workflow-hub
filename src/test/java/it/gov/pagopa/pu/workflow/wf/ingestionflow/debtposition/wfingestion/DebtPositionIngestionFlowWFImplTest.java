@@ -7,7 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.Insta
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,8 +82,8 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
         Mockito.eq(ingestionFlowFileId),
-        Mockito.eq(IngestionFlowFile.StatusEnum.PROCESSING),
-        Mockito.eq(IngestionFlowFile.StatusEnum.COMPLETED),
+        Mockito.eq(IngestionFlowFileStatus.PROCESSING),
+        Mockito.eq(IngestionFlowFileStatus.COMPLETED),
         Mockito.isNull(),
         Mockito.isNull()
       );
@@ -119,8 +119,8 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
         ingestionFlowFileId,
-        IngestionFlowFile.StatusEnum.PROCESSING,
-        IngestionFlowFile.StatusEnum.ERROR,
+        IngestionFlowFileStatus.PROCESSING,
+        IngestionFlowFileStatus.ERROR,
         errorDescription,
         null
       );
@@ -158,8 +158,8 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
         ingestionFlowFileId,
-        IngestionFlowFile.StatusEnum.PROCESSING,
-        IngestionFlowFile.StatusEnum.ERROR,
+        IngestionFlowFileStatus.PROCESSING,
+        IngestionFlowFileStatus.ERROR,
         errorDescription,
         null
       );
@@ -193,8 +193,8 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
         Mockito.eq(ingestionFlowFileId),
-        Mockito.eq(IngestionFlowFile.StatusEnum.PROCESSING),
-        Mockito.eq(IngestionFlowFile.StatusEnum.COMPLETED),
+        Mockito.eq(IngestionFlowFileStatus.PROCESSING),
+        Mockito.eq(IngestionFlowFileStatus.COMPLETED),
         Mockito.isNull(),
         Mockito.isNull()
       );

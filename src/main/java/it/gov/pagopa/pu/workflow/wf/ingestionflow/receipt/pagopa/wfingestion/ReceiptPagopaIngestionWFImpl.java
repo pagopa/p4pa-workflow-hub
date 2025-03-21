@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPag
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaNotifySilActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaSendEmailActivity;
 import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptPagopaIngestionFlowFileResult;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -43,7 +43,7 @@ public class ReceiptPagopaIngestionWFImpl implements ReceiptPagopaIngestionWF, A
   public void ingest(Long ingestionFlowFileId) {
     log.info("Handling Receipt Pagopa ingestionFlowFileId {}", ingestionFlowFileId);
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFile.StatusEnum.UPLOADED, IngestionFlowFile.StatusEnum.PROCESSING, null, null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     ReceiptPagopaIngestionFlowFileResult ingestionResult = null;
     boolean success = true;
     String errorDescription = null;
@@ -56,10 +56,10 @@ public class ReceiptPagopaIngestionWFImpl implements ReceiptPagopaIngestionWF, A
     }
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
-      IngestionFlowFile.StatusEnum.PROCESSING,
+      IngestionFlowFileStatus.PROCESSING,
       success
-        ? IngestionFlowFile.StatusEnum.COMPLETED
-        : IngestionFlowFile.StatusEnum.ERROR,
+        ? IngestionFlowFileStatus.COMPLETED
+        : IngestionFlowFileStatus.ERROR,
       errorDescription,
       null);
 
