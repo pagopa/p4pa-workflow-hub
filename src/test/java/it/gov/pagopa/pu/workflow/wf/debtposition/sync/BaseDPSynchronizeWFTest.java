@@ -116,7 +116,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
         .sendIoNotification(Mockito.same(debtPositionRequested), Mockito.eq(iudSyncFinalizationMap), Mockito.same(wfExecutionConfig.getIoMessages()));
     }
     Mockito.verify(publishPaymentEventActivityMock)
-      .publishEvent(Mockito.same(debtPositionFinalized), Mockito.same(paymentEventType));
+      .publishDebtPositionEvent(Mockito.same(debtPositionFinalized), Mockito.same(paymentEventType));
     Mockito.verify(cancelCheckDpExpirationScheduleActivityMock)
         .cancelExpirationSchedule(Mockito.same(debtPositionFinalized.getDebtPositionId()));
     Mockito.verify(scheduleCheckDpExpirationActivityMock)
@@ -124,7 +124,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     if(isSyncErrorPossible()) {
       Mockito.verify(publishPaymentEventActivityMock)
-        .publishErrorEvent(Mockito.same(debtPositionRequested), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: SYNCIUDERROR for DebtPosition ID: 1. Error: Error"));
+        .publishDebtPositionErrorEvent(Mockito.same(debtPositionRequested), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: SYNCIUDERROR for DebtPosition ID: 1. Error: Error"));
     }
   }
 
@@ -146,9 +146,9 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     if(isSyncErrorPossible()){
       Mockito.verify(publishPaymentEventActivityMock)
-        .publishErrorEvent(Mockito.same(debtPosition), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: "+SYNC_IUD+" for DebtPosition ID: 1. Error: Error"));
+        .publishDebtPositionErrorEvent(Mockito.same(debtPosition), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: "+SYNC_IUD+" for DebtPosition ID: 1. Error: Error"));
       Mockito.verify(publishPaymentEventActivityMock)
-        .publishErrorEvent(Mockito.same(debtPosition), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: "+SYNC_IUD_ERROR+" for DebtPosition ID: 1. Error: Error"));
+        .publishDebtPositionErrorEvent(Mockito.same(debtPosition), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: "+SYNC_IUD_ERROR+" for DebtPosition ID: 1. Error: Error"));
     }
 
     Mockito.verify(cancelCheckDpExpirationScheduleActivityMock)

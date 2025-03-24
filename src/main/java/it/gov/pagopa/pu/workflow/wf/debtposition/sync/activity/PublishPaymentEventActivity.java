@@ -9,7 +9,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 @ActivityInterface
 public interface PublishPaymentEventActivity {
   @ActivityMethod
-  void publishEvent(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType);
+  void publishDebtPositionEvent(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType);
   @ActivityMethod
-  void publishErrorEvent(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, String paymentEventDescription);
+  void publishDebtPositionErrorEvent(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, String paymentEventDescription);
 }
