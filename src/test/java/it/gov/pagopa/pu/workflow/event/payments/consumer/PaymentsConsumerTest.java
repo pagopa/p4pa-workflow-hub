@@ -59,7 +59,7 @@ class PaymentsConsumerTest {
   }
 
   @Test
-  void givenNotHandledEventWhenAcceptThenInvokeClient() {
+  void givenNotHandledEventWhenAcceptThenNoAction() {
     // Given
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
       .eventId("EVENTID")
@@ -74,12 +74,12 @@ class PaymentsConsumerTest {
   }
 
   @Test
-  void givenWrongPayloadWhenAcceptThenInvokeClient() {
+  void givenRtReceivedAndWrongPayloadWhenAcceptThenNoAction() {
     // Given
     PaymentEventDTO<?> paymentEventDTO = PaymentEventDTO.builder()
       .eventId("EVENTID")
       .payload(new Object())
-      .eventType(PaymentEventType.SYNC_ERROR)
+      .eventType(PaymentEventType.RT_RECEIVED)
       .build();
 
     // When
