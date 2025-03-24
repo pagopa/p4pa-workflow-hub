@@ -1,8 +1,9 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
-import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
+import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker;
@@ -39,12 +40,11 @@ class PaymentsConsumerTest {
   @Test
   void givenExpectedEventWhenAcceptThenInvokeClient() {
     // Given
-    PaymentEventDTO paymentEventDTO = new PaymentEventDTO(
-      "EVENTID",
-      buildPaidDebtPosition(),
-      PaymentEventType.RT_RECEIVED,
-      ""
-    );
+    DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(buildPaidDebtPosition())
+      .eventType(PaymentEventType.RT_RECEIVED)
+      .build();
 
     // When
     paymentsConsumer.accept(paymentEventDTO);
@@ -59,14 +59,28 @@ class PaymentsConsumerTest {
   }
 
   @Test
-  void givenNotHandledEventWhenAcceptThenInvokeClient() {
+  void givenNotHandledEventWhenAcceptThenNoAction() {
     // Given
-    PaymentEventDTO paymentEventDTO = new PaymentEventDTO(
-      "EVENTID",
-      buildPaidDebtPosition(),
-      PaymentEventType.SYNC_ERROR,
-      ""
-    );
+    DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(buildPaidDebtPosition())
+      .eventType(PaymentEventType.SYNC_ERROR)
+      .build();
+
+    // When
+    paymentsConsumer.accept(paymentEventDTO);
+
+    Mockito.verifyNoInteractions(wfClientMock);
+  }
+
+  @Test
+  void givenRtReceivedAndWrongPayloadWhenAcceptThenNoAction() {
+    // Given
+    PaymentEventDTO<?> paymentEventDTO = PaymentEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(new Object())
+      .eventType(PaymentEventType.RT_RECEIVED)
+      .build();
 
     // When
     paymentsConsumer.accept(paymentEventDTO);

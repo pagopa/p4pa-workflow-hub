@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.event.payments.producer;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,20 +32,20 @@ class PaymentsProducerServiceTest {
   }
 
   @Test
-  void whenNotifyPaymentsEventThenSendMessage() {
+  void whenNotifyDebtPositionPaymentsEventThenSendMessage() {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
     PaymentEventType eventType = PaymentEventType.SYNC_ERROR;
 
     // When
-    paymentsProducerService.notifyPaymentsEvent(debtPosition, eventType, "eventDescription");
+    paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPosition, eventType, "eventDescription");
 
     // Then
     verify(streamBridge, times(1)).send(
       Mockito.eq("paymentsProducer-out-0"),
       Mockito.any(),
       Mockito.<Message<?>>argThat(m -> {
-        PaymentEventDTO payload = (PaymentEventDTO) m.getPayload();
+        DebtPositionEventDTO payload = (DebtPositionEventDTO) m.getPayload();
         String eventIdPrefix = eventType.name() + debtPosition.getDebtPositionId();
         Assertions.assertEquals(eventIdPrefix, payload.getEventId().substring(0, eventIdPrefix.length()));
         Assertions.assertSame(debtPosition, payload.getPayload());

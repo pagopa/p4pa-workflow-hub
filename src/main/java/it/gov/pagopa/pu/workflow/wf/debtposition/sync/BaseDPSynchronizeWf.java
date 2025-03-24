@@ -91,7 +91,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
           } catch (Exception e) {
             String errorMessage = "Error occurred while synchronizing Installment with IUD: " + installment.getIud() + " for DebtPosition ID: " + debtPosition.getDebtPositionId() + ". Error: " + e.getMessage();
             log.error(errorMessage, e);
-            publishPaymentEventActivity.publishErrorEvent(debtPosition, PaymentEventType.SYNC_ERROR, errorMessage);
+            publishPaymentEventActivity.publishDebtPositionErrorEvent(debtPosition, PaymentEventType.SYNC_ERROR, errorMessage);
             return null;
           }
         }
@@ -128,7 +128,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
   protected void publishEvent(PaymentEventType paymentEventType, DebtPositionDTO finalizedDebtPositionDTO) {
     if (paymentEventType != null) {
       log.info("Publishing event {} on debtPosition {}", paymentEventType, finalizedDebtPositionDTO.getDebtPositionId());
-      publishPaymentEventActivity.publishEvent(finalizedDebtPositionDTO, paymentEventType);
+      publishPaymentEventActivity.publishDebtPositionEvent(finalizedDebtPositionDTO, paymentEventType);
     }
   }
 
