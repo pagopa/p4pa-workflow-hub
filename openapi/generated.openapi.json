@@ -1207,7 +1207,7 @@
         "type" : "string",
         "enum" : [ "fineWf" ]
       },
-      "WorkflowType" : {
+      "WorkflowTypeOrg" : {
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1221,12 +1221,13 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
-          "workflowTypeId" : {
+          "debtPositionTypeOrgId" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "description" : {
-            "type" : "string"
+          "workflowTypeId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
           "defaultExecutionConfig" : {
             "oneOf" : [ {
@@ -1237,7 +1238,7 @@
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "defaultExecutionConfig", "description" ]
+        "required" : [ "debtPositionTypeOrgId", "defaultExecutionConfig", "workflowTypeId" ]
       },
       "FineWfExecutionConfig" : {
         "allOf" : [ {
@@ -1302,16 +1303,16 @@
           }
         }
       },
-      "PagedModelWorkflowType" : {
+      "PagedModelWorkflowTypeOrg" : {
         "type" : "object",
         "properties" : {
           "_embedded" : {
             "type" : "object",
             "properties" : {
-              "workflowTypes" : {
+              "workflowTypeOrgs" : {
                 "type" : "array",
                 "items" : {
-                  "$ref" : "#/components/schemas/WorkflowType"
+                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
                 }
               }
             }
@@ -1389,7 +1390,7 @@
           }
         }
       },
-      "WorkflowTypeOrg" : {
+      "WorkflowType" : {
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1403,13 +1404,12 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
-          "debtPositionTypeOrgId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "workflowTypeId" : {
             "type" : "integer",
             "format" : "int64"
+          },
+          "description" : {
+            "type" : "string"
           },
           "defaultExecutionConfig" : {
             "oneOf" : [ {
@@ -1420,18 +1420,18 @@
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "debtPositionTypeOrgId", "defaultExecutionConfig", "workflowTypeId" ]
+        "required" : [ "defaultExecutionConfig", "description" ]
       },
-      "PagedModelWorkflowTypeOrg" : {
+      "PagedModelWorkflowType" : {
         "type" : "object",
         "properties" : {
           "_embedded" : {
             "type" : "object",
             "properties" : {
-              "workflowTypeOrgs" : {
+              "workflowTypes" : {
                 "type" : "array",
                 "items" : {
-                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
+                  "$ref" : "#/components/schemas/WorkflowType"
                 }
               }
             }
@@ -1772,7 +1772,7 @@
       },
       "PaymentOptionTypeEnum" : {
         "type" : "string",
-        "enum" : [ "SINGLE_INSTALLMENT", "INSTALLMENTS", "DOWN_PAYMENT" ]
+        "enum" : [ "SINGLE_INSTALLMENT", "REDUCED_SINGLE_INSTALLMENT", "INSTALLMENTS", "DOWN_PAYMENT" ]
       },
       "PersonDTO" : {
         "type" : "object",
