@@ -31,6 +31,12 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/PaymentEventType'
+        - name: paymentEventDescription
+          in: query
+          description: If provided paymentEventType, the optional description to publish.
+          required: false
+          schema:
+            type: string
       requestBody:
         required: true
         content:

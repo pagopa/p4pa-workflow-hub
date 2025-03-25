@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
 import org.junit.jupiter.api.AfterEach;
@@ -33,28 +34,27 @@ class PublishPaymentEventActivityTest {
   void whenPublishDebtPositionEventThenInvokeProducer(){
     // Given
     DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
-    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
 
     // When
-    activity.publishDebtPositionEvent(debtPositionDTO, paymentEventType);
+    activity.publishDebtPositionEvent(debtPositionDTO, paymentEventRequest);
 
     // Then
     Mockito.verify(eventProduceServiceMock)
-      .notifyDebtPositionPaymentsEvent(Mockito.same(debtPositionDTO), Mockito.same(paymentEventType), Mockito.isNull());
+      .notifyDebtPositionPaymentsEvent(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest));
   }
 
   @Test
   void whenPublishDebtPositionErrorEventThenInvokeProducer(){
     // Given
     DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
-    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
-    String errorDescription = "ERRORDESCRIPTION";
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
 
     // When
-    activity.publishDebtPositionErrorEvent(debtPositionDTO, paymentEventType, errorDescription);
+    activity.publishDebtPositionErrorEvent(debtPositionDTO, paymentEventRequest);
 
     // Then
     Mockito.verify(eventProduceServiceMock)
-      .notifyDebtPositionPaymentsEvent(Mockito.same(debtPositionDTO), Mockito.same(paymentEventType), Mockito.same(errorDescription));
+      .notifyDebtPositionPaymentsEvent(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest));
   }
 }

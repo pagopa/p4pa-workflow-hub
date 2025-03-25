@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +20,14 @@ public class PublishPaymentEventActivityImpl implements PublishPaymentEventActiv
   }
 
   @Override
-  public void publishDebtPositionEvent(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType) {
-    log.info("Publishing event {} on debtPosition: {}", paymentEventType, debtPositionDTO.getDebtPositionId());
-    paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPositionDTO, paymentEventType, null);
+  public void publishDebtPositionEvent(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest) {
+    log.info("Publishing event {} on debtPosition: {}", paymentEventRequest.getPaymentEventType(), debtPositionDTO.getDebtPositionId());
+    paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPositionDTO, paymentEventRequest);
   }
 
   @Override
-  public void publishDebtPositionErrorEvent(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, String paymentEventDescription) {
-    log.info("Publishing error event {} on debtPosition: {}", paymentEventType, debtPositionDTO.getDebtPositionId());
-    paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPositionDTO, paymentEventType, paymentEventDescription);
+  public void publishDebtPositionErrorEvent(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest) {
+    log.info("Publishing error event {} on debtPosition: {}", paymentEventRequest.getEventDescription(), debtPositionDTO.getDebtPositionId());
+    paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPositionDTO, paymentEventRequest);
   }
 }

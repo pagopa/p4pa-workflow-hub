@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWFTest;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,8 +34,8 @@ class SynchronizeNoPagoPAWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncW
   }
 
   @Override
-  protected void invokeWF(SynchronizeSyncWF wf, DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
-    wf.synchronizeDPSync(debtPosition, paymentEventType, wfExecutionConfig);
+  protected void invokeWF(SynchronizeSyncWF wf, DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
+    wf.synchronizeDPSync(debtPosition, paymentEventRequest, wfExecutionConfig);
   }
 
 }

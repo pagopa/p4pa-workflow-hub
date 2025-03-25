@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd;
 import it.gov.pagopa.payhub.activities.activity.debtposition.gpd.SynchronizeInstallmentGpdActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWFTest;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -54,8 +54,8 @@ class SynchronizeAsyncGpdWFTest extends BaseDPSynchronizeWFTest<SynchronizeAsync
   }
 
   @Override
-  protected void invokeWF(SynchronizeAsyncGpdWF synchronizeSyncAcaWF, DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
-    synchronizeSyncAcaWF.synchronizeDPAsyncGpd(debtPosition, paymentEventType, wfExecutionConfig);
+  protected void invokeWF(SynchronizeAsyncGpdWF synchronizeSyncAcaWF, DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
+    synchronizeSyncAcaWF.synchronizeDPAsyncGpd(debtPosition, paymentEventRequest, wfExecutionConfig);
   }
 
 }

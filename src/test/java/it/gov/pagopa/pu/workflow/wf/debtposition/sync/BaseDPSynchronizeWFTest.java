@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositio
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
@@ -89,7 +90,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
   protected void givenCompleteUseCaseWhenWfInvokedThenOk() {
     // Given
     DebtPositionDTO debtPositionRequested = buildDebtPositionToSync();
-    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
     wfExecutionConfig.setIoMessages(new GenericWfExecutionConfig.IONotificationBaseOpsMessages());
 
@@ -108,7 +109,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     configureIUDSyncKo(debtPositionRequested, SYNC_IUD_ERROR, new RuntimeException("Error"));
 
     // When
-    invokeWF(wf, debtPositionRequested, paymentEventType, wfExecutionConfig);
+    invokeWF(wf, debtPositionRequested, paymentEventRequest, wfExecutionConfig);
 
     // Then
     if(isNotifyIoInvolved()) {
@@ -116,7 +117,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
         .sendIoNotification(Mockito.same(debtPositionRequested), Mockito.eq(iudSyncFinalizationMap), Mockito.same(wfExecutionConfig.getIoMessages()));
     }
     Mockito.verify(publishPaymentEventActivityMock)
-      .publishDebtPositionEvent(Mockito.same(debtPositionFinalized), Mockito.same(paymentEventType));
+      .publishDebtPositionEvent(Mockito.same(debtPositionFinalized), Mockito.same(paymentEventRequest));
     Mockito.verify(cancelCheckDpExpirationScheduleActivityMock)
         .cancelExpirationSchedule(Mockito.same(debtPositionFinalized.getDebtPositionId()));
     Mockito.verify(scheduleCheckDpExpirationActivityMock)
@@ -124,7 +125,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     if(isSyncErrorPossible()) {
       Mockito.verify(publishPaymentEventActivityMock)
-        .publishDebtPositionErrorEvent(Mockito.same(debtPositionRequested), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: SYNCIUDERROR for DebtPosition ID: 1. Error: Error"));
+        .publishDebtPositionErrorEvent(Mockito.same(debtPositionRequested), Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SYNC_ERROR, "Error occurred while synchronizing Installment with IUD: SYNCIUDERROR for DebtPosition ID: 1. Error: Error")));
     }
   }
 
@@ -146,9 +147,9 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     if(isSyncErrorPossible()){
       Mockito.verify(publishPaymentEventActivityMock)
-        .publishDebtPositionErrorEvent(Mockito.same(debtPosition), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: "+SYNC_IUD+" for DebtPosition ID: 1. Error: Error"));
+        .publishDebtPositionErrorEvent(Mockito.same(debtPosition), Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SYNC_ERROR, "Error occurred while synchronizing Installment with IUD: "+SYNC_IUD+" for DebtPosition ID: 1. Error: Error")));
       Mockito.verify(publishPaymentEventActivityMock)
-        .publishDebtPositionErrorEvent(Mockito.same(debtPosition), Mockito.eq(PaymentEventType.SYNC_ERROR), Mockito.eq("Error occurred while synchronizing Installment with IUD: "+SYNC_IUD_ERROR+" for DebtPosition ID: 1. Error: Error"));
+        .publishDebtPositionErrorEvent(Mockito.same(debtPosition), Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SYNC_ERROR, "Error occurred while synchronizing Installment with IUD: "+SYNC_IUD_ERROR+" for DebtPosition ID: 1. Error: Error")));
     }
 
     Mockito.verify(cancelCheckDpExpirationScheduleActivityMock)
@@ -192,7 +193,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
   protected abstract void configureIUDSyncOk(DebtPositionDTO debtPosition, String iud);
   protected abstract void configureIUDSyncKo(DebtPositionDTO debtPosition, String iud, Throwable expectedException);
 
-  protected abstract void invokeWF(W wf, DebtPositionDTO debtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig);
+  protected abstract void invokeWF(W wf, DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig);
 
   protected boolean isSyncErrorPossible(){
     return true;
