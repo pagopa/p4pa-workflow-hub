@@ -85,6 +85,36 @@ class DebtPositionControllerTest {
   }
 
   @Test
+  void givenNoOptionalParametersWhenSyncDebtPositionThenOk() throws Exception {
+    String workflowId = "workflow-1";
+    String accessToken = "ACCESSTOKEN";
+    DebtPositionDTO debtPositionRequestDTO = buildDebtPositionDTO();
+    SyncDebtPositionRequestDTO request = new SyncDebtPositionRequestDTO(debtPositionRequestDTO, null);
+    WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
+      .workflowId(workflowId)
+      .build();
+
+    Mockito.when(service.syncDebtPosition(debtPositionRequestDTO, null, new WfExecutionParameters(false, false, null), accessToken))
+      .thenReturn(expected);
+
+    try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
+      securityUtilsMockedStatic.when(SecurityUtils::getAccessToken)
+        .thenReturn(accessToken);
+
+      MvcResult result = mockMvc.perform(
+          post("/workflowhub/workflow/debt-position/sync")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andReturn();
+
+      WorkflowCreatedDTO resultResponse =
+        objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+      assertEquals(expected, resultResponse);
+    }
+  }
+
+  @Test
   void whenCheckDpExpirationThenOk() throws Exception {
     String workflowId = "workflow-1";
     Long debtPositionId = 1L;
