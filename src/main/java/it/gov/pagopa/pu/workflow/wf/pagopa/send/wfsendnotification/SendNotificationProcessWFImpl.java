@@ -20,6 +20,7 @@ import java.time.Duration;
 @WorkflowImpl(taskQueues = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS)
 public class SendNotificationProcessWFImpl implements SendNotificationProcessWF, ApplicationContextAware {
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS = "SendNotificationProcessWF";
+  public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY = "SendNotificationProcessWF_LOCAL";
 
   private static final int MAX_RETRIES = 10;
   private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
