@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.generic;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.SynchronizeDebtPositionWfClient;
 import org.apache.commons.lang3.function.TriFunction;
@@ -40,16 +41,16 @@ class DebtPositionGenericSyncServiceTest {
     // Given
     String accessToken = "ACCESSTOKEN";
     DebtPositionDTO debtPosition = new DebtPositionDTO();
-    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
 
     debtPosition.setFlagPagoPaPayment(false);
     String expectedWorkflowId = "WFID";
-    Mockito.when(wfClientMock.synchronizeNoPagoPADP(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(wfExecutionConfig)))
+    Mockito.when(wfClientMock.synchronizeNoPagoPADP(Mockito.same(debtPosition), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionConfig)))
       .thenReturn(expectedWorkflowId);
 
     // When
-    String result = service.invokeWorkflow(debtPosition, paymentEventType, false, wfExecutionConfig, accessToken);
+    String result = service.invokeWorkflow(debtPosition, paymentEventRequest, false, wfExecutionConfig, accessToken);
 
     // Then
     Assertions.assertSame(expectedWorkflowId, result);
@@ -80,13 +81,13 @@ class DebtPositionGenericSyncServiceTest {
     testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel .ASYNC_GPD, true, null);
   }
 
-  private void testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel  interactionModel, boolean massive, TriFunction<DebtPositionDTO, PaymentEventType, GenericWfExecutionConfig, String> expectedWfClientInvoke) {
+  private void testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel  interactionModel, boolean massive, TriFunction<DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig, String> expectedWfClientInvoke) {
     // Given
     String accessToken = "ACCESSTOKEN";
     long organizationId = 1L;
     DebtPositionDTO debtPosition = new DebtPositionDTO();
     debtPosition.setOrganizationId(organizationId);
-    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
 
     Mockito.when(interactionModelRetrieverServiceMock.retrieveInteractionModel(organizationId, accessToken))
@@ -96,12 +97,12 @@ class DebtPositionGenericSyncServiceTest {
     String expectedWorkflowId = null;
     if (expectedWfClientInvoke != null) {
       expectedWorkflowId = "WFID";
-      Mockito.when(expectedWfClientInvoke.apply(Mockito.same(debtPosition), Mockito.same(paymentEventType), Mockito.same(wfExecutionConfig)))
+      Mockito.when(expectedWfClientInvoke.apply(Mockito.same(debtPosition), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionConfig)))
         .thenReturn(expectedWorkflowId);
     }
 
     // When
-    String result = service.invokeWorkflow(debtPosition, paymentEventType, massive, wfExecutionConfig, accessToken);
+    String result = service.invokeWorkflow(debtPosition, paymentEventRequest, massive, wfExecutionConfig, accessToken);
 
     // Then
     Assertions.assertSame(expectedWorkflowId, result);

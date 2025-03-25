@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.JsonConfig;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -54,12 +55,12 @@ class DebtPositionControllerTest {
         .build())
       .build();
     SyncDebtPositionRequestDTO request = new SyncDebtPositionRequestDTO(debtPositionRequestDTO, executionConfig);
-    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.syncDebtPosition(debtPositionRequestDTO, paymentEventType, new WfExecutionParameters(true, false, executionConfig), accessToken))
+    Mockito.when(service.syncDebtPosition(debtPositionRequestDTO, paymentEventRequest, new WfExecutionParameters(true, false, executionConfig), accessToken))
       .thenReturn(expected);
 
     try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -71,7 +72,38 @@ class DebtPositionControllerTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .param("massive", "true")
             .param("partialChange", "false")
-            .param("paymentEventType", paymentEventType.name())
+            .param("paymentEventType", paymentEventRequest.getPaymentEventType().getValue())
+            .param("paymentEventDescription", paymentEventRequest.getEventDescription())
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andReturn();
+
+      WorkflowCreatedDTO resultResponse =
+        objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+      assertEquals(expected, resultResponse);
+    }
+  }
+
+  @Test
+  void givenNoOptionalParametersWhenSyncDebtPositionThenOk() throws Exception {
+    String workflowId = "workflow-1";
+    String accessToken = "ACCESSTOKEN";
+    DebtPositionDTO debtPositionRequestDTO = buildDebtPositionDTO();
+    SyncDebtPositionRequestDTO request = new SyncDebtPositionRequestDTO(debtPositionRequestDTO, null);
+    WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
+      .workflowId(workflowId)
+      .build();
+
+    Mockito.when(service.syncDebtPosition(debtPositionRequestDTO, null, new WfExecutionParameters(false, false, null), accessToken))
+      .thenReturn(expected);
+
+    try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
+      securityUtilsMockedStatic.when(SecurityUtils::getAccessToken)
+        .thenReturn(accessToken);
+
+      MvcResult result = mockMvc.perform(
+          post("/workflowhub/workflow/debt-position/sync")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andReturn();

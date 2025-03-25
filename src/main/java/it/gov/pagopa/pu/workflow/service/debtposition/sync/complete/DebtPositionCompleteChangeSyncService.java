@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.service.debtposition.sync.complete;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.custom.DebtPositionCustomWfSyncService;
 import it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.generic.DebtPositionGenericSyncService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +21,15 @@ public class DebtPositionCompleteChangeSyncService {
     this.customWfSyncService = customWfSyncService;
   }
 
-  public String invokeWorkflow(DebtPositionDTO debtPositionDTO, PaymentEventType paymentEventType, WfExecutionParameters wfExecutionParameters, String accessToken) {
-    log.debug("Requested complete change on debtPosition {} (paymentEventType {})", debtPositionDTO.getDebtPositionId(), paymentEventType);
+  public String invokeWorkflow(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, WfExecutionParameters wfExecutionParameters, String accessToken) {
+    log.debug("Requested complete change on debtPosition {} (paymentEventType {})",
+      debtPositionDTO.getDebtPositionId(),
+      paymentEventRequest!=null? paymentEventRequest.getPaymentEventType() : null);
 
     if(wfExecutionParameters.getWfExecutionConfig() == null || wfExecutionParameters.getWfExecutionConfig() instanceof GenericWfExecutionConfig) {
-      return genericWfSyncService.invokeWorkflow(debtPositionDTO, paymentEventType, wfExecutionParameters.isMassive(), (GenericWfExecutionConfig)wfExecutionParameters.getWfExecutionConfig(), accessToken);
+      return genericWfSyncService.invokeWorkflow(debtPositionDTO, paymentEventRequest, wfExecutionParameters.isMassive(), (GenericWfExecutionConfig)wfExecutionParameters.getWfExecutionConfig(), accessToken);
     } else {
-      return customWfSyncService.invokeWorkflow(debtPositionDTO, paymentEventType, wfExecutionParameters);
+      return customWfSyncService.invokeWorkflow(debtPositionDTO, paymentEventRequest, wfExecutionParameters);
     }
   }
 }

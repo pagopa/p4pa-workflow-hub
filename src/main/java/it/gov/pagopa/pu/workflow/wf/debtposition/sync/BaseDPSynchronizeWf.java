@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.config.CheckDebtPositionExpirationWfConfig;
@@ -68,13 +69,13 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
    * For each TO_SYNC installment, it will call {@link #synchronizeInstallment(DebtPositionDTO, InstallmentDTO)} method, publishing an event in case of error.<BR />
    * Next it will call {@link #finalizeDebtPositionSyncStatusActivity}
    */
-  protected void synchronizeDebtPosition(DebtPositionDTO requestedDebtPosition, PaymentEventType paymentEventType, GenericWfExecutionConfig wfExecutionConfig) {
+  protected void synchronizeDebtPosition(DebtPositionDTO requestedDebtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     log.info("Synchronizing DebtPosition {} using Activity class {}", debtPositionId, getClass().getSimpleName());
 
     Map<String, IupdSyncStatusUpdateDTO> finalizeStatusRequest = processToSyncInstallments(requestedDebtPosition);
     DebtPositionDTO finalizedDebtPositionDTO = finalizeSyncStatus(requestedDebtPosition, finalizeStatusRequest);
-    publishEvent(paymentEventType, finalizedDebtPositionDTO);
+    publishEvent(paymentEventRequest, finalizedDebtPositionDTO);
     callIONotificationActivity(requestedDebtPosition, finalizeStatusRequest, wfExecutionConfig!=null? wfExecutionConfig.getIoMessages() : null);
     scheduleExpirationWF(finalizedDebtPositionDTO, debtPositionId);
 
@@ -91,7 +92,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
           } catch (Exception e) {
             String errorMessage = "Error occurred while synchronizing Installment with IUD: " + installment.getIud() + " for DebtPosition ID: " + debtPosition.getDebtPositionId() + ". Error: " + e.getMessage();
             log.error(errorMessage, e);
-            publishPaymentEventActivity.publishDebtPositionErrorEvent(debtPosition, PaymentEventType.SYNC_ERROR, errorMessage);
+            publishPaymentEventActivity.publishDebtPositionErrorEvent(debtPosition, new PaymentEventRequestDTO(PaymentEventType.SYNC_ERROR, errorMessage));
             return null;
           }
         }
@@ -125,10 +126,10 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     }
   }
 
-  protected void publishEvent(PaymentEventType paymentEventType, DebtPositionDTO finalizedDebtPositionDTO) {
-    if (paymentEventType != null) {
-      log.info("Publishing event {} on debtPosition {}", paymentEventType, finalizedDebtPositionDTO.getDebtPositionId());
-      publishPaymentEventActivity.publishDebtPositionEvent(finalizedDebtPositionDTO, paymentEventType);
+  protected void publishEvent(PaymentEventRequestDTO paymentEventRequest, DebtPositionDTO finalizedDebtPositionDTO) {
+    if (paymentEventRequest != null) {
+      log.info("Publishing event {} on debtPosition {}", paymentEventRequest.getPaymentEventType(), finalizedDebtPositionDTO.getDebtPositionId());
+      publishPaymentEventActivity.publishDebtPositionEvent(finalizedDebtPositionDTO, paymentEventRequest);
     }
   }
 

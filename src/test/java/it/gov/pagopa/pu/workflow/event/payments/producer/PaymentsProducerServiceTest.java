@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.event.payments.producer;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import org.junit.jupiter.api.Assertions;
@@ -35,10 +36,10 @@ class PaymentsProducerServiceTest {
   void whenNotifyDebtPositionPaymentsEventThenSendMessage() {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
-    PaymentEventType eventType = PaymentEventType.SYNC_ERROR;
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
 
     // When
-    paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPosition, eventType, "eventDescription");
+    paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPosition, paymentEventRequest);
 
     // Then
     verify(streamBridge, times(1)).send(
@@ -46,10 +47,11 @@ class PaymentsProducerServiceTest {
       Mockito.any(),
       Mockito.<Message<?>>argThat(m -> {
         DebtPositionEventDTO payload = (DebtPositionEventDTO) m.getPayload();
-        String eventIdPrefix = eventType.name() + debtPosition.getDebtPositionId();
+        String eventIdPrefix = paymentEventRequest.getPaymentEventType().getValue() + debtPosition.getDebtPositionId();
         Assertions.assertEquals(eventIdPrefix, payload.getEventId().substring(0, eventIdPrefix.length()));
         Assertions.assertSame(debtPosition, payload.getPayload());
-        Assertions.assertSame(eventType, payload.getEventType());
+        Assertions.assertSame(paymentEventRequest.getEventDescription(), payload.getEventDescription());
+        Assertions.assertSame(paymentEventRequest.getPaymentEventType(), payload.getEventType());
         Assertions.assertEquals(String.valueOf(debtPosition.getOrganizationId()), m.getHeaders().get(KafkaHeaders.KEY));
         return true;
       }));
