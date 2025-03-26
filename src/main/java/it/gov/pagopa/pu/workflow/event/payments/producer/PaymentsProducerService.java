@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.event.payments.producer;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -35,14 +35,14 @@ public class PaymentsProducerService {
     }
     */
 
-  public void notifyDebtPositionPaymentsEvent(DebtPositionDTO debtPosition, PaymentEventType event, String eventDescription) {
-    String eventId = event.name() + debtPosition.getDebtPositionId() + UUID.randomUUID();
+  public void notifyDebtPositionPaymentsEvent(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest) {
+    String eventId = paymentEventRequest.getPaymentEventType().getValue() + debtPosition.getDebtPositionId() + UUID.randomUUID();
     streamBridge.send("paymentsProducer-out-0", binder,
       MessageBuilder.withPayload(DebtPositionEventDTO.builder()
           .eventId(eventId)
           .payload(debtPosition)
-          .eventType(event)
-          .eventDescription(eventDescription)
+          .eventType(paymentEventRequest.getPaymentEventType())
+          .eventDescription(paymentEventRequest.getEventDescription())
           .build())
         .setHeader(KafkaHeaders.KEY, String.valueOf(debtPosition.getOrganizationId()))
         .build()

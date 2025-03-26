@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.controller;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -23,20 +24,22 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> syncDebtPosition(SyncDebtPositionRequestDTO syncDebtPositionRequest, Boolean massive, Boolean partialChange, PaymentEventType paymentEventType) {
+  public ResponseEntity<WorkflowCreatedDTO> syncDebtPosition(SyncDebtPositionRequestDTO syncDebtPositionRequest, Boolean massive, Boolean partialChange, PaymentEventType paymentEventType, String paymentEventDescription) {
     WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(
       Boolean.TRUE.equals(massive),
       Boolean.TRUE.equals(partialChange),
       syncDebtPositionRequest.getExecutionConfig());
 
-    log.info("Starting workflow to synchronize DebtPosition: {} (massive: {}, partial: {})",
+    log.info("Starting workflow to synchronize DebtPosition: {} (massive: {}, partial: {}) and evenType: {}",
       syncDebtPositionRequest.getDebtPosition().getDebtPositionId(),
       wfExecutionParameters.isMassive(),
-      wfExecutionParameters.isPartialChange());
+      wfExecutionParameters.isPartialChange(),
+      paymentEventType);
 
     return ResponseEntity.ok(
       service.syncDebtPosition(
-        syncDebtPositionRequest.getDebtPosition(), paymentEventType,
+        syncDebtPositionRequest.getDebtPosition(),
+        paymentEventType != null? new PaymentEventRequestDTO(paymentEventType, paymentEventDescription) : null,
         wfExecutionParameters,
         SecurityUtils.getAccessToken()));
   }

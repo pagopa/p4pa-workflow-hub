@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 import io.temporal.workflow.Functions;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWF;
@@ -104,13 +105,13 @@ class SynchronizeDebtPositionWfClientTest {
   private <T> void testInvokeWF(
     String taskQueue,
     Class<T> wfInterfaceClass,
-    TriFunction<DebtPositionDTO, PaymentEventType, GenericWfExecutionConfig, String> clientInvoke,
-    Functions.Proc4<T, DebtPositionDTO, PaymentEventType, GenericWfExecutionConfig> wfInvokeVerifier) {
+    TriFunction<DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig, String> clientInvoke,
+    Functions.Proc4<T, DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig> wfInvokeVerifier) {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
     debtPosition.setDebtPositionId(1L);
     String expectedWorkflowId = taskQueue+"-1";
-    PaymentEventType paymentEventType = PaymentEventType.DP_CREATED;
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     GenericWfExecutionConfig genericWfExecutionConfig = new GenericWfExecutionConfig();
     genericWfExecutionConfig.setIoMessages(new GenericWfExecutionConfig.IONotificationBaseOpsMessages());
 
@@ -123,10 +124,10 @@ class SynchronizeDebtPositionWfClientTest {
       .thenReturn(wf);
 
     // When
-    String workflowId = clientInvoke.apply(debtPosition, paymentEventType, genericWfExecutionConfig);
+    String workflowId = clientInvoke.apply(debtPosition, paymentEventRequest, genericWfExecutionConfig);
 
     // Then
     Assertions.assertEquals(expectedWorkflowId, workflowId);
-    wfInvokeVerifier.apply(Mockito.verify(wf), debtPosition, paymentEventType, genericWfExecutionConfig);
+    wfInvokeVerifier.apply(Mockito.verify(wf), debtPosition, paymentEventRequest, genericWfExecutionConfig);
   }
 }
