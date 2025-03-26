@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPag
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaSendEmailActivity;
 import it.gov.pagopa.payhub.activities.dto.receipt.ReceiptPagopaIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -22,6 +23,7 @@ public class ReceiptPagopaIngestionWFImpl implements ReceiptPagopaIngestionWF, A
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private ReceiptPagopaNotifySilActivity receiptPagopaNotifySilActivity;
   private ReceiptPagopaSendEmailActivity receiptPagopaSendEmailActivity;
+  private CreateAssessmentsWFClient createAssessmentsWFClient;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -37,6 +39,7 @@ public class ReceiptPagopaIngestionWFImpl implements ReceiptPagopaIngestionWF, A
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
     receiptPagopaNotifySilActivity = wfConfig.buildReceiptPagopaNotifySilActivityStub();
     receiptPagopaSendEmailActivity = wfConfig.buildReceiptPagopaSendEmailActivityStub();
+    createAssessmentsWFClient = applicationContext.getBean(CreateAssessmentsWFClient.class);
   }
 
   @Override
@@ -64,6 +67,10 @@ public class ReceiptPagopaIngestionWFImpl implements ReceiptPagopaIngestionWF, A
       null);
 
     if (success) {
+
+      Long receiptId = ingestionResult.getReceiptDTO().getReceiptId();
+      createAssessmentsWFClient.createAssessmentsAsyncStart(receiptId);
+
       try {
         receiptPagopaNotifySilActivity.handleNotifySil(ingestionResult.getReceiptDTO(), ingestionResult.getInstallmentDTO());
       } catch (Exception e) {
