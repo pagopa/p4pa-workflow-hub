@@ -2,7 +2,8 @@ package it.gov.pagopa.pu.workflow.event.payments.producer;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
-import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
+import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.integration.support.MessageBuilder;
@@ -36,15 +37,23 @@ public class PaymentsProducerService {
     */
 
   public void notifyDebtPositionPaymentsEvent(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest) {
-    String eventId = paymentEventRequest.getPaymentEventType().getValue() + debtPosition.getDebtPositionId() + UUID.randomUUID();
+    notifyPaymentsEvent(debtPosition.getOrganizationId(), debtPosition.getDebtPositionId(), debtPosition, paymentEventRequest);
+  }
+
+  public void notifyDebtPositionSendEvent(DebtPositionSendNotificationDTO debtPosition, PaymentEventRequestDTO paymentEventRequest) {
+    notifyPaymentsEvent(debtPosition.getOrganizationId(), debtPosition.getDebtPositionId(), debtPosition, paymentEventRequest);
+  }
+
+  public void notifyPaymentsEvent(Long organizationId, Long debtPositionId, Object payload, PaymentEventRequestDTO paymentEventRequest) {
+    String eventId = paymentEventRequest.getPaymentEventType().getValue() + debtPositionId + UUID.randomUUID();
     streamBridge.send("paymentsProducer-out-0", binder,
-      MessageBuilder.withPayload(DebtPositionEventDTO.builder()
+      MessageBuilder.withPayload(PaymentEventDTO.builder()
           .eventId(eventId)
-          .payload(debtPosition)
+          .payload(payload)
           .eventType(paymentEventRequest.getPaymentEventType())
           .eventDescription(paymentEventRequest.getEventDescription())
           .build())
-        .setHeader(KafkaHeaders.KEY, String.valueOf(debtPosition.getOrganizationId()))
+        .setHeader(KafkaHeaders.KEY, String.valueOf(organizationId))
         .build()
     );
   }

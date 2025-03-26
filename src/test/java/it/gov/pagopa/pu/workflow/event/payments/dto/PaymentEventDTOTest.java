@@ -14,15 +14,19 @@ import java.util.stream.Stream;
 
 class PaymentEventDTOTest {
 
-  private final Map<PaymentEventType, Class<? extends PaymentEventDTO<?>>> enum2ExpectedModel = Map.of(
-    PaymentEventType.DP_CREATED, DebtPositionEventDTO.class,
-    PaymentEventType.DP_UPDATED, DebtPositionEventDTO.class,
-    PaymentEventType.DP_CANCELLED, DebtPositionEventDTO.class,
-    PaymentEventType.DPI_ADDED, DebtPositionEventDTO.class,
-    PaymentEventType.DPI_UPDATED, DebtPositionEventDTO.class,
-    PaymentEventType.DPI_CANCELLED, DebtPositionEventDTO.class,
-    PaymentEventType.RT_RECEIVED, DebtPositionEventDTO.class,
-    PaymentEventType.SYNC_ERROR, DebtPositionEventDTO.class
+  private final Map<PaymentEventType, Class<? extends PaymentEventDTO<?>>> enum2ExpectedModel = Map.ofEntries(
+    Map.entry(PaymentEventType.DP_CREATED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.DP_UPDATED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.DP_CANCELLED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.DPI_ADDED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.DPI_UPDATED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.DPI_CANCELLED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.RT_RECEIVED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.SYNC_ERROR, DebtPositionEventDTO.class),
+
+    Map.entry(PaymentEventType.SEND_NOTIFICATION_CREATED, DebtPositionSendEventDTO.class),
+    Map.entry(PaymentEventType.SEND_NOTIFICATION_DATE, DebtPositionSendEventDTO.class),
+    Map.entry(PaymentEventType.SEND_NOTIFICATION_ERROR, DebtPositionSendEventDTO.class)
   );
 
   @Test

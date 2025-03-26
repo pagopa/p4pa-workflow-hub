@@ -6,9 +6,16 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.DeliveryNotific
 import it.gov.pagopa.payhub.activities.activity.sendnotification.NotificationStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.PreloadSendFileActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.UploadSendFileActivity;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.mapper.SendNotification2DebtPositionSendNotificationsMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -20,6 +27,7 @@ import java.time.Duration;
 @WorkflowImpl(taskQueues = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS)
 public class SendNotificationProcessWFImpl implements SendNotificationProcessWF, ApplicationContextAware {
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS = "SendNotificationProcessWF";
+  public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY = "SendNotificationProcessWF_LOCAL";
 
   private static final int MAX_RETRIES = 10;
   private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
@@ -28,6 +36,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   private UploadSendFileActivity uploadSendFileActivity;
   private DeliveryNotificationActivity deliveryNotificationActivity;
   private NotificationStatusActivity notificationStatusActivity;
+  private PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -43,6 +52,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     uploadSendFileActivity = wfConfig.buildUploadSendFileActivityStub();
     deliveryNotificationActivity = wfConfig.buildDeliveryNotificationActivityStub();
     notificationStatusActivity = wfConfig.buildNotificationStatusActivityStub();
+    publishSendNotificationPaymentEventActivity = wfConfig.buildPublishSendNotificationPaymentEventActivityStub();
   }
 
   @Override
@@ -53,21 +63,28 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     uploadSendFileActivity.uploadSendFile(sendNotificationId);
     deliveryNotificationActivity.deliveryNotification(sendNotificationId);
 
-    waitDeliveryAcceptance(sendNotificationId);
+    SendNotificationDTO sendNotificationDTO = waitDeliveryAcceptance(sendNotificationId);
+
+    publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
   }
 
-  private void waitDeliveryAcceptance(String sendNotificationId) {
+  private void publishSendEvent(SendNotificationDTO sendNotificationDTO, PaymentEventRequestDTO eventRequestDTO) {
+    SendNotification2DebtPositionSendNotificationsMapper.map(sendNotificationDTO).forEach(p ->
+      publishSendNotificationPaymentEventActivity.publishSendNotificationEvent(p, eventRequestDTO));
+  }
+
+  private SendNotificationDTO waitDeliveryAcceptance(String sendNotificationId) {
     int attemptCounter = 0;
-    String notificationRequestStatus = null;
+    SendNotificationDTO notification = null;
 
     while (attemptCounter < MAX_RETRIES) {
       attemptCounter++;
 
-      notificationRequestStatus = notificationStatusActivity.getSendNotificationStatus(sendNotificationId).getNotificationRequestStatus();
+      notification = notificationStatusActivity.getSendNotificationStatus(sendNotificationId);
 
-      if (notificationRequestStatus != null && notificationRequestStatus.equalsIgnoreCase("ACCEPTED")) {
+      if (notification != null && NotificationStatus.ACCEPTED.equals(notification.getStatus())) {
         log.info("Notification status is ACCEPTED for sendNotificationId {}", sendNotificationId);
-        return;
+        return notification;
       }
 
       log.info("Notification status not ACCEPTED, retry attempt {} for sendNotificationId {}", attemptCounter, sendNotificationId);
@@ -75,6 +92,12 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       Workflow.sleep(RETRY_INTERVAL);
     }
 
-    throw new WorkflowInternalErrorException("Max retries reached: notification status not ACCEPTED for sendNotificationId " + sendNotificationId + ". Last status was: " + notificationRequestStatus);
+    if (notification != null) {
+      for (DebtPositionSendNotificationDTO p : SendNotification2DebtPositionSendNotificationsMapper.map(notification)) {
+        publishSendNotificationPaymentEventActivity.publishSendNotificationErrorEvent(p,
+          new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, "Exceeded max retry attempts to wait for ACCEPTED status: " + attemptCounter));
+      }
+    }
+    throw new WorkflowInternalErrorException("Max retries reached: notification status not ACCEPTED for sendNotificationId " + sendNotificationId + ". Last status was: " + (notification!=null?notification.getStatus():"null"));
   }
 }
