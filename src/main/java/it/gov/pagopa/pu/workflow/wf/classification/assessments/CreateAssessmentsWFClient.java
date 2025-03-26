@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.classification.assessments;
+package it.gov.pagopa.pu.workflow.wf.assessments;
 
 import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
