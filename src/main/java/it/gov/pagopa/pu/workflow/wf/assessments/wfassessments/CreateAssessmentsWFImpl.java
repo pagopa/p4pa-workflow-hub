@@ -1,8 +1,8 @@
-package it.gov.pagopa.pu.workflow.wf.classification.assessments.wfassessments;
+package it.gov.pagopa.pu.workflow.wf.assessments.wfassessments;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.AssessmentsCreationActivity;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.config.CreateAssessmentsWFConfig;
+import it.gov.pagopa.pu.workflow.wf.assessments.config.CreateAssessmentsWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +28,7 @@ public class CreateAssessmentsWFImpl implements CreateAssessmentsWF, Application
   }
 
   @Override
-  public void create(Long receiptId) {
+  public void createAssessment(Long receiptId) {
     log.info("Creating assessment for receiptId: {}", receiptId);
 
     assessmentsCreationActivity.createAssessments(receiptId);

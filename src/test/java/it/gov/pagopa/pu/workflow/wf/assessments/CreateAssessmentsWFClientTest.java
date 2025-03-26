@@ -1,9 +1,9 @@
-package it.gov.pagopa.pu.workflow.wf.classification.assessments;
+package it.gov.pagopa.pu.workflow.wf.assessments;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.wfassessments.CreateAssessmentsWF;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.wfassessments.CreateAssessmentsWFImpl;
+import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
+import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class CreateAssessmentsWFClientTest {
   }
 
   @Test
-  void testCreate() {
+  void testCreateAssessment() {
     Long receiptId = 123L;
     String taskQueue = CreateAssessmentsWFImpl.TASK_QUEUE_CREATE_ASSESSMENTS_WF;
     String expectedWorkflowId = "CreateAssessmentsWF-123";
@@ -56,7 +56,7 @@ class CreateAssessmentsWFClientTest {
 
       // Then
       assertEquals(expectedWorkflowId, workflowId);
-      verify(wfMock).create(receiptId);
+      verify(wfMock).createAssessment(receiptId);
     }
   }
 }

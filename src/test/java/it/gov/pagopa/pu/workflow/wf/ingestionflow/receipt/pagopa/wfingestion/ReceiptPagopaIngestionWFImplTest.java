@@ -9,7 +9,6 @@ import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,8 +31,6 @@ class ReceiptPagopaIngestionWFImplTest {
   private ReceiptPagopaIngestionActivity receiptPagopaIngestionActivityMock;
   @Mock
   private ReceiptPagopaNotifySilActivity receiptPagopaNotifySilActivityMock;
-  @Mock
-  private CreateAssessmentsWFClient createAssessmentsWFClientMock;
 
   private ReceiptPagopaIngestionWFImpl wf;
 
@@ -50,9 +47,6 @@ class ReceiptPagopaIngestionWFImplTest {
       .thenReturn(receiptPagopaNotifySilActivityMock);
     Mockito.when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaSendEmailActivityStub())
       .thenReturn(receiptPagopaSendEmailActivityMock);
-
-    Mockito.when(applicationContextMock.getBean(CreateAssessmentsWFClient.class))
-      .thenReturn(createAssessmentsWFClientMock);
 
     Mockito.when(applicationContextMock.getBean(ReceiptPagopaIngestionWfConfig.class))
       .thenReturn(receiptPagopaIngestionWfConfigMock);
@@ -131,38 +125,4 @@ class ReceiptPagopaIngestionWFImplTest {
     Mockito.verify(receiptPagopaNotifySilActivityMock, Mockito.times(1))
       .handleNotifySil(receiptDTO, installmentDTO);
   }
-
-  @Test
-  void givenSuccessfulProcessingWhenIngestThenCreateAssessmentsAsyncStart() {
-    long ingestionFlowFileId = 1L;
-    ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-    receiptDTO.setReceiptId(123L);
-    InstallmentDTO installmentDTO = new InstallmentDTO();
-
-    ReceiptPagopaIngestionFlowFileResult result = new ReceiptPagopaIngestionFlowFileResult(receiptDTO, installmentDTO);
-
-    Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId)).thenReturn(result);
-
-    Assertions.assertDoesNotThrow(() -> wf.ingest(ingestionFlowFileId));
-
-    Mockito.verify(createAssessmentsWFClientMock, Mockito.times(1))
-      .createAssessmentsAsyncStart(123L);
-  }
-
-  @Test
-  void givenExceptionInProcessFileWhenIngestThenUpdateStatusToError() {
-    long ingestionFlowFileId = 1L;
-
-    Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId))
-      .thenThrow(new RuntimeException("Test exception"));
-
-    wf.ingest(ingestionFlowFileId);
-
-    Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
-      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
-    Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
-      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, "error processing receipt id[1]: Test exception", null);
-    Mockito.verifyNoInteractions(receiptPagopaNotifySilActivityMock, receiptPagopaSendEmailActivityMock, createAssessmentsWFClientMock);
-  }
-
 }

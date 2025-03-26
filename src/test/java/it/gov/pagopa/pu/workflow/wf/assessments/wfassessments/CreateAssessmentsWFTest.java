@@ -1,7 +1,7 @@
-package it.gov.pagopa.pu.workflow.wf.classification.assessments.wfassessments;
+package it.gov.pagopa.pu.workflow.wf.assessments.wfassessments;
 
 import it.gov.pagopa.payhub.activities.activity.classifications.AssessmentsCreationActivity;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.config.CreateAssessmentsWFConfig;
+import it.gov.pagopa.pu.workflow.wf.assessments.config.CreateAssessmentsWFConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,25 +40,25 @@ class CreateAssessmentsWFTest {
   }
 
   @Test
-  void givenValidReceiptIdWhenCreateThenLogAndCreateAssessments() {
+  void givenValidReceiptIdWhenCreateThenLogAndCreateAssessmentAssessments() {
     // Given
     Long receiptId = 123L;
 
     // When
-    workflow.create(receiptId);
+    workflow.createAssessment(receiptId);
 
     // Then
     verify(assessmentsCreationActivityMock).createAssessments(receiptId);
   }
 
   @Test
-  void givenExceptionWhenCreateThenLogError() {
+  void givenExceptionWhenCreateAssessmentThenLogError() {
     // Given
     Long receiptId = 123L;
     doThrow(new RuntimeException("Test exception")).when(assessmentsCreationActivityMock).createAssessments(receiptId);
 
     // When
-    assertThrows(RuntimeException.class, () -> workflow.create(receiptId));
+    assertThrows(RuntimeException.class, () -> workflow.createAssessment(receiptId));
 
     // Then
     verify(assessmentsCreationActivityMock).createAssessments(receiptId);

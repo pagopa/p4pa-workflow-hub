@@ -5,6 +5,8 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
+import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
+import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +21,11 @@ import java.util.function.Consumer;
 public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
 
   private final TransferClassificationWFClient transferClassificationWFClient;
+  private final CreateAssessmentsWFClient createAssessmentsWFClient;
 
-  public PaymentsConsumer(TransferClassificationWFClient transferClassificationWFClient) {
+  public PaymentsConsumer(TransferClassificationWFClient transferClassificationWFClient, CreateAssessmentsWFClient createAssessmentsWFClient) {
     this.transferClassificationWFClient = transferClassificationWFClient;
+    this.createAssessmentsWFClient = createAssessmentsWFClient;
   }
 
   @Override
@@ -43,6 +47,15 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
                   .transferIndex(t.getTransferIndex())
                   .build()
               )));
+
+        Long receiptIdFromEvent= Long.valueOf(paymentEventDTO.getEventDescription().replace("receiptId:",""));
+        debtPosition.getPaymentOptions().stream()
+          .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
+          .filter(installment -> receiptIdFromEvent.equals(installment.getReceiptId()))
+          .findFirst()
+          .ifPresent(installment -> createAssessmentsWFClient.createAssessments(receiptIdFromEvent));
+
+
       } else {
         log.error("Unexpected payload related to RT_RECEIVED event: provided {} having payload type {}"
           , paymentEventDTO.getClass().getName(),
