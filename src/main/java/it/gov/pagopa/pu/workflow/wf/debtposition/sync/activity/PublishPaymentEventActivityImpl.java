@@ -27,7 +27,7 @@ public class PublishPaymentEventActivityImpl implements PublishPaymentEventActiv
 
   @Override
   public void publishDebtPositionErrorEvent(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest) {
-    log.info("Publishing error event {} on debtPosition: {}", paymentEventRequest.getEventDescription(), debtPositionDTO.getDebtPositionId());
+    log.info("Publishing error event {} on debtPosition: {}", paymentEventRequest.getPaymentEventType(), debtPositionDTO.getDebtPositionId());
     paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPositionDTO, paymentEventRequest);
   }
 }

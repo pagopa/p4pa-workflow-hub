@@ -5,8 +5,13 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.DeliveryNotific
 import it.gov.pagopa.payhub.activities.activity.sendnotification.NotificationStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.PreloadSendFileActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.UploadSendFileActivity;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NewNotificationRequestStatusResponseV24DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.utils.faker.SendNotificationDTOFaker;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +38,8 @@ class SendNotificationProcessWFImplTest {
   private DeliveryNotificationActivity deliveryNotificationActivityMock;
   @Mock
   private NotificationStatusActivity notificationStatusActivityMock;
+  @Mock
+  private PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivityMock;
 
   private SendNotificationProcessWFImpl wf;
 
@@ -45,6 +52,7 @@ class SendNotificationProcessWFImplTest {
     Mockito.when(wfConfigMock.buildUploadSendFileActivityStub()).thenReturn(uploadSendFileActivityMock);
     Mockito.when(wfConfigMock.buildDeliveryNotificationActivityStub()).thenReturn(deliveryNotificationActivityMock);
     Mockito.when(wfConfigMock.buildNotificationStatusActivityStub()).thenReturn(notificationStatusActivityMock);
+    Mockito.when(wfConfigMock.buildPublishSendNotificationPaymentEventActivityStub()).thenReturn(publishSendNotificationPaymentEventActivityMock);
 
     Mockito.when(applicationContextMock.getBean(SendNotificationProcessWfConfig.class)).thenReturn(wfConfigMock);
 
@@ -55,8 +63,8 @@ class SendNotificationProcessWFImplTest {
   @Test
   void givenStatusAcceptedWhenSendNotificationProcessThenOk() {
     String sendNotificationId = "testId";
-    NewNotificationRequestStatusResponseV24DTO expectedResponse = new NewNotificationRequestStatusResponseV24DTO();
-    expectedResponse.setNotificationRequestStatus("ACCEPTED");
+    SendNotificationDTO expectedResponse = SendNotificationDTOFaker.buildSendNotificationDTO();
+    expectedResponse.status(NotificationStatus.ACCEPTED);
 
     Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
       .thenReturn(expectedResponse);
@@ -67,13 +75,16 @@ class SendNotificationProcessWFImplTest {
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
     Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
     Mockito.verify(notificationStatusActivityMock).getSendNotificationStatus(sendNotificationId);
+    SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
+      Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
+    );
   }
 
   @Test
   void givenStatusNotAcceptedWhenSendNotificationProcessThenRetries() {
     String sendNotificationId = "testId";
-    NewNotificationRequestStatusResponseV24DTO expectedResponse = new NewNotificationRequestStatusResponseV24DTO();
-    expectedResponse.setNotificationRequestStatus("NOT_ACCEPTED");
+    SendNotificationDTO expectedResponse = SendNotificationDTOFaker.buildSendNotificationDTO();
+    expectedResponse.setStatus(NotificationStatus.COMPLETE);
 
     Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
       .thenReturn(expectedResponse);
@@ -88,7 +99,7 @@ class SendNotificationProcessWFImplTest {
       );
 
       assertEquals(
-        "Max retries reached: notification status not ACCEPTED for sendNotificationId " + sendNotificationId + ". Last status was: NOT_ACCEPTED",
+        "Max retries reached: notification status not ACCEPTED for sendNotificationId " + sendNotificationId + ". Last status was: COMPLETE",
         exception.getMessage()
       );
     }
@@ -97,36 +108,10 @@ class SendNotificationProcessWFImplTest {
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
     Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
     Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).getSendNotificationStatus(sendNotificationId);
+    SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
+      Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationErrorEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, "Exceeded max retry attempts to wait for ACCEPTED status: 10"))
+    );
   }
 
-  @Test
-  void givenStatusNullWhenSendNotificationProcessThenRetries() {
-    String sendNotificationId = "testId";
-    NewNotificationRequestStatusResponseV24DTO expectedResponse = new NewNotificationRequestStatusResponseV24DTO();
-    expectedResponse.setNotificationRequestStatus(null);
-
-    Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
-      .thenReturn(expectedResponse);
-
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
-        .then(invocation -> null);
-
-      Exception exception = assertThrows(
-        WorkflowInternalErrorException.class,
-        () -> wf.sendNotificationProcess(sendNotificationId)
-      );
-
-      assertEquals(
-        "Max retries reached: notification status not ACCEPTED for sendNotificationId " + sendNotificationId + ". Last status was: null",
-        exception.getMessage()
-      );
-    }
-
-    Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
-    Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
-    Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
-    Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).getSendNotificationStatus(sendNotificationId);
-  }
 }
 

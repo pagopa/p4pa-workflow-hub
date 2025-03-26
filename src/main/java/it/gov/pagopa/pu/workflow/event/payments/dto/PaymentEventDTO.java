@@ -24,6 +24,11 @@ import lombok.experimental.SuperBuilder;
     "RT_RECEIVED",
     "SYNC_ERROR",
   }),
+  @JsonSubTypes.Type(value = DebtPositionSendEventDTO.class, names = {
+    "SEND_NOTIFICATION_CREATED",
+    "SEND_NOTIFICATION_DATE",
+    "SEND_NOTIFICATION_ERROR"
+  }),
 })
 public class PaymentEventDTO <T> {
   private String eventId;

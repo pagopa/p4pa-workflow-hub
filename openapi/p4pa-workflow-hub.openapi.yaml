@@ -271,6 +271,9 @@ components:
         - DPI_CANCELLED
         - RT_RECEIVED
         - SYNC_ERROR
+        - SEND_NOTIFICATION_CREATED
+        - SEND_NOTIFICATION_ERROR
+        - SEND_NOTIFICATION_DATE
     SyncDebtPositionRequestDTO:
       type: object
       required:
