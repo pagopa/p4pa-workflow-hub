@@ -10,6 +10,7 @@ import org.springframework.integration.support.MessageBuilder;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Component
@@ -37,20 +38,21 @@ public class PaymentsProducerService {
     */
 
   public void notifyDebtPositionPaymentsEvent(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest) {
-    notifyPaymentsEvent(debtPosition.getOrganizationId(), debtPosition.getDebtPositionId(), debtPosition, paymentEventRequest);
+    notifyPaymentsEvent(debtPosition.getOrganizationId(), String.valueOf(debtPosition.getDebtPositionId()), debtPosition, paymentEventRequest);
   }
 
-  public void notifyDebtPositionSendEvent(DebtPositionSendNotificationDTO debtPosition, PaymentEventRequestDTO paymentEventRequest) {
-    notifyPaymentsEvent(debtPosition.getOrganizationId(), debtPosition.getDebtPositionId(), debtPosition, paymentEventRequest);
+  public void notifyDebtPositionSendEvent(DebtPositionSendNotificationDTO dpSendNotification, PaymentEventRequestDTO paymentEventRequest) {
+    notifyPaymentsEvent(dpSendNotification.getOrganizationId(), dpSendNotification.getSendNotificationId(), dpSendNotification, paymentEventRequest);
   }
 
-  public void notifyPaymentsEvent(Long organizationId, Long debtPositionId, Object payload, PaymentEventRequestDTO paymentEventRequest) {
-    String eventId = paymentEventRequest.getPaymentEventType().getValue() + debtPositionId + UUID.randomUUID();
+  public void notifyPaymentsEvent(Long organizationId, String entityId, Object payload, PaymentEventRequestDTO paymentEventRequest) {
+    String eventId = paymentEventRequest.getPaymentEventType().getValue() + entityId + UUID.randomUUID();
     streamBridge.send("paymentsProducer-out-0", binder,
       MessageBuilder.withPayload(PaymentEventDTO.builder()
           .eventId(eventId)
-          .payload(payload)
           .eventType(paymentEventRequest.getPaymentEventType())
+          .eventDateTime(OffsetDateTime.now())
+          .payload(payload)
           .eventDescription(paymentEventRequest.getEventDescription())
           .build())
         .setHeader(KafkaHeaders.KEY, String.valueOf(organizationId))

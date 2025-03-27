@@ -1,10 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.config;
 
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.DeliveryNotificationActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.NotificationStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.PreloadSendFileActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.UploadSendFileActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
@@ -30,6 +27,10 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
 
   public NotificationStatusActivity buildNotificationStatusActivityStub() {
     return Workflow.newActivityStub(NotificationStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public GetSendNotificationActivity buildGetSendNotificationActivityStub() {
+    return Workflow.newActivityStub(GetSendNotificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
   public PublishSendNotificationPaymentEventActivity buildPublishSendNotificationPaymentEventActivityStub() {

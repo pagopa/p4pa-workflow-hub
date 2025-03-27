@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @SuperBuilder
 public class DebtPositionSendNotificationDTO {
+  private String sendNotificationId;
   private Long debtPositionId;
   private Long organizationId;
   private String iun;

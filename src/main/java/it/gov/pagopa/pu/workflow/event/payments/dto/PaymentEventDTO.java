@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.time.OffsetDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,7 +34,8 @@ import lombok.experimental.SuperBuilder;
 })
 public class PaymentEventDTO <T> {
   private String eventId;
-  private T payload;
   private PaymentEventType eventType;
+  private OffsetDateTime eventDateTime;
+  private T payload;
   private String eventDescription;
 }
