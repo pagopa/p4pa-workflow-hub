@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker;
+import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -24,17 +25,19 @@ class PaymentsConsumerTest {
 
   @Mock
   private TransferClassificationWFClient wfClientMock;
+  @Mock
+  private CreateAssessmentsWFClient createAssessmentsWFClientMock;
 
   private PaymentsConsumer paymentsConsumer;
 
   @BeforeEach
   void init() {
-    this.paymentsConsumer = new PaymentsConsumer(wfClientMock);
+    this.paymentsConsumer = new PaymentsConsumer(wfClientMock, createAssessmentsWFClientMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(wfClientMock);
+    Mockito.verifyNoMoreInteractions(wfClientMock, createAssessmentsWFClientMock);
   }
 
   @Test
@@ -44,6 +47,7 @@ class PaymentsConsumerTest {
       .eventId("EVENTID")
       .payload(buildPaidDebtPosition())
       .eventType(PaymentEventType.RT_RECEIVED)
+      .eventDescription("receiptId:2")
       .build();
 
     // When
@@ -56,6 +60,32 @@ class PaymentsConsumerTest {
       .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv3", "iur2", 1));
     Mockito.verify(wfClientMock)
       .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv5", "iur1", 1));
+    Mockito.verify(createAssessmentsWFClientMock)
+      .createAssessments(2L);
+  }
+
+  @Test
+  void givenExpectedEventWithUncorrectReceiptIdWhenAcceptThenInvokeClient() {
+    // Given
+    DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(buildPaidDebtPosition())
+      .eventType(PaymentEventType.RT_RECEIVED)
+      .eventDescription("receiptId:undefined")
+      .build();
+
+    // When
+    paymentsConsumer.accept(paymentEventDTO);
+
+    // Then
+    Mockito.verify(wfClientMock)
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv1", "iur1", 1));
+    Mockito.verify(wfClientMock)
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv3", "iur2", 1));
+    Mockito.verify(wfClientMock)
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv5", "iur1", 1));
+    Mockito.verify(createAssessmentsWFClientMock)
+      .createAssessments(1L);
   }
 
   @Test
