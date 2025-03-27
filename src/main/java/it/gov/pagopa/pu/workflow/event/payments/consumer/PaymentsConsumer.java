@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -63,18 +64,16 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
   }
 
   void handleCreateAssessments(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
-    List<Long> receiptIds;
+    Set<Long> receiptIds;
     try {
-      receiptIds = List.of(Long.valueOf(event.getEventDescription().replace("receiptId:", "")));
+      receiptIds = Set.of(Long.valueOf(event.getEventDescription().replace("receiptId:", "")));
     } catch (Exception e) {
       log.error("It was not possible to retrieve the particular receiptId which originated the event, let's considering all installment's receiptIds");
       receiptIds = debtPosition.getPaymentOptions().stream()
         .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
         .filter(installment -> Objects.nonNull(installment.getReceiptId()) && InstallmentStatus.PAID.equals(installment.getStatus()))
         .map(InstallmentDTO::getReceiptId)
-        .collect(Collectors.toSet())
-        .stream()
-        .toList();
+        .collect(Collectors.toSet());
     }
     if (receiptIds.isEmpty()) {
       log.error("Cannot retrieve a receiptId related to the input event: " + event.getEventId());
