@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -11,6 +12,8 @@ import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassifi
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -47,21 +50,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
                   .build()
               )));
 
-        List<Long> receiptIds;
-        try{receiptIds= List.of(Long.valueOf(paymentEventDTO.getEventDescription().replace("receiptId:","")));
-        }catch(Exception e){
-        log.error("It was not possible to retrieve the particular receiptId which originated the event, let's considering all installment's receiptIds");
-        receiptIds = debtPosition.getPaymentOptions().stream()
-                                   .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
-                                   .map(InstallmentDTO::getReceiptId)
-                                    .filter(Object::nonNull)
-                                    .toList();
-        }
-        if(receiptIds.isEmpty()){
-          log.error("Cannot retrieve a receiptId related to the input event:" + paymentEventDTO.getEventId());
-        }
-        receiptIds.forEach(receiptId -> createAssessmentsWFClient.createAssessments(receiptId));
-
+        handleCreateAssessments(paymentEventDTO.getEventDescription(), paymentEventDTO.getEventId(), debtPosition);
 
       } else {
         log.error("Unexpected payload related to RT_RECEIVED event: provided {} having payload type {}"
@@ -69,6 +58,23 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
           Optional.ofNullable(paymentEventDTO.getPayload()).map(p -> p.getClass().getName()).orElse("null"));
       }
     }
+  }
+
+  void handleCreateAssessments(String paymentEventDescription, String paymentEventId, DebtPositionDTO debtPosition){
+    List<Long> receiptIds;
+    try{receiptIds= List.of(Long.valueOf(paymentEventDescription.replace("receiptId:","")));
+    }catch(Exception e){
+      log.error("It was not possible to retrieve the particular receiptId which originated the event, let's considering all installment's receiptIds");
+      receiptIds = debtPosition.getPaymentOptions().stream()
+        .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
+        .map(InstallmentDTO::getReceiptId)
+        .filter(Objects::nonNull)
+        .toList();
+    }
+    if(receiptIds.isEmpty()){
+      log.error("Cannot retrieve a receiptId related to the input event:" + paymentEventId);
+    }
+    receiptIds.forEach(createAssessmentsWFClient::createAssessments);
   }
 
 }

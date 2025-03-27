@@ -5,6 +5,7 @@ import io.temporal.workflow.WorkflowMethod;
 
 /**
  * Workflow interface for the Assessment creation
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1621491884/Creazione+Accertamenti>Confluence page</a>
  * */
 
 @WorkflowInterface

@@ -60,6 +60,8 @@ class PaymentsConsumerTest {
       .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv3", "iur2", 1));
     Mockito.verify(wfClientMock)
       .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv5", "iur1", 1));
+    Mockito.verify(createAssessmentsWFClientMock)
+      .createAssessments(2L);
   }
 
   @Test
