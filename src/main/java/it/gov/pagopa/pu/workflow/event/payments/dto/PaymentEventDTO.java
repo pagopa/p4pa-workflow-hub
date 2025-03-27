@@ -26,6 +26,7 @@ import java.time.OffsetDateTime;
     "RT_RECEIVED",
     "SYNC_ERROR",
   }),
+  @JsonSubTypes.Type(value = DebtPositionIoEventDTO.class, name = "IO_NOTIFIED"),
   @JsonSubTypes.Type(value = DebtPositionSendEventDTO.class, names = {
     "SEND_NOTIFICATION_CREATED",
     "SEND_NOTIFICATION_DATE",

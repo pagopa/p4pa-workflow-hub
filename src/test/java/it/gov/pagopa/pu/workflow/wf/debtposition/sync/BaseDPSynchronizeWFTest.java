@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
@@ -105,6 +106,13 @@ public abstract class BaseDPSynchronizeWFTest<W> {
           iudSyncFinalizationMap))
       .thenReturn(debtPositionFinalized);
 
+
+    DebtPositionIoNotificationDTO ioNotificationDTO = new DebtPositionIoNotificationDTO();
+    Mockito.lenient()
+      .when(ioNotificationDebtPositionActivityMock.sendIoNotification(Mockito.same(debtPositionRequested), Mockito.eq(iudSyncFinalizationMap), Mockito.same(wfExecutionConfig.getIoMessages())))
+        .thenReturn(ioNotificationDTO);
+
+
     configureIUDSyncOk(debtPositionRequested, SYNC_IUD);
     configureIUDSyncKo(debtPositionRequested, SYNC_IUD_ERROR, new RuntimeException("Error"));
 
@@ -115,6 +123,8 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     if(isNotifyIoInvolved()) {
       Mockito.verify(ioNotificationDebtPositionActivityMock)
         .sendIoNotification(Mockito.same(debtPositionRequested), Mockito.eq(iudSyncFinalizationMap), Mockito.same(wfExecutionConfig.getIoMessages()));
+      Mockito.verify(publishPaymentEventActivityMock)
+        .publishDebtPositionIoNotificationEvent(Mockito.same(ioNotificationDTO), Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, null)));
     }
     Mockito.verify(publishPaymentEventActivityMock)
       .publishDebtPositionEvent(Mockito.same(debtPositionFinalized), Mockito.same(paymentEventRequest));

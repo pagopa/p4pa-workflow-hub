@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
@@ -29,5 +30,11 @@ public class PublishPaymentEventActivityImpl implements PublishPaymentEventActiv
   public void publishDebtPositionErrorEvent(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest) {
     log.info("Publishing error event {} on debtPosition: {}", paymentEventRequest.getPaymentEventType(), debtPositionDTO.getDebtPositionId());
     paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPositionDTO, paymentEventRequest);
+  }
+
+  @Override
+  public void publishDebtPositionIoNotificationEvent(DebtPositionIoNotificationDTO ioNotification, PaymentEventRequestDTO paymentEventRequest) {
+    log.info("Publishing IO Notification event {} on debtPosition: {}", paymentEventRequest.getPaymentEventType(), ioNotification.getDebtPositionId());
+    paymentsProducerService.notifyDebtPositionIoEvent(ioNotification, paymentEventRequest);
   }
 }

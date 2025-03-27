@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -56,5 +57,19 @@ class PublishPaymentEventActivityTest {
     // Then
     Mockito.verify(eventProduceServiceMock)
       .notifyDebtPositionPaymentsEvent(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest));
+  }
+
+  @Test
+  void whenPublishDebtPositionIoNotificationEventThenInvokeProducer(){
+    // Given
+    DebtPositionIoNotificationDTO ioNotificationDTO = new DebtPositionIoNotificationDTO();
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
+
+    // When
+    activity.publishDebtPositionIoNotificationEvent(ioNotificationDTO, paymentEventRequest);
+
+    // Then
+    Mockito.verify(eventProduceServiceMock)
+      .notifyDebtPositionIoEvent(Mockito.same(ioNotificationDTO), Mockito.same(paymentEventRequest));
   }
 }
