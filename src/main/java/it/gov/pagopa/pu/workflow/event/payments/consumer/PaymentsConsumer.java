@@ -47,12 +47,20 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
                   .build()
               )));
 
-        Long receiptIdFromEvent= Long.valueOf(paymentEventDTO.getEventDescription().replace("receiptId:",""));
-        debtPosition.getPaymentOptions().stream()
-          .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
-          .filter(installment -> receiptIdFromEvent.equals(installment.getReceiptId()))
-          .findFirst()
-          .ifPresent(installment -> createAssessmentsWFClient.createAssessments(receiptIdFromEvent));
+        List<Long> receiptIds;
+        try{receiptIds= List.of(Long.valueOf(paymentEventDTO.getEventDescription().replace("receiptId:","")));
+        }catch(Exception e){
+        log.error("It was not possible to retrieve the particular receiptId which originated the event, let's considering all installment's receiptIds");
+        receiptIds = debtPosition.getPaymentOptions().stream()
+                                   .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
+                                   .map(InstallmentDTO::getReceiptId)
+                                    .filter(Object::nonNull)
+                                    .toList();
+        }
+        if(receiptIds.isEmpty()){
+          log.error("Cannot retrieve a receiptId related to the input event:" + paymentEventDTO.getEventId());
+        }
+        receiptIds.forEach(receiptId -> createAssessmentsWFClient.createAssessments(receiptId));
 
 
       } else {
