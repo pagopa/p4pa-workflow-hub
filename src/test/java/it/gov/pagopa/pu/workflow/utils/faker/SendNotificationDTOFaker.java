@@ -20,6 +20,7 @@ public class SendNotificationDTOFaker {
   public static List<DebtPositionSendNotificationDTO> buildListDebtPositionSendNotificationDTO(SendNotificationDTO sendNotificationDTO){
     return List.of(
       DebtPositionSendNotificationDTO.builder()
+        .sendNotificationId(sendNotificationDTO.getSendNotificationId())
         .organizationId(sendNotificationDTO.getOrganizationId())
         .iun(sendNotificationDTO.getIun())
         .notificationDate(sendNotificationDTO.getNotificationDate())
@@ -28,6 +29,7 @@ public class SendNotificationDTOFaker {
         .noticeCodes(List.of("NAV1", "NAV2"))
         .build(),
       DebtPositionSendNotificationDTO.builder()
+        .sendNotificationId(sendNotificationDTO.getSendNotificationId())
         .organizationId(sendNotificationDTO.getOrganizationId())
         .iun(sendNotificationDTO.getIun())
         .notificationDate(sendNotificationDTO.getNotificationDate())

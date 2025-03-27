@@ -16,6 +16,9 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
+
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,6 +56,7 @@ class PaymentsProducerServiceTest {
         Assertions.assertSame(debtPosition, payload.getPayload());
         Assertions.assertSame(paymentEventRequest.getEventDescription(), payload.getEventDescription());
         Assertions.assertSame(paymentEventRequest.getPaymentEventType(), payload.getEventType());
+        Assertions.assertTrue(Duration.between(payload.getEventDateTime(), OffsetDateTime.now()).toSeconds() <=5);
         Assertions.assertEquals(String.valueOf(debtPosition.getOrganizationId()), m.getHeaders().get(KafkaHeaders.KEY));
         return true;
       }));

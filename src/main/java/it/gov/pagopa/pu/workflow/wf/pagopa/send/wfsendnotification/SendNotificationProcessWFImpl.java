@@ -2,10 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.DeliveryNotificationActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.NotificationStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.PreloadSendFileActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.UploadSendFileActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
@@ -36,6 +33,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   private UploadSendFileActivity uploadSendFileActivity;
   private DeliveryNotificationActivity deliveryNotificationActivity;
   private NotificationStatusActivity notificationStatusActivity;
+  private GetSendNotificationActivity getSendNotificationActivity;
   private PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity;
 
   /**
@@ -52,6 +50,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     uploadSendFileActivity = wfConfig.buildUploadSendFileActivityStub();
     deliveryNotificationActivity = wfConfig.buildDeliveryNotificationActivityStub();
     notificationStatusActivity = wfConfig.buildNotificationStatusActivityStub();
+    getSendNotificationActivity = wfConfig.buildGetSendNotificationActivityStub();
     publishSendNotificationPaymentEventActivity = wfConfig.buildPublishSendNotificationPaymentEventActivityStub();
   }
 
@@ -59,13 +58,26 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   public void sendNotificationProcess(String sendNotificationId) {
     log.info("Start sendNotificationProcess Workflow for sendNotificationId {}", sendNotificationId);
 
-    preloadSendFileActivity.preloadSendFile(sendNotificationId);
-    uploadSendFileActivity.uploadSendFile(sendNotificationId);
-    deliveryNotificationActivity.deliveryNotification(sendNotificationId);
+    try {
+      preloadSendFileActivity.preloadSendFile(sendNotificationId);
+      uploadSendFileActivity.uploadSendFile(sendNotificationId);
+      deliveryNotificationActivity.deliveryNotification(sendNotificationId);
 
-    SendNotificationDTO sendNotificationDTO = waitDeliveryAcceptance(sendNotificationId);
+      SendNotificationDTO sendNotificationDTO = waitDeliveryAcceptance(sendNotificationId);
 
-    publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
+      publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
+    } catch (RuntimeException e){
+      SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
+      if (notification != null) {
+        for (DebtPositionSendNotificationDTO p : SendNotification2DebtPositionSendNotificationsMapper.map(notification)) {
+          publishSendNotificationPaymentEventActivity.publishSendNotificationErrorEvent(p,
+            new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, e.getMessage()));
+        }
+      } else {
+        log.info("Provided unknown sendNotificationId {}", sendNotificationId);
+      }
+      throw e;
+    }
   }
 
   private void publishSendEvent(SendNotificationDTO sendNotificationDTO, PaymentEventRequestDTO eventRequestDTO) {
@@ -92,12 +104,6 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       Workflow.sleep(RETRY_INTERVAL);
     }
 
-    if (notification != null) {
-      for (DebtPositionSendNotificationDTO p : SendNotification2DebtPositionSendNotificationsMapper.map(notification)) {
-        publishSendNotificationPaymentEventActivity.publishSendNotificationErrorEvent(p,
-          new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, "Exceeded max retry attempts to wait for ACCEPTED status: " + attemptCounter));
-      }
-    }
-    throw new WorkflowInternalErrorException("Max retries reached: notification status not ACCEPTED for sendNotificationId " + sendNotificationId + ". Last status was: " + (notification!=null?notification.getStatus():"null"));
+    throw new WorkflowInternalErrorException("Exceeded max retry attempts to wait for ACCEPTED status (attempts:" + attemptCounter + ") on sendNotificationId " + sendNotificationId + ". Last status was: " + (notification!=null?notification.getStatus():"null"));
   }
 }

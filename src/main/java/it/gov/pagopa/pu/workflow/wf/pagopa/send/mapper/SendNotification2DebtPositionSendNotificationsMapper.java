@@ -11,6 +11,7 @@ public class SendNotification2DebtPositionSendNotificationsMapper {
   public static List<DebtPositionSendNotificationDTO> map(SendNotificationDTO sendNotificationDTO) {
     return sendNotificationDTO.getPayments().stream()
       .map(p -> (DebtPositionSendNotificationDTO) DebtPositionSendNotificationDTO.builder()
+        .sendNotificationId(sendNotificationDTO.getSendNotificationId())
         .organizationId(sendNotificationDTO.getOrganizationId())
         .debtPositionId(p.getDebtPositionId())
         .iun(sendNotificationDTO.getIun())
