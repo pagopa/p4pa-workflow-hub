@@ -65,6 +65,30 @@ class PaymentsConsumerTest {
   }
 
   @Test
+  void givenExpectedEventWithUncorrectReceiptIdWhenAcceptThenInvokeClient() {
+    // Given
+    DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(buildPaidDebtPosition())
+      .eventType(PaymentEventType.RT_RECEIVED)
+      .eventDescription("receiptId:undefined")
+      .build();
+
+    // When
+    paymentsConsumer.accept(paymentEventDTO);
+
+    // Then
+    Mockito.verify(wfClientMock)
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv1", "iur1", 1));
+    Mockito.verify(wfClientMock)
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv3", "iur2", 1));
+    Mockito.verify(wfClientMock)
+      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv5", "iur1", 1));
+    Mockito.verify(createAssessmentsWFClientMock, Mockito.times(3))
+      .createAssessments(1L);
+  }
+
+  @Test
   void givenNotHandledEventWhenAcceptThenNoAction() {
     // Given
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()

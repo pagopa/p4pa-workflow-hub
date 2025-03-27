@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
@@ -50,7 +51,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
                   .build()
               )));
 
-        handleCreateAssessments(paymentEventDTO.getEventDescription(), paymentEventDTO.getEventId(), debtPosition);
+        handleCreateAssessments((DebtPositionEventDTO)paymentEventDTO, debtPosition);
 
       } else {
         log.error("Unexpected payload related to RT_RECEIVED event: provided {} having payload type {}"
@@ -60,21 +61,23 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
     }
   }
 
-  void handleCreateAssessments(String paymentEventDescription, String paymentEventId, DebtPositionDTO debtPosition){
+  void handleCreateAssessments(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
     List<Long> receiptIds;
-    try{receiptIds= List.of(Long.valueOf(paymentEventDescription.replace("receiptId:","")));
-    }catch(Exception e){
+    try {
+      receiptIds = List.of(Long.valueOf(event.getEventDescription().replace("receiptId:", "")));
+    } catch (Exception e) {
       log.error("It was not possible to retrieve the particular receiptId which originated the event, let's considering all installment's receiptIds");
       receiptIds = debtPosition.getPaymentOptions().stream()
         .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
+        .filter(installment -> Objects.nonNull(installment.getReceiptId()) && InstallmentStatus.PAID.equals(installment.getStatus()))
         .map(InstallmentDTO::getReceiptId)
-        .filter(Objects::nonNull)
         .toList();
     }
-    if(receiptIds.isEmpty()){
-      log.error("Cannot retrieve a receiptId related to the input event:" + paymentEventId);
+    if (receiptIds.isEmpty()) {
+      log.error("Cannot retrieve a receiptId related to the input event: " + event.getEventId());
+    } else {
+      receiptIds.forEach(createAssessmentsWFClient::createAssessments);
     }
-    receiptIds.forEach(createAssessmentsWFClient::createAssessments);
   }
 
 }
