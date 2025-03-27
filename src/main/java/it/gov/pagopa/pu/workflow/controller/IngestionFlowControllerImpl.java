@@ -19,7 +19,7 @@ public class IngestionFlowControllerImpl implements IngestionFlowApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> ingestFlowFile(Long ingestionFlowFileId, IngestionFlowFile.FlowFileTypeEnum flowFileType) {
+  public ResponseEntity<WorkflowCreatedDTO> ingestFlowFile(Long ingestionFlowFileId, IngestionFlowFile.IngestionFlowFileTypeEnum flowFileType) {
     log.info("Creating IngestionFlowFile Workflow for ingestionFlowFileId {} of type {}", ingestionFlowFileId, flowFileType);
 
     String workflowId = service.ingest(ingestionFlowFileId, flowFileType);

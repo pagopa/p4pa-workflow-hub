@@ -43,7 +43,7 @@ class IngestionFlowControllerTest {
   @Test
   void whenIngestThenInvokeService() throws Exception {
     long ingestionFileId = 1L;
-    IngestionFlowFile.FlowFileTypeEnum flowFileType = IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING;
+    IngestionFlowFile.IngestionFlowFileTypeEnum flowFileType = IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
     String workflowId = "workflow123";
 
     WorkflowCreatedDTO workflowCreatedDTO = WorkflowCreatedDTO.builder().workflowId(workflowId).build();

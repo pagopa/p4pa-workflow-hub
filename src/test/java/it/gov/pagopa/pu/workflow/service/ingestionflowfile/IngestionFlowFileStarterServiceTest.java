@@ -33,7 +33,7 @@ class IngestionFlowFileStarterServiceTest {
 
   private IngestionFlowFileStarterService service;
 
-  private Map<IngestionFlowFile.FlowFileTypeEnum, Function<Long, String>> flowFileType2ClientInvoker;
+  private Map<IngestionFlowFile.IngestionFlowFileTypeEnum, Function<Long, String>> flowFileType2ClientInvoker;
 
   @BeforeEach
   void init(){
@@ -44,10 +44,10 @@ class IngestionFlowFileStarterServiceTest {
       receiptPagopaIngestionWFClientMock);
 
     flowFileType2ClientInvoker = Map.of(
-      IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClientMock::ingest,
-      IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClientMock::ingest,
-      IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest,
-      IngestionFlowFile.FlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClientMock::ingest
+      IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClientMock::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClientMock::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClientMock::ingest
     );
   }
 
@@ -62,8 +62,8 @@ class IngestionFlowFileStarterServiceTest {
   }
 
   @ParameterizedTest
-  @EnumSource(IngestionFlowFile.FlowFileTypeEnum.class)
-  void whenThenInvokeClientIfAny(IngestionFlowFile.FlowFileTypeEnum ingestionFlowFileType){
+  @EnumSource(IngestionFlowFile.IngestionFlowFileTypeEnum.class)
+  void whenThenInvokeClientIfAny(IngestionFlowFile.IngestionFlowFileTypeEnum ingestionFlowFileType){
     // Given
     long ingestionFlowFileId = 1L;
     String expectedWorkflowId = "WORKFLOWID";

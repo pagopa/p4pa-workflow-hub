@@ -14,7 +14,7 @@ import java.util.function.Function;
 @Service
 public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileStarterService {
 
-  private final Map<IngestionFlowFile.FlowFileTypeEnum, Function<Long, String>> ingestionFlowFileType2WfStarter;
+  private final Map<IngestionFlowFile.IngestionFlowFileTypeEnum, Function<Long, String>> ingestionFlowFileType2WfStarter;
 
   public IngestionFlowFileStarterServiceImpl(
     PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient,
@@ -22,15 +22,15 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     DebtPositionIngestionWFClient debtPositionIngestionWFClient,
     ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient) {
     ingestionFlowFileType2WfStarter = Map.of(
-      IngestionFlowFile.FlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClient::ingest,
-      IngestionFlowFile.FlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest,
-      IngestionFlowFile.FlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest,
-      IngestionFlowFile.FlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest
+      IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClient::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest
     );
   }
 
   @Override
-  public String ingest(long ingestionFlowFileId, IngestionFlowFile.FlowFileTypeEnum flowFileType) {
+  public String ingest(long ingestionFlowFileId, IngestionFlowFile.IngestionFlowFileTypeEnum flowFileType) {
     return ingestionFlowFileType2WfStarter.getOrDefault(flowFileType, x -> {
         throw new IngestionFlowTypeNotSupportedException("IngestionFlowFileType not supported: " + flowFileType);
       })
