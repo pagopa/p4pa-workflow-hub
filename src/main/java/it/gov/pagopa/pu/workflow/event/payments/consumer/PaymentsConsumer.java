@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -71,6 +72,8 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
         .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
         .filter(installment -> Objects.nonNull(installment.getReceiptId()) && InstallmentStatus.PAID.equals(installment.getStatus()))
         .map(InstallmentDTO::getReceiptId)
+        .collect(Collectors.toSet())
+        .stream()
         .toList();
     }
     if (receiptIds.isEmpty()) {
