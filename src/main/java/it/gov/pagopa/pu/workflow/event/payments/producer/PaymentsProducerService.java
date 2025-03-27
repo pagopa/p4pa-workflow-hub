@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.payments.producer;
 
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
@@ -43,6 +44,10 @@ public class PaymentsProducerService {
 
   public void notifyDebtPositionSendEvent(DebtPositionSendNotificationDTO dpSendNotification, PaymentEventRequestDTO paymentEventRequest) {
     notifyPaymentsEvent(dpSendNotification.getOrganizationId(), dpSendNotification.getSendNotificationId(), dpSendNotification, paymentEventRequest);
+  }
+
+  public void notifyDebtPositionIoEvent(DebtPositionIoNotificationDTO dpSendNotification, PaymentEventRequestDTO paymentEventRequest) {
+    notifyPaymentsEvent(dpSendNotification.getOrganizationId(), String.valueOf(dpSendNotification.getDebtPositionId()), dpSendNotification, paymentEventRequest);
   }
 
   public void notifyPaymentsEvent(Long organizationId, String entityId, Object payload, PaymentEventRequestDTO paymentEventRequest) {

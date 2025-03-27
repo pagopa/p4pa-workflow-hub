@@ -271,6 +271,7 @@ components:
         - DPI_CANCELLED
         - RT_RECEIVED
         - SYNC_ERROR
+        - IO_NOTIFIED
         - SEND_NOTIFICATION_CREATED
         - SEND_NOTIFICATION_ERROR
         - SEND_NOTIFICATION_DATE

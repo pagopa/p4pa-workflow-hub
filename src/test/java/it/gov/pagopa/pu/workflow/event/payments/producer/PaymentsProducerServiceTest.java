@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.payments.producer;
 
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -83,6 +84,31 @@ class PaymentsProducerServiceTest {
         Assertions.assertSame(paymentEventRequest.getEventDescription(), payload.getEventDescription());
         Assertions.assertSame(paymentEventRequest.getPaymentEventType(), payload.getEventType());
         Assertions.assertEquals(String.valueOf(debtPositionSendNotificationDTO.getOrganizationId()), m.getHeaders().get(KafkaHeaders.KEY));
+        return true;
+      }));
+  }
+
+  @Test
+  void whenNotifyDebtPositionIoEventEventThenSendMessage() {
+    // Given
+    DebtPositionIoNotificationDTO debtPositionIoNotificationDTO = new DebtPositionIoNotificationDTO();
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, "EVENTDESCRIPTION");
+
+    // When
+    paymentsProducerService.notifyDebtPositionIoEvent(debtPositionIoNotificationDTO, paymentEventRequest);
+
+    // Then
+    verify(streamBridge, times(1)).send(
+      Mockito.eq("paymentsProducer-out-0"),
+      Mockito.any(),
+      Mockito.<Message<?>>argThat(m -> {
+        PaymentEventDTO<?> payload = (PaymentEventDTO<?>)m.getPayload();
+        String eventIdPrefix = paymentEventRequest.getPaymentEventType().getValue() + debtPositionIoNotificationDTO.getDebtPositionId();
+        Assertions.assertEquals(eventIdPrefix, payload.getEventId().substring(0, eventIdPrefix.length()));
+        Assertions.assertSame(debtPositionIoNotificationDTO, payload.getPayload());
+        Assertions.assertSame(paymentEventRequest.getEventDescription(), payload.getEventDescription());
+        Assertions.assertSame(paymentEventRequest.getPaymentEventType(), payload.getEventType());
+        Assertions.assertEquals(String.valueOf(debtPositionIoNotificationDTO.getOrganizationId()), m.getHeaders().get(KafkaHeaders.KEY));
         return true;
       }));
   }

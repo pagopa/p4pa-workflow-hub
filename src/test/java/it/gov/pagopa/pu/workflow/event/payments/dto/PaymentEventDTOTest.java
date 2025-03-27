@@ -24,6 +24,8 @@ class PaymentEventDTOTest {
     Map.entry(PaymentEventType.RT_RECEIVED, DebtPositionEventDTO.class),
     Map.entry(PaymentEventType.SYNC_ERROR, DebtPositionEventDTO.class),
 
+    Map.entry(PaymentEventType.IO_NOTIFIED, DebtPositionIoEventDTO.class),
+
     Map.entry(PaymentEventType.SEND_NOTIFICATION_CREATED, DebtPositionSendEventDTO.class),
     Map.entry(PaymentEventType.SEND_NOTIFICATION_DATE, DebtPositionSendEventDTO.class),
     Map.entry(PaymentEventType.SEND_NOTIFICATION_ERROR, DebtPositionSendEventDTO.class)

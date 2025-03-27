@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 import com.nimbusds.jose.util.Pair;
 import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
@@ -137,7 +138,8 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     if (!CollectionUtils.isEmpty(iupdSyncStatusUpdateDTOMap)) {
       log.info("Calling notifyIO activity on debtPosition {} (organizationId {}, debtPositionTypeOrgId {})", debtPositionId, requestedDebtPosition.getOrganizationId(), requestedDebtPosition.getDebtPositionTypeOrgId());
-      ioNotificationDebtPositionActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap, ioMessages);
+      DebtPositionIoNotificationDTO ioNotifications = ioNotificationDebtPositionActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap, ioMessages);
+      publishPaymentEventActivity.publishDebtPositionIoNotificationEvent(ioNotifications, new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, null));
     } else {
       log.info("Nothing to notifyIO on debtPosition {}", debtPositionId);
     }

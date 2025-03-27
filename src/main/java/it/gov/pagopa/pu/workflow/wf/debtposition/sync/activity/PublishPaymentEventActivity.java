@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 
@@ -12,4 +13,6 @@ public interface PublishPaymentEventActivity {
   void publishDebtPositionEvent(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest);
   @ActivityMethod
   void publishDebtPositionErrorEvent(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest);
+  @ActivityMethod
+  void publishDebtPositionIoNotificationEvent(DebtPositionIoNotificationDTO ioNotification, PaymentEventRequestDTO paymentEventRequest);
 }
