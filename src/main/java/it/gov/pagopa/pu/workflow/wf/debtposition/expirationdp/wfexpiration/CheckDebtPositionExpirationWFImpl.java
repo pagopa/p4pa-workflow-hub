@@ -2,7 +2,6 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.DebtPositionExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.config.CheckDebtPositionExpirationWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -22,7 +21,6 @@ public class CheckDebtPositionExpirationWFImpl implements CheckDebtPositionExpir
   public static final String TASK_QUEUE_CHECK_DP_EXPIRATION_LOCAL_ACTIVITY = "CheckDebtPositionExpirationWF_LOCAL";
 
   private DebtPositionExpirationActivity debtPositionExpirationActivity;
-  private ScheduleCheckDpExpirationActivity scheduleCheckDpExpirationActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -34,7 +32,6 @@ public class CheckDebtPositionExpirationWFImpl implements CheckDebtPositionExpir
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     CheckDebtPositionExpirationWfConfig wfConfig = applicationContext.getBean(CheckDebtPositionExpirationWfConfig.class);
     debtPositionExpirationActivity = wfConfig.buildDebtPositionExpirationActivityStub();
-    scheduleCheckDpExpirationActivity = wfConfig.buildScheduleCheckDpExpirationActivityStub();
   }
 
   @Override
@@ -42,10 +39,6 @@ public class CheckDebtPositionExpirationWFImpl implements CheckDebtPositionExpir
     log.info("Starting workflow to check expiration of DebtPosition with ID: {}", debtPositionId);
     LocalDate nextDueDate = debtPositionExpirationActivity.checkAndUpdateInstallmentExpiration(debtPositionId);
     log.info("Checked expiration of DebtPosition with ID: {}, and retrieved the next due date: {}", debtPositionId, nextDueDate);
-    if (nextDueDate != null) {
-      log.info("Start scheduling the next check expiration of DebtPosition with ID: {}", debtPositionId);
-      scheduleCheckDpExpirationActivity.scheduleNextCheckDpExpiration(debtPositionId, nextDueDate.plusDays(1));
-    }
   }
 
 }
