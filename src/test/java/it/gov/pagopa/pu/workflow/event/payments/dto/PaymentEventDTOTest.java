@@ -21,6 +21,8 @@ class PaymentEventDTOTest {
     Map.entry(PaymentEventType.DPI_ADDED, DebtPositionEventDTO.class),
     Map.entry(PaymentEventType.DPI_UPDATED, DebtPositionEventDTO.class),
     Map.entry(PaymentEventType.DPI_CANCELLED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.DPI_EXPIRED, DebtPositionEventDTO.class),
+    Map.entry(PaymentEventType.DPI_REPORTED, DebtPositionEventDTO.class),
     Map.entry(PaymentEventType.RT_RECEIVED, DebtPositionEventDTO.class),
     Map.entry(PaymentEventType.SYNC_ERROR, DebtPositionEventDTO.class),
 

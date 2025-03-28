@@ -23,6 +23,8 @@ import java.time.OffsetDateTime;
     "DPI_ADDED",
     "DPI_UPDATED",
     "DPI_CANCELLED",
+    "DPI_EXPIRED",
+    "DPI_REPORTED",
     "RT_RECEIVED",
     "SYNC_ERROR",
   }),
