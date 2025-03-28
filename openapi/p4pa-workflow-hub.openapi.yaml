@@ -221,6 +221,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/assessments/receipt/{receiptId}:
+    post:
+      tags:
+        - Assessments
+      operationId: createAssessmentsByReceiptId
+      description: Start assessments creation by receiptId.
+      parameters:
+        - name: receiptId
+          in: path
+          required: true
+          description: The id of receipt.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: "Create assessments workflow created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
 
 security:
   - BearerAuth: [ ]
