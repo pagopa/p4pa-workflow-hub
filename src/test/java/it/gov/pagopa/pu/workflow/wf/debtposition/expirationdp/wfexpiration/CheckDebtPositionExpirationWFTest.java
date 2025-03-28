@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.DebtPositionExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.config.CheckDebtPositionExpirationWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +18,6 @@ class CheckDebtPositionExpirationWFTest {
 
   @Mock
   private DebtPositionExpirationActivity debtPositionExpirationActivityMock;
-  @Mock
-  private ScheduleCheckDpExpirationActivity scheduleCheckDpExpirationActivityMock;
 
   private CheckDebtPositionExpirationWFImpl wf;
 
@@ -32,9 +29,6 @@ class CheckDebtPositionExpirationWFTest {
     Mockito.when(configMock.buildDebtPositionExpirationActivityStub())
       .thenReturn(debtPositionExpirationActivityMock);
 
-    Mockito.when(configMock.buildScheduleCheckDpExpirationActivityStub())
-      .thenReturn(scheduleCheckDpExpirationActivityMock);
-
     Mockito.when(applicationContextMock.getBean(CheckDebtPositionExpirationWfConfig.class))
       .thenReturn(configMock);
 
@@ -45,28 +39,12 @@ class CheckDebtPositionExpirationWFTest {
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      debtPositionExpirationActivityMock,
-      scheduleCheckDpExpirationActivityMock);
+      debtPositionExpirationActivityMock
+    );
   }
 
   @Test
-  void givenCheckDpExpirationWithoutNextSchedulingThenSuccess() {
-    // Given
-    Long debtPositionId = 1L;
-
-    Mockito.when(debtPositionExpirationActivityMock
-      .checkAndUpdateInstallmentExpiration(debtPositionId)).thenReturn(null);
-
-    // When
-    wf.checkDpExpiration(debtPositionId);
-
-    // Then
-    Mockito.verify(debtPositionExpirationActivityMock).checkAndUpdateInstallmentExpiration(debtPositionId);
-    Mockito.verify(scheduleCheckDpExpirationActivityMock, Mockito.times(0)).scheduleNextCheckDpExpiration(Mockito.any(), Mockito.any());
-  }
-
-  @Test
-  void givenCheckDpExpirationWithNextSchedulingThenSuccess() {
+  void givenCheckDpExpirationWhenCheckDpExpirationThenInvokeActivity() {
     // Given
     Long debtPositionId = 1L;
     LocalDate date = LocalDate.of(2025, 1, 1);
@@ -74,12 +52,10 @@ class CheckDebtPositionExpirationWFTest {
     Mockito.when(debtPositionExpirationActivityMock
       .checkAndUpdateInstallmentExpiration(debtPositionId)).thenReturn(date);
 
-    Mockito.doNothing().when(scheduleCheckDpExpirationActivityMock).scheduleNextCheckDpExpiration(debtPositionId, date.plusDays(1));
     // When
     wf.checkDpExpiration(debtPositionId);
 
     // Then
     Mockito.verify(debtPositionExpirationActivityMock).checkAndUpdateInstallmentExpiration(debtPositionId);
-    Mockito.verify(scheduleCheckDpExpirationActivityMock).scheduleNextCheckDpExpiration(debtPositionId, date.plusDays(1));
   }
 }
