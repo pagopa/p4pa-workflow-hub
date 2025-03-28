@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AssessmentsControllerImpl.class)
@@ -49,7 +49,7 @@ class AssessmentsControllerTest {
         .thenReturn(accessToken);
 
       MvcResult result = mockMvc.perform(
-          get("/workflowhub/workflow/create-assessments/{receiptId}", receiptId))
+          post("/workflowhub/workflow/assessments/receipt/{receiptId}", receiptId))
         .andExpect(status().isCreated())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
