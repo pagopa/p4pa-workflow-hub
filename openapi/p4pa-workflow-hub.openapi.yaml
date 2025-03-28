@@ -221,12 +221,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/create-assessments/{receiptId}:
-    get:
+  /workflow/assessments/receipt/{receiptId}:
+    post:
       tags:
-        - CreateAssessments
-      operationId: createAssessmentsProcess
-      description: Start assessments creation.
+        - Assessments
+      operationId: createAssessmentsByReceiptId
+      description: Start assessments creation by receiptId.
       parameters:
         - name: receiptId
           in: path
