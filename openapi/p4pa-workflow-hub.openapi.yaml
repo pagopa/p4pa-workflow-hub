@@ -1,0 +1,317 @@
+openapi: 3.0.1
+info:
+  title: p4pa-workflow-hub
+  description: Api and Models
+  version: 0.0.1
+servers:
+  - url: "http://localhost:8080/workflowhub"
+paths:
+  /workflow/debt-position/sync:
+    post:
+      tags:
+        - DebtPosition
+      operationId: syncDebtPosition
+      description: Sync a debtPosition.
+      parameters:
+        - name: massive
+          in: query
+          description: Indicates if the operation is massive (true) or single (false).
+          required: false
+          schema:
+            type: boolean
+        - name: partialChange
+          in: query
+          description: Indicates if the operation is a cumulative operation (true), which at the end of the process will invoke again the API with the parameter set to false, or complete (false).
+          required: false
+          schema:
+            type: boolean
+        - name: paymentEventType
+          in: query
+          description: If provided, it will publish into Kafka queue the DebtPosition.
+          required: false
+          schema:
+            $ref: '#/components/schemas/PaymentEventType'
+        - name: paymentEventDescription
+          in: query
+          description: If provided paymentEventType, the optional description to publish.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncDebtPositionRequestDTO'
+      responses:
+        '200':
+          description: "Debt position created"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/debt-position/{debtPositionId}/check-expiration:
+    post:
+      tags:
+        - DebtPosition
+      operationId: checkDpExpiration
+      description: Check if a debt position expiration.
+      parameters:
+        - name: debtPositionId
+          in: path
+          required: true
+          description: The id of debt position.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: "Debt position expiration handled"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /ingestion-flow/{ingestionFlowFileId}:
+    post:
+      tags:
+        - IngestionFlow
+      operationId: ingestFlowFile
+      summary: Flow file ingestion
+      description: It will start the flow file ingestion returning its workflowId
+      parameters:
+        - name: ingestionFlowFileId
+          in: path
+          required: true
+          description: The unique identifier of the ingestion File.
+          schema:
+            type: integer
+            format: int64
+        - name: ingestionFlowFileType
+          in: query
+          description: IngestionFlowFileType
+          required: false
+          schema:
+            type: 'IngestionFlowFileType'
+      responses:
+        '201':
+          description: "Payment Ingestion Workflow created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /classification/transfer/{orgId}:
+    post:
+      tags:
+        - Classification
+      operationId: transferClassification
+      summary: Transfer classification
+      description: It will Processes Transfer classification based on the provided parameters returning its workflowId
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: the unique identifier of the organization.
+          schema:
+            type: integer
+            format: int64
+        - name: iuv
+          in: query
+          required: true
+          description: the unique identifier of the payment (IUV).
+          schema:
+            type: string
+        - name: iur
+          in: query
+          required: true
+          description: the identifier of the receipt associated with the payment.
+          schema:
+            type: string
+        - name: transferIndex
+          in: query
+          required: true
+          description: the index of the transfer to be classified.
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: "Transfer classification workflow created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflows/{workflowId}/status:
+    get:
+      tags:
+        - Workflow
+      operationId: getWorkflowStatus
+      summary: Get Workflow Status
+      description: Retrieve the current status of a Temporal workflow by its ID.
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Workflow status retrieved successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowStatusDTO'
+        '404':
+          description: "Workflow not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/send-notification/{sendNotificationId}/start:
+    get:
+      tags:
+        - SendNotification
+      operationId: sendNotificationProcess
+      description: Start send notification process (preloadFile, uploadFile, delivery and status).
+      parameters:
+        - name: sendNotificationId
+          in: path
+          required: true
+          description: The id of send notification.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Notification delivery status handled"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/assessments/receipt/{receiptId}:
+    post:
+      tags:
+        - Assessments
+      operationId: createAssessmentsByReceiptId
+      description: Start assessments creation by receiptId.
+      parameters:
+        - name: receiptId
+          in: path
+          required: true
+          description: The id of receipt.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: "Create assessments workflow created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+
+security:
+  - BearerAuth: [ ]
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    WorkflowCreatedDTO:
+      type: object
+      properties:
+        workflowId:
+          type: string
+    WorkflowErrorDTO:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED
+            - WORKFLOW_CONFLICT
+            - WORKFLOW_NOT_FOUND
+            - WORKFLOW_BAD_REQUEST
+            - WORKFLOW_GENERIC_ERROR
+        message:
+          type: string
+    WorkflowStatusDTO:
+      type: object
+      required:
+        - workflowId
+      properties:
+        workflowId:
+          type: string
+        status:
+          type: string
+    PaymentEventType:
+      type: string
+      enum:
+        - DP_CREATED
+        - DP_UPDATED
+        - DP_CANCELLED
+        - DPI_ADDED
+        - DPI_UPDATED
+        - DPI_CANCELLED
+        - DPI_EXPIRED
+        - DPI_REPORTED
+        - RT_RECEIVED
+        - SYNC_ERROR
+        - IO_NOTIFIED
+        - SEND_NOTIFICATION_CREATED
+        - SEND_NOTIFICATION_ERROR
+        - SEND_NOTIFICATION_DATE
+    SyncDebtPositionRequestDTO:
+      type: object
+      required:
+        - debtPosition
+      properties:
+        debtPosition:
+          type: 'DebtPositionDTO'
+        executionConfig:
+          type: 'WfExecutionConfig'
+
+

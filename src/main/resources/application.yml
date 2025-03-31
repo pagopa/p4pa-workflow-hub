@@ -1,0 +1,262 @@
+spring:
+  application:
+    name: ${artifactId}
+    version: ${version}
+  jmx.enabled: true
+  threads:
+    virtual:
+      enabled: "\${VIRTUAL_THREADS_ENABLED:true}"
+  jpa:
+    show-sql: "\${SHOW_SQL:false}"
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: "\${WORKFLOW_HUB_DB_URL:jdbc:postgresql://\${WORKFLOW_HUB_DB_HOST:localhost}:\${WORKFLOW_HUB_DB_PORT:5432}/\${WORKFLOW_HUB_DB_NAME:payhub}?currentSchema=workflow_hub}"
+    username: "\${WORKFLOW_HUB_DB_USER}"
+    password: "\${WORKFLOW_HUB_DB_PASSWORD}"
+    driverClassName: org.postgresql.Driver
+  data:
+    rest:
+      basePath: crud
+  temporal:
+    connection:
+      enable-https: "\${TEMPORAL_SERVER_ENABLE_HTTPS:false}"
+      target: "\${TEMPORAL_SERVER_HOST:localhost}:\${TEMPORAL_SERVER_PORT:7233}"
+      target.namespace: "\${TEMPORAL_SERVER_NAMESPACE:default}"
+    workers-auto-discovery:
+      packages:
+        - it.gov.pagopa.pu.workflow.wf
+  cloud:
+    function:
+      definition: paymentsConsumer
+    stream:
+      binders:
+        kafka-payments-producer:
+          type: kafka
+          environment:
+            spring.cloud.stream.kafka.binder:
+              brokers: "\${KAFKA_BINDER_BROKER:}"
+              configuration:
+                sasl.jaas.config: "\${KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG:}"
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        kafka-payments-consumer:
+          type: kafka
+          environment:
+            spring.cloud.stream.kafka.binder:
+              brokers: "\${KAFKA_BINDER_BROKER:}"
+              configuration:
+                sasl.jaas.config: "\${KAFKA_PAYMENTS_SASL_JAAS_CONFIG:}"
+      bindings:
+        paymentsProducer-out-0:
+          binder: kafka-payments-producer
+          content-type: "\${KAFKA_CONTENT_TYPE:application/json}"
+          destination: "\${KAFKA_TOPIC_PAYMENTS:}"
+        paymentsConsumer-in-0:
+          binder: kafka-payments-consumer
+          content-type: "\${KAFKA_CONTENT_TYPE:application/json}"
+          destination: "\${KAFKA_TOPIC_PAYMENTS:}"
+          group: "\${KAFKA_PAYMENTS_GROUP_ID:p4pa-workflow-hub-consumer-group}"
+          consumer.auto-startup: "\${KAFKA_PAYMENTS_CONSUMER_ENABLED:true}"
+      kafka:
+        binder:
+          auto-create-topics: false
+          configuration:
+            heartbeat.interval.ms: "\${KAFKA_CONFIG_HEARTBEAT_INTERVAL_MS:3000}"
+            session.timeout.ms: "\${KAFKA_CONFIG_SESSION_TIMEOUT_MS:30000}"
+            request.timeout.ms: "\${KAFKA_CONFIG_REQUEST_TIMEOUT_MS:60000}"
+            metadata.max.age.ms: "\${KAFKA_CONFIG_METADATA_MAX_AGE:180000}"
+            sasl.mechanism: "\${KAFKA_CONFIG_SASL_MECHANISM:}"
+            security.protocol: "\${KAFKA_CONFIG_SECURITY_PROTOCOL:}"
+            max.request.size: "\${KAFKA_CONFIG_MAX_REQUEST_SIZE:1000000}"
+        binders:
+          paymentsProducer-out-0:
+            producer:
+              configuration:
+                client.id: workflow-hub
+                connections.max.idle.ms: "\${KAFKA_PAYMENTS_PRODUCER_CONNECTION_MAX_IDLE_TIME:180000}"
+                retry.backoff.ms: "\${KAFKA_PAYMENTS_PRODUCER_RETRY_MS:\${KAFKA_RETRY_MS:10000}}"
+                linger.ms: "\${KAFKA_PAYMENTS_PRODUCER_LINGER_MS:\${KAFKA_LINGER_MS:2}}"
+                batch.size: "\${KAFKA_PAYMENTS_PRODUCER_BATCH_SIZE:\${KAFKA_BATCH_SIZE:16384}}"
+          paymentsConsumer-in-0:
+            consumer:
+              autoCommitOffset: "\${KAFKA_PAYMENTS_AUTO_COMMIT:\${KAFKA_CONSUMER_CONFIG_AUTO_COMMIT:true}}"
+              configuration:
+                connections.max.idle.ms: "\${KAFKA_PAYMENTS_REQUEST_CONNECTIONS_MAX_IDLE_MS:\${KAFKA_CONSUMER_CONFIG_CONNECTIONS_MAX_IDLE_MS:180000}}"
+                max.poll:
+                  interval.ms: "\${KAFKA_PAYMENTS_INTERVAL_TIMEOUT_MS:\${KAFKA_CONFIG_MAX_POLL_INTERVAL_TIMEOUT_MS:300000}}"
+                  records: "\${KAFKA_PAYMENTS_MAX_POLL_SIZE:\${KAFKA_CONSUMER_CONFIG_MAX_POLL_SIZE:500}}"
+                socket.connection.setup.timeout:
+                  max.ms: "\${KAFKA_PAYMENTS_REQUEST_CONNECTION_TIMEOUT_MAX_MS:\${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MAX_MS:200000}}"
+                  ms: "\${KAFKA_PAYMENTS_REQUEST_CONNECTION_TIMEOUT_MS:\${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MS:100000}}"
+              standardHeaders: "\${KAFKA_PAYMENTS_STANDARD_HEADERS:\${KAFKA_CONSUMER_CONFIG_STANDARD_HEADERS:both}}"
+              startOffset: "\${KAFKA_PAYMENTS_REQUEST_START_OFFSET:\${KAFKA_CONSUMER_CONFIG_START_OFFSET:earliest}}"
+
+management:
+  info:
+    build.enabled: true
+    java.enabled: true
+    git.enabled: true
+  tracing:
+    baggage.remote-fields:
+      - X-user-id
+  endpoints:
+    jmx:
+      exposure.include: "*"
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      probes.enabled: true
+      logging.slow-indicator-threshold: "\${HEALTH_ACTUATOR_LOGGER_TIMEOUT_DURATION:PT1S}"
+      group:
+        readiness.include: "*"
+        liveness.include: livenessState,diskSpace,ping
+      prometheus:
+        enabled: true
+    metrics:
+      tags:
+        application: ${artifactId}
+      export:
+        prometheus:
+          enabled: true
+          step: 1m
+          descriptions: true
+      enable:
+        jvm: true
+        process: true
+        system: true
+        http: true
+        logback: true
+
+logging:
+  level:
+    root: "\${LOG_LEVEL_ROOT:INFO}"
+    it.gov.pagopa: "\${LOG_LEVEL_PAGOPA:INFO}"
+    org.springframework: "\${LOG_LEVEL_SPRING:INFO}"
+    org.springframework.boot.availability: "\${LOG_LEVEL_SPRING_BOOT_AVAILABILITY:DEBUG}"
+    org.springframework.kafka: "\${LOG_LEVEL_SPRING_KAFKA:INFO}"
+    org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: "\${LOG_LEVEL_KAFKA_CONSUMER_COORDINATOR:WARN}"
+    it.gov.pagopa.pu.workflow.exception.WorkflowExceptionHandler: "\${LOGGING_LEVEL_API_REQUEST_EXCEPTION:INFO}"
+    org.springdoc.core.utils.SpringDocAnnotationsUtils: "\${LOG_LEVEL_SPRING_DOC:ERROR}"
+    PERFORMANCE_LOG: "\${LOG_LEVEL_PERFORMANCE_LOG:INFO}"
+    PERFORMANCE_LOG.API_REQUEST: "\${LOG_LEVEL_PERFORMANCE_LOG_API_REQUEST:\${logging.level.PERFORMANCE_LOG}}"
+    PERFORMANCE_LOG.REST_INVOKE: "\${LOG_LEVEL_PERFORMANCE_LOG_REST_INVOKE:\${logging.level.PERFORMANCE_LOG}}"
+
+workflow:
+  default:
+    startToCloseTimeoutInSeconds: "\${DEFAULT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:300}"
+    retryInitialIntervalInMillis: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:1000}"
+    retryBackoffCoefficient: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:1.5}"
+    retryMaximumAttempts: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:30}"
+
+  # debt position
+  debt-position-expiration:
+    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # debt position sync
+  debt-position-synchronize:
+    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # ingestion flow
+  payments-reporting-ingestion:
+    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  treasury-opi-ingestion:
+    start-to-close-timeout-in-seconds: "\${TREASURY_OPI_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  debt-position-ingestion:
+    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:3600}"
+    retry-initial-interval-in-millis: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  receipt-pagopa-ingestion:
+    start-to-close-timeout-in-seconds: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # classification
+  iuf-classification:
+    start-to-close-timeout-in-seconds: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  transfer-classification:
+    start-to-close-timeout-in-seconds: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # pagopa payments reporting
+  payments-reporting-pagopa-brokers-fetch:
+    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  payments-reporting-pagopa-organization-fetch:
+    start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # pagopa taxonomy synchronization
+  synchronize-taxonomy-pagopa-fetch:
+    start-to-close-timeout-in-seconds: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # send notification
+  send-notification:
+    start-to-close-timeout-in-seconds: "\${SEND_NOTIFICATION_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${SEND_NOTIFICATION_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${SEND_NOTIFICATION_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${SEND_NOTIFICATION_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # create assessments
+  create-assessments:
+    start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${CREATE_ASSESSMENTS_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${CREATE_ASSESSMENTS_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${CREATE_ASSESSMENTS_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+schedule:
+  payments-reporting-pagopa-brokers-fetch:
+    cron-expression: "\${SCHEDULE_PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_CRON:0 1/6 * * *}" # each day, 01:00-07:00-13:00-19:00 (Europe/Rome)
+  synchronize-taxonomy-pagopa-fetch:
+    cron-expression: "\${SCHEDULE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_CRON:0 0 * * *}" # each day, 00:00 (Europe/Rome)
+
+springdoc:
+  writer-with-default-pretty-printer: true
+
+jwt:
+  access-token:
+    public-key: "\${JWT_TOKEN_PUBLIC_KEY:-----BEGIN PUBLIC KEY-----
+                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2ovm/rd3g69dq9PisinQ
+                6mWy8ZttT8D+GKXCsHZycsGnN7b74TPyYy+4+h+9cgJeizp8RDRrufHjiBrqi/2r
+                eOk/rD7ZHbpfQvHK8MYfgIVdtTxYMX/GGdOrX6/5TV2b8e2aCG6GmxF0UuEvxY9o
+                TmcZUxnIeDtl/ixz4DQ754eS363qWfEA92opW+jcYzr07sbQtR86e+Z/s/CUeX6W
+                1PHNvBqdlAgp2ecr/1DOLq1D9hEANBPSwbt+FM6FNe4vLphi7GTwiB0yaAuy+jE8
+                odND6HPvvvmgbK1/2qTHn/HJjWUm11LUC73BszR32BKbdEEhxPQnnwswVekWzPi1
+                IwIDAQAB
+                -----END PUBLIC KEY-----}"
+
+data-cipher:
+  encrypt-psw: "\${CIPHER_DP_SYNC_WF_CONFIG_ENCRYPT_PSW:dpSyncWfConfigEncryptPsw}"
