@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.expiration;
 
 import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerHandlerWFImpl;
+import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWFImpl;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class ExportFileExpirationHandlerWFClient {
   public String exportFileExpirationHandler(Long exportFileId) {
     log.info("Starting exportFileExpirationHandler for file with exportFileId: {}", exportFileId);
 
-    String taskQueue = ExportFileExpirationHandlerHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
+    String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
     String workflowId = generateWorkflowId(exportFileId, taskQueue);
 
     ExportFileExpirationHandlerWF workflow = workflowService.buildWorkflowStub(

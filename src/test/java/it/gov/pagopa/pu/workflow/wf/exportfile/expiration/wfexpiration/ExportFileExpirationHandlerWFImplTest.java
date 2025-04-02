@@ -15,12 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ExportFileExpirationHandlerHandlerWFImplTest {
+class ExportFileExpirationHandlerWFImplTest {
 
   @Mock
   private ExportFileExpirationHandlerActivity exportFileExpirationHandlerActivityMock;
 
-  private ExportFileExpirationHandlerHandlerWFImpl workflow;
+  private ExportFileExpirationHandlerWFImpl workflow;
 
   @BeforeEach
   void setUp() {
@@ -30,7 +30,7 @@ class ExportFileExpirationHandlerHandlerWFImplTest {
 
     when(applicationContextMock.getBean(ExportFileExpirationHandlerWFConfig.class)).thenReturn(configMock);
 
-    workflow = new ExportFileExpirationHandlerHandlerWFImpl();
+    workflow = new ExportFileExpirationHandlerWFImpl();
     workflow.setApplicationContext(applicationContextMock);
   }
 

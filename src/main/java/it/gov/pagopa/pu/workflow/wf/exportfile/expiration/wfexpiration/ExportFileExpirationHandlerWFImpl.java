@@ -8,9 +8,9 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-@WorkflowImpl(taskQueues = ExportFileExpirationHandlerHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF)
+@WorkflowImpl(taskQueues = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF)
 @Slf4j
-public class ExportFileExpirationHandlerHandlerWFImpl implements ExportFileExpirationHandlerWF, ApplicationContextAware {
+public class ExportFileExpirationHandlerWFImpl implements ExportFileExpirationHandlerWF, ApplicationContextAware {
   public static final String TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF = "ExportFileExpirationHandlerWF";
 
   private ExportFileExpirationHandlerActivity exportFileExpirationHandlerActivity;

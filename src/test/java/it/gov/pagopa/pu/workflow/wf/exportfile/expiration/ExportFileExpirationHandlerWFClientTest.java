@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.expiration;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerHandlerWFImpl;
+import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWFImpl;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWF;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ class ExportFileExpirationHandlerWFClientTest {
   @Test
   void testCreateExportFileExpirationHandler() {
     Long exportFileId = 456L;
-    String taskQueue = ExportFileExpirationHandlerHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
+    String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
     String expectedWorkflowId = "ExportFileExpirationHandlerWF-456";
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
