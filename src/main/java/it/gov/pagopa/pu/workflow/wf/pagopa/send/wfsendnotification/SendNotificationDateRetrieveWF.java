@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 
 /**
  * Workflow interface for retrieve and save date notification.
@@ -26,5 +27,5 @@ public interface SendNotificationDateRetrieveWF {
    * @param sendNotificationId the unique identifier of the notification to be sent
    */
   @WorkflowMethod
-  void sendNotificationDateRetrieve(String sendNotificationId);
+  SendNotificationDTO sendNotificationDateRetrieve(String sendNotificationId);
 }

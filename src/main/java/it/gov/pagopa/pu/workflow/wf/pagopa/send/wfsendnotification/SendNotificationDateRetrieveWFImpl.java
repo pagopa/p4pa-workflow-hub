@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
 import io.temporal.spring.boot.WorkflowImpl;
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +11,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.time.Duration;
+
 @Slf4j
 @WorkflowImpl(taskQueues = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE)
 public class SendNotificationDateRetrieveWFImpl implements SendNotificationDateRetrieveWF, ApplicationContextAware {
   public static final String TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE = "SendNotificationDateRetrieveWF";
+
+  private static final Duration RETRY_INTERVAL = Duration.ofHours(12);
 
   private SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity;
 
@@ -30,8 +36,15 @@ public class SendNotificationDateRetrieveWFImpl implements SendNotificationDateR
   }
 
   @Override
-  public void sendNotificationDateRetrieve(String sendNotificationId) {
+  public SendNotificationDTO sendNotificationDateRetrieve(String sendNotificationId) {
+    SendNotificationDTO sendNotification;
 
-    sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(sendNotificationId);
+    while ((sendNotification = sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(sendNotificationId)) == null) {
+      log.info("Notification send date not available for sendNotificationId {}", sendNotificationId);
+      Workflow.sleep(RETRY_INTERVAL);
+    }
+
+    log.info("Notification date retrieved correctly for sendNotificationId {}", sendNotificationId);
+    return sendNotification;
   }
 }
