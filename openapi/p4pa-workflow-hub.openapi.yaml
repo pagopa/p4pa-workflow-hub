@@ -248,6 +248,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/send-notification/{sendNotificationId}/retrieve-notification-date:
+    get:
+      tags:
+        - SendNotification
+      operationId: retrieveNotificationDate
+      description: Retrieve notification date from send
+      parameters:
+        - name: sendNotificationId
+          in: path
+          required: true
+          description: The id of send notification.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Retrieve notification correctly"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
 
 security:
   - BearerAuth: [ ]
