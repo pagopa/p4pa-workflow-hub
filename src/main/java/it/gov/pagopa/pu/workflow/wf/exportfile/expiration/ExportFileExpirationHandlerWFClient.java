@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.expiration;
 
 import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexportfileexpirationhandler.ExportFileExpirationHandlerHandlerWFImpl;
-import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexportfileexpirationhandler.ExportFileExpirationHandlerWF;
+import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerHandlerWFImpl;
+import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

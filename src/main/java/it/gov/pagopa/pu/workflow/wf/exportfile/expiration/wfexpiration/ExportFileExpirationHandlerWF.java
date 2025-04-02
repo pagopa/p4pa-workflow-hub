@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexportfileexpirationhandler;
+package it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
