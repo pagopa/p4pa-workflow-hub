@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
@@ -40,11 +40,11 @@ public class SendNotificationDateRetrieveWFImpl implements SendNotificationDateR
     SendNotificationDTO sendNotification;
 
     while ((sendNotification = sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(sendNotificationId)) == null) {
-      log.info("Notification send date not available for sendNotificationId {}", sendNotificationId);
+      log.info("Notification send date not available for sendNotificationId {}, waiting {} for next check", sendNotificationId, RETRY_INTERVAL);
       Workflow.sleep(RETRY_INTERVAL);
     }
 
-    log.info("Notification date retrieved correctly for sendNotificationId {}", sendNotificationId);
+    log.info("Notification date retrieved correctly for sendNotificationId {}: {}", sendNotificationId, sendNotification.getNotificationDate());
     return sendNotification;
   }
 }

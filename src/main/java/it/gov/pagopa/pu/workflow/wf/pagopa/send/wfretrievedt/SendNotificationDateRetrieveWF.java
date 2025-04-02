@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;

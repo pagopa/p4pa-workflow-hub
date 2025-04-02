@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationDateRetrieveWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationDateRetrieveWFImpl;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWFImpl;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWFImpl;
 import org.junit.jupiter.api.AfterEach;
