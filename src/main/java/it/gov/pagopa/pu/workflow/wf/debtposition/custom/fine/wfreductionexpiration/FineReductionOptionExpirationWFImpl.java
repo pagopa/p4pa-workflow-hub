@@ -38,14 +38,18 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
   }
 
   public String handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, boolean massive, FineWfExecutionConfig executionParams, String accessToken){
+    log.info("Handling fine reduction expiration for debtPositionId: {}, massive: {}, paymentEventRequest: {}", debtPositionId, massive, paymentEventRequestDTO);
     DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
 
     if (debtPositionDTO == null){
+      log.warn("DebtPositionDTO not found for debtPositionId: {}", debtPositionId);
       return null;
     }
 
+    log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", executionParams);
     GenericWfExecutionConfig wfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(executionParams);
 
+    log.info("Synchronize debt position sync");
     return invokeSyncDebtPositionActivity.synchronizeDPSync(debtPositionDTO, paymentEventRequestDTO, massive, wfExecutionConfig, accessToken);
   }
 }

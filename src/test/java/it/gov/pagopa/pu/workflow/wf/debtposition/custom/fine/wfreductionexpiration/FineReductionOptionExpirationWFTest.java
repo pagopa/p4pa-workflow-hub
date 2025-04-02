@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class FineReductionOptionExpirationWFTest {
@@ -60,7 +61,7 @@ class FineReductionOptionExpirationWFTest {
   }
 
   @Test
-  void whenHandleFineReductionExpiration(){
+  void whenHandleFineReductionExpirationThenOk() {
     // Given
     Long debtPositionId = 1L;
     String accessToken = "accessToken";
@@ -92,5 +93,26 @@ class FineReductionOptionExpirationWFTest {
       // Then
       assertEquals(workflowId, result);
     }
+  }
+
+  @Test
+  void givenDebtPositionNullWhenHandleFineReductionExpirationThenReturnNull() {
+    // Given
+    Long debtPositionId = 1L;
+    String accessToken = "accessToken";
+    PaymentEventRequestDTO paymentEventRequestDTO = new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, "description");
+        FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
+      new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
+    FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
+    fineWfExecutionConfig.setIoMessages(fineWfMessages);
+
+    Mockito.when(debtPositionFineReductionOptionExpirationActivityMock.handleFineReductionExpiration(debtPositionId))
+      .thenReturn(null);
+
+    // When
+    String result = wf.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, fineWfExecutionConfig, accessToken);
+
+    // Then
+    assertNull(result);
   }
 }
