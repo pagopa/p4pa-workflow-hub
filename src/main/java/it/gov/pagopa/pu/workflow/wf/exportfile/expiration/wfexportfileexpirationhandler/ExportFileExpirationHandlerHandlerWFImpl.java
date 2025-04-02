@@ -1,8 +1,8 @@
-package it.gov.pagopa.pu.workflow.wf.exportfileexpiration.wfexportfileexpirationhandler;
+package it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexportfileexpirationhandler;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileExpirationHandlerActivity;
-import it.gov.pagopa.pu.workflow.wf.exportfileexpiration.config.ExportFileExpirationHandlerWFConfig;
+import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.config.ExportFileExpirationHandlerWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

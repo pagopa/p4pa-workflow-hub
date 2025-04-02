@@ -1,7 +1,7 @@
-package it.gov.pagopa.pu.workflow.wf.exportfileexpiration.wfexportfileexpirationhandler;
+package it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexportfileexpirationhandler;
 
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileExpirationHandlerActivity;
-import it.gov.pagopa.pu.workflow.wf.exportfileexpiration.config.ExportFileExpirationHandlerWFConfig;
+import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.config.ExportFileExpirationHandlerWFConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
