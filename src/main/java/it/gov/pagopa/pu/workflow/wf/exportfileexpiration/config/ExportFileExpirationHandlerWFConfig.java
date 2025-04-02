@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.exportfileexpirationhandler.config;
+package it.gov.pagopa.pu.workflow.wf.exportfileexpiration.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileExpirationHandlerActivity;

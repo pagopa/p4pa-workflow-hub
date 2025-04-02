@@ -1,9 +1,9 @@
-package it.gov.pagopa.pu.workflow.wf.exportfileexpirationhandler;
+package it.gov.pagopa.pu.workflow.wf.exportfileexpiration;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.exportfileexpirationhandler.wfexportfileexpirationhandler.ExportFileExpirationHandlerHandlerWFImpl;
-import it.gov.pagopa.pu.workflow.wf.exportfileexpirationhandler.wfexportfileexpirationhandler.ExportFileExpirationHandlerWF;
+import it.gov.pagopa.pu.workflow.wf.exportfileexpiration.wfexportfileexpirationhandler.ExportFileExpirationHandlerHandlerWFImpl;
+import it.gov.pagopa.pu.workflow.wf.exportfileexpiration.wfexportfileexpirationhandler.ExportFileExpirationHandlerWF;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
