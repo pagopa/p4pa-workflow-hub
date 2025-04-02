@@ -13,5 +13,5 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 public interface FineReductionOptionExpirationWF {
 
   @WorkflowMethod
-  String handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, FineWfExecutionConfig executionParams);
+  String handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, boolean massive, FineWfExecutionConfig executionParams, String accessToken);
 }

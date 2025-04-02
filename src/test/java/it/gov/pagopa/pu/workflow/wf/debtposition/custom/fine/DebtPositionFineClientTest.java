@@ -44,6 +44,7 @@ class DebtPositionFineClientTest {
   void whenHandleFineReductionExpirationThenSuccess() {
     // Given
     Long debtPositionId = 1L;
+    String accessToken = "accessToken";
     String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
     String expectedWorkflowId = "FineReductionOptionExpirationWF-1";
     PaymentEventRequestDTO paymentEventRequestDTO = new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, "description");
@@ -65,11 +66,11 @@ class DebtPositionFineClientTest {
         .thenReturn(fineReductionOptionExpirationWFMock);
 
       // When
-      String workflowId = client.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, wfExecutionConfig);
+      String workflowId = client.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, wfExecutionConfig, accessToken);
 
       // Then
       Assertions.assertEquals(expectedWorkflowId, workflowId);
-      Mockito.verify(fineReductionOptionExpirationWFMock).handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, wfExecutionConfig);
+      Mockito.verify(fineReductionOptionExpirationWFMock).handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, wfExecutionConfig, accessToken);
     }
   }
 }

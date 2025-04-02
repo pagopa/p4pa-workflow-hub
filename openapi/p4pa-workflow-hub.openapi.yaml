@@ -83,6 +83,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/debt-position/fine/{debtPositionId}/reduction-expiration:
+    post:
+      tags:
+        - DebtPositionFine
+      operationId: handleFineReductionExpiration
+      description: Handle the reduction expiration date of a fine.
+      parameters:
+        - name: debtPositionId
+          in: path
+          required: true
+          description: The id of debt position.
+          schema:
+            type: integer
+            format: int64
+        - name: massive
+          in: query
+          description: Indicates if the operation is massive (true) or single (false).
+          required: false
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'FineReductionExpirationRequestDTO'
+      responses:
+        '200':
+          description: "Ok"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /ingestion-flow/{ingestionFlowFileId}:
     post:
       tags:

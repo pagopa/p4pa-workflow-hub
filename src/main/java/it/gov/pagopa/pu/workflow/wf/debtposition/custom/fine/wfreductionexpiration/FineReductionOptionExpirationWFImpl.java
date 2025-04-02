@@ -1,8 +1,14 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration;
 
 import io.temporal.spring.boot.WorkflowImpl;
+import it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine.DebtPositionFineReductionOptionExpirationActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.config.DebtPositionFineWfConfig;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper.FineWfExecutionConfigMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -14,6 +20,9 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
 
   public static final String TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION = "FineReductionOptionExpirationWF";
 
+  private DebtPositionFineReductionOptionExpirationActivity debtPositionFineReductionOptionExpirationActivity;
+  private InvokeSyncDebtPositionActivity invokeSyncDebtPositionActivity;
+
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
    * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
@@ -22,11 +31,21 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
    */
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    // TODO https://pagopa.atlassian.net/browse/P4ADEV-2494
+    DebtPositionFineWfConfig wfConfig = applicationContext.getBean(DebtPositionFineWfConfig.class);
+
+    debtPositionFineReductionOptionExpirationActivity = wfConfig.buildDebtPositionFineReductionOptionExpirationActivityStub();
+    invokeSyncDebtPositionActivity = wfConfig.buildInvokeSyncDebtPositionActivity();
   }
 
-  public String handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, FineWfExecutionConfig executionParams) {
-    // TODO https://pagopa.atlassian.net/browse/P4ADEV-2494
-    return "";
+  public String handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, boolean massive, FineWfExecutionConfig executionParams, String accessToken){
+    DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
+
+    if (debtPositionDTO == null){
+      return null;
+    }
+
+    GenericWfExecutionConfig wfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(executionParams);
+
+    return invokeSyncDebtPositionActivity.synchronizeDPSync(debtPositionDTO, paymentEventRequestDTO, massive, wfExecutionConfig, accessToken);
   }
 }
