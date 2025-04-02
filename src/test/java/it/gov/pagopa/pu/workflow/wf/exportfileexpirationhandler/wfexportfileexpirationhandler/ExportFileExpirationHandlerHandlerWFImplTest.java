@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.exportfileexpirationhandler.wfexportfileexpirationhandler;
 
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileExpirationHandlerActivity;
-import it.gov.pagopa.pu.workflow.wf.exportfileexpirationhandler.config.CreateExportFileExpirationHandlerWFConfig;
+import it.gov.pagopa.pu.workflow.wf.exportfileexpirationhandler.config.ExportFileExpirationHandlerWFConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,22 +15,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CreateExportFileExpirationHandlerWFTest {
+class ExportFileExpirationHandlerHandlerWFImplTest {
 
   @Mock
   private ExportFileExpirationHandlerActivity exportFileExpirationHandlerActivityMock;
 
-  private CreateExportFileExpirationHandlerHandlerWFImpl workflow;
+  private ExportFileExpirationHandlerHandlerWFImpl workflow;
 
   @BeforeEach
   void setUp() {
-    CreateExportFileExpirationHandlerWFConfig configMock = mock(CreateExportFileExpirationHandlerWFConfig.class);
+    ExportFileExpirationHandlerWFConfig configMock = mock(ExportFileExpirationHandlerWFConfig.class);
     ApplicationContext applicationContextMock = mock(ApplicationContext.class);
     when(configMock.buildExportFileExpirationHandlerActivityStub()).thenReturn(exportFileExpirationHandlerActivityMock);
 
-    when(applicationContextMock.getBean(CreateExportFileExpirationHandlerWFConfig.class)).thenReturn(configMock);
+    when(applicationContextMock.getBean(ExportFileExpirationHandlerWFConfig.class)).thenReturn(configMock);
 
-    workflow = new CreateExportFileExpirationHandlerHandlerWFImpl();
+    workflow = new ExportFileExpirationHandlerHandlerWFImpl();
     workflow.setApplicationContext(applicationContextMock);
   }
 
@@ -43,7 +43,7 @@ class CreateExportFileExpirationHandlerWFTest {
   void givenValidExportFileIdWhenCreateThenLogAndHandleExpiration() {
     Long exportFileId = 456L;
 
-    workflow.createExportFileExpirationHandler(exportFileId);
+    workflow.exportFileExpirationHandler(exportFileId);
 
     verify(exportFileExpirationHandlerActivityMock).handleExpiration(exportFileId);
   }
@@ -53,7 +53,7 @@ class CreateExportFileExpirationHandlerWFTest {
     Long exportFileId = 456L;
     doThrow(new RuntimeException("Test exception")).when(exportFileExpirationHandlerActivityMock).handleExpiration(exportFileId);
 
-    assertThrows(RuntimeException.class, () -> workflow.createExportFileExpirationHandler(exportFileId));
+    assertThrows(RuntimeException.class, () -> workflow.exportFileExpirationHandler(exportFileId));
 
     verify(exportFileExpirationHandlerActivityMock).handleExpiration(exportFileId);
   }

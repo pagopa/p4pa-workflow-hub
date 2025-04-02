@@ -8,8 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "workflow.create-export-file-expiration-handler")
-public class CreateExportFileExpirationHandlerWFConfig extends BaseWfConfig {
+@ConfigurationProperties(prefix = "workflow.export-file-expiration-handler")
+public class ExportFileExpirationHandlerWFConfig extends BaseWfConfig {
 
   public ExportFileExpirationHandlerActivity buildExportFileExpirationHandlerActivityStub() {
     return Workflow.newActivityStub(ExportFileExpirationHandlerActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));

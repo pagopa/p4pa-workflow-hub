@@ -4,8 +4,8 @@ import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
 @WorkflowInterface
-public interface CreateExportFileExpirationHandlerWF {
+public interface ExportFileExpirationHandlerWF {
 
   @WorkflowMethod
-  void createExportFileExpirationHandler(Long exportFileId);
+  void exportFileExpirationHandler(Long exportFileId);
 }
