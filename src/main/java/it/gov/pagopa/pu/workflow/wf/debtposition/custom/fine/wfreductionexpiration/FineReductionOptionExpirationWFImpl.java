@@ -13,7 +13,6 @@ import org.springframework.context.ApplicationContextAware;
 public class FineReductionOptionExpirationWFImpl implements FineReductionOptionExpirationWF, ApplicationContextAware {
 
   public static final String TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION = "FineReductionOptionExpirationWF";
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_LOCAL_ACTIVITY = "DebtPositionSynchronizeSyncWF_LOCAL";
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />

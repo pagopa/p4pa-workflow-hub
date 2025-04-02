@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity;
+package it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
@@ -10,5 +10,5 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 public interface InvokeSyncDebtPositionActivity {
 
   @ActivityMethod
-  String synchronizeDPSync(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig);
+  String synchronizeDPSync(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, boolean massive, GenericWfExecutionConfig wfExecutionConfig, String accessToken);
 }

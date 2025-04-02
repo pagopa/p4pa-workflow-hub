@@ -9,20 +9,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class FineWfExecutionConfigMapperTest {
 
   @Test
-  void testMapFineWfExecutionConfigToGenericWfExecutionConfigForIsNotified() {
+  void testMapNotifiedInstallment() {
     IONotificationMessage ioNotificationMessage = new IONotificationMessage("subject", "message");
     FineWfExecutionConfig fineConfig = FineWfExecutionConfig.builder()
       .ioMessages(new FineWfExecutionConfig.IONotificationFineWfMessages(ioNotificationMessage, null))
       .build();
 
-    GenericWfExecutionConfig result = FineWfExecutionConfigMapper.mapFineWfExecutionConfigToGenericWfExecutionConfigForIsNotified(fineConfig);
+    GenericWfExecutionConfig result = FineWfExecutionConfigMapper.mapNotifiedInstallment(fineConfig);
 
     assertNotNull(result);
     assertEquals(ioNotificationMessage, result.getIoMessages().getCreated());
+    assertEquals(ioNotificationMessage, result.getIoMessages().getUpdated());
   }
 
   @Test
-  void testMapFineWfExecutionConfigToGenericWfExecutionConfigForReductionExpired() {
+  void testMapReductionExpired() {
     IONotificationMessage ioNotificationMessage = new IONotificationMessage("expired-subject", "expired-message");
     FineWfExecutionConfig.IONotificationFineWfMessages fineMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, ioNotificationMessage);
@@ -30,10 +31,11 @@ class FineWfExecutionConfigMapperTest {
     FineWfExecutionConfig fineConfig = new FineWfExecutionConfig();
     fineConfig.setIoMessages(fineMessages);
 
-    GenericWfExecutionConfig result = FineWfExecutionConfigMapper.mapFineWfExecutionConfigToGenericWfExecutionConfigForReductionExpired(fineConfig);
+    GenericWfExecutionConfig result = FineWfExecutionConfigMapper.mapReductionExpired(fineConfig);
 
     assertNotNull(result);
     assertEquals(ioNotificationMessage, result.getIoMessages().getCreated());
+    assertEquals(ioNotificationMessage, result.getIoMessages().getUpdated());
   }
 }
 
