@@ -33,6 +33,10 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(GetSendNotificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
+  public SendNotificationDateRetrieveActivity buildSendNotificationDateRetrieveActivityStub() {
+    return Workflow.newActivityStub(SendNotificationDateRetrieveActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
   public PublishSendNotificationPaymentEventActivity buildPublishSendNotificationPaymentEventActivityStub() {
     return Workflow.newActivityStub(PublishSendNotificationPaymentEventActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
