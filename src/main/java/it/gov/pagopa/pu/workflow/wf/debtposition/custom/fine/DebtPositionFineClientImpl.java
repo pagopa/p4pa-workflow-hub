@@ -4,8 +4,8 @@ import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductioneexpiration.FineReductionOptionExpirationWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductioneexpiration.FineReductionOptionExpirationWFImpl;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWF;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
