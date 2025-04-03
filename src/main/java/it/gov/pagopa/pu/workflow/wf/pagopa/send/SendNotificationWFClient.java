@@ -34,7 +34,7 @@ public class SendNotificationWFClient {
     return workflowId;
   }
 
-  public String sendNotificationDateRetrieve(String sendNotificationId) {
+  public String scheduleSendNotificationDateRetrieve(String sendNotificationId) {
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
     String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
 

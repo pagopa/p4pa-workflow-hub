@@ -80,7 +80,7 @@ class SendNotificationWFClientTest {
         .thenReturn(sendNotificationDateRetrieveWFMock);
 
       // When
-      String workflowId = client.sendNotificationDateRetrieve(sendNotificationId);
+      String workflowId = client.scheduleSendNotificationDateRetrieve(sendNotificationId);
 
       // Then
       assertEquals(expectedWorkflowId, workflowId);

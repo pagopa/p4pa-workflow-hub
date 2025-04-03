@@ -10,6 +10,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.ScheduleSendNotificationDateRetrieveActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.mapper.SendNotification2DebtPositionSendNotificationsMapper;
@@ -25,6 +26,7 @@ import java.time.Duration;
 public class SendNotificationProcessWFImpl implements SendNotificationProcessWF, ApplicationContextAware {
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS = "SendNotificationProcessWF";
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY = "SendNotificationProcessWF_LOCAL";
+  public static final String TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE_LOCAL_ACTIVITY = "SendNotificationDateRetrieveWF_LOCAL";
 
   private static final int MAX_RETRIES = 10;
   private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
@@ -35,6 +37,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   private NotificationStatusActivity notificationStatusActivity;
   private GetSendNotificationActivity getSendNotificationActivity;
   private PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity;
+  private ScheduleSendNotificationDateRetrieveActivity scheduleSendNotificationDateRetrieveActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -52,6 +55,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     notificationStatusActivity = wfConfig.buildNotificationStatusActivityStub();
     getSendNotificationActivity = wfConfig.buildGetSendNotificationActivityStub();
     publishSendNotificationPaymentEventActivity = wfConfig.buildPublishSendNotificationPaymentEventActivityStub();
+    scheduleSendNotificationDateRetrieveActivity = wfConfig.buildScheduleSendNotificationDateRetrieveActivityStub();
   }
 
   @Override
@@ -66,6 +70,8 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       SendNotificationDTO sendNotificationDTO = waitDeliveryAcceptance(sendNotificationId);
 
       publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
+
+      scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieve(sendNotificationId);
     } catch (RuntimeException e){
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
       if (notification != null) {

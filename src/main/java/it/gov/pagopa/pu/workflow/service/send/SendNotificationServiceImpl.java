@@ -23,13 +23,6 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     return buildWorkflowCreatedDTO(workflowId);
   }
 
-  @Override
-  public WorkflowCreatedDTO sendNotificationDateRetrieve(String sendNotificationId) {
-    String workflowId = sendNotificationWFClient.sendNotificationDateRetrieve(sendNotificationId);
-
-    return buildWorkflowCreatedDTO(workflowId);
-  }
-
   private WorkflowCreatedDTO buildWorkflowCreatedDTO(String workflowId) {
     return WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
