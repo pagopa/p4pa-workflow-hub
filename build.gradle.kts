@@ -52,13 +52,13 @@ val openApiToolsVersion = "0.2.6"
 val micrometerVersion = "1.4.3"
 val bouncycastleVersion = "1.80"
 val mapStructVersion = "1.6.3"
-val temporalVersion = "1.27.1"
-val protobufJavaVersion = "3.25.5"
+val temporalVersion = "1.28.4"
+val protobufJavaVersion = "4.30.2"
 val guavaVersion = "33.4.0-jre"
 val postgresJdbcVersion = "42.7.5"
 val podamVersion = "8.0.2.RELEASE"
 
-val activitiesVersion = "1.92.4"
+val activitiesVersion = "1.92.5"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
