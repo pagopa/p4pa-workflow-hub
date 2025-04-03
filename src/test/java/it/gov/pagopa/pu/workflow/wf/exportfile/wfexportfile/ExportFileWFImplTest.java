@@ -83,7 +83,6 @@ class ExportFileWFImplTest {
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
-      workflowMock.when(() -> Workflow.sideEffect(Mockito.eq(LocalDate.class),Mockito.any())).thenReturn(LocalDate.now());
 
       wf.exportFile(exportFileId,exportFileType);
 
