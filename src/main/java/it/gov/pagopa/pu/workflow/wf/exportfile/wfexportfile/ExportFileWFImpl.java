@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile;
 
 import io.micrometer.common.util.StringUtils;
 import io.temporal.spring.boot.WorkflowImpl;
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.exportflow.debtposition.ExportFileActivity;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
@@ -62,9 +63,10 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
       errorDescription = e.getMessage();
     }
 
-    LocalDate expirationDate = LocalDate.now().plusDays(expirationDays);
     updateExportFileWithProcessingResult(exportFileId, errorDescription, exportFileResult);
 
+    LocalDate expirationDate = Workflow.sideEffect(LocalDate.class,
+      LocalDate::now).plusDays(expirationDays);
     if(StringUtils.isBlank(errorDescription)){
       scheduleExportFileExpiration(exportFileId, expirationDate);
     }
