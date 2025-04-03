@@ -229,6 +229,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/export-file/{exportFileId}:
+    get:
+      tags:
+        - ExportFile
+      operationId: exportFileExpirationHandler
+      description: Handle the expiration of export file
+      parameters:
+        - name: exportFileId
+          in: path
+          required: true
+          description: The ID of export file
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflow/send-notification/{sendNotificationId}/start:
     get:
       tags:

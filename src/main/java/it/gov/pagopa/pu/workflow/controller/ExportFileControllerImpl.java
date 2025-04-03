@@ -3,7 +3,9 @@ package it.gov.pagopa.pu.workflow.controller;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.workflow.controller.generated.ExportFileApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.exportfile.ExportFileService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ExportFileControllerImpl implements ExportFileApi {
 
-  public ExportFileControllerImpl() {
+  private final ExportFileService service;
+
+  public ExportFileControllerImpl(ExportFileService service) {
+    this.service = service;
+  }
+
+  @Override
+  public ResponseEntity<WorkflowCreatedDTO> exportFileExpirationHandler(Long exportFileId) {
+    log.info("Starting exportFileExpirationHandler for exportFileId: {}", exportFileId);
+    WorkflowCreatedDTO createWorkflowResponseDTO = service.exportFileExpirationHandler(exportFileId);
+    return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);
   }
 
   @Override
