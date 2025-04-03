@@ -36,6 +36,7 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
     invokeSyncDebtPositionActivity = wfConfig.buildInvokeSyncDebtPositionActivity();
   }
 
+  @Override
   public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
     log.info("Handling fine reduction expiration for debtPositionId: {}, wfExecutionConfig: {}", debtPositionId, wfExecutionConfig);    DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
 

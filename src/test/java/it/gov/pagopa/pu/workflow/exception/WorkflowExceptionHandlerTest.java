@@ -141,7 +141,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_INVALID_EXECUTION_CONFIG"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
   }
 

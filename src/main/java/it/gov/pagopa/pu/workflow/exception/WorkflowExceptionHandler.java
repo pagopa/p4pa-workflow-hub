@@ -48,7 +48,7 @@ public class WorkflowExceptionHandler {
 
   @ExceptionHandler(value = InvalidWfExecutionConfigException.class)
   public ResponseEntity<WorkflowErrorDTO> handleInvalidWfExecutionConfigException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INVALID_EXECUTION_CONFIG);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INVALID_SYNC_DP_WF_EXECUTION_CONFIG);
   }
 
   @ExceptionHandler({WorkflowNotFoundException.class})
