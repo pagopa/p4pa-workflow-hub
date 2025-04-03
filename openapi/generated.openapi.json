@@ -16,8 +16,14 @@
     "name" : "IngestionFlow",
     "description" : "the IngestionFlow API"
   }, {
+    "name" : "DebtPositionFine",
+    "description" : "the DebtPositionFine API"
+  }, {
     "name" : "Assessments",
     "description" : "the Assessments API"
+  }, {
+    "name" : "ExportFile",
+    "description" : "the ExportFile API"
   }, {
     "name" : "SendNotification",
     "description" : "the SendNotification API"
@@ -926,6 +932,48 @@
         } ]
       }
     },
+    "/workflowhub/workflow/debt-position/fine/{debtPositionId}/expire-reduction" : {
+      "post" : {
+        "tags" : [ "DebtPositionFine" ],
+        "description" : "Handle the reduction expiration date of a fine.",
+        "operationId" : "expireFineReduction",
+        "parameters" : [ {
+          "name" : "debtPositionId",
+          "in" : "path",
+          "description" : "The id of debt position.",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Ok",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
     "/workflowhub/workflow/assessments/receipt/{receiptId}" : {
       "post" : {
         "tags" : [ "Assessments" ],
@@ -1005,6 +1053,99 @@
           },
           "500" : {
             "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workflowhub/export-file/{exportFileId}" : {
+      "post" : {
+        "tags" : [ "ExportFile" ],
+        "summary" : "Export File",
+        "description" : "It will start the creation of an Export File returning its workflowId",
+        "operationId" : "exportFile",
+        "parameters" : [ {
+          "name" : "exportFileId",
+          "in" : "path",
+          "description" : "The unique identifier of the Export File.",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "exportFileType",
+          "in" : "query",
+          "description" : "ExportFileType",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/ExportFileTypeEnum"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Export File created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workflowhub/export-file/{exportFileId}/expire" : {
+      "post" : {
+        "tags" : [ "ExportFile" ],
+        "description" : "Expire an export file",
+        "operationId" : "expireExportFile",
+        "parameters" : [ {
+          "name" : "exportFileId",
+          "in" : "path",
+          "description" : "The ID of export file",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1178,6 +1319,47 @@
           "BearerAuth" : [ ]
         } ]
       }
+    },
+    "/workflowhub/workflow/send-notification/{sendNotificationId}/retrieve-notification-date" : {
+      "get" : {
+        "tags" : [ "SendNotification" ],
+        "description" : "Retrieve notification date from send",
+        "operationId" : "retrieveNotificationDate",
+        "parameters" : [ {
+          "name" : "sendNotificationId",
+          "in" : "path",
+          "description" : "The id of send notification.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Retrieve notification correctly",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -1256,7 +1438,11 @@
           }
         }
       },
-      "DebtPositionWorkflowType" : {
+      "DebtPositionSyncWfName" : {
+        "type" : "string",
+        "enum" : [ "fineWf" ]
+      },
+      "WorkflowType" : {
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1270,70 +1456,23 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
-          "debtPositionId" : {
+          "workflowTypeId" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "workflowTypeOrgId" : {
-            "type" : "integer",
-            "format" : "int64"
+          "description" : {
+            "type" : "string"
           },
-          "executionConfig" : {
-            "type" : "string",
-            "format" : "byte"
+          "defaultExecutionConfig" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
           },
           "_links" : {
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "debtPositionId", "executionConfig" ]
-      },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
-      "PagedModelDebtPositionWorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "debtPositionWorkflowTypes" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/DebtPositionWorkflowType"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "DebtPositionSyncWfName" : {
-        "type" : "string",
-        "enum" : [ "fineWf" ]
+        "required" : [ "defaultExecutionConfig", "description" ]
       },
       "FineWfExecutionConfig" : {
         "allOf" : [ {
@@ -1377,48 +1516,26 @@
           }
         }
       },
-      "WfExecutionConfig" : {
-        "type" : "object",
-        "discriminator" : {
-          "propertyName" : "workflowTypeName"
-        },
-        "properties" : {
-          "workflowTypeName" : {
-            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
-          }
-        }
-      },
-      "WorkflowType" : {
+      "PageMetadata" : {
         "type" : "object",
         "properties" : {
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateOperatorExternalId" : {
-            "type" : "string"
-          },
-          "workflowTypeId" : {
+          "size" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "description" : {
-            "type" : "string"
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "defaultExecutionConfig" : {
-            "oneOf" : [ {
-              "$ref" : "#/components/schemas/FineWfExecutionConfig"
-            } ]
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
           }
-        },
-        "required" : [ "defaultExecutionConfig", "description" ]
+        }
       },
       "PagedModelWorkflowType" : {
         "type" : "object",
@@ -1439,6 +1556,17 @@
           },
           "page" : {
             "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "WfExecutionConfig" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "workflowTypeName"
+        },
+        "properties" : {
+          "workflowTypeName" : {
+            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
           }
         }
       },
@@ -1485,6 +1613,60 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/WorkflowTypeOrg"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "DebtPositionWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "debtPositionId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "workflowTypeOrgId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "executionConfig" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        },
+        "required" : [ "debtPositionId", "executionConfig" ]
+      },
+      "PagedModelDebtPositionWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "debtPositionWorkflowTypes" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/DebtPositionWorkflowType"
                 }
               }
             }
@@ -1595,7 +1777,7 @@
       },
       "CodeEnum" : {
         "type" : "string",
-        "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_CONFLICT", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR" ]
+        "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_CONFLICT", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR", "WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG" ]
       },
       "WorkflowErrorDTO" : {
         "type" : "object",
@@ -1931,6 +2113,10 @@
       "IngestionFlowFileTypeEnum" : {
         "type" : "string",
         "enum" : [ "RECEIPT", "RECEIPT_PAGOPA", "PAYMENTS_REPORTING", "PAYMENTS_REPORTING_PAGOPA", "TREASURY_OPI", "TREASURY_CSV", "TREASURY_XLS", "TREASURY_POSTE", "DP_INSTALLMENTS", "PAYMENT_NOTIFICATION" ]
+      },
+      "ExportFileTypeEnum" : {
+        "type" : "string",
+        "enum" : [ "PAID", "CLASSIFICATIONS", "PAYMENTS_REPORTING" ]
       },
       "WorkflowStatusDTO" : {
         "type" : "object",

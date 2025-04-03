@@ -1,9 +1,11 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.sync.config;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
+import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
 import it.gov.pagopa.pu.workflow.model.DebtPositionWorkflowType;
 import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;
 import it.gov.pagopa.pu.workflow.repository.DebtPositionWorkflowTypeRepository;
@@ -180,4 +182,59 @@ class WfExecutionConfigHandlerServiceTest {
     // Then
     Assertions.assertNull(wfExecutionParameters.getWfExecutionConfig());
   }
+
+  @Test
+  void givenValidFineWfExecutionConfigWhenFindStoredExecutionConfigThenOk() {
+    // Given
+    long debtPositionId = 1L;
+    FineWfExecutionConfig fineConfig = new FineWfExecutionConfig();
+    byte[] ciphered = new byte[0];
+
+    DebtPositionWorkflowType dpWfType = new DebtPositionWorkflowType();
+    dpWfType.setExecutionConfig(ciphered);
+
+    Mockito.when(debtPositionWorkflowTypeRepositoryMock.findById(debtPositionId))
+      .thenReturn(Optional.of(dpWfType));
+    Mockito.when(dataCipherServiceMock.decryptObj(ciphered, WfExecutionConfig.class))
+      .thenReturn(fineConfig);
+
+    // When
+    FineWfExecutionConfig result = service.findStoredExecutionConfig(debtPositionId, FineWfExecutionConfig.class);
+
+    // Then
+    Assertions.assertSame(fineConfig, result);
+  }
+
+  @Test
+  void givenNoExecutionConfigWhenFindStoredExecutionConfigThenThrowInvalidWfExecutionConfigException() {
+    // Given
+    long debtPositionId = 1L;
+    Mockito.when(debtPositionWorkflowTypeRepositoryMock.findById(debtPositionId))
+      .thenReturn(Optional.empty());
+
+    // Then
+    Assertions.assertThrows(InvalidWfExecutionConfigException.class,
+      () -> service.findStoredExecutionConfig(debtPositionId, FineWfExecutionConfig.class));
+  }
+
+  @Test
+  void givenWrongExecutionConfigTypeWhenFindStoredExecutionConfigThenThrowInvalidWfExecutionConfigException() {
+    // Given
+    long debtPositionId = 1L;
+    GenericWfExecutionConfig wrongConfig = new GenericWfExecutionConfig();
+    byte[] ciphered = new byte[0];
+
+    DebtPositionWorkflowType dpWfType = new DebtPositionWorkflowType();
+    dpWfType.setExecutionConfig(ciphered);
+
+    Mockito.when(debtPositionWorkflowTypeRepositoryMock.findById(debtPositionId))
+      .thenReturn(Optional.of(dpWfType));
+    Mockito.when(dataCipherServiceMock.decryptObj(ciphered, WfExecutionConfig.class))
+      .thenReturn(wrongConfig);
+
+    // Then
+    Assertions.assertThrows(InvalidWfExecutionConfigException.class,
+      () -> service.findStoredExecutionConfig(debtPositionId, FineWfExecutionConfig.class));
+  }
+
 }

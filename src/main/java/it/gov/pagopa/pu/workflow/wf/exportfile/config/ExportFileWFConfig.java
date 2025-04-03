@@ -1,0 +1,30 @@
+package it.gov.pagopa.pu.workflow.wf.exportfile.config;
+
+import io.temporal.workflow.Workflow;
+import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.exportflow.debtposition.ExportFileActivity;
+import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
+import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.wf.exportfile.activity.ScheduleExportFileExpirationActivity;
+import it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile.ExportFileWFImpl;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConfigurationProperties(prefix = "workflow.export-file")
+public class ExportFileWFConfig extends BaseWfConfig {
+
+  public ExportFileActivity buildExportFileActivityStub() {
+    return Workflow.newActivityStub(ExportFileActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public UpdateExportFileStatusActivity buildUpdateExportFileStatusActivityStub() {
+    return Workflow.newActivityStub(UpdateExportFileStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public ScheduleExportFileExpirationActivity buildScheduleExportFileExpirationActivityStub() {
+    return Workflow.newActivityStub(ScheduleExportFileExpirationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+      ExportFileWFImpl.TASK_QUEUE_EXPORT_FILE_LOCAL_ACTIVITY,
+      this));
+  }
+}
