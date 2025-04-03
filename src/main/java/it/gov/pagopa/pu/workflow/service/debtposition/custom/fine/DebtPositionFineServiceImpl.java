@@ -22,7 +22,7 @@ public class DebtPositionFineServiceImpl implements DebtPositionFineService {
   @Override
   public WorkflowCreatedDTO expireFineReduction(Long debtPositionId) {
     log.debug("Fetching fine execution config for debtPositionId: {}", debtPositionId);
-    FineWfExecutionConfig executionParams = wfExecutionConfigHandlerService.findStoredExecutionConfig(debtPositionId);
+    FineWfExecutionConfig executionParams = wfExecutionConfigHandlerService.findStoredExecutionConfig(debtPositionId, FineWfExecutionConfig.class);
 
     log.debug("Starting workflow to handle fine reduction expiration: {})", debtPositionId);
     String workflowId = debtPositionFineClient.expireFineReduction(debtPositionId, executionParams);

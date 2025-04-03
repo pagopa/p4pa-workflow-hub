@@ -41,9 +41,14 @@ public class WorkflowExceptionHandler {
     return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CodeEnum.CONFLICT);
   }
 
-  @ExceptionHandler(value = {IngestionFlowTypeNotSupportedException.class, InvalidWfExecutionConfigException.class})
+  @ExceptionHandler(value = IngestionFlowTypeNotSupportedException.class)
   public ResponseEntity<WorkflowErrorDTO> handleIngestionFlowTypeNotSupportedException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INGESTION_FLOW_FILE_NOT_SUPPORTED);
+  }
+
+  @ExceptionHandler(value = InvalidWfExecutionConfigException.class)
+  public ResponseEntity<WorkflowErrorDTO> handleInvalidWfExecutionConfigException(Exception ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INVALID_EXECUTION_CONFIG);
   }
 
   @ExceptionHandler({WorkflowNotFoundException.class})

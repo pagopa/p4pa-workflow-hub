@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.sync.config;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
@@ -70,17 +69,20 @@ public class WfExecutionConfigHandlerService {
     }
   }
 
-  public FineWfExecutionConfig findStoredExecutionConfig(Long debtPositionId) {
+  public <T extends WfExecutionConfig> T findStoredExecutionConfig(Long debtPositionId, Class<T> wfExecConfigClass) {
     WfExecutionConfig config = findWfExecutionConfigById(debtPositionId)
       .orElseThrow(() -> new InvalidWfExecutionConfigException("Execution config not found for debtPositionId: " + debtPositionId));
 
-    if (!(config instanceof FineWfExecutionConfig fineConfig)) {
-      throw new InvalidWfExecutionConfigException("Invalid execution config type for debtPositionId: " + debtPositionId);
+    if (!wfExecConfigClass.isInstance(config)) {
+      throw new InvalidWfExecutionConfigException(String.format("Invalid execution config type for debtPositionId: %d. Expected: %s, Found: %s",
+        debtPositionId,
+        wfExecConfigClass.getSimpleName(),
+        config.getClass().getSimpleName()
+      ));
     }
 
-    return fineConfig;
+    return wfExecConfigClass.cast(config);
   }
-
 
   private Optional<WfExecutionConfig> findWfExecutionConfigById(Long debtPositionId) {
     return debtPositionWorkflowTypeRepository

@@ -50,7 +50,7 @@ class DebtPositionFineControllerTest {
       .thenReturn(expected);
 
     MvcResult result = mockMvc.perform(
-        post("/workflowhub/workflow/debt-position/fine/1/reduction-expiration")
+        post("/workflowhub/workflow/debt-position/fine/1/expire-reduction")
           .contentType(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().isOk())
       .andReturn();

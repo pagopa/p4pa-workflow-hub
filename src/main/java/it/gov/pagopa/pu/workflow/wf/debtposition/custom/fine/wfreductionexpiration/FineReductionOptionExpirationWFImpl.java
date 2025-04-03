@@ -36,9 +36,8 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
     invokeSyncDebtPositionActivity = wfConfig.buildInvokeSyncDebtPositionActivity();
   }
 
-  public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig executionParams) {
-    log.info("Handling fine reduction expiration for debtPositionId: {}, executionParams: {}", debtPositionId, executionParams);
-    DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
+  public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
+    log.info("Handling fine reduction expiration for debtPositionId: {}, wfExecutionConfig: {}", debtPositionId, wfExecutionConfig);    DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
 
     if (debtPositionDTO == null){
       log.warn("DebtPositionDTO not found for debtPositionId: {}", debtPositionId);
@@ -46,10 +45,10 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
     }
 
     // TODO replace IO placeholders https://pagopa.atlassian.net/browse/P4ADEV-2599
-    log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", executionParams);
-    GenericWfExecutionConfig wfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(executionParams);
+    log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", wfExecutionConfig);
+    GenericWfExecutionConfig genericWfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(wfExecutionConfig);
 
     log.info("Synchronize debt position sync");
-    return invokeSyncDebtPositionActivity.synchronizeDPSync(debtPositionDTO, null, false, wfExecutionConfig);
+    return invokeSyncDebtPositionActivity.synchronizeDPSync(debtPositionDTO, null, false, genericWfExecutionConfig);
   }
 }

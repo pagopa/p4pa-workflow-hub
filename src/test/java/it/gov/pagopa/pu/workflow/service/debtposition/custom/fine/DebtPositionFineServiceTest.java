@@ -46,7 +46,7 @@ class DebtPositionFineServiceTest {
     FineWfExecutionConfig wfExecutionConfig = new FineWfExecutionConfig();
     wfExecutionConfig.setIoMessages(fineWfMessages);
 
-    Mockito.when(wfExecutionConfigHandlerServiceMock.findStoredExecutionConfig(debtPositionId))
+    Mockito.when(wfExecutionConfigHandlerServiceMock.findStoredExecutionConfig(debtPositionId, FineWfExecutionConfig.class))
         .thenReturn(wfExecutionConfig);
 
     Mockito.when(debtPositionFineClientMock.expireFineReduction(debtPositionId,  wfExecutionConfig))

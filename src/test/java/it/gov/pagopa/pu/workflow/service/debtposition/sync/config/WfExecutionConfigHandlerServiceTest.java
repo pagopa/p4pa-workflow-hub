@@ -199,7 +199,7 @@ class WfExecutionConfigHandlerServiceTest {
       .thenReturn(fineConfig);
 
     // When
-    FineWfExecutionConfig result = service.findStoredExecutionConfig(debtPositionId);
+    FineWfExecutionConfig result = service.findStoredExecutionConfig(debtPositionId, FineWfExecutionConfig.class);
 
     // Then
     Assertions.assertSame(fineConfig, result);
@@ -214,7 +214,7 @@ class WfExecutionConfigHandlerServiceTest {
 
     // Then
     Assertions.assertThrows(InvalidWfExecutionConfigException.class,
-      () -> service.findStoredExecutionConfig(debtPositionId));
+      () -> service.findStoredExecutionConfig(debtPositionId, FineWfExecutionConfig.class));
   }
 
   @Test
@@ -234,7 +234,7 @@ class WfExecutionConfigHandlerServiceTest {
 
     // Then
     Assertions.assertThrows(InvalidWfExecutionConfigException.class,
-      () -> service.findStoredExecutionConfig(debtPositionId));
+      () -> service.findStoredExecutionConfig(debtPositionId, FineWfExecutionConfig.class));
   }
 
 }

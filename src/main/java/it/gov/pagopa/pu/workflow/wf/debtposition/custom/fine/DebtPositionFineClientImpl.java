@@ -21,7 +21,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
   }
 
   @Override
-  public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig executionParams) {
+  public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
     log.info("Starting check debt position reduction expiration WF: {}", debtPositionId);
     String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
     String workflowId = generateWorkflowId(debtPositionId, taskQueue);
@@ -30,7 +30,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       FineReductionOptionExpirationWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::expireFineReduction, debtPositionId, executionParams);
+    WorkflowClient.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
     return workflowId;
   }
 }
