@@ -64,7 +64,6 @@ class FineReductionOptionExpirationWFTest {
   void whenHandleFineReductionExpirationThenOk() {
     // Given
     Long debtPositionId = 1L;
-    String accessToken = "accessToken";
     String workflowId = "workflowId";
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
     PaymentEventRequestDTO paymentEventRequestDTO = new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, "description");
@@ -84,11 +83,11 @@ class FineReductionOptionExpirationWFTest {
       mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig))
         .thenReturn(wfExecutionConfig);
 
-      Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequestDTO, false, wfExecutionConfig, accessToken))
+      Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequestDTO, false, wfExecutionConfig))
         .thenReturn(workflowId);
 
       // When
-      String result = wf.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, fineWfExecutionConfig, accessToken);
+      String result = wf.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, fineWfExecutionConfig);
 
       // Then
       assertEquals(workflowId, result);
@@ -99,7 +98,6 @@ class FineReductionOptionExpirationWFTest {
   void givenDebtPositionNullWhenHandleFineReductionExpirationThenReturnNull() {
     // Given
     Long debtPositionId = 1L;
-    String accessToken = "accessToken";
     PaymentEventRequestDTO paymentEventRequestDTO = new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, "description");
         FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
@@ -110,7 +108,7 @@ class FineReductionOptionExpirationWFTest {
       .thenReturn(null);
 
     // When
-    String result = wf.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, fineWfExecutionConfig, accessToken);
+    String result = wf.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, fineWfExecutionConfig);
 
     // Then
     assertNull(result);

@@ -9,9 +9,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.custom.fine.DebtPositionFineService;
-import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,7 +41,6 @@ class DebtPositionFineControllerTest {
   @Test
   void whenHandleFineReductionExpirationThenOk() throws Exception {
     Long debtPositionId = 1L;
-    String accessToken = "accessToken";
     String expectedWorkflowId = "FineReductionOptionExpirationWF-1";
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, null);
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
@@ -54,24 +51,19 @@ class DebtPositionFineControllerTest {
 
     FineReductionExpirationRequestDTO body = new FineReductionExpirationRequestDTO(paymentEventRequest, wfExecutionConfig);
 
-    Mockito.when(service.handleFineReductionExpiration(debtPositionId, paymentEventRequest, false, wfExecutionConfig, accessToken))
+    Mockito.when(service.handleFineReductionExpiration(debtPositionId, paymentEventRequest, false, wfExecutionConfig))
       .thenReturn(expected);
 
-    try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
-      securityUtilsMockedStatic.when(SecurityUtils::getAccessToken)
-        .thenReturn(accessToken);
+    MvcResult result = mockMvc.perform(
+        post("/workflowhub/workflow/debt-position/fine/1/reduction-expiration")
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .param("massive", "false")
+          .content(objectMapper.writeValueAsString(body)))
+      .andExpect(status().isOk())
+      .andReturn();
 
-      MvcResult result = mockMvc.perform(
-          post("/workflowhub/workflow/debt-position/fine/1/reduction-expiration")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .param("massive", "false")
-            .content(objectMapper.writeValueAsString(body)))
-        .andExpect(status().isOk())
-        .andReturn();
-
-      WorkflowCreatedDTO resultResponse =
-        objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
-      assertEquals(expected, resultResponse);
-    }
+    WorkflowCreatedDTO resultResponse =
+      objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    assertEquals(expected, resultResponse);
   }
 }

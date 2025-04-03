@@ -18,9 +18,9 @@ public class DebtPositionFineServiceImpl implements DebtPositionFineService {
   }
 
   @Override
-  public WorkflowCreatedDTO handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, boolean massive, FineWfExecutionConfig executionParams, String accessToken) {
+  public WorkflowCreatedDTO handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, boolean massive, FineWfExecutionConfig executionParams) {
     log.debug("Starting workflow to handle fine reduction expiration: {} (massive: {}, paymentEventType: {})", debtPositionId, massive, paymentEventRequestDTO.getPaymentEventType());
-    String workflowId = debtPositionFineClient.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, massive, executionParams, accessToken);
+    String workflowId = debtPositionFineClient.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, massive, executionParams);
 
     return WorkflowCreatedDTO.builder().workflowId(workflowId).build();
   }

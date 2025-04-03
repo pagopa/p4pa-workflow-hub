@@ -4,7 +4,6 @@ import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionFineApi;
 import it.gov.pagopa.pu.workflow.dto.FineReductionExpirationRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.custom.fine.DebtPositionFineService;
-import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +22,7 @@ public class DebtPositionFineControllerImpl implements DebtPositionFineApi {
   public ResponseEntity<WorkflowCreatedDTO> handleFineReductionExpiration(Long debtPositionId, FineReductionExpirationRequestDTO body, Boolean massive) {
     log.info("Starting workflow to handle fine reduction expiration: {} and evenType: {}", debtPositionId, body.getPaymentEventRequest().getPaymentEventType());
     return ResponseEntity.ok(
-      debtPositionFineService.handleFineReductionExpiration(debtPositionId, body.getPaymentEventRequest(), massive, body.getExecutionParams(), SecurityUtils.getAccessToken())
+      debtPositionFineService.handleFineReductionExpiration(debtPositionId, body.getPaymentEventRequest(), massive, body.getExecutionParams())
     );
   }
 }
