@@ -48,15 +48,6 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
   @Override
   public void exportFile(Long exportFileId, ExportFileTypeEnum exportFileType) {
     log.info("Starting export file workflow for exportFileId: {}", exportFileId);
-    boolean success = processExportFile(exportFileId, exportFileType);
-    if(success){
-      scheduleExportFileExpiration(exportFileId);
-    }
-    //TODO sendEmailActivity will be added with the task P4ADEV-2597
-    log.info("Completed export file workflow for exportFileId: {}", exportFileId);
-  }
-
-  private boolean processExportFile(Long exportFileId, ExportFileTypeEnum exportFileType) {
     updateExportFileStatus(UpdateStatusRequest.builder()
       .exportFileId(exportFileId)
       .oldStatus(ExportFileStatus.REQUESTED)
@@ -65,8 +56,13 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
     Pair<ExportFileResult,String> exportResultPair = executeExport(exportFileId, exportFileType);
     ExportFileResult exportFileResult = exportResultPair.getLeft();
     String errorDescription = exportResultPair.getRight();
+    LocalDate expirationDate = LocalDate.now().plusDays(expirationDays);
     updateExportFileWithProcessingResult(exportFileId, errorDescription, exportFileResult);
-    return StringUtils.isBlank(errorDescription);
+    if(StringUtils.isBlank(errorDescription)){
+      scheduleExportFileExpiration(exportFileId, expirationDate);
+    }
+    //TODO sendEmailActivity will be added with the task P4ADEV-2597
+    log.info("Completed export file workflow for exportFileId: {}", exportFileId);
   }
 
   private void updateExportFileWithProcessingResult(Long exportFileId, String errorDescription,
@@ -80,6 +76,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
         .filePathName(exportFileResult.getFilePath())
         .fileName(exportFileResult.getFileName())
         //TODO field fileSize depends on task P4ADEV-2598
+        //TODO field expirationDate depends on task P4ADEV-2600
         .exportedRows(exportFileResult.getExportedRows())
         .build();
     }else{
@@ -106,10 +103,10 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
     }
   }
 
-  private void scheduleExportFileExpiration(Long exportFileId) {
+  private void scheduleExportFileExpiration(Long exportFileId, LocalDate expirationDate) {
     scheduleExportFileExpirationActivity.scheduleExportFileExpiration(
       exportFileId,
-      LocalDate.now().plusDays(expirationDays)
+      expirationDate
     );
   }
 }

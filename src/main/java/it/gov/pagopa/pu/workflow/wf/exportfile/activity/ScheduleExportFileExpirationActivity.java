@@ -8,6 +8,6 @@ import java.time.LocalDate;
 public interface ScheduleExportFileExpirationActivity {
 
   @ActivityMethod
-  void scheduleExportFileExpiration(Long exportFileId, LocalDate dueDate);
+  void scheduleExportFileExpiration(Long exportFileId, LocalDate expirationDate);
 
 }
