@@ -46,6 +46,7 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
       return null;
     }
 
+    // TODO replace IO placeholders https://pagopa.atlassian.net/browse/P4ADEV-2599
     log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", executionParams);
     GenericWfExecutionConfig wfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(executionParams);
 
