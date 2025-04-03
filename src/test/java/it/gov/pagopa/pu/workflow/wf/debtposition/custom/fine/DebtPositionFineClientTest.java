@@ -2,8 +2,6 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine;
 
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
-import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWF;
@@ -41,12 +39,11 @@ class DebtPositionFineClientTest {
   }
 
   @Test
-  void whenHandleFineReductionExpirationThenSuccess() {
+  void whenExpireFineReductionThenSuccess() {
     // Given
     Long debtPositionId = 1L;
     String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
     String expectedWorkflowId = "FineReductionOptionExpirationWF-1";
-    PaymentEventRequestDTO paymentEventRequestDTO = new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, "description");
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
 
@@ -65,11 +62,11 @@ class DebtPositionFineClientTest {
         .thenReturn(fineReductionOptionExpirationWFMock);
 
       // When
-      String workflowId = client.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, wfExecutionConfig);
+      String workflowId = client.expireFineReduction(debtPositionId, wfExecutionConfig);
 
       // Then
       Assertions.assertEquals(expectedWorkflowId, workflowId);
-      Mockito.verify(fineReductionOptionExpirationWFMock).handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, wfExecutionConfig);
+      Mockito.verify(fineReductionOptionExpirationWFMock).expireFineReduction(debtPositionId, wfExecutionConfig);
     }
   }
 }

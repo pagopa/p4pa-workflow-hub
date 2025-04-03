@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity;
 
+import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
@@ -21,12 +22,14 @@ class InvokeSyncDebtPositionActivityTest {
 
   @Mock
   private DebtPositionGenericSyncService debtPositionGenericSyncServiceMock;
+  @Mock
+  private AuthnService authnService;
 
   private InvokeSyncDebtPositionActivity activity;
 
   @BeforeEach
   void init() {
-    activity = new InvokeSyncDebtPositionActivityImpl(debtPositionGenericSyncServiceMock);
+    activity = new InvokeSyncDebtPositionActivityImpl(debtPositionGenericSyncServiceMock, authnService);
   }
 
   @Test
@@ -39,11 +42,13 @@ class InvokeSyncDebtPositionActivityTest {
     String workflowId = "workflowId";
     String accessToken = "accessToken";
 
+    Mockito.when(authnService.getAccessToken()).thenReturn(accessToken);
+
     Mockito.when(debtPositionGenericSyncServiceMock.invokeWorkflow(debtPositionDTO, paymentEventRequestDTO, false, wfExecutionConfig, accessToken))
       .thenReturn(workflowId);
 
     // When
-    String result = activity.synchronizeDPSync(debtPositionDTO, paymentEventRequestDTO, false, wfExecutionConfig, accessToken);
+    String result = activity.synchronizeDPSync(debtPositionDTO, paymentEventRequestDTO, false, wfExecutionConfig);
 
     // Then
     assertEquals(workflowId, result);

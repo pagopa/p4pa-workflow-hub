@@ -10,5 +10,5 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 public interface InvokeSyncDebtPositionActivity {
 
   @ActivityMethod
-  String synchronizeDPSync(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, boolean massive, GenericWfExecutionConfig wfExecutionConfig, String accessToken);
+  String synchronizeDPSync(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, boolean massive, GenericWfExecutionConfig wfExecutionConfig);
 }

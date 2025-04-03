@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.debtposition.sync.config;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
 import it.gov.pagopa.pu.workflow.model.DebtPositionWorkflowType;
 import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;
 import it.gov.pagopa.pu.workflow.repository.DebtPositionWorkflowTypeRepository;
@@ -38,10 +39,7 @@ public class WfExecutionConfigHandlerService {
   }
 
   public void persistAndConfigure(DebtPositionDTO debtPositionDTO, WfExecutionParameters wfExecutionParameters) {
-    Optional<WfExecutionConfig> storedExecutionConfig = debtPositionWorkflowTypeRepository
-      .findById(Objects.requireNonNull(debtPositionDTO.getDebtPositionId()))
-      .map(DebtPositionWorkflowType::getExecutionConfig)
-      .map(cipherData -> dataCipherService.decryptObj(cipherData, WfExecutionConfig.class));
+    Optional<WfExecutionConfig> storedExecutionConfig = findWfExecutionConfigById(debtPositionDTO.getDebtPositionId());
 
     if (storedExecutionConfig.isPresent()) {
       WfExecutionConfig stored = storedExecutionConfig.get();
@@ -69,6 +67,28 @@ public class WfExecutionConfigHandlerService {
         saveWfExecutionConfig(debtPositionDTO, workflowTypeOrg, wfExecutionParameters.getWfExecutionConfig());
       }
     }
+  }
+
+  public <T extends WfExecutionConfig> T findStoredExecutionConfig(Long debtPositionId, Class<T> wfExecConfigClass) {
+    WfExecutionConfig config = findWfExecutionConfigById(debtPositionId)
+      .orElseThrow(() -> new InvalidWfExecutionConfigException("Execution config not found for debtPositionId: " + debtPositionId));
+
+    if (!wfExecConfigClass.isInstance(config)) {
+      throw new InvalidWfExecutionConfigException(String.format("Invalid execution config type for debtPositionId: %d. Expected: %s, Found: %s",
+        debtPositionId,
+        wfExecConfigClass.getSimpleName(),
+        config.getClass().getSimpleName()
+      ));
+    }
+
+    return wfExecConfigClass.cast(config);
+  }
+
+  private Optional<WfExecutionConfig> findWfExecutionConfigById(Long debtPositionId) {
+    return debtPositionWorkflowTypeRepository
+      .findById(Objects.requireNonNull(debtPositionId))
+      .map(DebtPositionWorkflowType::getExecutionConfig)
+      .map(cipherData -> dataCipherService.decryptObj(cipherData, WfExecutionConfig.class));
   }
 
   private void saveWfExecutionConfig(DebtPositionDTO debtPositionDTO, Optional<WorkflowTypeOrg> workflowTypeOrg, WfExecutionConfig wfExecutionConfig) {

@@ -3,7 +3,6 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpirat
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
-import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 
 /**
  * Workflow to handle Debt Position Fine reduction expiration
@@ -13,5 +12,5 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 public interface FineReductionOptionExpirationWF {
 
   @WorkflowMethod
-  String handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, FineWfExecutionConfig executionParams);
+  String expireFineReduction(Long debtPositionId, FineWfExecutionConfig executionParams);
 }
