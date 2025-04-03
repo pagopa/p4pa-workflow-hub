@@ -62,11 +62,10 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
       errorDescription = e.getMessage();
     }
 
-    LocalDate expirationDate = LocalDate.now().plusDays(expirationDays);
     updateExportFileWithProcessingResult(exportFileId, errorDescription, exportFileResult);
 
-    if(StringUtils.isBlank(errorDescription)){
-      scheduleExportFileExpiration(exportFileId, expirationDate);
+    if(StringUtils.isBlank(errorDescription) && exportFileResult!=null && exportFileResult.getExportDate()!=null){
+      scheduleExportFileExpiration(exportFileId, exportFileResult.getExportDate().plusDays(expirationDays));
     }
 
     //TODO sendEmailActivity will be added with the task P4ADEV-2597

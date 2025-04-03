@@ -64,7 +64,8 @@ class ExportFileWFImplTest {
     exportFileResult.setFilePath("filePath");
     exportFileResult.setFileName("fileName");
     exportFileResult.setExportedRows(10L);
-    LocalDate expectedDueDate = LocalDate.now().plusDays(expirationDays);
+    exportFileResult.setExportDate(LocalDate.now());
+    LocalDate expectedDueDate = exportFileResult.getExportDate().plusDays(expirationDays);
     UpdateStatusRequest processingUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.REQUESTED, ExportFileStatus.PROCESSING, null, null,
@@ -120,10 +121,6 @@ class ExportFileWFImplTest {
   void givenErrorCreatingFileWhenExportFileThenStatusError() {
     Long exportFileId = 1L;
     ExportFileTypeEnum exportFileType = ExportFileTypeEnum.PAID;
-    ExportFileResult exportFileResult = new ExportFileResult();
-    exportFileResult.setFilePath("filePath");
-    exportFileResult.setFileName("fileName");
-    exportFileResult.setExportedRows(10L);
     UpdateStatusRequest processingUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.REQUESTED, ExportFileStatus.PROCESSING, null, null,
