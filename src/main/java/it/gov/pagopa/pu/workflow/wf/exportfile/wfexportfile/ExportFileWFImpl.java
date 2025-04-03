@@ -12,7 +12,6 @@ import it.gov.pagopa.pu.workflow.wf.exportfile.activity.ScheduleExportFileExpira
 import it.gov.pagopa.pu.workflow.wf.exportfile.config.ExportFileWFConfig;
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -53,14 +52,23 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
       .oldStatus(ExportFileStatus.REQUESTED)
       .newStatus(ExportFileStatus.PROCESSING)
       .build());
-    Pair<ExportFileResult,String> exportResultPair = executeExport(exportFileId, exportFileType);
-    ExportFileResult exportFileResult = exportResultPair.getLeft();
-    String errorDescription = exportResultPair.getRight();
+
+    ExportFileResult exportFileResult = null;
+    String errorDescription = null;
+    try {
+      exportFileResult = exportFileActivity.executeExport(
+        exportFileId, exportFileType);
+    } catch(Exception e){
+      errorDescription = e.getMessage();
+    }
+
     LocalDate expirationDate = LocalDate.now().plusDays(expirationDays);
     updateExportFileWithProcessingResult(exportFileId, errorDescription, exportFileResult);
+
     if(StringUtils.isBlank(errorDescription)){
       scheduleExportFileExpiration(exportFileId, expirationDate);
     }
+
     //TODO sendEmailActivity will be added with the task P4ADEV-2597
     log.info("Completed export file workflow for exportFileId: {}", exportFileId);
   }
@@ -92,15 +100,6 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
 
   private void updateExportFileStatus(UpdateStatusRequest updateStatusRequest) {
     updateExportFileStatusActivity.updateStatus(updateStatusRequest);
-  }
-
-  private Pair<ExportFileResult,String> executeExport(Long exportFileId, ExportFileTypeEnum exportFileType){
-    try {
-      return Pair.of(exportFileActivity.executeExport(
-          exportFileId, exportFileType),null);
-    }catch(Exception e){
-      return Pair.of(null,e.getMessage());
-    }
   }
 
   private void scheduleExportFileExpiration(Long exportFileId, LocalDate expirationDate) {
