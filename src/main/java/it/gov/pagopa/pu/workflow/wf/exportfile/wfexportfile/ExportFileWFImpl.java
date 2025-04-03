@@ -93,8 +93,8 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
     updateExportFileStatus(updateStatusRequest);
   }
 
-  private void updateExportFileStatus(UpdateStatusRequest exportFileId) {
-    updateExportFileStatusActivity.updateStatus(exportFileId);
+  private void updateExportFileStatus(UpdateStatusRequest updateStatusRequest) {
+    updateExportFileStatusActivity.updateStatus(updateStatusRequest);
   }
 
   private Pair<ExportFileResult,String> executeExport(Long exportFileId, ExportFileTypeEnum exportFileType){
