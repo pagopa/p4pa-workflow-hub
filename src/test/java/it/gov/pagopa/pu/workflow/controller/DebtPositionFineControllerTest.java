@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.workflow.config.JsonConfig;
-import it.gov.pagopa.pu.workflow.dto.FineReductionExpirationRequestDTO;
-import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.custom.fine.DebtPositionFineService;
 import org.junit.jupiter.api.Test;
@@ -42,23 +39,19 @@ class DebtPositionFineControllerTest {
   void whenHandleFineReductionExpirationThenOk() throws Exception {
     Long debtPositionId = 1L;
     String expectedWorkflowId = "FineReductionOptionExpirationWF-1";
-    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, null);
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
     FineWfExecutionConfig wfExecutionConfig = new FineWfExecutionConfig();
     wfExecutionConfig.setIoMessages(fineWfMessages);
     WorkflowCreatedDTO expected = new WorkflowCreatedDTO(expectedWorkflowId);
 
-    FineReductionExpirationRequestDTO body = new FineReductionExpirationRequestDTO(paymentEventRequest, wfExecutionConfig);
 
-    Mockito.when(service.handleFineReductionExpiration(debtPositionId, paymentEventRequest, false, wfExecutionConfig))
+    Mockito.when(service.expireFineReduction(debtPositionId))
       .thenReturn(expected);
 
     MvcResult result = mockMvc.perform(
         post("/workflowhub/workflow/debt-position/fine/1/reduction-expiration")
-          .contentType(MediaType.APPLICATION_JSON_VALUE)
-          .param("massive", "false")
-          .content(objectMapper.writeValueAsString(body)))
+          .contentType(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().isOk())
       .andReturn();
 

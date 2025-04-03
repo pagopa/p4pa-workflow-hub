@@ -192,7 +192,6 @@ openApiGenerate {
     "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
     "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
     "FineWfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig",
-    "FineReductionExpirationRequestDTO" to "it.gov.pagopa.pu.workflow.dto.FineReductionExpirationRequestDTO"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",

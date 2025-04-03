@@ -87,7 +87,7 @@ paths:
     post:
       tags:
         - DebtPositionFine
-      operationId: handleFineReductionExpiration
+      operationId: expireFineReduction
       description: Handle the reduction expiration date of a fine.
       parameters:
         - name: debtPositionId
@@ -97,18 +97,6 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: massive
-          in: query
-          description: Indicates if the operation is massive (true) or single (false).
-          required: false
-          schema:
-            type: boolean
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: 'FineReductionExpirationRequestDTO'
       responses:
         '200':
           description: "Ok"

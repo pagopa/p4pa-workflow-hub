@@ -5,7 +5,6 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine.DebtPos
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.config.DebtPositionFineWfConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper.FineWfExecutionConfigMapper;
@@ -37,8 +36,8 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
     invokeSyncDebtPositionActivity = wfConfig.buildInvokeSyncDebtPositionActivity();
   }
 
-  public String handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, boolean massive, FineWfExecutionConfig executionParams){
-    log.info("Handling fine reduction expiration for debtPositionId: {}, massive: {}, paymentEventRequest: {}", debtPositionId, massive, paymentEventRequestDTO);
+  public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig executionParams) {
+    log.info("Handling fine reduction expiration for debtPositionId: {}, executionParams: {}", debtPositionId, executionParams);
     DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
 
     if (debtPositionDTO == null){
@@ -51,6 +50,6 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
     GenericWfExecutionConfig wfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(executionParams);
 
     log.info("Synchronize debt position sync");
-    return invokeSyncDebtPositionActivity.synchronizeDPSync(debtPositionDTO, paymentEventRequestDTO, massive, wfExecutionConfig);
+    return invokeSyncDebtPositionActivity.synchronizeDPSync(debtPositionDTO, null, false, wfExecutionConfig);
   }
 }

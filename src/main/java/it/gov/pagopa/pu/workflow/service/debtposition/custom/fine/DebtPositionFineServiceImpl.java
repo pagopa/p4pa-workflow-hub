@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.service.debtposition.custom.fine;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
-import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.debtposition.sync.config.WfExecutionConfigHandlerService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPositionFineClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,15 +12,20 @@ import org.springframework.stereotype.Service;
 public class DebtPositionFineServiceImpl implements DebtPositionFineService {
 
   private final DebtPositionFineClient debtPositionFineClient;
+  private final WfExecutionConfigHandlerService wfExecutionConfigHandlerService;
 
-  public DebtPositionFineServiceImpl(DebtPositionFineClient debtPositionFineClient) {
+  public DebtPositionFineServiceImpl(DebtPositionFineClient debtPositionFineClient, WfExecutionConfigHandlerService wfExecutionConfigHandlerService) {
     this.debtPositionFineClient = debtPositionFineClient;
+    this.wfExecutionConfigHandlerService = wfExecutionConfigHandlerService;
   }
 
   @Override
-  public WorkflowCreatedDTO handleFineReductionExpiration(Long debtPositionId, PaymentEventRequestDTO paymentEventRequestDTO, boolean massive, FineWfExecutionConfig executionParams) {
-    log.debug("Starting workflow to handle fine reduction expiration: {} (massive: {}, paymentEventType: {})", debtPositionId, massive, paymentEventRequestDTO.getPaymentEventType());
-    String workflowId = debtPositionFineClient.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, massive, executionParams);
+  public WorkflowCreatedDTO expireFineReduction(Long debtPositionId) {
+    log.debug("Fetching fine execution config for debtPositionId: {}", debtPositionId);
+    FineWfExecutionConfig executionParams = wfExecutionConfigHandlerService.findStoredExecutionConfig(debtPositionId);
+
+    log.debug("Starting workflow to handle fine reduction expiration: {})", debtPositionId);
+    String workflowId = debtPositionFineClient.expireFineReduction(debtPositionId, executionParams);
 
     return WorkflowCreatedDTO.builder().workflowId(workflowId).build();
   }

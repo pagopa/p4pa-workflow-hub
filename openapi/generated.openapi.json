@@ -936,7 +936,7 @@
       "post" : {
         "tags" : [ "DebtPositionFine" ],
         "description" : "Handle the reduction expiration date of a fine.",
-        "operationId" : "handleFineReductionExpiration",
+        "operationId" : "expireFineReduction",
         "parameters" : [ {
           "name" : "debtPositionId",
           "in" : "path",
@@ -946,25 +946,7 @@
             "type" : "integer",
             "format" : "int64"
           }
-        }, {
-          "name" : "massive",
-          "in" : "query",
-          "description" : "Indicates if the operation is massive (true) or single (false).",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
         } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/FineReductionExpirationRequestDTO"
-              }
-            }
-          },
-          "required" : true
-        },
         "responses" : {
           "200" : {
             "description" : "Ok",
@@ -2085,28 +2067,6 @@
       "PaymentEventType" : {
         "type" : "string",
         "enum" : [ "DP_CREATED", "DP_UPDATED", "DP_CANCELLED", "DPI_ADDED", "DPI_UPDATED", "DPI_CANCELLED", "DPI_EXPIRED", "DPI_REPORTED", "RT_RECEIVED", "SYNC_ERROR", "IO_NOTIFIED", "SEND_NOTIFICATION_CREATED", "SEND_NOTIFICATION_ERROR", "SEND_NOTIFICATION_DATE" ]
-      },
-      "FineReductionExpirationRequestDTO" : {
-        "type" : "object",
-        "properties" : {
-          "paymentEventRequest" : {
-            "$ref" : "#/components/schemas/PaymentEventRequestDTO"
-          },
-          "executionParams" : {
-            "$ref" : "#/components/schemas/FineWfExecutionConfig"
-          }
-        }
-      },
-      "PaymentEventRequestDTO" : {
-        "type" : "object",
-        "properties" : {
-          "paymentEventType" : {
-            "$ref" : "#/components/schemas/PaymentEventType"
-          },
-          "eventDescription" : {
-            "type" : "string"
-          }
-        }
       },
       "IngestionFlowFileTypeEnum" : {
         "type" : "string",

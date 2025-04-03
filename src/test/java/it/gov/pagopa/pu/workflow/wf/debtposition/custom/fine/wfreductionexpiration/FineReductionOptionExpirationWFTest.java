@@ -5,8 +5,6 @@ import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.config.DebtPositionFineWfConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper.FineWfExecutionConfigMapper;
@@ -61,15 +59,13 @@ class FineReductionOptionExpirationWFTest {
   }
 
   @Test
-  void whenHandleFineReductionExpirationThenOk() {
+  void whenExpireFineReductionThenOk() {
     // Given
     Long debtPositionId = 1L;
     String workflowId = "workflowId";
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-    PaymentEventRequestDTO paymentEventRequestDTO = new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, "description");
     GenericWfExecutionConfig wfExecutionConfig =
       new GenericWfExecutionConfig(new GenericWfExecutionConfig.IONotificationBaseOpsMessages(new IONotificationMessage("subject", "message"), null, null));
-
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
     FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
@@ -83,11 +79,11 @@ class FineReductionOptionExpirationWFTest {
       mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig))
         .thenReturn(wfExecutionConfig);
 
-      Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequestDTO, false, wfExecutionConfig))
+      Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, null, false, wfExecutionConfig))
         .thenReturn(workflowId);
 
       // When
-      String result = wf.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, fineWfExecutionConfig);
+      String result = wf.expireFineReduction(debtPositionId, fineWfExecutionConfig);
 
       // Then
       assertEquals(workflowId, result);
@@ -95,11 +91,10 @@ class FineReductionOptionExpirationWFTest {
   }
 
   @Test
-  void givenDebtPositionNullWhenHandleFineReductionExpirationThenReturnNull() {
+  void givenDebtPositionNullWhenExpireFineReductionThenReturnNull() {
     // Given
     Long debtPositionId = 1L;
-    PaymentEventRequestDTO paymentEventRequestDTO = new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, "description");
-        FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
+    FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
     FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
     fineWfExecutionConfig.setIoMessages(fineWfMessages);
@@ -108,7 +103,7 @@ class FineReductionOptionExpirationWFTest {
       .thenReturn(null);
 
     // When
-    String result = wf.handleFineReductionExpiration(debtPositionId, paymentEventRequestDTO, false, fineWfExecutionConfig);
+    String result = wf.expireFineReduction(debtPositionId, fineWfExecutionConfig);
 
     // Then
     assertNull(result);

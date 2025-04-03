@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowErrorDTO;
+import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import jakarta.servlet.ServletException;
@@ -40,7 +41,7 @@ public class WorkflowExceptionHandler {
     return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CodeEnum.CONFLICT);
   }
 
-  @ExceptionHandler(IngestionFlowTypeNotSupportedException.class)
+  @ExceptionHandler(value = {IngestionFlowTypeNotSupportedException.class, InvalidWfExecutionConfigException.class})
   public ResponseEntity<WorkflowErrorDTO> handleIngestionFlowTypeNotSupportedException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INGESTION_FLOW_FILE_NOT_SUPPORTED);
   }

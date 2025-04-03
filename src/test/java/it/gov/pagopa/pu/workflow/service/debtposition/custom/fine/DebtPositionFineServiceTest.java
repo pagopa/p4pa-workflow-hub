@@ -2,9 +2,8 @@ package it.gov.pagopa.pu.workflow.service.debtposition.custom.fine;
 
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
-import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
-import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.debtposition.sync.config.WfExecutionConfigHandlerService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPositionFineClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,36 +20,40 @@ class DebtPositionFineServiceTest {
 
   @Mock
   private DebtPositionFineClient debtPositionFineClientMock;
+  @Mock
+  private WfExecutionConfigHandlerService wfExecutionConfigHandlerServiceMock;
 
   private DebtPositionFineService service;
 
   @BeforeEach
   void init(){
-    service = new DebtPositionFineServiceImpl(debtPositionFineClientMock);
+    service = new DebtPositionFineServiceImpl(debtPositionFineClientMock, wfExecutionConfigHandlerServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(debtPositionFineClientMock);
+    Mockito.verifyNoMoreInteractions(debtPositionFineClientMock, wfExecutionConfigHandlerServiceMock);
   }
 
   @Test
-  void whenHandleFineReductionExpiration(){
+  void whenExpireFineReduction(){
     // Given
     Long debtPositionId = 1L;
     String expectedWorkflowId = "FineReductionOptionExpirationWF-1";
-    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, null);
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
 
     FineWfExecutionConfig wfExecutionConfig = new FineWfExecutionConfig();
     wfExecutionConfig.setIoMessages(fineWfMessages);
 
-    Mockito.when(debtPositionFineClientMock.handleFineReductionExpiration(debtPositionId, paymentEventRequest, false, wfExecutionConfig))
+    Mockito.when(wfExecutionConfigHandlerServiceMock.findStoredExecutionConfig(debtPositionId))
+        .thenReturn(wfExecutionConfig);
+
+    Mockito.when(debtPositionFineClientMock.expireFineReduction(debtPositionId,  wfExecutionConfig))
       .thenReturn(expectedWorkflowId);
 
     // When
-    WorkflowCreatedDTO workflowCreatedDTO = service.handleFineReductionExpiration(debtPositionId, paymentEventRequest, false, wfExecutionConfig);
+    WorkflowCreatedDTO workflowCreatedDTO = service.expireFineReduction(debtPositionId);
 
     // Then
     assertEquals(expectedWorkflowId, workflowCreatedDTO.getWorkflowId());
