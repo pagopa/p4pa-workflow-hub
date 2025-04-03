@@ -27,9 +27,9 @@ class ScheduleSendNotificationDateRetrieveActivityTest {
     String sendNotificationId = "sendNotificationId";
 
     // When
-    activity.scheduleSendNotificationDateRetrieve(sendNotificationId);
+    activity.scheduleSendNotificationDateRetrieveWF(sendNotificationId);
 
     // Then
-    Mockito.verify(sendNotificationWFClientMock).scheduleSendNotificationDateRetrieve(sendNotificationId);
+    Mockito.verify(sendNotificationWFClientMock).sendNotificationDateRetrieve(sendNotificationId);
   }
 }

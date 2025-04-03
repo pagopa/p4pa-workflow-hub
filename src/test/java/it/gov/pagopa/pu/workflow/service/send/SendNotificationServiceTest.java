@@ -48,4 +48,22 @@ class SendNotificationServiceTest {
     Assertions.assertEquals(expectedResult, result);
   }
 
+  @Test
+  void givenSendNotificationIdWhenRetrieveNotificationDateThenOk() {
+    // Given
+    String sendNotificationId = "sendNotificationId";
+
+    WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
+      .workflowId("WFID")
+      .build();
+
+    Mockito.when(sendNotificationWFClientMock.sendNotificationDateRetrieve(Mockito.same(sendNotificationId)))
+      .thenReturn("WFID");
+
+    // When
+    WorkflowCreatedDTO result = service.sendNotificationDateRetrieve(sendNotificationId);
+
+    // Then
+    Assertions.assertEquals(expectedResult, result);
+  }
 }

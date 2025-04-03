@@ -6,5 +6,5 @@ import io.temporal.activity.ActivityMethod;
 @ActivityInterface
 public interface ScheduleSendNotificationDateRetrieveActivity {
   @ActivityMethod
-  void scheduleSendNotificationDateRetrieve(String sendNotificationId);
+  void scheduleSendNotificationDateRetrieveWF(String sendNotificationId);
 }

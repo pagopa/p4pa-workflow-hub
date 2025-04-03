@@ -47,6 +47,6 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
   public ScheduleSendNotificationDateRetrieveActivity buildScheduleSendNotificationDateRetrieveActivityStub() {
     return Workflow.newActivityStub(ScheduleSendNotificationDateRetrieveActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-        SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE_LOCAL_ACTIVITY, this));
+        SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY, this));
   }
 }

@@ -26,7 +26,6 @@ import java.time.Duration;
 public class SendNotificationProcessWFImpl implements SendNotificationProcessWF, ApplicationContextAware {
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS = "SendNotificationProcessWF";
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY = "SendNotificationProcessWF_LOCAL";
-  public static final String TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE_LOCAL_ACTIVITY = "SendNotificationDateRetrieveWF_LOCAL";
 
   private static final int MAX_RETRIES = 10;
   private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
@@ -71,7 +70,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
       publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
 
-      scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieve(sendNotificationId);
+      scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieveWF(sendNotificationId);
     } catch (RuntimeException e){
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
       if (notification != null) {

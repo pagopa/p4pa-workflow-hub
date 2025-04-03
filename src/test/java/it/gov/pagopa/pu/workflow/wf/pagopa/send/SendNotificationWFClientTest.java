@@ -15,6 +15,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -70,17 +73,18 @@ class SendNotificationWFClientTest {
     String sendNotificationId = "sendNotificationId";
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
     String expectedWorkflowId = "SendNotificationDateRetrieveWF-1";
+    LocalDateTime startDate = LocalDateTime.now().with(LocalTime.of(6, 0));
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
         .when(() -> Utilities.generateWorkflowId(sendNotificationId, taskQueue))
         .thenReturn(expectedWorkflowId);
 
-      Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationDateRetrieveWF.class, taskQueue, expectedWorkflowId))
+      Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(SendNotificationDateRetrieveWF.class, taskQueue, expectedWorkflowId, startDate))
         .thenReturn(sendNotificationDateRetrieveWFMock);
 
       // When
-      String workflowId = client.scheduleSendNotificationDateRetrieve(sendNotificationId);
+      String workflowId = client.sendNotificationDateRetrieve(sendNotificationId);
 
       // Then
       assertEquals(expectedWorkflowId, workflowId);

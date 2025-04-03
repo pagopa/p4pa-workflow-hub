@@ -9,6 +9,9 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificat
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Slf4j
@@ -16,6 +19,7 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class SendNotificationWFClient {
 
   private final WorkflowService workflowService;
+  private static final LocalDateTime START_SCHEDULE = LocalDateTime.now().with(LocalTime.of(6, 0));
 
   public SendNotificationWFClient(WorkflowService workflowService) {
     this.workflowService = workflowService;
@@ -34,14 +38,15 @@ public class SendNotificationWFClient {
     return workflowId;
   }
 
-  public String scheduleSendNotificationDateRetrieve(String sendNotificationId) {
+  public String sendNotificationDateRetrieve(String sendNotificationId) {
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
     String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
 
-    SendNotificationDateRetrieveWF workflow = workflowService.buildWorkflowStub(
+    SendNotificationDateRetrieveWF workflow = workflowService.buildWorkflowStubScheduled(
       SendNotificationDateRetrieveWF.class,
       taskQueue,
-      workflowId);
+      workflowId,
+      START_SCHEDULE);
     WorkflowClient.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
     return workflowId;
   }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE_LOCAL_ACTIVITY)
+@ActivityImpl(taskQueues = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY)
 public class ScheduleSendNotificationDateRetrieveActivityImpl implements ScheduleSendNotificationDateRetrieveActivity {
 
   private final SendNotificationWFClient sendNotificationWFClient;
@@ -18,7 +18,7 @@ public class ScheduleSendNotificationDateRetrieveActivityImpl implements Schedul
   }
 
   @Override
-  public void scheduleSendNotificationDateRetrieve(String sendNotificationId) {
-    sendNotificationWFClient.scheduleSendNotificationDateRetrieve(sendNotificationId);
+  public void scheduleSendNotificationDateRetrieveWF(String sendNotificationId) {
+    sendNotificationWFClient.sendNotificationDateRetrieve(sendNotificationId);
   }
 }
