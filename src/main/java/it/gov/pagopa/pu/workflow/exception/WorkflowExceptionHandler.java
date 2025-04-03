@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
+import it.gov.pagopa.payhub.activities.exception.exportflow.ExportFileTypeNotSupported;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowErrorDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
@@ -9,6 +10,7 @@ import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
 import org.springframework.core.Ordered;
@@ -24,8 +26,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.util.stream.Collectors;
 
 /**
  * A class exception that handles errors related to workflows.
@@ -43,6 +43,11 @@ public class WorkflowExceptionHandler {
   @ExceptionHandler(IngestionFlowTypeNotSupportedException.class)
   public ResponseEntity<WorkflowErrorDTO> handleIngestionFlowTypeNotSupportedException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INGESTION_FLOW_FILE_NOT_SUPPORTED);
+  }
+
+  @ExceptionHandler(ExportFileTypeNotSupported.class)
+  public ResponseEntity<WorkflowErrorDTO> handleExportFileTypeNotSupportedException(Exception ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.EXPORT_FILE_TYPE_NOT_SUPPORTED);
   }
 
   @ExceptionHandler({WorkflowNotFoundException.class})
