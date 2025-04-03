@@ -151,6 +151,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /export-file/{exportFileId}/expire:
+    post:
+      tags:
+        - ExportFile
+      operationId: expireExportFile
+      description: Expire an export file
+      parameters:
+        - name: exportFileId
+          in: path
+          required: true
+          description: The ID of export file
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /classification/transfer/{orgId}:
     post:
       tags:
