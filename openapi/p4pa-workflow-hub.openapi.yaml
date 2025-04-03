@@ -83,6 +83,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/debt-position/fine/{debtPositionId}/expire-reduction:
+    post:
+      tags:
+        - DebtPositionFine
+      operationId: expireFineReduction
+      description: Handle the reduction expiration date of a fine.
+      parameters:
+        - name: debtPositionId
+          in: path
+          required: true
+          description: The id of debt position.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: "Ok"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /ingestion-flow/{ingestionFlowFileId}:
     post:
       tags:
@@ -363,6 +390,7 @@ components:
             - WORKFLOW_NOT_FOUND
             - WORKFLOW_BAD_REQUEST
             - WORKFLOW_GENERIC_ERROR
+            - WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG
         message:
           type: string
     WorkflowStatusDTO:
