@@ -65,10 +65,9 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
 
     updateExportFileWithProcessingResult(exportFileId, errorDescription, exportFileResult);
 
-    LocalDate expirationDate = Workflow.sideEffect(LocalDate.class,
-      LocalDate::now).plusDays(expirationDays);
     if(StringUtils.isBlank(errorDescription)){
-      scheduleExportFileExpiration(exportFileId, expirationDate);
+      scheduleExportFileExpiration(exportFileId,
+        Workflow.sideEffect(LocalDate.class, LocalDate::now).plusDays(expirationDays));
     }
 
     //TODO sendEmailActivity will be added with the task P4ADEV-2597
