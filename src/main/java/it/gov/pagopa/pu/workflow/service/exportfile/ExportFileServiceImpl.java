@@ -16,8 +16,8 @@ public class ExportFileServiceImpl implements ExportFileService {
   }
 
   @Override
-  public WorkflowCreatedDTO exportFileExpirationHandler(Long exportFileId) {
-    log.info("Starting exportFileExpirationHandler for exportFileId: {}", exportFileId);
+  public WorkflowCreatedDTO expireExportFile(Long exportFileId) {
+    log.debug("Starting expireExportFile for exportFileId: {}", exportFileId);
     String workflowId = exportFileExpirationHandlerWFClient.exportFileExpirationHandler(exportFileId);
     return buildWorkflowCreatedDTO(workflowId);
   }

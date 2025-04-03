@@ -30,7 +30,7 @@ class ExportFileServiceImplTest {
   }
 
   @Test
-  void givenExportFileIdWhenExportFileExpirationHandlerThenOk() {
+  void givenExportFileIdWhenExpireExportFileThenOk() {
     Long exportFileId = 1L;
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
@@ -40,7 +40,7 @@ class ExportFileServiceImplTest {
     Mockito.when(exportFileExpirationHandlerWFClientMock.exportFileExpirationHandler(Mockito.same(exportFileId)))
       .thenReturn("WFID");
 
-    WorkflowCreatedDTO result = service.exportFileExpirationHandler(exportFileId);
+    WorkflowCreatedDTO result = service.expireExportFile(exportFileId);
 
     Assertions.assertEquals(expectedResult, result);
   }

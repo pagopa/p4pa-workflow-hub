@@ -20,9 +20,9 @@ public class ExportFileControllerImpl implements ExportFileApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> exportFileExpirationHandler(Long exportFileId) {
-    log.info("Starting exportFileExpirationHandler for exportFileId: {}", exportFileId);
-    WorkflowCreatedDTO createWorkflowResponseDTO = service.exportFileExpirationHandler(exportFileId);
+  public ResponseEntity<WorkflowCreatedDTO> expireExportFile(Long exportFileId) {
+    log.info("Starting expireExportFile for exportFileId: {}", exportFileId);
+    WorkflowCreatedDTO createWorkflowResponseDTO = service.expireExportFile(exportFileId);
     return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);
   }
 

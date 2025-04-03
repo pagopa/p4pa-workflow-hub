@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ExportFileControllerImpl.class)
@@ -31,7 +31,7 @@ class ExportFileControllerImplTest {
   private ExportFileService service;
 
   @Test
-  void givenExportFileIdWhenExportFileExpirationHandlerThenOk() throws Exception {
+  void givenExportFileIdWhenExpireExportFileThenOk() throws Exception {
     Long exportFileId = 1L;
     String workflowId = "workflow-1";
     String accessToken = "ACCESSTOKEN";
@@ -39,7 +39,7 @@ class ExportFileControllerImplTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.exportFileExpirationHandler(exportFileId))
+    Mockito.when(service.expireExportFile(exportFileId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -47,7 +47,7 @@ class ExportFileControllerImplTest {
         .thenReturn(accessToken);
 
       MvcResult result = mockMvc.perform(
-          get("/workflowhub/workflow/export-file/{exportFileId}", exportFileId))
+          post("/workflowhub/export-file/{exportFileId}/expire", exportFileId))
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
