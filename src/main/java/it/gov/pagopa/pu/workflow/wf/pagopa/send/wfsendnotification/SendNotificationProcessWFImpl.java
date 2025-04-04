@@ -95,6 +95,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     int attemptCounter = 0;
     SendNotificationDTO notification = null;
     Duration retryInterval = Duration.ofSeconds(30);
+    Workflow.sleep(retryInterval);
 
     while (attemptCounter < MAX_RETRIES) {
       attemptCounter++;

@@ -87,7 +87,12 @@ class SendNotificationProcessWFImplTest {
     Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
       .thenReturn(expectedResponse);
 
-    wf.sendNotificationProcess(sendNotificationId);
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      wf.sendNotificationProcess(sendNotificationId);
+    }
 
     Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
