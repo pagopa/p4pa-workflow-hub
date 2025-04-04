@@ -28,7 +28,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY = "SendNotificationProcessWF_LOCAL";
 
   private static final int MAX_RETRIES = 10;
-  private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
+  private static final Duration SEND_NOTIFICATION_STATUS_RETRIEVE_BASE_DELAY = Duration.ofMinutes(5);
   private static final Duration NOTIFICATION_DATE_RETRIEVE_DELAY = Duration.ofMinutes(30);
 
   private PreloadSendFileActivity preloadSendFileActivity;
@@ -94,7 +94,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   private SendNotificationDTO waitDeliveryAcceptance(String sendNotificationId) {
     int attemptCounter = 0;
     SendNotificationDTO notification = null;
-    Duration retryInterval = RETRY_INTERVAL;
+    Duration retryInterval = SEND_NOTIFICATION_STATUS_RETRIEVE_BASE_DELAY;
     Workflow.sleep(retryInterval);
 
     while (attemptCounter < MAX_RETRIES) {
