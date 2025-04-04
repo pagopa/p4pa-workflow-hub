@@ -15,8 +15,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -44,7 +43,7 @@ class SendNotificationWFClientTest {
   }
 
   @Test
-  void givenSendNotificationIdWhenSendNotificationProcessThenOk() {
+  void givenSendNotificationIdWhenStartSendNotificationProcessThenOk() {
     // Given
     String sendNotificationId = "sendNotificationId";
     String taskQueue = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS;
@@ -59,7 +58,7 @@ class SendNotificationWFClientTest {
         .thenReturn(sendNotificationProcessWFMock);
 
       // When
-      String workflowId = client.sendNotificationProcess(sendNotificationId);
+      String workflowId = client.startSendNotificationProcess(sendNotificationId);
 
       // Then
       assertEquals(expectedWorkflowId, workflowId);
@@ -68,26 +67,48 @@ class SendNotificationWFClientTest {
   }
 
   @Test
-  void givenSendNotificationIdWhenRetrieveNotificationDateThenOk() {
+  void givenSendNotificationIdWhenStartSendNotificationRetrieveNotificationDateThenOk() {
     // Given
     String sendNotificationId = "sendNotificationId";
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
     String expectedWorkflowId = "SendNotificationDateRetrieveWF-1";
-    LocalDateTime startDate = LocalDateTime.now().with(LocalTime.of(6, 0));
 
     try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
       utilitiesMockedStatic
         .when(() -> Utilities.generateWorkflowId(sendNotificationId, taskQueue))
         .thenReturn(expectedWorkflowId);
 
-      Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(SendNotificationDateRetrieveWF.class, taskQueue, expectedWorkflowId, startDate))
+      Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationDateRetrieveWF.class, taskQueue, expectedWorkflowId))
         .thenReturn(sendNotificationDateRetrieveWFMock);
 
       // When
-      String workflowId = client.sendNotificationDateRetrieve(sendNotificationId);
+      String workflowId = client.startSendNotificationDateRetrieve(sendNotificationId);
 
       // Then
       assertEquals(expectedWorkflowId, workflowId);
+      verify(sendNotificationDateRetrieveWFMock).sendNotificationDateRetrieve(sendNotificationId);
+    }
+  }
+
+  @Test
+  void givenSendNotificationIdWhenScheduleSendNotificationDateRetrieveThenOk() {
+    // Given
+    String sendNotificationId = "sendNotificationId";
+    String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
+    String expectedWorkflowId = "SendNotificationDateRetrieveWF-1";
+
+    try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
+      utilitiesMockedStatic
+        .when(() -> Utilities.generateWorkflowId(sendNotificationId, taskQueue))
+        .thenReturn(expectedWorkflowId);
+
+      Mockito.when(workflowServiceMock.buildWorkflowStubDelayed(SendNotificationDateRetrieveWF.class, taskQueue, expectedWorkflowId, Duration.ofHours(1)))
+        .thenReturn(sendNotificationDateRetrieveWFMock);
+
+      // When
+      client.scheduleSendNotificationDateRetrieve(sendNotificationId, Duration.ofHours(1));
+
+      // Then
       verify(sendNotificationDateRetrieveWFMock).sendNotificationDateRetrieve(sendNotificationId);
     }
   }

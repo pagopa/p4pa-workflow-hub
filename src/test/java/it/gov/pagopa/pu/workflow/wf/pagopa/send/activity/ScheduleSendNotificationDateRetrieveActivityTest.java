@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
+
 @ExtendWith(MockitoExtension.class)
 class ScheduleSendNotificationDateRetrieveActivityTest {
 
@@ -27,9 +29,9 @@ class ScheduleSendNotificationDateRetrieveActivityTest {
     String sendNotificationId = "sendNotificationId";
 
     // When
-    activity.scheduleSendNotificationDateRetrieveWF(sendNotificationId);
+    activity.scheduleSendNotificationDateRetrieveWF(sendNotificationId, Duration.ofHours(1));
 
     // Then
-    Mockito.verify(sendNotificationWFClientMock).sendNotificationDateRetrieve(sendNotificationId);
+    Mockito.verify(sendNotificationWFClientMock).scheduleSendNotificationDateRetrieve(sendNotificationId, Duration.ofHours(1));
   }
 }

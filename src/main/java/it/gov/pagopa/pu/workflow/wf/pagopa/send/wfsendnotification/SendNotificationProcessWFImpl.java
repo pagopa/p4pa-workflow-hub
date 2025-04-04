@@ -29,6 +29,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
   private static final int MAX_RETRIES = 10;
   private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
+  private static final Duration NEXT_SCHEDULE = Duration.ofHours(1);
 
   private PreloadSendFileActivity preloadSendFileActivity;
   private UploadSendFileActivity uploadSendFileActivity;
@@ -59,7 +60,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
   @Override
   public void sendNotificationProcess(String sendNotificationId) {
-    log.info("Start sendNotificationProcess Workflow for sendNotificationId {}", sendNotificationId);
+    log.info("Start startSendNotificationProcess Workflow for sendNotificationId {}", sendNotificationId);
 
     try {
       preloadSendFileActivity.preloadSendFile(sendNotificationId);
@@ -70,7 +71,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
       publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
 
-      scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieveWF(sendNotificationId);
+      scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieveWF(sendNotificationId, NEXT_SCHEDULE);
     } catch (RuntimeException e){
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
       if (notification != null) {

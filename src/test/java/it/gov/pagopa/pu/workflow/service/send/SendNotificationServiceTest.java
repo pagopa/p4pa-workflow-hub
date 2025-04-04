@@ -38,7 +38,7 @@ class SendNotificationServiceTest {
       .workflowId("WFID")
       .build();
 
-    Mockito.when(sendNotificationWFClientMock.sendNotificationProcess(Mockito.same(sendNotificationId)))
+    Mockito.when(sendNotificationWFClientMock.startSendNotificationProcess(Mockito.same(sendNotificationId)))
       .thenReturn("WFID");
 
     // When
@@ -57,7 +57,7 @@ class SendNotificationServiceTest {
       .workflowId("WFID")
       .build();
 
-    Mockito.when(sendNotificationWFClientMock.sendNotificationDateRetrieve(Mockito.same(sendNotificationId)))
+    Mockito.when(sendNotificationWFClientMock.startSendNotificationDateRetrieve(Mockito.same(sendNotificationId)))
       .thenReturn("WFID");
 
     // When

@@ -6,6 +6,8 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificat
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 @Service
 @Slf4j
 @ActivityImpl(taskQueues = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY)
@@ -18,7 +20,7 @@ public class ScheduleSendNotificationDateRetrieveActivityImpl implements Schedul
   }
 
   @Override
-  public void scheduleSendNotificationDateRetrieveWF(String sendNotificationId) {
-    sendNotificationWFClient.sendNotificationDateRetrieve(sendNotificationId);
+  public void scheduleSendNotificationDateRetrieveWF(String sendNotificationId, Duration nextSchedule) {
+    sendNotificationWFClient.scheduleSendNotificationDateRetrieve(sendNotificationId, nextSchedule);
   }
 }
