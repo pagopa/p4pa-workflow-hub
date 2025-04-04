@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
 import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.ScheduleSendNotificationDateRetrieveActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWFImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +40,12 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
 
   public PublishSendNotificationPaymentEventActivity buildPublishSendNotificationPaymentEventActivityStub() {
     return Workflow.newActivityStub(PublishSendNotificationPaymentEventActivity.class,
+      TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+        SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY, this));
+  }
+
+  public ScheduleSendNotificationDateRetrieveActivity buildScheduleSendNotificationDateRetrieveActivityStub() {
+    return Workflow.newActivityStub(ScheduleSendNotificationDateRetrieveActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
         SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY, this));
   }

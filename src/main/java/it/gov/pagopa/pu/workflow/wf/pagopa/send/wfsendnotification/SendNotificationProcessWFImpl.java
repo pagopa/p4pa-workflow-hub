@@ -10,6 +10,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.ScheduleSendNotificationDateRetrieveActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.mapper.SendNotification2DebtPositionSendNotificationsMapper;
@@ -27,7 +28,8 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY = "SendNotificationProcessWF_LOCAL";
 
   private static final int MAX_RETRIES = 10;
-  private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
+  private static final Duration SEND_NOTIFICATION_STATUS_RETRIEVE_BASE_DELAY = Duration.ofMinutes(5);
+  private static final Duration NOTIFICATION_DATE_RETRIEVE_DELAY = Duration.ofMinutes(30);
 
   private PreloadSendFileActivity preloadSendFileActivity;
   private UploadSendFileActivity uploadSendFileActivity;
@@ -35,6 +37,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   private NotificationStatusActivity notificationStatusActivity;
   private GetSendNotificationActivity getSendNotificationActivity;
   private PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity;
+  private ScheduleSendNotificationDateRetrieveActivity scheduleSendNotificationDateRetrieveActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -52,6 +55,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     notificationStatusActivity = wfConfig.buildNotificationStatusActivityStub();
     getSendNotificationActivity = wfConfig.buildGetSendNotificationActivityStub();
     publishSendNotificationPaymentEventActivity = wfConfig.buildPublishSendNotificationPaymentEventActivityStub();
+    scheduleSendNotificationDateRetrieveActivity = wfConfig.buildScheduleSendNotificationDateRetrieveActivityStub();
   }
 
   @Override
@@ -66,6 +70,8 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       SendNotificationDTO sendNotificationDTO = waitDeliveryAcceptance(sendNotificationId);
 
       publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
+
+      scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieveWF(sendNotificationId, NOTIFICATION_DATE_RETRIEVE_DELAY);
     } catch (RuntimeException e){
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
       if (notification != null) {
@@ -88,6 +94,8 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   private SendNotificationDTO waitDeliveryAcceptance(String sendNotificationId) {
     int attemptCounter = 0;
     SendNotificationDTO notification = null;
+    Duration retryInterval = SEND_NOTIFICATION_STATUS_RETRIEVE_BASE_DELAY;
+    Workflow.sleep(retryInterval);
 
     while (attemptCounter < MAX_RETRIES) {
       attemptCounter++;
@@ -99,9 +107,10 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
         return notification;
       }
 
-      log.info("Notification status not ACCEPTED, retry attempt {} for sendNotificationId {}", attemptCounter, sendNotificationId);
+      retryInterval = retryInterval.multipliedBy(2);
+      log.info("Notification status not ACCEPTED, retry attempt {} for sendNotificationId {}, waiting {} seconds until next retry", attemptCounter, sendNotificationId, retryInterval);
 
-      Workflow.sleep(RETRY_INTERVAL);
+      Workflow.sleep(retryInterval);
     }
 
     throw new WorkflowInternalErrorException("Exceeded max retry attempts to wait for ACCEPTED status (attempts:" + attemptCounter + ") on sendNotificationId " + sendNotificationId + ". Last status was: " + (notification!=null?notification.getStatus():"null"));

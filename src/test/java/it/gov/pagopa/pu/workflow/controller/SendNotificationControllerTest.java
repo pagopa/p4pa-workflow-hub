@@ -87,4 +87,5 @@ class SendNotificationControllerTest {
       assertEquals(expected, resultResponse);
     }
   }
+
 }

@@ -9,6 +9,10 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificat
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Slf4j
@@ -21,7 +25,7 @@ public class SendNotificationWFClient {
     this.workflowService = workflowService;
   }
 
-  public String sendNotificationProcess(String sendNotificationId) {
+  public String startSendNotificationProcess(String sendNotificationId) {
     log.debug("Starting send notification process having id {}", sendNotificationId);
     String taskQueue = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS;
     String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
@@ -34,7 +38,7 @@ public class SendNotificationWFClient {
     return workflowId;
   }
 
-  public String sendNotificationDateRetrieve(String sendNotificationId) {
+  public String startSendNotificationDateRetrieve(String sendNotificationId) {
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
     String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
 
@@ -44,5 +48,18 @@ public class SendNotificationWFClient {
       workflowId);
     WorkflowClient.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
     return workflowId;
+  }
+
+  public void scheduleSendNotificationDateRetrieve(String sendNotificationId, Duration nextSchedule) {
+    log.debug("Starting scheduleSendNotificationDateRetrieve having id {}", sendNotificationId);
+    String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
+    String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
+
+    SendNotificationDateRetrieveWF workflow = workflowService.buildWorkflowStubDelayed(
+      SendNotificationDateRetrieveWF.class,
+      taskQueue,
+      workflowId,
+      nextSchedule);
+    WorkflowClient.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
   }
 }

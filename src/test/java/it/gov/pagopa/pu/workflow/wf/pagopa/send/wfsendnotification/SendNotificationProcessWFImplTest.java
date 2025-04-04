@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.utils.faker.SendNotificationDTOFaker;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.ScheduleSendNotificationDateRetrieveActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,8 @@ class SendNotificationProcessWFImplTest {
   private GetSendNotificationActivity getSendNotificationActivityMock;
   @Mock
   private PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivityMock;
+  @Mock
+  private ScheduleSendNotificationDateRetrieveActivity scheduleSendNotificationDateRetrieveActivityMock;
 
   private SendNotificationProcessWFImpl wf;
 
@@ -54,6 +57,7 @@ class SendNotificationProcessWFImplTest {
     Mockito.when(wfConfigMock.buildNotificationStatusActivityStub()).thenReturn(notificationStatusActivityMock);
     Mockito.when(wfConfigMock.buildGetSendNotificationActivityStub()).thenReturn(getSendNotificationActivityMock);
     Mockito.when(wfConfigMock.buildPublishSendNotificationPaymentEventActivityStub()).thenReturn(publishSendNotificationPaymentEventActivityMock);
+    Mockito.when(wfConfigMock.buildScheduleSendNotificationDateRetrieveActivityStub()).thenReturn(scheduleSendNotificationDateRetrieveActivityMock);
 
     Mockito.when(applicationContextMock.getBean(SendNotificationProcessWfConfig.class)).thenReturn(wfConfigMock);
 
@@ -69,7 +73,8 @@ class SendNotificationProcessWFImplTest {
       deliveryNotificationActivityMock,
       notificationStatusActivityMock,
       getSendNotificationActivityMock,
-      publishSendNotificationPaymentEventActivityMock
+      publishSendNotificationPaymentEventActivityMock,
+      scheduleSendNotificationDateRetrieveActivityMock
     );
   }
 
@@ -82,7 +87,12 @@ class SendNotificationProcessWFImplTest {
     Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
       .thenReturn(expectedResponse);
 
-    wf.sendNotificationProcess(sendNotificationId);
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      wf.sendNotificationProcess(sendNotificationId);
+    }
 
     Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
@@ -91,6 +101,7 @@ class SendNotificationProcessWFImplTest {
     SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
       Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
     );
+    Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock).scheduleSendNotificationDateRetrieveWF(sendNotificationId, Duration.ofMinutes(30));
   }
 
   @Test

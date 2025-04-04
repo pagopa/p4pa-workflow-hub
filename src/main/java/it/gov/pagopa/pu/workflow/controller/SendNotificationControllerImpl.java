@@ -31,4 +31,5 @@ public class SendNotificationControllerImpl implements SendNotificationApi {
     WorkflowCreatedDTO createWorkflowResponseDTO = service.sendNotificationDateRetrieve(sendNotificationId);
     return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);
   }
+
 }
