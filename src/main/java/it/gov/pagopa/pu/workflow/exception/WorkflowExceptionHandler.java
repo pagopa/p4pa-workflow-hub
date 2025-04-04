@@ -7,8 +7,10 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowErrorDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
+import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.event.Level;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.transaction.TransactionException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.ErrorResponseException;
@@ -81,6 +84,15 @@ public class WorkflowExceptionHandler {
     return handleException(ex, request, httpStatus, errorCode);
   }
 
+  @ExceptionHandler({TransactionException.class})
+  public ResponseEntity<WorkflowErrorDTO> handleTransactionException(TransactionException ex, HttpServletRequest request) {
+    if (ex.getCause() instanceof RollbackException rollbackException && rollbackException.getCause() instanceof ValidationException validationException) {
+      return handleViolationException(validationException, request);
+    } else {
+      return handleRuntimeException(ex, request);
+    }
+  }
+
   @ExceptionHandler({RuntimeException.class})
   public ResponseEntity<WorkflowErrorDTO> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.GENERIC_ERROR);
@@ -113,26 +125,38 @@ public class WorkflowExceptionHandler {
   }
 
   private static String buildReturnedMessage(Exception ex) {
-    if (ex instanceof HttpMessageNotReadableException) {
-      if (ex.getCause() instanceof JsonMappingException jsonMappingException) {
-        return "Cannot parse body: " +
-          jsonMappingException.getPath().stream()
-            .map(JsonMappingException.Reference::getFieldName)
-            .collect(Collectors.joining(".")) +
-          ": " + jsonMappingException.getOriginalMessage();
+    switch (ex) {
+      case HttpMessageNotReadableException httpMessageNotReadableException -> {
+        if (httpMessageNotReadableException.getCause() instanceof JsonMappingException jsonMappingException) {
+          return "Cannot parse body. " +
+            jsonMappingException.getPath().stream()
+              .map(JsonMappingException.Reference::getFieldName)
+              .collect(Collectors.joining(".")) +
+            ": " + jsonMappingException.getOriginalMessage();
+        }
+        return "Required request body is missing";
       }
-      return "Required request body is missing";
-    } else if (ex instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
-      return "Invalid request content:" +
-        methodArgumentNotValidException.getBindingResult()
-          .getAllErrors().stream()
-          .map(e -> " " +
-            (e instanceof FieldError fieldError ? fieldError.getField() : e.getObjectName()) +
-            ": " + e.getDefaultMessage())
-          .sorted()
-          .collect(Collectors.joining(";"));
-    } else {
-      return ex.getMessage();
+      case MethodArgumentNotValidException methodArgumentNotValidException -> {
+        return "Invalid request content." +
+          methodArgumentNotValidException.getBindingResult()
+            .getAllErrors().stream()
+            .map(e -> " " +
+              (e instanceof FieldError fieldError ? fieldError.getField() : e.getObjectName()) +
+              ": " + e.getDefaultMessage())
+            .sorted()
+            .collect(Collectors.joining(";"));
+      }
+      case ConstraintViolationException constraintViolationException -> {
+        return "Invalid request content." +
+          constraintViolationException.getConstraintViolations()
+            .stream()
+            .map(e -> " " + e.getPropertyPath() + ": " + e.getMessage())
+            .sorted()
+            .collect(Collectors.joining(";"));
+      }
+      default -> {
+        return ex.getMessage();
+      }
     }
   }
 
