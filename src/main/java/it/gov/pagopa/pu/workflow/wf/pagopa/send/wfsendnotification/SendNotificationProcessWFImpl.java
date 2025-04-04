@@ -10,6 +10,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.ScheduleSendNotificationDateRetrieveActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.mapper.SendNotification2DebtPositionSendNotificationsMapper;
@@ -28,6 +29,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
   private static final int MAX_RETRIES = 10;
   private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
+  private static final Duration NOTIFICATION_DATE_RETRIEVE_DELAY = Duration.ofMinutes(30);
 
   private PreloadSendFileActivity preloadSendFileActivity;
   private UploadSendFileActivity uploadSendFileActivity;
@@ -35,6 +37,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   private NotificationStatusActivity notificationStatusActivity;
   private GetSendNotificationActivity getSendNotificationActivity;
   private PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity;
+  private ScheduleSendNotificationDateRetrieveActivity scheduleSendNotificationDateRetrieveActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -52,6 +55,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     notificationStatusActivity = wfConfig.buildNotificationStatusActivityStub();
     getSendNotificationActivity = wfConfig.buildGetSendNotificationActivityStub();
     publishSendNotificationPaymentEventActivity = wfConfig.buildPublishSendNotificationPaymentEventActivityStub();
+    scheduleSendNotificationDateRetrieveActivity = wfConfig.buildScheduleSendNotificationDateRetrieveActivityStub();
   }
 
   @Override
@@ -66,6 +70,8 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       SendNotificationDTO sendNotificationDTO = waitDeliveryAcceptance(sendNotificationId);
 
       publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
+
+      scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieveWF(sendNotificationId, NOTIFICATION_DATE_RETRIEVE_DELAY);
     } catch (RuntimeException e){
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
       if (notification != null) {

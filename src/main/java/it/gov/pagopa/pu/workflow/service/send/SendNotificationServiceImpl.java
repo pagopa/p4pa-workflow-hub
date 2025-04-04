@@ -18,14 +18,14 @@ public class SendNotificationServiceImpl implements SendNotificationService {
   @Override
   public WorkflowCreatedDTO sendNotificationProcess(String sendNotificationId) {
     log.debug("Starting send notification process with sendNotificationId: {}", sendNotificationId);
-    String workflowId = sendNotificationWFClient.sendNotificationProcess(sendNotificationId);
+    String workflowId = sendNotificationWFClient.startSendNotificationProcess(sendNotificationId);
 
     return buildWorkflowCreatedDTO(workflowId);
   }
 
   @Override
   public WorkflowCreatedDTO sendNotificationDateRetrieve(String sendNotificationId) {
-    String workflowId = sendNotificationWFClient.sendNotificationDateRetrieve(sendNotificationId);
+    String workflowId = sendNotificationWFClient.startSendNotificationDateRetrieve(sendNotificationId);
 
     return buildWorkflowCreatedDTO(workflowId);
   }
