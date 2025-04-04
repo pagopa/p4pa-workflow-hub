@@ -96,7 +96,7 @@ class SendNotificationProcessWFImplTest {
     SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
       Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
     );
-    Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock).scheduleSendNotificationDateRetrieveWF(sendNotificationId, Duration.ofHours(1));
+    Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock).scheduleSendNotificationDateRetrieveWF(sendNotificationId, Duration.ofMinutes(30));
   }
 
   @Test
