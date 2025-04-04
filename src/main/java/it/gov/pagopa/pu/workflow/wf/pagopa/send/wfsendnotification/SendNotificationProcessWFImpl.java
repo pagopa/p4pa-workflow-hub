@@ -94,7 +94,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   private SendNotificationDTO waitDeliveryAcceptance(String sendNotificationId) {
     int attemptCounter = 0;
     SendNotificationDTO notification = null;
-    Duration retryInterval = Duration.ofSeconds(30);
+    Duration retryInterval = RETRY_INTERVAL;
     Workflow.sleep(retryInterval);
 
     while (attemptCounter < MAX_RETRIES) {
@@ -107,9 +107,9 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
         return notification;
       }
 
+      retryInterval = retryInterval.multipliedBy(2);
       log.info("Notification status not ACCEPTED, retry attempt {} for sendNotificationId {}, waiting {} seconds until next retry", attemptCounter, sendNotificationId, retryInterval);
 
-      retryInterval = retryInterval.multipliedBy(2);
       Workflow.sleep(retryInterval);
     }
 
