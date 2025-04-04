@@ -29,7 +29,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
   private static final int MAX_RETRIES = 10;
   private static final Duration RETRY_INTERVAL = Duration.ofMinutes(5);
-  private static final Duration NEXT_SCHEDULE = Duration.ofHours(1);
+  private static final Duration NEXT_SCHEDULE = Duration.ofSeconds(1);
 
   private PreloadSendFileActivity preloadSendFileActivity;
   private UploadSendFileActivity uploadSendFileActivity;
