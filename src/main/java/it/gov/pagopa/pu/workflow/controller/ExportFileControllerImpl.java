@@ -20,26 +20,27 @@ public class ExportFileControllerImpl implements ExportFileApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> expireExportFile(Long exportFileId) {
+  public ResponseEntity<WorkflowCreatedDTO> expireExportFile(
+    Long exportFileId) {
     log.info("Starting expireExportFile for exportFileId: {}", exportFileId);
-    WorkflowCreatedDTO createWorkflowResponseDTO = service.expireExportFile(exportFileId);
+    WorkflowCreatedDTO createWorkflowResponseDTO = service.expireExportFile(
+      exportFileId);
     return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> exportFile(Long exportFileId, ExportFile.ExportFileTypeEnum flowFileType) {
-    log.info("Creating IngestionFlowFile Workflow for exportFileId {} of type {}", exportFileId, flowFileType);
+  public ResponseEntity<WorkflowCreatedDTO> exportFile(Long exportFileId,
+    ExportFile.ExportFileTypeEnum flowFileType) {
+    log.info("Creating Export File Workflow for exportFileId {} of type {}",
+      exportFileId, flowFileType);
 
-    // TODO: call workflow String workflowId = ;
+    WorkflowCreatedDTO response = service.create(exportFileId, flowFileType);
 
-    /*WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    response.setWorkflowId(workflowId);
+    log.info(
+      "Export File workflow {} created successfully for exportFileId {} of type {}",
+      response.getWorkflowId(), exportFileId, flowFileType);
 
-    log.info("Ingestion workflow {} created successfully for ingestionFileId {} of type {}", workflowId, exportFileId, flowFileType);
-
-    return ResponseEntity.status(201).body(response);*/
-
-    return ResponseEntity.ok(new WorkflowCreatedDTO());
+    return ResponseEntity.status(201).body(response);
   }
 
 }
