@@ -70,7 +70,7 @@ class ExportFileControllerImplTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.create(exportFileId, exportFileType))
+    Mockito.when(service.exportFile(exportFileId, exportFileType))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {

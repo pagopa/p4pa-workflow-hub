@@ -62,7 +62,7 @@ class ExportFileServiceImplTest {
         ExportFile.ExportFileTypeEnum.class)))
       .thenReturn("WFID");
 
-    WorkflowCreatedDTO result = service.create(exportFileId, ExportFileTypeEnum.PAID);
+    WorkflowCreatedDTO result = service.exportFile(exportFileId, ExportFileTypeEnum.PAID);
 
     Assertions.assertEquals(expectedResult, result);
   }

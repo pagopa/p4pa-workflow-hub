@@ -29,7 +29,7 @@ public class ExportFileControllerImpl implements ExportFileApi {
   @Override
   public ResponseEntity<WorkflowCreatedDTO> exportFile(Long exportFileId, ExportFile.ExportFileTypeEnum flowFileType) {
     log.info("Creating Export File Workflow for exportFileId {} of type {}", exportFileId, flowFileType);
-    WorkflowCreatedDTO response = service.create(exportFileId, flowFileType);
+    WorkflowCreatedDTO response = service.exportFile(exportFileId, flowFileType);
     log.info("Export File workflow {} created successfully for exportFileId {} of type {}", response.getWorkflowId(), exportFileId, flowFileType);
     return ResponseEntity.status(201).body(response);
   }

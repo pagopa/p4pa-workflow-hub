@@ -5,5 +5,5 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 
 public interface ExportFileService {
   WorkflowCreatedDTO expireExportFile(Long exportFileId);
-  WorkflowCreatedDTO create(Long exportFileId, ExportFile.ExportFileTypeEnum exportFileType);
+  WorkflowCreatedDTO exportFile(Long exportFileId, ExportFile.ExportFileTypeEnum exportFileType);
 }

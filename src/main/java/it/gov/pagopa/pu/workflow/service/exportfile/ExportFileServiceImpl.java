@@ -28,7 +28,7 @@ public class ExportFileServiceImpl implements ExportFileService {
   }
 
   @Override
-  public WorkflowCreatedDTO create(Long exportFileId,
+  public WorkflowCreatedDTO exportFile(Long exportFileId,
     ExportFileTypeEnum exportFileType) {
     log.debug("Starting createExportFile for exportFileId: {} and type: {}", exportFileId, exportFileType);
     String workflowId = exportFileWFClient.exportFile(exportFileId, exportFileType);
