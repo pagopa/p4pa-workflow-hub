@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile;
+package it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile;
 
 import io.micrometer.common.util.StringUtils;
 import io.temporal.spring.boot.WorkflowImpl;
@@ -8,8 +8,8 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import it.gov.pagopa.pu.workflow.wf.exportfile.activity.ScheduleExportFileExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.exportfile.config.ExportFileWFConfig;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;

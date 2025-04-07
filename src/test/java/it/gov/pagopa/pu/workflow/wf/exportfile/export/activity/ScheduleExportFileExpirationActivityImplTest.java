@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.exportfile.activity;
+package it.gov.pagopa.pu.workflow.wf.exportfile.export.activity;
 
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.ExportFileExpirationHandlerWFClient;
 import org.junit.jupiter.api.BeforeEach;

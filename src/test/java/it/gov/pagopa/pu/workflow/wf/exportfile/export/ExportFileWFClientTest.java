@@ -1,12 +1,12 @@
-package it.gov.pagopa.pu.workflow.wf.exportfile;
+package it.gov.pagopa.pu.workflow.wf.exportfile.export;
 
 import static org.mockito.Mockito.mockStatic;
 
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile.ExportFileWF;
-import it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile.ExportFileWFImpl;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWF;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

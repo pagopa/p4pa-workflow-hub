@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.service.exportfile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.wf.exportfile.ExportFileWFClient;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.ExportFileWFClient;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.ExportFileExpirationHandlerWFClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

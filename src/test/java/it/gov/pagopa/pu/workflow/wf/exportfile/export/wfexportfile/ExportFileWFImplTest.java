@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile;
+package it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
@@ -7,10 +7,11 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import it.gov.pagopa.pu.workflow.wf.exportfile.activity.ScheduleExportFileExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.exportfile.config.ExportFileWFConfig;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
 import java.time.Duration;
 import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
