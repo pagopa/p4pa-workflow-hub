@@ -23,18 +23,15 @@ public class ExportFileServiceImpl implements ExportFileService {
   @Override
   public WorkflowCreatedDTO expireExportFile(Long exportFileId) {
     log.debug("Starting expireExportFile for exportFileId: {}", exportFileId);
-    String workflowId = exportFileExpirationHandlerWFClient.exportFileExpirationHandler(
-      exportFileId);
+    String workflowId = exportFileExpirationHandlerWFClient.exportFileExpirationHandler(exportFileId);
     return buildWorkflowCreatedDTO(workflowId);
   }
 
   @Override
   public WorkflowCreatedDTO create(Long exportFileId,
     ExportFileTypeEnum exportFileType) {
-    log.debug("Starting createExportFile for exportFileId: {} and type: {}",
-      exportFileId, exportFileType);
-    String workflowId = exportFileWFClient.exportFile(exportFileId,
-      exportFileType);
+    log.debug("Starting createExportFile for exportFileId: {} and type: {}", exportFileId, exportFileType);
+    String workflowId = exportFileWFClient.exportFile(exportFileId, exportFileType);
     return buildWorkflowCreatedDTO(workflowId);
   }
 
