@@ -7,6 +7,8 @@ import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFil
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Service
@@ -31,5 +33,25 @@ public class ExportFileExpirationHandlerWFClient {
       workflowId);
     WorkflowClient.start(workflow::exportFileExpirationHandler, exportFileId);
     return workflowId;
+  }
+
+  public void scheduleExportFileExpiration(Long exportFileId, LocalDate expirationDate) {
+    log.info("Scheduling export file expiration WF: {}, on {}", exportFileId, expirationDate);
+
+    String taskQueque = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
+    String workflowId = generateWorkflowId(exportFileId, taskQueque);
+
+    ExportFileExpirationHandlerWF workflow = workflowService.buildWorkflowStubScheduled(
+
+      ExportFileExpirationHandlerWF.class,
+
+      taskQueque,
+
+      workflowId,
+
+      expirationDate
+
+    );
+    WorkflowClient.start(workflow::exportFileExpirationHandler,exportFileId);
   }
 }
