@@ -13,6 +13,8 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -56,5 +58,22 @@ class ExportFileExpirationHandlerWFClientTest {
       assertEquals(expectedWorkflowId, workflowId);
       verify(wfMock).exportFileExpirationHandler(exportFileId);
     }
+  }
+
+  @Test
+  void givenParamsWhenScheduleExportFileExpirationThenOk() {
+    //given
+    Long exportFileId = 1L;
+    LocalDate dateTime = LocalDate.of(2025,1,1);
+    String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
+
+    String workflowId = Utilities.generateWorkflowId(exportFileId, taskQueue);
+
+    Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(ExportFileExpirationHandlerWF.class, taskQueue, workflowId, dateTime))
+      .thenReturn(wfMock);
+    //when
+    client.scheduleExportFileExpiration(exportFileId, dateTime);
+    //then
+    verify(wfMock).exportFileExpirationHandler(exportFileId);
   }
 }
