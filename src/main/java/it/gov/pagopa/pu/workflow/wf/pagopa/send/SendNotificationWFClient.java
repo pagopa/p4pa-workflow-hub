@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
@@ -28,7 +26,7 @@ public class SendNotificationWFClient {
   public String startSendNotificationProcess(String sendNotificationId) {
     log.debug("Starting send notification process having id {}", sendNotificationId);
     String taskQueue = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS;
-    String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
+    String workflowId = generateWorkflowId(sendNotificationId, SendNotificationProcessWF.class);
 
     SendNotificationProcessWF workflow = workflowService.buildWorkflowStub(
       SendNotificationProcessWF.class,
@@ -40,7 +38,7 @@ public class SendNotificationWFClient {
 
   public String startSendNotificationDateRetrieve(String sendNotificationId) {
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
-    String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
+    String workflowId = generateWorkflowId(sendNotificationId, SendNotificationDateRetrieveWF.class);
 
     SendNotificationDateRetrieveWF workflow = workflowService.buildWorkflowStub(
       SendNotificationDateRetrieveWF.class,
@@ -53,7 +51,7 @@ public class SendNotificationWFClient {
   public void scheduleSendNotificationDateRetrieve(String sendNotificationId, Duration nextSchedule) {
     log.debug("Starting scheduleSendNotificationDateRetrieve having id {}", sendNotificationId);
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
-    String workflowId = generateWorkflowId(sendNotificationId, taskQueue);
+    String workflowId = generateWorkflowId(sendNotificationId, SendNotificationDateRetrieveWF.class);
 
     SendNotificationDateRetrieveWF workflow = workflowService.buildWorkflowStubDelayed(
       SendNotificationDateRetrieveWF.class,

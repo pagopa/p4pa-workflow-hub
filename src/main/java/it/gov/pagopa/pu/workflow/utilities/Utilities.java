@@ -13,15 +13,15 @@ public class Utilities {
 
   private Utilities(){}
 
-  public static String generateWorkflowId(Long id, String workflow){
-    if (id == null || workflow == null) {
-      throw new WorkflowInternalErrorException("The ID or the workflow must not be null");
-    }
-    return String.format("%s-%d", workflow, id);
+  public static String generateWorkflowId(Long id, Class<?> workflowInterface){
+    return generateWorkflowId(id != null? id.toString() : null, workflowInterface);
   }
 
-  public static String generateWorkflowId(String id, String workflow) {
-    return String.format("%s-%s", workflow, id);
+  public static String generateWorkflowId(String id, Class<?> workflowInterface) {
+    if (id == null || workflowInterface == null) {
+      throw new WorkflowInternalErrorException("The ID or the workflow must not be null");
+    }
+    return String.format("%s-%s", workflowInterface.getSimpleName(), id);
   }
 
   @Named("offsetDateTimeToInstant")

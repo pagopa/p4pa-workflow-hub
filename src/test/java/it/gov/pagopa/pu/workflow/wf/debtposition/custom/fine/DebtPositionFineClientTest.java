@@ -3,7 +3,6 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine;
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -12,11 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionFineClientTest {
@@ -29,12 +25,12 @@ class DebtPositionFineClientTest {
   private DebtPositionFineClient client;
 
   @BeforeEach
-  void init(){
+  void init() {
     client = new DebtPositionFineClientImpl(workflowServiceMock);
   }
 
   @AfterEach
-  void verifyNoMoreInteractions(){
+  void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(workflowServiceMock);
   }
 
@@ -50,23 +46,17 @@ class DebtPositionFineClientTest {
     FineWfExecutionConfig wfExecutionConfig = new FineWfExecutionConfig();
     wfExecutionConfig.setIoMessages(fineWfMessages);
 
-    try (MockedStatic<Utilities> utilitiesMockedStatic = mockStatic(Utilities.class)) {
-      utilitiesMockedStatic
-        .when(() -> Utilities.generateWorkflowId(debtPositionId, taskQueue))
-        .thenReturn(expectedWorkflowId);
+    Mockito.when(workflowServiceMock.buildWorkflowStub(
+        FineReductionOptionExpirationWF.class,
+        taskQueue,
+        expectedWorkflowId))
+      .thenReturn(fineReductionOptionExpirationWFMock);
 
-      Mockito.when(workflowServiceMock.buildWorkflowStub(
-          FineReductionOptionExpirationWF.class,
-          taskQueue,
-          expectedWorkflowId))
-        .thenReturn(fineReductionOptionExpirationWFMock);
+    // When
+    String workflowId = client.expireFineReduction(debtPositionId, wfExecutionConfig);
 
-      // When
-      String workflowId = client.expireFineReduction(debtPositionId, wfExecutionConfig);
-
-      // Then
-      Assertions.assertEquals(expectedWorkflowId, workflowId);
-      Mockito.verify(fineReductionOptionExpirationWFMock).expireFineReduction(debtPositionId, wfExecutionConfig);
-    }
+    // Then
+    Assertions.assertEquals(expectedWorkflowId, workflowId);
+    Mockito.verify(fineReductionOptionExpirationWFMock).expireFineReduction(debtPositionId, wfExecutionConfig);
   }
 }

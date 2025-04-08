@@ -17,14 +17,14 @@ class UtilitiesTest {
 
   @Test
   void whenGenerateWorkflowIdThenOk(){
-    String workflowId = Utilities.generateWorkflowId(1L, "workflow");
+    String workflowId = Utilities.generateWorkflowId(1L, Utilities.class);
 
-    assertEquals("workflow-1", workflowId);
+    assertEquals("Utilities-1", workflowId);
   }
 
   @Test
   void givenGenerateWorkflowIdWhenIdNullThenThrowWorkflowInternalErrorException(){
-    testGenerateWorkflowIdWhenNullErrors(null, "workflow");
+    testGenerateWorkflowIdWhenNullErrors(null, Utilities.class);
   }
 
   @Test
@@ -44,8 +44,7 @@ class UtilitiesTest {
 
   @Test
   void givenOffsetDateTimeToInstantWhenNullThenSuccess() {
-    Instant result = Utilities.offsetDateTimeToInstant(null);
-    assertNull(result);
+    assertNull(Utilities.offsetDateTimeToInstant(null));
   }
 
   @Test
@@ -62,11 +61,10 @@ class UtilitiesTest {
 
   @Test
   void givenOffsetDateTimeToLocalDateTimeWhenNullThenSuccess() {
-    LocalDateTime result = Utilities.offsetDateTimeToLocalDateTime(null);
-    assertNull(result);
+    assertNull(Utilities.offsetDateTimeToLocalDateTime(null));
   }
 
-  private static void testGenerateWorkflowIdWhenNullErrors(Long id, String workflow) {
+  private static void testGenerateWorkflowIdWhenNullErrors(Long id, Class<?> workflow) {
     WorkflowInternalErrorException exception = assertThrows(
       WorkflowInternalErrorException.class,
       () -> Utilities.generateWorkflowId(id, workflow)
@@ -77,8 +75,8 @@ class UtilitiesTest {
 
   @Test
   void whenGenerateWorkflowStringIdThenOk(){
-    String workflowId = Utilities.generateWorkflowId("00000020f51bb4362eee2a4d", "workflow");
+    String workflowId = Utilities.generateWorkflowId("00000020f51bb4362eee2a4d", Utilities.class);
 
-    assertEquals("workflow-00000020f51bb4362eee2a4d", workflowId);
+    assertEquals("Utilities-00000020f51bb4362eee2a4d", workflowId);
   }
 }

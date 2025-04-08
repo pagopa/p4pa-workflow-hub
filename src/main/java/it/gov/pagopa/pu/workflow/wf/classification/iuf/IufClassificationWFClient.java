@@ -4,10 +4,11 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWF;
-import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWF;
+import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +56,7 @@ public class IufClassificationWFClient {
   if (organizationId == null || iuf == null) {
     throw new WorkflowInternalErrorException("The organizationId or iuf must not be null");
   }
-  return String.format("%s-%d-%s", IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, organizationId, iuf);
+  return Utilities.generateWorkflowId(String.format("%d-%s", organizationId, iuf), IufClassificationWF.class);
 }
 
 }

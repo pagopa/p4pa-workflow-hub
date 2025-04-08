@@ -25,7 +25,7 @@ public class OrganizationPaymentsReportingPagoPaFetchWFClient {
   public String retrieve(Long organizationId) {
     log.info("Starting fetch PagoPA payments reporting for the organization having id {}", organizationId);
     String taskQueue = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH;
-    String workflowId = generateWorkflowId(organizationId, taskQueue);
+    String workflowId = generateWorkflowId(organizationId, PaymentsReportingPagoPaOrganizationFetchWF.class);
 
     PaymentsReportingPagoPaOrganizationFetchWF workflow = workflowService.buildWorkflowStub(
       PaymentsReportingPagoPaOrganizationFetchWF.class,

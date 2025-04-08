@@ -24,7 +24,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
   public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
     log.info("Starting check debt position reduction expiration WF: {}", debtPositionId);
     String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
-    String workflowId = generateWorkflowId(debtPositionId, taskQueue);
+    String workflowId = generateWorkflowId(debtPositionId, FineReductionOptionExpirationWF.class);
 
     FineReductionOptionExpirationWF workflow = workflowService.buildWorkflowStub(
       FineReductionOptionExpirationWF.class,

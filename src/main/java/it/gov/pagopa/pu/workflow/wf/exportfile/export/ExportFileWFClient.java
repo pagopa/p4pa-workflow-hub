@@ -24,7 +24,7 @@ public class ExportFileWFClient {
     log.info("Starting export file for export file with id: {} and export file type: {}", exportFileId, exportFileType);
 
     String taskQueue = ExportFileWFImpl.TASK_QUEUE_EXPORT_FILE_WF;
-    String workflowId  = generateWorkflowId(exportFileType+"-"+exportFileId, taskQueue);
+    String workflowId  = generateWorkflowId(exportFileType+"-"+exportFileId, ExportFileWF.class);
 
     ExportFileWF workflow = workflowService.buildWorkflowStub(
       ExportFileWF.class,

@@ -25,7 +25,7 @@ public class ExportFileExpirationHandlerWFClient {
     log.info("Starting exportFileExpirationHandler for file with exportFileId: {}", exportFileId);
 
     String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
-    String workflowId = generateWorkflowId(exportFileId, taskQueue);
+    String workflowId = generateWorkflowId(exportFileId, ExportFileExpirationHandlerWF.class);
 
     ExportFileExpirationHandlerWF workflow = workflowService.buildWorkflowStub(
       ExportFileExpirationHandlerWF.class,
@@ -38,14 +38,14 @@ public class ExportFileExpirationHandlerWFClient {
   public void scheduleExportFileExpiration(Long exportFileId, LocalDate expirationDate) {
     log.info("Scheduling export file expiration WF: {}, on {}", exportFileId, expirationDate);
 
-    String taskQueque = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
-    String workflowId = generateWorkflowId(exportFileId, taskQueque);
+    String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
+    String workflowId = generateWorkflowId(exportFileId, ExportFileExpirationHandlerWF.class);
 
     ExportFileExpirationHandlerWF workflow = workflowService.buildWorkflowStubScheduled(
 
       ExportFileExpirationHandlerWF.class,
 
-      taskQueque,
+      taskQueue,
 
       workflowId,
 
