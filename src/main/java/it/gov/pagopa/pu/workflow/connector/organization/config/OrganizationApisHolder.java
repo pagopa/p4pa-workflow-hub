@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.connector.organization.config;
 
-import it.gov.pagopa.payhub.activities.config.RestTemplateConfig;
+import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApiClientConfig;
 import it.gov.pagopa.pu.organization.client.generated.BrokerSearchControllerApi;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControllerApi;
