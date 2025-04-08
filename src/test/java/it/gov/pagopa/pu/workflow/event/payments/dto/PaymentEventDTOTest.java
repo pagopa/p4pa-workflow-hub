@@ -1,6 +1,10 @@
 package it.gov.pagopa.pu.workflow.event.payments.dto;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.config.JsonConfig;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,6 +37,8 @@ class PaymentEventDTOTest {
     Map.entry(PaymentEventType.SEND_NOTIFICATION_ERROR, DebtPositionSendEventDTO.class)
   );
 
+  private final ObjectMapper objectMapper = new JsonConfig().objectMapper();
+
   @Test
   void testExpectedMapIsCompleted() {
     Assertions.assertEquals(
@@ -57,5 +63,27 @@ class PaymentEventDTOTest {
           return acc;
         })
     );
+  }
+
+  @Test
+  void testSerialization() throws JsonProcessingException {
+    DebtPositionDTO payload = new DebtPositionDTO();
+    payload.setDebtPositionId(1L);
+
+    DebtPositionEventDTO expectedEvent = new DebtPositionEventDTO();
+    expectedEvent.setEventId("eventId");
+    expectedEvent.setEventType(PaymentEventType.RT_RECEIVED);
+    expectedEvent.setPayload(payload);
+
+    PaymentEventDTO<?> event = PaymentEventDTO.builder()
+      .eventId(expectedEvent.getEventId())
+      .eventType(expectedEvent.getEventType())
+      .payload(payload)
+      .build();
+
+    String serialized = objectMapper.writeValueAsString(event);
+    PaymentEventDTO<?> result = objectMapper.readValue(serialized, PaymentEventDTO.class);
+
+    Assertions.assertEquals(expectedEvent, result);
   }
 }

@@ -14,7 +14,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "eventType", defaultImpl = PaymentEventDTO.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "eventType", defaultImpl = PaymentEventDTO.class, visible = true)
 @JsonSubTypes({
   @JsonSubTypes.Type(value = DebtPositionEventDTO.class, names = {
     "DP_CREATED",
