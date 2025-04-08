@@ -139,7 +139,9 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     if (!CollectionUtils.isEmpty(iupdSyncStatusUpdateDTOMap)) {
       log.info("Calling notifyIO activity on debtPosition {} (organizationId {}, debtPositionTypeOrgId {})", debtPositionId, requestedDebtPosition.getOrganizationId(), requestedDebtPosition.getDebtPositionTypeOrgId());
       DebtPositionIoNotificationDTO ioNotifications = ioNotificationDebtPositionActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap, ioMessages);
-      publishPaymentEventActivity.publishDebtPositionIoNotificationEvent(ioNotifications, new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, null));
+      if(ioNotifications != null){
+        publishPaymentEventActivity.publishDebtPositionIoNotificationEvent(ioNotifications, new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, null));
+      }
     } else {
       log.info("Nothing to notifyIO on debtPosition {}", debtPositionId);
     }
