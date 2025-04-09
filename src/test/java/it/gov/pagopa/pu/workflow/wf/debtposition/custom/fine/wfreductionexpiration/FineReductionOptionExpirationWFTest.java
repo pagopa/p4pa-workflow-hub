@@ -40,7 +40,7 @@ class FineReductionOptionExpirationWFTest {
     Mockito.when(configMock.buildDebtPositionFineReductionOptionExpirationActivityStub())
       .thenReturn(debtPositionFineReductionOptionExpirationActivityMock);
 
-    Mockito.when(configMock.buildInvokeSyncDebtPositionActivity())
+    Mockito.when(configMock.buildInvokeSyncDebtPositionActivityStub())
       .thenReturn(invokeSyncDebtPositionActivityMock);
 
     Mockito.when(applicationContextMock.getBean(DebtPositionFineWfConfig.class))

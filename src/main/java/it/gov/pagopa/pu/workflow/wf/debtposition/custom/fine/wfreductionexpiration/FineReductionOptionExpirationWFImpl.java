@@ -33,7 +33,7 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
     DebtPositionFineWfConfig wfConfig = applicationContext.getBean(DebtPositionFineWfConfig.class);
 
     debtPositionFineReductionOptionExpirationActivity = wfConfig.buildDebtPositionFineReductionOptionExpirationActivityStub();
-    invokeSyncDebtPositionActivity = wfConfig.buildInvokeSyncDebtPositionActivity();
+    invokeSyncDebtPositionActivity = wfConfig.buildInvokeSyncDebtPositionActivityStub();
   }
 
   @Override
