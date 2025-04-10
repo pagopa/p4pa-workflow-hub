@@ -26,7 +26,7 @@ class CancelReductionExpirationScheduleActivityTest {
 
   @Test
   void whenCancelReductionPeriodExpirationSchedulingThenOk(){
-    String workflowId = "workflowId";
+    String workflowId = "FineReductionOptionExpirationWF-1";
     Long debtPositionId = 1L;
 
     activity.cancelReductionPeriodExpirationScheduling(debtPositionId);
