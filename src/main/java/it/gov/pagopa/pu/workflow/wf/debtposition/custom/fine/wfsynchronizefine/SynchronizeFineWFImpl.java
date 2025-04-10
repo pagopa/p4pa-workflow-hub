@@ -8,17 +8,15 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionStatus;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.CancelReductionExpirationScheduleActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
-import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.ScheduleReductionExpirationActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity.CancelReductionExpirationScheduleActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity.ScheduleReductionExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.config.DebtPositionFineWfConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper.FineWfExecutionConfigMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import static it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPositionFineClientImpl.generateExpireFineReductionWorkflowId;
 
 @Slf4j
 @WorkflowImpl(taskQueues = SynchronizeFineWFImpl.TASK_QUEUE_SYNC_FINE)
@@ -68,13 +66,12 @@ public class SynchronizeFineWFImpl implements SynchronizeFineWF, ApplicationCont
       } else if (result.isNotified()) {
         log.info("DebtPosition with id {} is NOTIFIED, cancelling and rescheduling reduction expiration workflow", debtPosition.getDebtPositionId());
         cancelReductionExpirationScheduleActivity(debtPosition);
-        scheduleReductionExpirationActivity.expireFineReduction(result.getDebtPositionDTO().getDebtPositionId(), wfExecutionConfig);
+        scheduleReductionExpirationActivity.scheduleExpireFineReduction(result.getDebtPositionDTO().getDebtPositionId(), wfExecutionConfig, result.getReductionEndDate());
       }
     }
   }
 
   private void cancelReductionExpirationScheduleActivity(DebtPositionDTO debtPosition) {
-    String workflowId = generateExpireFineReductionWorkflowId(debtPosition.getDebtPositionId());
-    cancelReductionExpirationScheduleActivity.cancelScheduling(workflowId);
+    cancelReductionExpirationScheduleActivity.cancelReductionPeriodExpirationScheduling(debtPosition.getDebtPositionId());
   }
 }

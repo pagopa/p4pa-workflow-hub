@@ -27,6 +27,7 @@ public class DebtPositionCustomWfSyncService {
       wfExecutionConfig.getClass());
 
     if (wfExecutionConfig instanceof FineWfExecutionConfig fineConfig) {
+      // should I control also others execution config?
       return fineClient.synchronizeFine(debtPositionDTO, paymentEventRequest, wfExecutionParameters.isMassive(), fineConfig);
     } else {
       log.warn("Skipping sync: wfExecutionConfig is not of type FineWfExecutionConfig (actual: {})", wfExecutionConfig.getClass().getSimpleName());
