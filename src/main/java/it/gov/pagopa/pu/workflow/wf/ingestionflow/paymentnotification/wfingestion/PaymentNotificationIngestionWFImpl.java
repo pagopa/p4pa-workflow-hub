@@ -44,7 +44,7 @@ public class PaymentNotificationIngestionWFImpl implements PaymentNotificationIn
 
   @Override
   public void ingest(Long ingestionFlowFileId) {
-    log.info("Handling Payment Notification Ingesting FlowFileId {}", ingestionFlowFileId);
+    log.info("Handling Payment Notification IngestionFlowFileId {}", ingestionFlowFileId);
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
     String errorDescription = processFile(ingestionFlowFileId);
