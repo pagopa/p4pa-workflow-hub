@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity;
 
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity.CancelReductionExpirationScheduleActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity.CancelReductionExpirationScheduleActivityImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,10 +25,11 @@ class CancelReductionExpirationScheduleActivityTest {
   }
 
   @Test
-  void whenCancelSchedulingThenOk(){
+  void whenCancelReductionPeriodExpirationSchedulingThenOk(){
     String workflowId = "workflowId";
+    Long debtPositionId = 1L;
 
-    activity.cancelScheduling(workflowId);
+    activity.cancelReductionPeriodExpirationScheduling(debtPositionId);
 
     verify(workflowServiceMock).cancelWorkflow(workflowId);
   }

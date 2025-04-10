@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity;
+package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
@@ -7,5 +7,5 @@ import io.temporal.activity.ActivityMethod;
 public interface CancelReductionExpirationScheduleActivity {
 
   @ActivityMethod
-  void cancelScheduling(String workflowId);
+  void cancelReductionPeriodExpirationScheduling(Long debtPositionId);
 }
