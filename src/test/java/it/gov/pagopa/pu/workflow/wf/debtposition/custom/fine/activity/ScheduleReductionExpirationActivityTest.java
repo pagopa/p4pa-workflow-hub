@@ -36,7 +36,7 @@ class ScheduleReductionExpirationActivityTest {
       .build();
     String workflowId = "workflowId";
 
-    Mockito.when(clientMock.expireFineReduction(debtPositionId, fineConfig))
+    Mockito.when(clientMock.scheduleExpireFineReduction(debtPositionId, fineConfig, OFFSET_DATE_TIME))
       .thenReturn(workflowId);
 
     //When
