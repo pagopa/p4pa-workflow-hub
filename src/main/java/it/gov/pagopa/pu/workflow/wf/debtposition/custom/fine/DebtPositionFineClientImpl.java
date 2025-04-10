@@ -2,15 +2,13 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine;
 
 import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWFImpl;
-import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfsynchronizefine.SynchronizeFineWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfsynchronizefine.SynchronizeFineWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
@@ -39,16 +37,17 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
   }
 
   @Override
-  public String synchronizeFine(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig) {
-    log.info("Starting synchronizing fine WF: {}", debtPositionDTO.getDebtPositionId());
-    String taskQueue = SynchronizeFineWFImpl.TASK_QUEUE_SYNC_FINE;
-    String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), SynchronizeFineWF.class);
+  public String scheduleExpireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig, OffsetDateTime fineReductionExpirationDateTime) {
+    log.info("Starting schedule to check debt position reduction expiration WF: {}", debtPositionId);
+    String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
+    String workflowId = generateExpireFineReductionWorkflowId(debtPositionId);
 
-    SynchronizeFineWF workflow = workflowService.buildWorkflowStub(
-      SynchronizeFineWF.class,
+    FineReductionOptionExpirationWF workflow = workflowService.buildWorkflowStubScheduled(
+      FineReductionOptionExpirationWF.class,
       taskQueue,
-      workflowId);
-    WorkflowClient.start(workflow::synchronizeFine, debtPositionDTO, paymentEventRequest, massive, wfExecutionConfig);
+      workflowId,
+      fineReductionExpirationDateTime);
+    WorkflowClient.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
     return workflowId;
   }
 

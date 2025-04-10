@@ -3,6 +3,10 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.utils.faker.SendNotificationDTOFaker;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +27,9 @@ class SendNotificationDateRetrieveWFImplTest {
   @Mock
   private SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivityMock;
 
+  @Mock
+  private PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivityMock;
+
   private SendNotificationDateRetrieveWFImpl wf;
 
   @BeforeEach
@@ -31,6 +38,7 @@ class SendNotificationDateRetrieveWFImplTest {
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
     Mockito.when(wfConfigMock.buildSendNotificationDateRetrieveActivityStub()).thenReturn(sendNotificationDateRetrieveActivityMock);
+    Mockito.when(wfConfigMock.buildPublishSendNotificationPaymentEventActivityStub()).thenReturn(publishSendNotificationPaymentEventActivityMock);
 
     Mockito.when(applicationContextMock.getBean(SendNotificationProcessWfConfig.class)).thenReturn(wfConfigMock);
 
@@ -41,7 +49,8 @@ class SendNotificationDateRetrieveWFImplTest {
   @AfterEach
   void verifyNoMoreInteractions(){
     Mockito.verifyNoMoreInteractions(
-      sendNotificationDateRetrieveActivityMock
+      sendNotificationDateRetrieveActivityMock,
+      publishSendNotificationPaymentEventActivityMock
     );
   }
 
@@ -59,6 +68,10 @@ class SendNotificationDateRetrieveWFImplTest {
 
     // Then
     Mockito.verify(sendNotificationDateRetrieveActivityMock).sendNotificationDateRetrieve(sendNotificationId);
+    SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
+      Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(
+        PaymentEventType.SEND_NOTIFICATION_DATE, null))
+    );
   }
 
   @Test
@@ -81,6 +94,10 @@ class SendNotificationDateRetrieveWFImplTest {
 
       // Then
       Mockito.verify(sendNotificationDateRetrieveActivityMock, Mockito.times(3)).sendNotificationDateRetrieve(sendNotificationId);
+      SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
+        Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(
+          PaymentEventType.SEND_NOTIFICATION_DATE, null))
+      );
       assertEquals(expectedResponse, actualResponse);
     }
   }

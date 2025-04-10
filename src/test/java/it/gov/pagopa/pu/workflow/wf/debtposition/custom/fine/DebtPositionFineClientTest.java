@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static it.gov.pagopa.pu.workflow.utils.TestUtils.OFFSET_DATE_TIME;
+
 @ExtendWith(MockitoExtension.class)
 class DebtPositionFineClientTest {
 
@@ -54,6 +56,33 @@ class DebtPositionFineClientTest {
 
     // When
     String workflowId = client.expireFineReduction(debtPositionId, wfExecutionConfig);
+
+    // Then
+    Assertions.assertEquals(expectedWorkflowId, workflowId);
+    Mockito.verify(fineReductionOptionExpirationWFMock).expireFineReduction(debtPositionId, wfExecutionConfig);
+  }
+
+  @Test
+  void whenScheduleExpireFineReductionThenSuccess() {
+    // Given
+    Long debtPositionId = 1L;
+    String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
+    String expectedWorkflowId = "FineReductionOptionExpirationWF-1";
+    FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
+      new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
+
+    FineWfExecutionConfig wfExecutionConfig = new FineWfExecutionConfig();
+    wfExecutionConfig.setIoMessages(fineWfMessages);
+
+    Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(
+        FineReductionOptionExpirationWF.class,
+        taskQueue,
+        expectedWorkflowId,
+        OFFSET_DATE_TIME))
+      .thenReturn(fineReductionOptionExpirationWFMock);
+
+    // When
+    String workflowId = client.scheduleExpireFineReduction(debtPositionId, wfExecutionConfig, OFFSET_DATE_TIME);
 
     // Then
     Assertions.assertEquals(expectedWorkflowId, workflowId);
