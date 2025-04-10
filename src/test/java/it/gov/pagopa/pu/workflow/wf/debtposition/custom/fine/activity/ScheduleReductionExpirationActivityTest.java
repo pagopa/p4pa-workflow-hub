@@ -27,7 +27,7 @@ class ScheduleReductionExpirationActivityTest {
   }
 
   @Test
-  void whenScheduleExpireFineReduction(){
+  void whenScheduleExpireFineReductionThenOk(){
     //Given
     Long debtPositionId = 1L;
     IONotificationMessage ioNotificationMessage = new IONotificationMessage("subject", "message");
