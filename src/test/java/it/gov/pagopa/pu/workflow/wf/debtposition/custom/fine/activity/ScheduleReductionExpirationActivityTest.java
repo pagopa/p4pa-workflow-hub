@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity;
+package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity;
 
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static it.gov.pagopa.pu.workflow.utils.TestUtils.OFFSET_DATE_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +27,7 @@ class ScheduleReductionExpirationActivityTest {
   }
 
   @Test
-  void whenExpireFineReduction(){
+  void whenScheduleExpireFineReduction(){
     //Given
     Long debtPositionId = 1L;
     IONotificationMessage ioNotificationMessage = new IONotificationMessage("subject", "message");
@@ -39,7 +40,7 @@ class ScheduleReductionExpirationActivityTest {
       .thenReturn(workflowId);
 
     //When
-    String result = activity.expireFineReduction(debtPositionId, fineConfig);
+    String result = activity.scheduleExpireFineReduction(debtPositionId, fineConfig, OFFSET_DATE_TIME);
 
     //Then
     assertEquals(workflowId, result);

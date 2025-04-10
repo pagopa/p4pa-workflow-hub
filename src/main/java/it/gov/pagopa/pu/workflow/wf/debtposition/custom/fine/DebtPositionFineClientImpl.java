@@ -8,6 +8,8 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpirati
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
+
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Slf4j
@@ -30,6 +32,21 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       FineReductionOptionExpirationWF.class,
       taskQueue,
       workflowId);
+    WorkflowClient.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
+    return workflowId;
+  }
+
+  @Override
+  public String scheduleExpireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig, OffsetDateTime fineReductionExpirationDateTime) {
+    log.info("Starting schedule to check debt position reduction expiration WF: {}", debtPositionId);
+    String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
+    String workflowId = generateExpireFineReductionWorkflowId(debtPositionId);
+
+    FineReductionOptionExpirationWF workflow = workflowService.buildWorkflowStubScheduled(
+      FineReductionOptionExpirationWF.class,
+      taskQueue,
+      workflowId,
+      fineReductionExpirationDateTime);
     WorkflowClient.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
     return workflowId;
   }

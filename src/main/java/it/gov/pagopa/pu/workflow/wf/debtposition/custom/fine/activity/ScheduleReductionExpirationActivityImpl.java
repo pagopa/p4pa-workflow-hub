@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity;
+package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
@@ -6,6 +6,8 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPositionFineCli
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
 
 @Service
 @Slf4j
@@ -19,7 +21,7 @@ public class ScheduleReductionExpirationActivityImpl implements ScheduleReductio
   }
 
   @Override
-  public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
-    return debtPositionFineClient.expireFineReduction(debtPositionId, wfExecutionConfig);
+  public String scheduleExpireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig, OffsetDateTime fineReductionExpirationDateTime) {
+    return debtPositionFineClient.scheduleExpireFineReduction(debtPositionId, wfExecutionConfig, fineReductionExpirationDateTime);
   }
 }
