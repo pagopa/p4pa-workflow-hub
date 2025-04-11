@@ -77,7 +77,7 @@ class SynchronizeFineWFTest {
   }
 
   @Test
-  void givenDPStatusPaidWhenSynchronizeFineThenCancelReductionExpirationSchedule() {
+  void givenDPStatusPaidWhenSynchronizeFineDPThenCancelReductionExpirationSchedule() {
     // Given
     String workflowId = "workflowId";
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
@@ -102,7 +102,7 @@ class SynchronizeFineWFTest {
         .thenReturn(workflowId);
 
       // When
-      wf.synchronizeFine(debtPositionDTO, paymentEventRequest, false, fineWfExecutionConfig);
+      wf.synchronizeFineDP(debtPositionDTO, paymentEventRequest, false, fineWfExecutionConfig);
 
       // Then
       verify(cancelReductionExpirationScheduleActivityMock, times(1)).cancelReductionPeriodExpirationScheduling(debtPositionDTO.getDebtPositionId());
@@ -110,7 +110,40 @@ class SynchronizeFineWFTest {
   }
 
   @Test
-  void givenDPNotifiedWhenSynchronizeFineThenCancelAndRescheduleReductionExpiration() {
+  void givenDPStatusPartiallyPaidWhenSynchronizeFineDPThenCancelReductionExpirationSchedule() {
+    // Given
+    String workflowId = "workflowId";
+    DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
+    debtPositionDTO.setStatus(DebtPositionStatus.PARTIALLY_PAID);
+    GenericWfExecutionConfig wfExecutionConfig =
+      new GenericWfExecutionConfig(new GenericWfExecutionConfig.IONotificationBaseOpsMessages(new IONotificationMessage("subject", "message"), null, null));
+    FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
+      new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
+    FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
+    fineWfExecutionConfig.setIoMessages(fineWfMessages);
+    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO();
+
+    Mockito.when(debtPositionSynchronizeFineActivityMock.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig))
+      .thenReturn(new HandleFineDebtPositionResult(debtPositionDTO, OFFSET_DATE_TIME, false));
+
+    try (
+      MockedStatic<FineWfExecutionConfigMapper> mapperMock = Mockito.mockStatic(FineWfExecutionConfigMapper.class)) {
+      mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig))
+        .thenReturn(wfExecutionConfig);
+
+      Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
+        .thenReturn(workflowId);
+
+      // When
+      wf.synchronizeFineDP(debtPositionDTO, paymentEventRequest, false, fineWfExecutionConfig);
+
+      // Then
+      verify(cancelReductionExpirationScheduleActivityMock, times(1)).cancelReductionPeriodExpirationScheduling(debtPositionDTO.getDebtPositionId());
+    }
+  }
+
+  @Test
+  void givenDPNotifiedWhenSynchronizeFineDPThenCancelAndRescheduleReductionExpiration() {
     // Given
     String workflowId = "workflowId";
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
@@ -134,41 +167,11 @@ class SynchronizeFineWFTest {
         .thenReturn(workflowId);
 
       // When
-      wf.synchronizeFine(debtPositionDTO, paymentEventRequest, false, fineWfExecutionConfig);
+      wf.synchronizeFineDP(debtPositionDTO, paymentEventRequest, false, fineWfExecutionConfig);
 
       // Then
       verify(cancelReductionExpirationScheduleActivityMock, times(1)).cancelReductionPeriodExpirationScheduling(debtPositionDTO.getDebtPositionId());
       verify(scheduleReductionExpirationActivityMock, times(1)).scheduleExpireFineReduction(debtPositionDTO.getDebtPositionId(), fineWfExecutionConfig, OFFSET_DATE_TIME);
-    }
-  }
-
-  @Test
-  void givenWorkflowIdNullWhenSynchronizeFineThenDoNothing() {
-    DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-    GenericWfExecutionConfig wfExecutionConfig =
-      new GenericWfExecutionConfig(new GenericWfExecutionConfig.IONotificationBaseOpsMessages(new IONotificationMessage("subject", "message"), null, null));
-    FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
-    fineWfExecutionConfig.setIoMessages(new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message")));
-    PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO();
-
-    HandleFineDebtPositionResult result = new HandleFineDebtPositionResult(debtPositionDTO, OFFSET_DATE_TIME, true);
-
-    Mockito.when(debtPositionSynchronizeFineActivityMock.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig))
-      .thenReturn(result);
-
-    try (
-      MockedStatic<FineWfExecutionConfigMapper> mapperMock = Mockito.mockStatic(FineWfExecutionConfigMapper.class)) {
-      mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig))
-        .thenReturn(wfExecutionConfig);
-
-      Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
-        .thenReturn(null);
-
-      wf.synchronizeFine(debtPositionDTO, paymentEventRequest, false, fineWfExecutionConfig);
-
-      // Then
-      verify(cancelReductionExpirationScheduleActivityMock, times(0)).cancelReductionPeriodExpirationScheduling(debtPositionDTO.getDebtPositionId());
-      verify(scheduleReductionExpirationActivityMock, times(0)).scheduleExpireFineReduction(debtPositionDTO.getDebtPositionId(), fineWfExecutionConfig, OFFSET_DATE_TIME);
     }
   }
 }

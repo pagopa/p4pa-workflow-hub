@@ -10,5 +10,5 @@ public interface DebtPositionFineClient {
 
   String expireFineReduction(Long debtPositionId, FineWfExecutionConfig executionParams);
   String scheduleExpireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig, OffsetDateTime fineReductionExpirationDateTime);
-  String synchronizeFine(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig);
+  String synchronizeFineDP(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig);
 }

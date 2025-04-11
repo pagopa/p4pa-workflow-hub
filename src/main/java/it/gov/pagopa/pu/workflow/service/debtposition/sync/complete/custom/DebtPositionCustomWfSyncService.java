@@ -26,12 +26,10 @@ public class DebtPositionCustomWfSyncService {
       paymentEventRequest!=null? paymentEventRequest.getPaymentEventType() : null,
       wfExecutionConfig.getClass());
 
-    if (wfExecutionConfig instanceof FineWfExecutionConfig fineConfig) {
-      // should I control also others execution config?
-      return fineClient.synchronizeFine(debtPositionDTO, paymentEventRequest, wfExecutionParameters.isMassive(), fineConfig);
+    if (wfExecutionConfig instanceof FineWfExecutionConfig fineWfExecutionConfig) {
+      return fineClient.synchronizeFineDP(debtPositionDTO, paymentEventRequest, wfExecutionParameters.isMassive(), fineWfExecutionConfig);
     } else {
-      log.warn("Skipping sync: wfExecutionConfig is not of type FineWfExecutionConfig (actual: {})", wfExecutionConfig.getClass().getSimpleName());
-      return null;
+      throw new IllegalStateException("WfExecutionConfig not supported: " + wfExecutionConfig.getClass());
     }
   }
 }

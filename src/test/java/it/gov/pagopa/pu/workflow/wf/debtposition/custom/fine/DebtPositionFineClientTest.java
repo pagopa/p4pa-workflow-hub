@@ -97,7 +97,7 @@ class DebtPositionFineClientTest {
   }
 
   @Test
-  void whenSynchronizeFineThenSuccess() {
+  void whenSynchronizeFineDPThenSuccess() {
     // Given
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO();
@@ -116,10 +116,10 @@ class DebtPositionFineClientTest {
       .thenReturn(synchronizeFineWFMock);
 
     // When
-    String workflowId = client.synchronizeFine(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig);
+    String workflowId = client.synchronizeFineDP(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig);
 
     // Then
     Assertions.assertEquals(expectedWorkflowId, workflowId);
-    Mockito.verify(synchronizeFineWFMock).synchronizeFine(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig);
+    Mockito.verify(synchronizeFineWFMock).synchronizeFineDP(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig);
   }
 }

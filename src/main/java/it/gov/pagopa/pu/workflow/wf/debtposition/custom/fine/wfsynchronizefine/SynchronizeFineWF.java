@@ -14,5 +14,5 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 public interface SynchronizeFineWF {
 
   @WorkflowMethod
-  void synchronizeFine(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massivo, FineWfExecutionConfig executionParams);
+  void synchronizeFineDP(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massivo, FineWfExecutionConfig executionParams);
 }

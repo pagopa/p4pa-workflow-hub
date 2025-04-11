@@ -56,7 +56,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
   }
 
   @Override
-  public String synchronizeFine(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig) {
+  public String synchronizeFineDP(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig) {
     log.info("Starting synchronizing fine WF: {}", debtPositionDTO.getDebtPositionId());
     String taskQueue = SynchronizeFineWFImpl.TASK_QUEUE_SYNC_FINE;
     String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), SynchronizeFineWF.class);
@@ -65,7 +65,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       SynchronizeFineWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::synchronizeFine, debtPositionDTO, paymentEventRequest, massive, wfExecutionConfig);
+    WorkflowClient.start(workflow::synchronizeFineDP, debtPositionDTO, paymentEventRequest, massive, wfExecutionConfig);
     return workflowId;
   }
 

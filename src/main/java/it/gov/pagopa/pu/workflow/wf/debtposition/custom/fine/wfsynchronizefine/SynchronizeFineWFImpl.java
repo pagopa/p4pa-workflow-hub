@@ -46,7 +46,7 @@ public class SynchronizeFineWFImpl implements SynchronizeFineWF, ApplicationCont
   }
 
   @Override
-  public void synchronizeFine(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig) {
+  public void synchronizeFineDP(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig) {
     HandleFineDebtPositionResult result = debtPositionSynchronizeFineActivity.handleFineDebtPosition(debtPositionDTO, massive, wfExecutionConfig);
 
     // TODO replace IO placeholders https://pagopa.atlassian.net/browse/P4ADEV-2599
@@ -56,19 +56,18 @@ public class SynchronizeFineWFImpl implements SynchronizeFineWF, ApplicationCont
     DebtPositionDTO debtPosition = result.getDebtPositionDTO();
 
     log.info("Synchronize fine {} with Nodo", debtPosition.getDebtPositionId());
-    String workflowId = invokeSyncDebtPositionActivity.synchronizeDPSync(debtPosition, paymentEventRequest, massive, genericWfExecutionConfig);
+    invokeSyncDebtPositionActivity.synchronizeDPSync(debtPosition, paymentEventRequest, massive, genericWfExecutionConfig);
 
-    if (workflowId != null){
-      if (DebtPositionStatus.PAID.equals(debtPosition.getStatus())) {
-        log.info("DebtPosition with id {} is PAID, cancelling reduction expiration workflow", debtPosition.getDebtPositionId());
-        cancelReductionExpirationScheduleActivity(debtPosition);
+    if (DebtPositionStatus.PAID.equals(debtPosition.getStatus()) || DebtPositionStatus.PARTIALLY_PAID.equals(debtPosition.getStatus())) {
+      log.info("DebtPosition with id {} is [{}], cancelling reduction expiration workflow", debtPosition.getDebtPositionId(), debtPosition.getStatus());
+      cancelReductionExpirationScheduleActivity(debtPosition);
 
-      } else if (result.isNotified()) {
-        log.info("DebtPosition with id {} is NOTIFIED, cancelling and rescheduling reduction expiration workflow", debtPosition.getDebtPositionId());
-        cancelReductionExpirationScheduleActivity(debtPosition);
-        scheduleReductionExpirationActivity.scheduleExpireFineReduction(result.getDebtPositionDTO().getDebtPositionId(), wfExecutionConfig, result.getReductionEndDate());
-      }
+    } else if (result.isNotified()) {
+      log.info("DebtPosition with id {} is NOTIFIED, cancelling and rescheduling reduction expiration workflow", debtPosition.getDebtPositionId());
+      cancelReductionExpirationScheduleActivity(debtPosition);
+      scheduleReductionExpirationActivity.scheduleExpireFineReduction(debtPosition.getDebtPositionId(), wfExecutionConfig, result.getReductionEndDate());
     }
+
   }
 
   private void cancelReductionExpirationScheduleActivity(DebtPositionDTO debtPosition) {
