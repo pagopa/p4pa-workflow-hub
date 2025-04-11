@@ -4,7 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
@@ -46,24 +46,23 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
   public void ingest(Long ingestionFlowFileId) {
     log.info("Handling PaymentsReporting IngestingFlowFileId {}", ingestionFlowFileId);
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
-    String errorDescription = processFile(ingestionFlowFileId);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    PaymentsReportingIngestionFlowFileActivityResult ingestionFlowFileResult = processFile(ingestionFlowFileId);
 
-    boolean success = errorDescription==null;
+    boolean success = ingestionFlowFileResult.getErrorDescription()==null;
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
       IngestionFlowFileStatus.PROCESSING,
       success
         ? IngestionFlowFileStatus.COMPLETED
         : IngestionFlowFileStatus.ERROR,
-      errorDescription,
-      null);
+      ingestionFlowFileResult);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
     log.info("PaymentsReporting Ingestion completed for file with ID {} with success {} and errorDescription {}",
-      ingestionFlowFileId, success, errorDescription);
+      ingestionFlowFileId, success, ingestionFlowFileResult.getErrorDescription());
   }
 
-  private String processFile(Long ingestionFlowFileId) {
+  private PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) {
     try{
       PaymentsReportingIngestionFlowFileActivityResult ingestionResult = paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
 
@@ -72,9 +71,11 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
         ingestionResult.getIuf(),
         ingestionResult.getTransfers());
 
-      return null;
+      return ingestionResult;
     } catch (Exception e) {
-      return e.getMessage();
+      PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
+      result.setErrorDescription(e.getMessage());
+      return result;
     }
   }
 }

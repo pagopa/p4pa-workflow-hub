@@ -33,12 +33,13 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
     DebtPositionFineWfConfig wfConfig = applicationContext.getBean(DebtPositionFineWfConfig.class);
 
     debtPositionFineReductionOptionExpirationActivity = wfConfig.buildDebtPositionFineReductionOptionExpirationActivityStub();
-    invokeSyncDebtPositionActivity = wfConfig.buildInvokeSyncDebtPositionActivity();
+    invokeSyncDebtPositionActivity = wfConfig.buildInvokeSyncDebtPositionActivityStub();
   }
 
   @Override
   public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
-    log.info("Handling fine reduction expiration for debtPositionId: {}, wfExecutionConfig: {}", debtPositionId, wfExecutionConfig);    DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
+    log.info("Handling fine reduction expiration for debtPositionId: {}, wfExecutionConfig: {}", debtPositionId, wfExecutionConfig);
+    DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
 
     if (debtPositionDTO == null){
       log.warn("DebtPositionDTO not found for debtPositionId: {}", debtPositionId);
