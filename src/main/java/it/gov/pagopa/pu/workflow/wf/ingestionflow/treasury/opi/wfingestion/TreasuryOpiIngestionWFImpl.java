@@ -4,7 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury.TreasuryOpiIngestionActivity;
-import it.gov.pagopa.payhub.activities.dto.treasury.TreasuryIufIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
@@ -48,7 +48,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     log.info("Handling Treasury OPI ingestionFlowFileId {}", ingestionFlowFileId);
     TreasuryIufIngestionFlowFileResult ingestionResult;
 
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     ingestionResult = processFile(ingestionFlowFileId);
     boolean success = StringUtils.isEmpty(ingestionResult.getErrorDescription());
 
@@ -57,8 +57,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
       success
         ? IngestionFlowFileStatus.COMPLETED
         : IngestionFlowFileStatus.ERROR,
-      ingestionResult.getErrorDescription(),
-      ingestionResult.getDiscardedFileName());
+      ingestionResult);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
     log.info("Treasury OPI ingestion with ID {} with success {}, errorDescription {} and discardFileName {}",
@@ -78,12 +77,10 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
           treasuryId
         ));
     } catch (Exception e){
-      ingestionResult = new TreasuryIufIngestionFlowFileResult(
-        Collections.emptyMap(),
-        null,
-        "Unexpected error when processing TreasuryOPI file: " + e.getMessage(),
-        null
-      );
+      ingestionResult = TreasuryIufIngestionFlowFileResult.builder()
+        .iuf2TreasuryIdMap(Collections.emptyMap())
+        .errorDescription("Unexpected error when processing TreasuryOPI file: " + e.getMessage())
+        .build();
     }
     return ingestionResult;
   }
