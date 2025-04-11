@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsRe
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.service.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
@@ -44,7 +45,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
    * Temporal workflow will not allow to use injection in order to avoid
    * <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
    * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
-   * In {@link it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
+   * In {@link TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
    * Use this as an example to override based on the particular workflow.
    */
   @Override
