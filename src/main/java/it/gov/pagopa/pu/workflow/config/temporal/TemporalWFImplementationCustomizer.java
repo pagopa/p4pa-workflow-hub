@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.config;
+package it.gov.pagopa.pu.workflow.config.temporal;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;

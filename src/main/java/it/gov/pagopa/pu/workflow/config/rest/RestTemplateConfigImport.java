@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.config;
+package it.gov.pagopa.pu.workflow.config.rest;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
