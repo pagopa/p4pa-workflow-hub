@@ -362,34 +362,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/payment-notification/{ingestionFlowFileId}:
-    post:
-      tags:
-        - PaymentNotification
-      operationId: createPaymentNotificationByIngestionFlowFileId
-      description: Start payment notification creation by ingestionFlowFileId.
-      parameters:
-        - name: ingestionFlowFileId
-          in: path
-          required: true
-          description: The id of ingestionFlowFile.
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '201':
-          description: "Create payment notification workflow created successfully"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowCreatedDTO'
-        '500':
-          description: Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowErrorDTO'
-
 security:
   - BearerAuth: [ ]
 components:

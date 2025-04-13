@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.ingestionflowfile;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
@@ -20,12 +21,15 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient,
     TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient,
     DebtPositionIngestionWFClient debtPositionIngestionWFClient,
-    ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient) {
+    ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient,
+    PaymentNotificationIngestionWFClient paymentNotificationIngestionWFClient) {
     ingestionFlowFileType2WfStarter = Map.of(
       IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest,
-      IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest
+      IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION, paymentNotificationIngestionWFClient::ingest
+
     );
   }
 
