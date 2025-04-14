@@ -54,8 +54,7 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
     WorkflowServiceImpl.waitForSignalMethods();
     log.info("Notifying Transfer Classifications: {}", toNotify);
 
-    toNotify.stream()
-      .forEach(transferClassificationStartSignalDTO ->
+    toNotify.forEach(transferClassificationStartSignalDTO ->
         startTransferClassificationActivity.signalTransferClassificationWithStart(
           transferClassificationStartSignalDTO.getOrgId(),
           transferClassificationStartSignalDTO.getIuv(),
