@@ -25,7 +25,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
   public String checkDpExpiration(Long debtPositionId) {
     log.info("Starting check debt position expiration WF: {}", debtPositionId);
     String taskQueue = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
-    String workflowId = generateWorkflowId(debtPositionId, taskQueue);
+    String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWF.class);
 
     CheckDebtPositionExpirationWF workflow = workflowService.buildWorkflowStub(
       CheckDebtPositionExpirationWF.class,
@@ -38,7 +38,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
   @Override
   public void scheduleNextCheckDpExpiration(Long debtPositionId, LocalDate nextDueDate) {
     log.info("Start of scheduling the next check debt position expiration WF: {}, on {}", debtPositionId, nextDueDate);
-    String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF);
+    String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWF.class);
     CheckDebtPositionExpirationWF workflow = workflowService.buildWorkflowStubScheduled(
       CheckDebtPositionExpirationWF.class,
       CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF,
@@ -50,7 +50,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
 
   @Override
   public void cancelScheduling(Long debtPositionId) {
-    String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF);
+    String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWF.class);
     log.info("Cancelling next scheduling of workflow {}", workflowId);
     workflowService.cancelWorkflow(workflowId);
   }

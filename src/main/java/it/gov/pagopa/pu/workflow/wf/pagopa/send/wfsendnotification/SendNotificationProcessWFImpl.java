@@ -5,7 +5,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
@@ -28,7 +28,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
   public static final String TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY = "SendNotificationProcessWF_LOCAL";
 
   private static final int MAX_RETRIES = 10;
-  private static final Duration SEND_NOTIFICATION_STATUS_RETRIEVE_BASE_DELAY = Duration.ofMinutes(5);
+  private static final Duration SEND_NOTIFICATION_STATUS_RETRIEVE_BASE_DELAY = Duration.ofSeconds(30);
   private static final Duration NOTIFICATION_DATE_RETRIEVE_DELAY = Duration.ofMinutes(30);
 
   private PreloadSendFileActivity preloadSendFileActivity;

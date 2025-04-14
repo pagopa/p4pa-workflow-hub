@@ -1,12 +1,12 @@
-package it.gov.pagopa.pu.workflow.wf.exportfile.config;
+package it.gov.pagopa.pu.workflow.wf.exportfile.export.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.exportflow.debtposition.ExportFileActivity;
-import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
-import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
-import it.gov.pagopa.pu.workflow.wf.exportfile.activity.ScheduleExportFileExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile.ExportFileWFImpl;
+import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWFImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile;
+package it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile;
 
 import io.micrometer.common.util.StringUtils;
 import io.temporal.spring.boot.WorkflowImpl;
@@ -8,8 +8,9 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import it.gov.pagopa.pu.workflow.wf.exportfile.activity.ScheduleExportFileExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.exportfile.config.ExportFileWFConfig;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
 import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -33,7 +34,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
    * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
-   * In {@link it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
+   * In {@link TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
    * Use this as an example to override based on the particular workflow.
    */
   @Override

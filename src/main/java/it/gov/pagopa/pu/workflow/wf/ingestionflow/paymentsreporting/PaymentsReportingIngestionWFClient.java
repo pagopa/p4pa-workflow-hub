@@ -22,7 +22,7 @@ public class PaymentsReportingIngestionWFClient {
   public String ingest(Long ingestionFlowFileId) {
     log.info("Starting payments reporting ingestion flow file having id {}", ingestionFlowFileId);
     String taskQueue = PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF;
-    String workflowId = generateWorkflowId(ingestionFlowFileId, taskQueue);
+    String workflowId = generateWorkflowId(ingestionFlowFileId, PaymentsReportingIngestionWF.class);
 
     PaymentsReportingIngestionWF workflow = workflowService.buildWorkflowStub(
       PaymentsReportingIngestionWF.class,

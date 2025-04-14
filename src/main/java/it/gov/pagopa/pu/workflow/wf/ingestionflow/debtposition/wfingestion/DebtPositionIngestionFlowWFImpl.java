@@ -7,8 +7,10 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.InstallmentIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.Constants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +42,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
    * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
-   * In {@link it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
+   * In {@link TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
    * Use this as an example to override based on the particular workflow.
    */
   @Override
@@ -65,16 +67,15 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     String additionalError
       = synchronizeIngestedDebtPositionActivity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-    String errorDescription = mergeErrorDescriptions(ingestionResult.getErrorDescription(), additionalError);
-    boolean success = errorDescription == null;
+    mergeErrorDescriptions(ingestionResult, additionalError);
+    boolean success = ingestionResult.getErrorDescription() == null;
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
       IngestionFlowFileStatus.PROCESSING,
       success
         ? IngestionFlowFileStatus.COMPLETED
         : IngestionFlowFileStatus.ERROR,
-      errorDescription,
-      ingestionResult.getDiscardedFileName());
+      ingestionResult);
     sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
 
     log.info("Debt Position ingestion with ID {} is completed, with success {} and error_description {}",
@@ -103,22 +104,19 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     } catch (Exception e) {
       String error = "Unexpected error when processing DebtPositionIngestion file: " + e.getMessage();
       log.error(error);
-      ingestionResult = new InstallmentIngestionFlowFileResult(
-        null,
-        null,
-        error,
-        null
-      );
+      ingestionResult = InstallmentIngestionFlowFileResult.builder()
+        .errorDescription(error)
+        .build();
     }
     return ingestionResult;
   }
 
-  private String mergeErrorDescriptions(String ingestionResultErrorDescription, String additionalError) {
-    if (StringUtils.isEmpty(additionalError)) {
-      return ingestionResultErrorDescription;
-    } else {
-      return (ingestionResultErrorDescription == null ? "" : ingestionResultErrorDescription + "\n\n") +
-        "There were errors during the synchronization of the ingested Debt Position:" + additionalError;
+  private void mergeErrorDescriptions(IngestionFlowFileResult ingestionResult, String additionalError) {
+    if (!StringUtils.isEmpty(additionalError)) {
+      String ingestionResultErrorDescription = ingestionResult.getErrorDescription();
+      ingestionResult.setErrorDescription(
+        (ingestionResultErrorDescription == null ? "" : ingestionResultErrorDescription + "\n\n") +
+          "There were errors during the synchronization of the ingested Debt Position:" + additionalError);
     }
   }
 

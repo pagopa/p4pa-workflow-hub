@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.config;
+package it.gov.pagopa.pu.workflow.config.temporal;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

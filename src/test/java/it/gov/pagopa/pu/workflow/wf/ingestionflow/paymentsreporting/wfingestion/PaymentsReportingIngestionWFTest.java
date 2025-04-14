@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
-import it.gov.pagopa.payhub.activities.dto.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
@@ -93,12 +93,12 @@ class PaymentsReportingIngestionWFTest {
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
 
     Mockito.verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, true);
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, result);
 
     Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock)
       .signalIufClassificationWithStart(organizationId, "iuf-1", List.of(paymentsReportingTransferDTO));
@@ -112,16 +112,20 @@ class PaymentsReportingIngestionWFTest {
     Mockito.when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId))
       .thenThrow(new NotRetryableActivityException("DUMMY"));
 
+    PaymentsReportingIngestionFlowFileActivityResult ingestionFlowFileResult = PaymentsReportingIngestionFlowFileActivityResult.builder()
+      .errorDescription("DUMMY")
+      .build();
+
     // When
     wf.ingest(ingestionFlowFileId);
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null, null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     Mockito.verify(sendEmailIngestionFlowActivityMock)
       .sendEmail(ingestionFlowFileId, false);
 
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, "DUMMY", null);
+      .updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, ingestionFlowFileResult);
   }
 }

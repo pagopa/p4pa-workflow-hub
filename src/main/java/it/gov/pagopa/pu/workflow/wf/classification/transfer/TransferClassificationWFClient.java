@@ -4,6 +4,7 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWFImpl;
@@ -38,6 +39,6 @@ public class TransferClassificationWFClient {
     if (orgId == null || iuv == null || iur == null) {
       throw new WorkflowInternalErrorException("The ID or the workflow must not be null");
     }
-    return String.format("%s-%d-%s-%s-%d", TransferClassificationWFImpl.TASK_QUEUE_TRANSFER_CLASSIFICATION_WF, orgId, iuv, iur, transferIndex);
+    return Utilities.generateWorkflowId(String.format("%d-%s-%s-%d", orgId, iuv, iur, transferIndex), TransferClassificationWF.class);
   }
 }

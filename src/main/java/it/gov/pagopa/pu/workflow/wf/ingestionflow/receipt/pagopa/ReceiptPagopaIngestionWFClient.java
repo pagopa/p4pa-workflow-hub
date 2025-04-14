@@ -21,7 +21,7 @@ public class ReceiptPagopaIngestionWFClient {
 
   public String ingest(Long ingestionFlowFileId) {
     log.info("Starting Receipt Pagopa ingestion flow file having id {}", ingestionFlowFileId);
-    String workflowId = generateWorkflowId(ingestionFlowFileId, ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF);
+    String workflowId = generateWorkflowId(ingestionFlowFileId, ReceiptPagopaIngestionWF.class);
     ReceiptPagopaIngestionWF workflow = workflowService.buildWorkflowStub(
       ReceiptPagopaIngestionWF.class,
       ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF,

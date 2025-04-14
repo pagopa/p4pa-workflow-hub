@@ -1,6 +1,12 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
+import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.exportfile.ExportFileService;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
@@ -15,10 +21,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ExportFileControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -49,6 +51,36 @@ class ExportFileControllerImplTest {
       MvcResult result = mockMvc.perform(
           post("/workflowhub/export-file/{exportFileId}/expire", exportFileId))
         .andExpect(status().isOk())
+        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+        .andReturn();
+
+      WorkflowCreatedDTO resultResponse =
+        objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+      assertEquals(expected, resultResponse);
+    }
+  }
+
+  @Test
+  void whenCreateExportFileThenOk() throws Exception {
+    Long exportFileId = 1L;
+    ExportFile.ExportFileTypeEnum exportFileType = ExportFileTypeEnum.CLASSIFICATIONS;
+    String workflowId = "workflow-1";
+    String accessToken = "ACCESSTOKEN";
+    WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
+      .workflowId(workflowId)
+      .build();
+
+    Mockito.when(service.exportFile(exportFileId, exportFileType))
+      .thenReturn(expected);
+
+    try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
+      securityUtilsMockedStatic.when(SecurityUtils::getAccessToken)
+        .thenReturn(accessToken);
+
+      MvcResult result = mockMvc.perform(
+          post("/workflowhub/export-file/{exportFileId}", exportFileId)
+            .queryParam("exportFileType", ExportFileTypeEnum.CLASSIFICATIONS.toString()))
+        .andExpect(status().isCreated())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
 

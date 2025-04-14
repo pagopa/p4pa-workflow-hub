@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.config;
+package it.gov.pagopa.pu.workflow.config.temporal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.common.converter.DataConverter;

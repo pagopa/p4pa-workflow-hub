@@ -110,7 +110,7 @@ class SynchronizeDebtPositionWfClientTest {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
     debtPosition.setDebtPositionId(1L);
-    String expectedWorkflowId = taskQueue+"-1";
+    String expectedWorkflowId = wfInterfaceClass.getSimpleName()+"-1";
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     GenericWfExecutionConfig genericWfExecutionConfig = new GenericWfExecutionConfig();
     genericWfExecutionConfig.setIoMessages(new GenericWfExecutionConfig.IONotificationBaseOpsMessages());

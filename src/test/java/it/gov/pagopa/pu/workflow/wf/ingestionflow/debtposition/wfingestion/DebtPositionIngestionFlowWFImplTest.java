@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIng
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,6 +60,17 @@ class DebtPositionIngestionFlowWFImplTest {
     wf.setApplicationContext(applicationContextMock);
   }
 
+  @AfterEach
+  void verifyNoMoreInteractions(){
+    Mockito.verifyNoMoreInteractions(
+      ingestionFlowFileProcessingLockerActivityMock,
+      installmentIngestionFlowFileActivityMock,
+      updateIngestionFlowStatusActivityMock,
+      sendEmailIngestionFlowActivityMock,
+      synchronizeIngestedDebtPositionActivityMock
+    );
+  }
+
   @Test
   void givenSuccessfulProcessingConditionWhenIngestThenOk() {
     long ingestionFlowFileId = 1L;
@@ -84,8 +96,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFileStatus.PROCESSING),
         Mockito.eq(IngestionFlowFileStatus.COMPLETED),
-        Mockito.isNull(),
-        Mockito.isNull()
+        Mockito.same(installmentIngestionFlowFileResult)
       );
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
     }
@@ -121,8 +132,11 @@ class DebtPositionIngestionFlowWFImplTest {
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
         IngestionFlowFileStatus.ERROR,
-        errorDescription,
-        null
+        InstallmentIngestionFlowFileResult.builder()
+          .processedRows(installmentIngestionFlowFileResult.getProcessedRows())
+          .totalRows(installmentIngestionFlowFileResult.getTotalRows())
+          .errorDescription(errorDescription)
+          .build()
       );
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
     }
@@ -160,8 +174,9 @@ class DebtPositionIngestionFlowWFImplTest {
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
         IngestionFlowFileStatus.ERROR,
-        errorDescription,
-        null
+        InstallmentIngestionFlowFileResult.builder()
+          .errorDescription(errorDescription)
+          .build()
       );
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
     }
@@ -195,8 +210,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFileStatus.PROCESSING),
         Mockito.eq(IngestionFlowFileStatus.COMPLETED),
-        Mockito.isNull(),
-        Mockito.isNull()
+        Mockito.same(installmentIngestionFlowFileResult)
       );
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
     }

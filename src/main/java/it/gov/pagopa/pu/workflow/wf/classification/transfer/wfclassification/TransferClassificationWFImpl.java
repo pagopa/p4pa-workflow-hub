@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.service.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
@@ -26,7 +27,7 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
    * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
-   * In {@link it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
+   * In {@link TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
    * Use this as an example to override based on the particular workflow.
    */
   @Override

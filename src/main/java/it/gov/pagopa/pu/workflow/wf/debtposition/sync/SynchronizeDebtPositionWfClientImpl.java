@@ -114,7 +114,7 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
     Function<T, Functions.Proc3<DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig>> wfMethodCall,
     Class<T> wfInterfaceClass)
   {
-    String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), taskQueue);
+    String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), wfInterfaceClass);
     T workflow = workflowService.buildWorkflowStub(
       wfInterfaceClass,
       taskQueue,

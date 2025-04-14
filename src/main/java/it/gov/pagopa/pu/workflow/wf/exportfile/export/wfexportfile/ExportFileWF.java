@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.exportfile.wfexportfile;
+package it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;

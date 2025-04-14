@@ -22,7 +22,7 @@ public class DebtPositionIngestionWFClient {
   public String ingest(Long ingestionFlowFileId) {
     log.info("Starting debt position ingestion flow file having id {}", ingestionFlowFileId);
     String taskQueue = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW;
-    String workflowId = generateWorkflowId(ingestionFlowFileId, taskQueue);
+    String workflowId = generateWorkflowId(ingestionFlowFileId, DebtPositionIngestionFlowWF.class);
 
     DebtPositionIngestionFlowWF workflow = workflowService.buildWorkflowStub(
       DebtPositionIngestionFlowWF.class,
