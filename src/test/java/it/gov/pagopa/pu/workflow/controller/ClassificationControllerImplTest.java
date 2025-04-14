@@ -2,6 +2,9 @@ package it.gov.pagopa.pu.workflow.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import org.junit.jupiter.api.Test;
@@ -23,6 +26,7 @@ class ClassificationControllerImplTest {
   private static final Long ORGANIZATION = 123L;
   private static final String IUV = "01011112222333345";
   private static final String IUR = "IUR";
+  private static final String IUD = "IUD";
   private static final int INDEX = 1;
 
   @Autowired
@@ -33,6 +37,9 @@ class ClassificationControllerImplTest {
 
   @MockitoBean
   private TransferClassificationWFClient transferClassificationWFClientMock;
+
+  @MockitoBean
+  private IudClassificationWFClient iudClassificationWFClientMock;
 
   @Test
   void givenIdWhenClassifyThenCreateTransferClassificationWFSuccessfully() throws Exception {
@@ -45,6 +52,43 @@ class ClassificationControllerImplTest {
 
     MvcResult result = mockMvc.perform(post("/workflowhub/classification/transfer/{orgId}", ORGANIZATION)
       .param("iuv", IUV)
+      .param("iur", IUR)
+      .param("transferIndex", String.valueOf(INDEX))
+    ).andExpect(status().isCreated()).andReturn();
+
+    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    assertEquals(workflowCreatedDTO, resultResponse);
+  }
+
+  @Test
+  void givenIdWhenClassifyThenCreateIudClassificationByPaymentNotificationSignalSuccessfully() throws Exception {
+    String expectedWorkflowId = String.format("%s-%d-%s", "IudClassificationWF", ORGANIZATION, IUD);
+
+    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId);
+
+    when(iudClassificationWFClientMock.notifyPaymentNotification(new IudClassificationNotifyPaymentNotificationSignalDTO(IUD, ORGANIZATION)))
+      .thenReturn(expectedWorkflowId);
+
+    MvcResult result = mockMvc.perform(post("/workflowhub/classification/iud/{orgId}/notify-payment-notification", ORGANIZATION)
+      .param("iud", IUD)
+    ).andExpect(status().isCreated()).andReturn();
+
+    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    assertEquals(workflowCreatedDTO, resultResponse);
+  }
+
+  @Test
+  void givenIdWhenClassifyThenCreateIudClassificationByReceiptSignalSuccessfully() throws Exception {
+    String expectedWorkflowId = String.format("%s-%d-%s", "IudClassificationWF", ORGANIZATION, IUD);
+
+    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId);
+
+    when(iudClassificationWFClientMock.notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(ORGANIZATION, IUD, IUV, IUR, INDEX)))
+      .thenReturn(expectedWorkflowId);
+
+    MvcResult result = mockMvc.perform(post("/workflowhub/classification/iud/{orgId}/notify-receipt", ORGANIZATION)
+      .param("iuv", IUV)
+      .param("iud", IUD)
       .param("iur", IUR)
       .param("transferIndex", String.valueOf(INDEX))
     ).andExpect(status().isCreated()).andReturn();
