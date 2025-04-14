@@ -15,6 +15,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -90,7 +91,9 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
 
     IudClassificationActivityResult activityResult = iudClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    activityResult.getTransfers2classify().forEach(transfer2ClassifyDTO -> {
+    activityResult.getTransfers2classify().stream()
+      .filter(Objects::nonNull)
+      .forEach(transfer2ClassifyDTO -> {
       TransferClassificationStartSignalDTO transferClassificationStartSignalDTO = TransferClassificationStartSignalDTO.builder()
         .orgId(activityResult.getOrganizationId())
         .iuv(transfer2ClassifyDTO.getIuv())
