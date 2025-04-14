@@ -47,9 +47,8 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
       return null;
     }
 
-    // TODO replace IO placeholders https://pagopa.atlassian.net/browse/P4ADEV-2599
     log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", wfExecutionConfig);
-    GenericWfExecutionConfig genericWfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(wfExecutionConfig);
+    GenericWfExecutionConfig genericWfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(wfExecutionConfig, debtPositionDTO);
 
     log.info("Synchronize debt position sync");
     return invokeSyncDebtPositionActivity.synchronizeDPSync(debtPositionDTO, null, false, genericWfExecutionConfig);

@@ -4,6 +4,8 @@ import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import org.junit.jupiter.api.Test;
+
+import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FineWfExecutionConfigMapperTest {
@@ -15,7 +17,7 @@ class FineWfExecutionConfigMapperTest {
       .ioMessages(new FineWfExecutionConfig.IONotificationFineWfMessages(ioNotificationMessage, null))
       .build();
 
-    GenericWfExecutionConfig result = FineWfExecutionConfigMapper.mapNotifiedInstallment(fineConfig);
+    GenericWfExecutionConfig result = FineWfExecutionConfigMapper.mapNotifiedInstallment(fineConfig, buildDebtPositionDTO());
 
     assertNotNull(result);
     assertEquals(ioNotificationMessage, result.getIoMessages().getCreated());
@@ -31,7 +33,7 @@ class FineWfExecutionConfigMapperTest {
     FineWfExecutionConfig fineConfig = new FineWfExecutionConfig();
     fineConfig.setIoMessages(fineMessages);
 
-    GenericWfExecutionConfig result = FineWfExecutionConfigMapper.mapReductionExpired(fineConfig);
+    GenericWfExecutionConfig result = FineWfExecutionConfigMapper.mapReductionExpired(fineConfig, buildDebtPositionDTO());
 
     assertNotNull(result);
     assertEquals(ioNotificationMessage, result.getIoMessages().getCreated());
