@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.debtposition.DebtPositionExpirationActivity;
-import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
-import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWFImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;

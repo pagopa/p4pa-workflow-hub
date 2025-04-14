@@ -4,8 +4,8 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.*;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsReportingImplicitReceiptHandlerActivity;
-import it.gov.pagopa.pu.workflow.config.BaseWfConfig;
-import it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;

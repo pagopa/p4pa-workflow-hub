@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
-import it.gov.pagopa.pu.workflow.config.JsonConfig;
+import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.custom.fine.DebtPositionFineService;
 import org.junit.jupiter.api.Test;
