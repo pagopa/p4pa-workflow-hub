@@ -1228,6 +1228,133 @@
         } ]
       }
     },
+    "/workflowhub/classification/iud/{orgId}/notify-receipt" : {
+      "post" : {
+        "tags" : [ "Classification" ],
+        "summary" : "IUD classification",
+        "description" : "It will Processes iud classification based on the provided parameters returning its workflowId",
+        "operationId" : "iudClassificationByReceiptSignal",
+        "parameters" : [ {
+          "name" : "orgId",
+          "in" : "path",
+          "description" : "the unique identifier of the organization.",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "iud",
+          "in" : "query",
+          "description" : "the unique identifier of the debt position (IUD).",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "iuv",
+          "in" : "query",
+          "description" : "the unique identifier of the payment (IUV).",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "iur",
+          "in" : "query",
+          "description" : "the identifier of the receipt associated with the payment.",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "transferIndex",
+          "in" : "query",
+          "description" : "the index of the transfer to be classified.",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "IUD classification workflow created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workflowhub/classification/iud/{orgId}/notify-payment-notification" : {
+      "post" : {
+        "tags" : [ "Classification" ],
+        "summary" : "IUD classification",
+        "description" : "It will Processes iud classification based on the provided parameters returning its workflowId",
+        "operationId" : "iudClassificationByPaymentNotificationSignal",
+        "parameters" : [ {
+          "name" : "orgId",
+          "in" : "path",
+          "description" : "the unique identifier of the organization.",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "iud",
+          "in" : "query",
+          "description" : "the unique identifier of the debt position (IUD).",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "IUD classification workflow created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
     "/workflowhub/workflows/{workflowId}/status" : {
       "get" : {
         "tags" : [ "Workflow" ],
@@ -1570,60 +1697,6 @@
           }
         }
       },
-      "WorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateOperatorExternalId" : {
-            "type" : "string"
-          },
-          "workflowTypeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "defaultExecutionConfig" : {
-            "oneOf" : [ {
-              "$ref" : "#/components/schemas/FineWfExecutionConfig"
-            } ]
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        },
-        "required" : [ "defaultExecutionConfig", "description" ]
-      },
-      "PagedModelWorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "workflowTypes" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/WorkflowType"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
       "WorkflowTypeOrg" : {
         "type" : "object",
         "properties" : {
@@ -1667,6 +1740,60 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/WorkflowTypeOrg"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "WorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "workflowTypeId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "defaultExecutionConfig" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        },
+        "required" : [ "defaultExecutionConfig", "description" ]
+      },
+      "PagedModelWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypes" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowType"
                 }
               }
             }
