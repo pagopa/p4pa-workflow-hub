@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIudActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IudClassificationActivity;
+import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
 import it.gov.pagopa.pu.workflow.service.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.config.IudClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
@@ -36,7 +37,7 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
    * Temporal workflow will not allow to use injection in order to avoid
    * <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
    * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
-   * In {@link it.gov.pagopa.pu.workflow.config.TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
+   * In {@link it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
    * Use this as an example to override based on the particular workflow.
    */
   @Override
@@ -81,17 +82,22 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
 
   @Override
   public void notifyPaymentNotification(IudClassificationNotifyPaymentNotificationSignalDTO signalDTO) {
-
     log.info("Handling payment notification in iud classification: {}", signalDTO);
     Long clearedResult = clearClassifyIudActivity.deleteClassificationByIud(
       signalDTO.getOrganizationId(),
       signalDTO.getIud());
     log.info("IUD payment notification classification cleared {} records for {}", clearedResult, signalDTO);
 
-    iudClassificationActivity.classify("signalDTO.getOrganizationId()", signalDTO.getIud());
+    IudClassificationActivityResult activityResult = iudClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    TransferClassificationStartSignalDTO transferClassificationStartSignalDTO = TransferClassificationStartSignalDTO.builder()
-      .build();
-    toNotify.add(transferClassificationStartSignalDTO);
+    activityResult.getTransfers2classify().forEach(transfer2ClassifyDTO -> {
+      TransferClassificationStartSignalDTO transferClassificationStartSignalDTO = TransferClassificationStartSignalDTO.builder()
+        .orgId(activityResult.getOrganizationId())
+        .iuv(transfer2ClassifyDTO.getIuv())
+        .iur(transfer2ClassifyDTO.getIur())
+        .transferIndex(transfer2ClassifyDTO.getTransferIndex())
+        .build();
+      toNotify.add(transferClassificationStartSignalDTO);
+    });
   }
 }
