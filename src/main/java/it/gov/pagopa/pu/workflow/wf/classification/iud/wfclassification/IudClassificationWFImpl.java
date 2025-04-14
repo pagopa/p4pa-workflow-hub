@@ -91,16 +91,15 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
 
     IudClassificationActivityResult activityResult = iudClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    activityResult.getTransfers2classify().stream()
-      .filter(Objects::nonNull)
-      .forEach(transfer2ClassifyDTO -> {
-      TransferClassificationStartSignalDTO transferClassificationStartSignalDTO = TransferClassificationStartSignalDTO.builder()
-        .orgId(activityResult.getOrganizationId())
-        .iuv(transfer2ClassifyDTO.getIuv())
-        .iur(transfer2ClassifyDTO.getIur())
-        .transferIndex(transfer2ClassifyDTO.getTransferIndex())
-        .build();
-      toNotify.add(transferClassificationStartSignalDTO);
-    });
+    if(!activityResult.getTransfers2classify().isEmpty()) {
+      activityResult.getTransfers2classify().stream()
+        .map(transfer2ClassifyDTO -> TransferClassificationStartSignalDTO.builder()
+          .orgId(activityResult.getOrganizationId())
+          .iuv(transfer2ClassifyDTO.getIuv())
+          .iur(transfer2ClassifyDTO.getIur())
+          .transferIndex(transfer2ClassifyDTO.getTransferIndex())
+          .build())
+        .forEach(toNotify::add);
+    }
   }
 }
