@@ -98,7 +98,7 @@ class IudClassificationWFTest {
       .iud(iud)
       .iuv(iuv)
       .iur(iur)
-      .transferIndex(transferIndex)
+      .transferIndexes(Collections.singletonList(transferIndex))
       .build();
 
     when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))

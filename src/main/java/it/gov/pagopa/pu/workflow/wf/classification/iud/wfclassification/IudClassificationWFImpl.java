@@ -72,13 +72,14 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
       signalDTO.getIud());
     log.info("IUD receipt classification cleared {} records for {}", clearedResult, signalDTO);
 
-    TransferClassificationStartSignalDTO transferClassificationStartSignalDTO = TransferClassificationStartSignalDTO.builder()
-      .orgId(signalDTO.getOrgId())
-      .iuv(signalDTO.getIuv())
-      .iur(signalDTO.getIur())
-      .transferIndex(signalDTO.getTransferIndex())
-      .build();
-    toNotify.add(transferClassificationStartSignalDTO);
+    signalDTO.getTransferIndexes().stream()
+      .map(index -> TransferClassificationStartSignalDTO.builder()
+        .orgId(signalDTO.getOrgId())
+        .iuv(signalDTO.getIuv())
+        .iur(signalDTO.getIur())
+        .transferIndex(index)
+        .build())
+      .forEach(toNotify::add);
   }
 
   @Override
