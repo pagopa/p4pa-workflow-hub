@@ -15,7 +15,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -68,13 +67,13 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
   public void notifyReceipt(IudClassificationNotifyReceiptSignalDTO signalDTO) {
     log.info("Handling receipt notification in iud classification: {}", signalDTO);
     Long clearedResult = clearClassifyIudActivity.deleteClassificationByIud(
-      signalDTO.getOrgId(),
+      signalDTO.getOrganizationId(),
       signalDTO.getIud());
     log.info("IUD receipt classification cleared {} records for {}", clearedResult, signalDTO);
 
     signalDTO.getTransferIndexes().stream()
       .map(index -> TransferClassificationStartSignalDTO.builder()
-        .orgId(signalDTO.getOrgId())
+        .orgId(signalDTO.getOrganizationId())
         .iuv(signalDTO.getIuv())
         .iur(signalDTO.getIur())
         .transferIndex(index)

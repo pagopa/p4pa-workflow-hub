@@ -12,9 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IudClassificationNotifyReceiptSignalDTO {
-  private Long orgId;
+  private Long organizationId;
   private String iud;
   private String iuv;
   private String iur;
-  List<Integer> transferIndexes;
+  private List<Integer> transferIndexes;
 }

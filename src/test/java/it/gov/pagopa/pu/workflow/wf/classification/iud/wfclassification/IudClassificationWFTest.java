@@ -94,7 +94,7 @@ class IudClassificationWFTest {
   void notifyReceipt(Long orgId, String iud, String iuv, String iur, int transferIndex) {
     // Given
     IudClassificationNotifyReceiptSignalDTO signalDTO = IudClassificationNotifyReceiptSignalDTO.builder()
-      .orgId(orgId)
+      .organizationId(orgId)
       .iud(iud)
       .iuv(iuv)
       .iur(iur)
