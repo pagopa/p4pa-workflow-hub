@@ -15,6 +15,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -82,15 +84,15 @@ class ClassificationControllerImplTest {
     String expectedWorkflowId = String.format("%s-%d-%s", "IudClassificationWF", ORGANIZATION, IUD);
 
     WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId);
-
-    when(iudClassificationWFClientMock.notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(ORGANIZATION, IUD, IUV, IUR, INDEX)))
+    IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(ORGANIZATION, IUD, IUV, IUR, Collections.singletonList(INDEX));
+    when(iudClassificationWFClientMock.notifyReceipt(signalDTO))
       .thenReturn(expectedWorkflowId);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/classification/iud/{orgId}/notify-receipt", ORGANIZATION)
       .param("iuv", IUV)
       .param("iud", IUD)
       .param("iur", IUR)
-      .param("transferIndex", String.valueOf(INDEX))
+      .param("transferIndexes", String.valueOf(INDEX))
     ).andExpect(status().isCreated()).andReturn();
 
     WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);

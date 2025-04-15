@@ -22,7 +22,7 @@ public class IudClassificationWFClient {
   }
 
   public String notifyReceipt(IudClassificationNotifyReceiptSignalDTO signalDTO) {
-    String workflowId = generateWorkflowId(signalDTO.getOrgId(), signalDTO.getIud());
+    String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIud());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, workflowId);
     WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(

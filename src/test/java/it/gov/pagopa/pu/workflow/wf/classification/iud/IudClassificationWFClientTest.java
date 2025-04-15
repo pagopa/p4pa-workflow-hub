@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -45,11 +47,11 @@ class IudClassificationWFClientTest {
   void notifyReceipt() {
     // Given
     IudClassificationNotifyReceiptSignalDTO signalDTO = IudClassificationNotifyReceiptSignalDTO.builder()
-      .orgId(1L)
+      .organizationId(1L)
       .iud("iud123")
       .iur("iur123")
       .iuv("iuv123")
-      .transferIndex(1)
+      .transferIndexes(Collections.singletonList(1))
       .build();
 
     String expectedWorkflowId = "IudClassificationWF-1-iud123";

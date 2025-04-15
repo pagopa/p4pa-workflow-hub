@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 public class ClassificationControllerImpl implements ClassificationApi {
@@ -45,13 +47,13 @@ public class ClassificationControllerImpl implements ClassificationApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> iudClassificationByReceiptSignal(Long orgId, String iud, String iuv, String iur, Integer transferIndex) {
-    log.info("Creating iud classification Workflow for organization id {} and iud {} and iuv {} and iur {} and transfer index {}", orgId, iud, iuv, iur, transferIndex);
-    IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(orgId, iud, iuv, iur, transferIndex);
+  public ResponseEntity<WorkflowCreatedDTO> iudClassificationByReceiptSignal(Long orgId, String iud, String iuv, String iur, List<Integer> transferIndexes) {
+    log.info("Creating iud classification Workflow for organization id {} and iud {} and iuv {} and iur {} and transfer index {}", orgId, iud, iuv, iur, transferIndexes);
+    IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(orgId, iud, iuv, iur, transferIndexes);
     String workflowId = iudClassificationWFClient.notifyReceipt(signalDTO);
 
     WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    log.info("workflow {} created successfully for organization id {} and iuv {} and iur {} and transfer index {}", workflowId, orgId, iuv, iur, transferIndex);
+    log.info("workflow {} created successfully for organization id {} and iuv {} and iur {} and transfer index {}", workflowId, orgId, iuv, iur, transferIndexes);
     return ResponseEntity.status(201).body(response);
   }
 }
