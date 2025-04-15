@@ -48,12 +48,12 @@ public class ClassificationControllerImpl implements ClassificationApi {
 
   @Override
   public ResponseEntity<WorkflowCreatedDTO> iudClassificationByReceiptSignal(Long orgId, String iud, String iuv, String iur, List<Integer> transferIndexes) {
-    log.info("Creating iud classification Workflow for organization id {} and iud {} and iuv {} and iur {} and transfer index {}", orgId, iud, iuv, iur, transferIndexes);
+    log.info("Creating iud classification Workflow for organization id {} and iud {} and iuv {} and iur {} and transfer indexes {}", orgId, iud, iuv, iur, transferIndexes);
     IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(orgId, iud, iuv, iur, transferIndexes);
     String workflowId = iudClassificationWFClient.notifyReceipt(signalDTO);
 
     WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    log.info("workflow {} created successfully for organization id {} and iuv {} and iur {} and transfer index {}", workflowId, orgId, iuv, iur, transferIndexes);
+    log.info("workflow {} created successfully for organization id {} and iud {} and iuv {} and iur {} and transfer indexes {}", workflowId, orgId, iud, iuv, iur, transferIndexes);
     return ResponseEntity.status(201).body(response);
   }
 }
