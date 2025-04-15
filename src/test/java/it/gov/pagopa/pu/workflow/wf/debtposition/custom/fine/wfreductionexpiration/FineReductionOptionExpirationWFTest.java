@@ -76,7 +76,7 @@ class FineReductionOptionExpirationWFTest {
 
     try (
       MockedStatic<FineWfExecutionConfigMapper> mapperMock = Mockito.mockStatic(FineWfExecutionConfigMapper.class)) {
-      mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig))
+      mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig, debtPositionDTO))
         .thenReturn(wfExecutionConfig);
 
       Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, null, false, wfExecutionConfig))
