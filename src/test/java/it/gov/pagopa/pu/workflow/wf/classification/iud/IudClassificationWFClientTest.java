@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iud;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
@@ -11,11 +12,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -113,5 +118,26 @@ class IudClassificationWFClientTest {
   private void checkMethodExistsOnWfAndClientClasses(String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
     Assertions.assertNotNull(IudClassificationWF.class.getMethod(methodName, parameterTypes));
     Assertions.assertNotNull(IudClassificationWFClient.class.getMethod(methodName, parameterTypes));
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideNullValues")
+  void whenGenerateWorkflowIdThenWorkflowInternalErrorException(Long organizationId, String iud) {
+    IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = IudClassificationNotifyPaymentNotificationSignalDTO.builder()
+        .organizationId(organizationId)
+        .iud(iud)
+        .build();
+
+    assertThrows(WorkflowInternalErrorException.class,
+        () -> client.notifyPaymentNotification(signalDTO),
+        "The organizationId or iud must not be null");
+  }
+
+  private static Stream<Arguments> provideNullValues() {
+    return Stream.of(
+        Arguments.of(null, "iud123"),
+        Arguments.of(1L, null),
+        Arguments.of(null, null)
+    );
   }
 }
