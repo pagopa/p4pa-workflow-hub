@@ -284,12 +284,14 @@ paths:
           description: the identifier of the receipt associated with the payment.
           schema:
             type: string
-        - name: transferIndex
+        - name: transferIndexes
           in: query
           required: true
-          description: the index of the transfer to be classified.
+          description: the indexes of the transfer to be classified.
           schema:
-            type: integer
+            type: array
+            items:
+              type: integer
       responses:
         '201':
           description: "IUD classification workflow created successfully"
@@ -303,6 +305,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+              example:
+                code: "WORKFLOW_BAD_REQUEST"
   /classification/iud/{orgId}/notify-payment-notification:
     post:
       tags:
@@ -337,6 +347,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+              example:
+                code: "WORKFLOW_BAD_REQUEST"
   /workflows/{workflowId}/status:
     get:
       tags:
