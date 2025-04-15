@@ -67,17 +67,18 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
   public void notifyReceipt(IudClassificationNotifyReceiptSignalDTO signalDTO) {
     log.info("Handling receipt notification in iud classification: {}", signalDTO);
     Long clearedResult = clearClassifyIudActivity.deleteClassificationByIud(
-      signalDTO.getOrgId(),
+      signalDTO.getOrganizationId(),
       signalDTO.getIud());
     log.info("IUD receipt classification cleared {} records for {}", clearedResult, signalDTO);
 
-    TransferClassificationStartSignalDTO transferClassificationStartSignalDTO = TransferClassificationStartSignalDTO.builder()
-      .orgId(signalDTO.getOrgId())
-      .iuv(signalDTO.getIuv())
-      .iur(signalDTO.getIur())
-      .transferIndex(signalDTO.getTransferIndex())
-      .build();
-    toNotify.add(transferClassificationStartSignalDTO);
+    signalDTO.getTransferIndexes().stream()
+      .map(index -> TransferClassificationStartSignalDTO.builder()
+        .orgId(signalDTO.getOrganizationId())
+        .iuv(signalDTO.getIuv())
+        .iur(signalDTO.getIur())
+        .transferIndex(index)
+        .build())
+      .forEach(toNotify::add);
   }
 
   @Override
@@ -90,14 +91,15 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
 
     IudClassificationActivityResult activityResult = iudClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    activityResult.getTransfers2classify().forEach(transfer2ClassifyDTO -> {
-      TransferClassificationStartSignalDTO transferClassificationStartSignalDTO = TransferClassificationStartSignalDTO.builder()
-        .orgId(activityResult.getOrganizationId())
-        .iuv(transfer2ClassifyDTO.getIuv())
-        .iur(transfer2ClassifyDTO.getIur())
-        .transferIndex(transfer2ClassifyDTO.getTransferIndex())
-        .build();
-      toNotify.add(transferClassificationStartSignalDTO);
-    });
+    if(!activityResult.getTransfers2classify().isEmpty()) {
+      activityResult.getTransfers2classify().stream()
+        .map(transfer2ClassifyDTO -> TransferClassificationStartSignalDTO.builder()
+          .orgId(activityResult.getOrganizationId())
+          .iuv(transfer2ClassifyDTO.getIuv())
+          .iur(transfer2ClassifyDTO.getIur())
+          .transferIndex(transfer2ClassifyDTO.getTransferIndex())
+          .build())
+        .forEach(toNotify::add);
+    }
   }
 }

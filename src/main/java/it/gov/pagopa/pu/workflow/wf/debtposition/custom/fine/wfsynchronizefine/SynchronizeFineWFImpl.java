@@ -50,11 +50,10 @@ public class SynchronizeFineWFImpl implements SynchronizeFineWF, ApplicationCont
   public void synchronizeFineDP(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig) {
     HandleFineDebtPositionResult result = debtPositionSynchronizeFineActivity.handleFineDebtPosition(debtPositionDTO, massive, wfExecutionConfig);
 
-    // TODO replace IO placeholders https://pagopa.atlassian.net/browse/P4ADEV-2599
-    log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", wfExecutionConfig);
-    GenericWfExecutionConfig genericWfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(wfExecutionConfig);
-
     DebtPositionDTO debtPosition = result.getDebtPositionDTO();
+
+    log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", wfExecutionConfig);
+    GenericWfExecutionConfig genericWfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(wfExecutionConfig, debtPosition);
 
     log.info("Synchronize fine {} with Nodo", debtPosition.getDebtPositionId());
     invokeSyncDebtPositionActivity.synchronizeDPSync(debtPosition, paymentEventRequest, massive, genericWfExecutionConfig);

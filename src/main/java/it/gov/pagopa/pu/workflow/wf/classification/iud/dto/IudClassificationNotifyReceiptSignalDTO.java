@@ -5,14 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class IudClassificationNotifyReceiptSignalDTO {
-  private Long orgId;
+  private Long organizationId;
   private String iud;
   private String iuv;
   private String iur;
-  private int transferIndex;
+  private List<Integer> transferIndexes;
 }

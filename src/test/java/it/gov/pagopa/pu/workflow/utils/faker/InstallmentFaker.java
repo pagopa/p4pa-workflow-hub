@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentSyncStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.workflow.utils.TestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,5 +45,29 @@ public class InstallmentFaker {
       .creationDate(OFFSET_DATE_TIME)
       .updateDate(OFFSET_DATE_TIME)
       .build();
+  }
+  public static InstallmentDTO buildInstallmentDTO2(){
+    List<TransferDTO> transfers = new ArrayList<>();
+    transfers.add(buildTransferDTO());
+    return TestUtils.getPodamFactory().manufacturePojo(InstallmentDTO.class)
+      .installmentId(2L)
+      .paymentOptionId(2L)
+      .status(InstallmentStatus.UNPAID)
+      .iupdPagopa("iupdPagopa")
+      .iud("iud2")
+      .iuv("iuv")
+      .iur("iur")
+      .iuf("iuf")
+      .nav("nav")
+      .creationDate(OFFSET_DATE_TIME)
+      .updateDate(OFFSET_DATE_TIME)
+      .dueDate(DATE)
+      .notificationFeeCents(1000L)
+      .amountCents(100L)
+      .remittanceInformation("remittanceInformation")
+      .legacyPaymentMetadata("legacyPaymentMetadata")
+      .balance("balance")
+      .transfers(transfers)
+      .debtor(buildPersonDTO());
   }
 }

@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -72,6 +73,7 @@ class IudClassificationWFTest {
     notifyReceipt(1L, "iud2", "iuv2", "iur2", 1);
 
     notifyPaymentNotification(1L, "iud3");
+    notFinalizingNotifyPaymentNotification(1L, "iud4");
 
     try(MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(Workflow::isEveryHandlerFinished).thenReturn(true);
@@ -92,11 +94,11 @@ class IudClassificationWFTest {
   void notifyReceipt(Long orgId, String iud, String iuv, String iur, int transferIndex) {
     // Given
     IudClassificationNotifyReceiptSignalDTO signalDTO = IudClassificationNotifyReceiptSignalDTO.builder()
-      .orgId(orgId)
+      .organizationId(orgId)
       .iud(iud)
       .iuv(iuv)
       .iur(iur)
-      .transferIndex(transferIndex)
+      .transferIndexes(Collections.singletonList(transferIndex))
       .build();
 
     when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))
@@ -120,6 +122,26 @@ class IudClassificationWFTest {
     IudClassificationActivityResult activityResult = IudClassificationActivityResult.builder()
       .organizationId(orgId)
       .transfers2classify(List.of(transfer2ClassifyDTO))
+      .build();
+
+    when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))
+      .thenReturn(1L);
+    when(iudClassificationActivityMock.classify(orgId, iud))
+      .thenReturn(activityResult);
+
+    // When
+    wf.notifyPaymentNotification(signalDTO);
+  }
+
+  void notFinalizingNotifyPaymentNotification(Long orgId, String iud) {
+    // Given
+    IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = IudClassificationNotifyPaymentNotificationSignalDTO.builder()
+      .organizationId(orgId)
+      .iud(iud)
+      .build();
+    IudClassificationActivityResult activityResult = IudClassificationActivityResult.builder()
+      .organizationId(orgId)
+      .transfers2classify(Collections.emptyList())
       .build();
 
     when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))
