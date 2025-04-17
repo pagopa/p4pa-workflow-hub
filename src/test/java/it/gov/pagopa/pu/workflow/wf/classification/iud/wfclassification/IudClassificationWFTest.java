@@ -4,7 +4,6 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIudActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IudClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
-import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.config.IudClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
@@ -73,7 +72,6 @@ class IudClassificationWFTest {
     notifyReceipt(1L, "iud2", "iuv2", "iur2", 1);
 
     notifyPaymentNotification(1L, "iud3");
-    notFinalizingNotifyPaymentNotification(1L, "iud4");
 
     try(MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(Workflow::isEveryHandlerFinished).thenReturn(true);
@@ -114,34 +112,12 @@ class IudClassificationWFTest {
       .organizationId(orgId)
       .iud(iud)
       .build();
-    Transfer2ClassifyDTO transfer2ClassifyDTO = Transfer2ClassifyDTO.builder()
-      .iur("iur3")
-      .iuv("iuv3")
-      .transferIndex(1)
-      .build();
     IudClassificationActivityResult activityResult = IudClassificationActivityResult.builder()
-      .organizationId(orgId)
-      .transfers2classify(List.of(transfer2ClassifyDTO))
-      .build();
-
-    when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))
-      .thenReturn(1L);
-    when(iudClassificationActivityMock.classify(orgId, iud))
-      .thenReturn(activityResult);
-
-    // When
-    wf.notifyPaymentNotification(signalDTO);
-  }
-
-  void notFinalizingNotifyPaymentNotification(Long orgId, String iud) {
-    // Given
-    IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = IudClassificationNotifyPaymentNotificationSignalDTO.builder()
       .organizationId(orgId)
       .iud(iud)
-      .build();
-    IudClassificationActivityResult activityResult = IudClassificationActivityResult.builder()
-      .organizationId(orgId)
-      .transfers2classify(Collections.emptyList())
+      .iuv("iuv3")
+      .iur("iur3")
+      .transferIndexes(List.of(1))
       .build();
 
     when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))
