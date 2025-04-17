@@ -251,6 +251,110 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /classification/iud/{orgId}/notify-receipt:
+    post:
+      tags:
+        - Classification
+      operationId: iudClassificationByReceiptSignal
+      summary: IUD classification
+      description: It will Processes iud classification based on the provided parameters returning its workflowId
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: the unique identifier of the organization.
+          schema:
+            type: integer
+            format: int64
+        - name: iud
+          in: query
+          required: true
+          description: the unique identifier of the debt position (IUD).
+          schema:
+            type: string
+        - name: iuv
+          in: query
+          required: true
+          description: the unique identifier of the payment (IUV).
+          schema:
+            type: string
+        - name: iur
+          in: query
+          required: true
+          description: the identifier of the receipt associated with the payment.
+          schema:
+            type: string
+        - name: transferIndexes
+          in: query
+          required: true
+          description: the indexes of the transfer to be classified.
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '201':
+          description: "IUD classification workflow created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+              example:
+                code: "WORKFLOW_BAD_REQUEST"
+  /classification/iud/{orgId}/notify-payment-notification:
+    post:
+      tags:
+        - Classification
+      operationId: iudClassificationByPaymentNotificationSignal
+      summary: IUD classification
+      description: It will Processes iud classification based on the provided parameters returning its workflowId
+      parameters:
+        - name: orgId
+          in: path
+          required: true
+          description: the unique identifier of the organization.
+          schema:
+            type: integer
+            format: int64
+        - name: iud
+          in: query
+          required: true
+          description: the unique identifier of the debt position (IUD).
+          schema:
+            type: string
+      responses:
+        '201':
+          description: "IUD classification workflow created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+              example:
+                code: "WORKFLOW_BAD_REQUEST"
   /workflows/{workflowId}/status:
     get:
       tags:

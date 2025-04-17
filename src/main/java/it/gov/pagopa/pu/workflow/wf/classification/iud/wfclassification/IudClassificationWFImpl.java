@@ -15,6 +15,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -56,50 +57,53 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
     log.info("Notifying Transfer Classifications: {}", toNotify);
 
     toNotify.forEach(transferClassificationStartSignalDTO ->
-        startTransferClassificationActivity.signalTransferClassificationWithStart(
-          transferClassificationStartSignalDTO.getOrgId(),
-          transferClassificationStartSignalDTO.getIuv(),
-          transferClassificationStartSignalDTO.getIur(),
-          transferClassificationStartSignalDTO.getTransferIndex()));
+      startTransferClassificationActivity.signalTransferClassificationWithStart(
+        transferClassificationStartSignalDTO.getOrgId(),
+        transferClassificationStartSignalDTO.getIuv(),
+        transferClassificationStartSignalDTO.getIur(),
+        transferClassificationStartSignalDTO.getTransferIndex()));
   }
 
   @Override
   public void notifyReceipt(IudClassificationNotifyReceiptSignalDTO signalDTO) {
-    log.info("Handling receipt notification in iud classification: {}", signalDTO);
-    Long clearedResult = clearClassifyIudActivity.deleteClassificationByIud(
-      signalDTO.getOrganizationId(),
-      signalDTO.getIud());
-    log.info("IUD receipt classification cleared {} records for {}", clearedResult, signalDTO);
+    deleteClassification(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    signalDTO.getTransferIndexes().stream()
-      .map(index -> TransferClassificationStartSignalDTO.builder()
-        .orgId(signalDTO.getOrganizationId())
-        .iuv(signalDTO.getIuv())
-        .iur(signalDTO.getIur())
-        .transferIndex(index)
-        .build())
-      .forEach(toNotify::add);
+    addToNotifyQueue(signalDTO.getOrganizationId(),
+      signalDTO.getIuv(),
+      signalDTO.getIur(),
+      signalDTO.getTransferIndexes());
   }
 
   @Override
   public void notifyPaymentNotification(IudClassificationNotifyPaymentNotificationSignalDTO signalDTO) {
-    log.info("Handling payment notification in iud classification: {}", signalDTO);
-    Long clearedResult = clearClassifyIudActivity.deleteClassificationByIud(
-      signalDTO.getOrganizationId(),
-      signalDTO.getIud());
-    log.info("IUD payment notification classification cleared {} records for {}", clearedResult, signalDTO);
+    deleteClassification(signalDTO.getOrganizationId(), signalDTO.getIud());
 
     IudClassificationActivityResult activityResult = iudClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    if(!activityResult.getTransfers2classify().isEmpty()) {
-      activityResult.getTransfers2classify().stream()
-        .map(transfer2ClassifyDTO -> TransferClassificationStartSignalDTO.builder()
-          .orgId(activityResult.getOrganizationId())
-          .iuv(transfer2ClassifyDTO.getIuv())
-          .iur(transfer2ClassifyDTO.getIur())
-          .transferIndex(transfer2ClassifyDTO.getTransferIndex())
-          .build())
-        .forEach(toNotify::add);
-    }
+    addToNotifyQueue(activityResult.getOrganizationId(),
+      activityResult.getIuv(),
+      activityResult.getIur(),
+      activityResult.getTransferIndexes());
+  }
+
+  private void deleteClassification(Long organizationId, String iud) {
+    log.info("Handling payment notification in iud classification for organization ID {} and iud {}", organizationId, iud);
+    Long clearedResult = clearClassifyIudActivity.deleteClassificationByIud(
+      organizationId, iud);
+    log.info("IUD payment notification classification cleared {} records for organization ID {} and iud {}", clearedResult, organizationId, iud);
+  }
+
+  private void addToNotifyQueue(Long organizationId,
+                                String iuv,
+                                String iur,
+                                List<Integer> transferIndexes) {
+    transferIndexes.stream()
+      .map(index -> TransferClassificationStartSignalDTO.builder()
+        .orgId(organizationId)
+        .iuv(iuv)
+        .iur(iur)
+        .transferIndex(index)
+        .build())
+      .forEach(toNotify::add);
   }
 }
