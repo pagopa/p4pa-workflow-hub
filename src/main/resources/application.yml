@@ -26,6 +26,123 @@ spring:
     workers-auto-discovery:
       packages:
         - it.gov.pagopa.pu.workflow.wf
+    workers:
+      # debt position
+      - task-queue: CheckDebtPositionExpirationWF_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_CHECK_DEBT_POSITION_EXPIRATION_POLLER_SIZE:2}"
+      - task-queue: CheckDebtPositionExpirationWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_CHECK_DEBT_POSITION_EXPIRATION_POLLER_SIZE:2}"
+      # debt position sync
+      - task-queue: SynchronizeDP_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_LOCAL_SIZE:5}"
+      - task-queue: DebtPositionSynchronize_NoPagoPA_WF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_NOPAGOPA_SIZE:1}"
+      - task-queue: DebtPositionSynchronize_SYNC_WF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_SYNC_POLLER_SIZE:5}"
+      - task-queue: DebtPositionSynchronize_SYNC+ACA_WF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_ACA_POLLER_SIZE:5}"
+      - task-queue: DebtPositionSynchronize_SYNC+GPDPRELOAD_WF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_GPDPRELOAD_POLLER_SIZE:3}"
+      - task-queue: DebtPositionSynchronize_SYNC+ACA+GPDPRELOAD_WF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_ACAGPDPRELOAD_POLLER_SIZE:3}"
+      - task-queue: DebtPositionSynchronize_ASYNC_GPD_WF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_GPD_POLLER_SIZE:5}"
+      - task-queue: DebtPositionSynchronize_finalizeMassive_WF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_MASSIVE_SYNC_FINALIZE_POLLER_SIZE:3}"
+      # debt position custom WF sync
+      - task-queue: DebtPositionSynchronize_fine_WF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_CUSTOM_FINE_POLLER_SIZE:5}"
+      - task-queue: FineReductionOptionExpirationWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_FINE_REDUCTION_EXPIRATION_POLLER_SIZE:3}"
+      # ingestion flow
+      - task-queue: PaymentsReportingIngestionWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENTS_REPORTING_POLLER_SIZE:2}"
+      - task-queue: PaymentsReportingIngestionWF_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENTS_REPORTING_POLLER_SIZE:2}"
+      - task-queue: TreasuryOpiIngestionWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_TREASURY_OPI_POLLER_SIZE:2}"
+      - task-queue: TreasuryOpiIngestionWF_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_TREASURY_OPI_POLLER_SIZE:2}"
+      - task-queue: ReceiptPagopaIngestionWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_RT_POLLER_SIZE:2}"
+      - task-queue: DebtPositionIngestionFlowWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_DP_POLLER_SIZE:2}"
+      - task-queue: PaymentNotificationIngestionWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
+      - task-queue: PaymentNotificationIngestionWF_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
+      # classification
+      - task-queue: IudClassificationWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_IUD_POLLER_SIZE:5}"
+      - task-queue: IudClassificationWF_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_IUD_POLLER_SIZE:5}"
+      - task-queue: IufClassificationWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_CASSIFICATION_IUF_POLLER_SIZE:5}"
+      - task-queue: IufClassificationWF_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_CASSIFICATION_IUF_POLLER_SIZE:5}"
+      - task-queue: TransferClassificationWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_TRANSFER_POLLER_SIZE:5}"
+      # pagopa payments reporting
+      - task-queue: PaymentsReportingPagoPaBrokersFetchWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_PAYMENTS_REPORTING_BROKERS_FETCH_POLLER_SIZE:1}"
+      - task-queue: PaymentsReportingPagoPaOrganizationFetchWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_PAYMENTS_REPORTING_PAGOPA_FETCH_POLLER_SIZE:3}"
+      # pagopa taxonomy sync
+      - task-queue: SynchronizeTaxonomyPagoPaFetchWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_SYNC_TAXONOMY_POLLER_SIZE:1}"
+      # pagopa send
+      - task-queue: SendNotificationProcessWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_SEND_NOTIFICATION_POLLER_SIZE:3}"
+      - task-queue: SendNotificationProcessWF_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_SEND_NOTIFICATION_POLLER_SIZE:2}"
+      - task-queue: SendNotificationDateRetrieveWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_SEND_NOTIFICATION_DT_RETRIEVE_POLLER_SIZE:3}"
+      # assessments
+      - task-queue: CreateAssessmentsWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_CREATE_ASSESSMENT_POLLER_SIZE:3}"
+      # export file
+      - task-queue: ExportFileWF_LOCAL
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_FILE_POLLER_SIZE:2}"
+      - task-queue: ExportFileWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_FILE_POLLER_SIZE:5}"
+      - task-queue: ExportFileExpirationHandlerWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_FILE_EXPIRATION_POLLER_SIZE:2}"
+
   cloud:
     function:
       definition: paymentsConsumer
