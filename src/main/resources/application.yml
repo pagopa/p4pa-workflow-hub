@@ -30,14 +30,14 @@ spring:
       # debt position
       - task-queue: CheckDebtPositionExpirationWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CHECK_DEBT_POSITION_EXPIRATION_POLLER_SIZE:2}"
+          max-concurrent-activity-task-pollers: "\${WF_CHECK_DEBT_POSITION_EXPIRATION_POLLER_SIZE:2}"
       - task-queue: CheckDebtPositionExpirationWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_CHECK_DEBT_POSITION_EXPIRATION_POLLER_SIZE:2}"
       # debt position sync
       - task-queue: SynchronizeDP_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_LOCAL_SIZE:5}"
+          max-concurrent-activity-task-pollers: "\${WF_DP_SYNC_LOCAL_SIZE:5}"
       - task-queue: DebtPositionSynchronize_NoPagoPA_WF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_NOPAGOPA_SIZE:1}"
@@ -72,13 +72,13 @@ spring:
           max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENTS_REPORTING_POLLER_SIZE:2}"
       - task-queue: PaymentsReportingIngestionWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENTS_REPORTING_POLLER_SIZE:2}"
+          max-concurrent-activity-task-pollers: "\${WF_INGESTION_PAYMENTS_REPORTING_POLLER_SIZE:2}"
       - task-queue: TreasuryOpiIngestionWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_INGESTION_TREASURY_OPI_POLLER_SIZE:2}"
       - task-queue: TreasuryOpiIngestionWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_TREASURY_OPI_POLLER_SIZE:2}"
+          max-concurrent-activity-task-pollers: "\${WF_INGESTION_TREASURY_OPI_POLLER_SIZE:2}"
       - task-queue: ReceiptPagopaIngestionWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_INGESTION_RT_POLLER_SIZE:2}"
@@ -90,20 +90,20 @@ spring:
           max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
       - task-queue: PaymentNotificationIngestionWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
+          max-concurrent-activity-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
       # classification
       - task-queue: IudClassificationWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_IUD_POLLER_SIZE:5}"
       - task-queue: IudClassificationWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_IUD_POLLER_SIZE:5}"
+          max-concurrent-activity-task-pollers: "\${WF_CLASSIFICATION_IUD_POLLER_SIZE:5}"
       - task-queue: IufClassificationWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_CASSIFICATION_IUF_POLLER_SIZE:5}"
       - task-queue: IufClassificationWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CASSIFICATION_IUF_POLLER_SIZE:5}"
+          max-concurrent-activity-task-pollers: "\${WF_CASSIFICATION_IUF_POLLER_SIZE:5}"
       - task-queue: TransferClassificationWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_TRANSFER_POLLER_SIZE:5}"
@@ -124,7 +124,7 @@ spring:
           max-concurrent-workflow-task-pollers: "\${WF_SEND_NOTIFICATION_POLLER_SIZE:3}"
       - task-queue: SendNotificationProcessWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_SEND_NOTIFICATION_POLLER_SIZE:2}"
+          max-concurrent-activity-task-pollers: "\${WF_SEND_NOTIFICATION_POLLER_SIZE:2}"
       - task-queue: SendNotificationDateRetrieveWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_SEND_NOTIFICATION_DT_RETRIEVE_POLLER_SIZE:3}"
@@ -135,7 +135,7 @@ spring:
       # export file
       - task-queue: ExportFileWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_FILE_POLLER_SIZE:2}"
+          max-concurrent-activity-task-pollers: "\${WF_EXPORT_FILE_POLLER_SIZE:2}"
       - task-queue: ExportFileWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_EXPORT_FILE_POLLER_SIZE:5}"
