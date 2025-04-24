@@ -19,7 +19,6 @@ import static it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiratio
 public class CheckDebtPositionExpirationWFImpl implements CheckDebtPositionExpirationWF, ApplicationContextAware {
 
   public static final String TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF = "CheckDebtPositionExpirationWF";
-  public static final String TASK_QUEUE_CHECK_DP_EXPIRATION_LOCAL_ACTIVITY = "CheckDebtPositionExpirationWF_LOCAL";
 
   private DebtPositionExpirationActivity debtPositionExpirationActivity;
 

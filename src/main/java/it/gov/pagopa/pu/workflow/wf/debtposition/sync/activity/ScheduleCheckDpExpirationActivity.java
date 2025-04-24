@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity;
+package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

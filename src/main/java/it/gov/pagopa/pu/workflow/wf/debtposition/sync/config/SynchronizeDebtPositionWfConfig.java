@@ -10,6 +10,7 @@ import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.CancelCheckDpExpirationScheduleActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.ScheduleCheckDpExpirationActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,6 +37,12 @@ public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(CancelCheckDpExpirationScheduleActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
         TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY, this));
+  }
+
+  public ScheduleCheckDpExpirationActivity buildScheduleCheckDpExpirationActivityStub() {
+    return Workflow.newActivityStub(ScheduleCheckDpExpirationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+      TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY,
+      this));
   }
 
   public SynchronizeInstallmentAcaActivity buildSynchronizeInstallmentAcaActivity() {

@@ -8,10 +8,9 @@ import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
-import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.config.CheckDebtPositionExpirationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.CancelCheckDpExpirationScheduleActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.ScheduleCheckDpExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,17 +59,11 @@ public abstract class BaseDPSynchronizeWFTest<W> {
       .thenReturn(publishPaymentEventActivityMock);
     Mockito.when(wfConfigMock.buildCancelCheckDpExpirationScheduleActivityStub())
         .thenReturn(cancelCheckDpExpirationScheduleActivityMock);
+    Mockito.when(wfConfigMock.buildScheduleCheckDpExpirationActivityStub())
+      .thenReturn(scheduleCheckDpExpirationActivityMock);
 
     Mockito.when(applicationContextMock.getBean(SynchronizeDebtPositionWfConfig.class))
       .thenReturn(wfConfigMock);
-
-    CheckDebtPositionExpirationWfConfig checkDebtPositionExpirationWfConfigMock = Mockito.mock(CheckDebtPositionExpirationWfConfig.class);
-
-    Mockito.when(checkDebtPositionExpirationWfConfigMock.buildScheduleCheckDpExpirationActivityStub())
-      .thenReturn(scheduleCheckDpExpirationActivityMock);
-
-    Mockito.when(applicationContextMock.getBean(CheckDebtPositionExpirationWfConfig.class))
-      .thenReturn(checkDebtPositionExpirationWfConfigMock);
 
     wf = configureMockAndCreateWf(applicationContextMock);
   }

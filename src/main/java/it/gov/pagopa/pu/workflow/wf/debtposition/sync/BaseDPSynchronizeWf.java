@@ -13,10 +13,9 @@ import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
-import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity.ScheduleCheckDpExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.config.CheckDebtPositionExpirationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.CancelCheckDpExpirationScheduleActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.ScheduleCheckDpExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -54,9 +53,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     publishPaymentEventActivity = wfConfig.buildPublishPaymentEventActivityStub();
     ioNotificationDebtPositionActivity = wfConfig.buildIONotificationDebtPositionActivityStub();
     cancelCheckDpExpirationScheduleActivity = wfConfig.buildCancelCheckDpExpirationScheduleActivityStub();
-
-    CheckDebtPositionExpirationWfConfig debtPositionExpirationWfConfig = applicationContext.getBean(CheckDebtPositionExpirationWfConfig.class);
-    scheduleCheckDpExpirationActivity = debtPositionExpirationWfConfig.buildScheduleCheckDpExpirationActivityStub();
+    scheduleCheckDpExpirationActivity = wfConfig.buildScheduleCheckDpExpirationActivityStub();
 
     buildActivities(wfConfig);
   }
