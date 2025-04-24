@@ -22,7 +22,7 @@ public class FinalizeMassiveSyncWFImpl extends BaseDPSynchronizeWf implements Fi
 
   @Override
   protected IupdSyncStatusUpdateDTO synchronizeInstallment(DebtPositionDTO debtPosition, InstallmentDTO installment) {
-    // SYNC DebtPosition should not invoke any PagoPA API
+    // Massive DebtPosition ingestion should not invoke any PagoPA API as finalization WF: the sync operation has been executed massively using specialized massive API
     return buildIupdSyncStatusUpdateDTO(installment);
   }
 }

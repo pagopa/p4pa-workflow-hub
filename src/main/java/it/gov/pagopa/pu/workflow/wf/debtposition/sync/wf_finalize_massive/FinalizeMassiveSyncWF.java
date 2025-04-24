@@ -7,8 +7,8 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 
 /**
- * Workflow to finalize a massive synchronized DebtPosition
- * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1485308613/Sincronizzazione+Posizione+Debitoria#3.2.2.-Workflow-se-scenario-massivo>Confluence page</a>
+ * Workflow to finalize a massive DebtPosition synchronized through specialized API to support massive operations
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1485308613/Sincronizzazione+Posizione+Debitoria#3.2.2.-Workflow-se-scenario-massivo-e-tecnologia-abilitata-al-caricamento-massivo>Confluence page</a>
  */
 @WorkflowInterface
 public interface FinalizeMassiveSyncWF {

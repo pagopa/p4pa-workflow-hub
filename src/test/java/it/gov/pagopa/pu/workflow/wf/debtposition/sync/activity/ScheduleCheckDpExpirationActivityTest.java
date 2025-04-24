@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.activity;
+package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
 import org.junit.jupiter.api.BeforeEach;
