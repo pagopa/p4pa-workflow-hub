@@ -8,12 +8,11 @@ import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
-import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
-import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -25,11 +24,11 @@ import java.util.stream.Collectors;
 @Service
 public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
 
-  private final TransferClassificationWFClient transferClassificationWFClient;
+  private final IudClassificationWFClient iudClassificationWFClient;
   private final CreateAssessmentsWFClient createAssessmentsWFClient;
 
-  public PaymentsConsumer(TransferClassificationWFClient transferClassificationWFClient, CreateAssessmentsWFClient createAssessmentsWFClient) {
-    this.transferClassificationWFClient = transferClassificationWFClient;
+  public PaymentsConsumer(IudClassificationWFClient iudClassificationWFClient, CreateAssessmentsWFClient createAssessmentsWFClient) {
+    this.iudClassificationWFClient = iudClassificationWFClient;
     this.createAssessmentsWFClient = createAssessmentsWFClient;
   }
 
@@ -44,9 +43,10 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
           .forEach(i -> i.getTransfers()
             .forEach(t ->
               // Once the IUD classification is ready, this should call the IUD Classification if there is a IUD
-              transferClassificationWFClient.startTransferClassification(
-                TransferClassificationStartSignalDTO.builder()
-                  .orgId(debtPosition.getOrganizationId())
+              iudClassificationWFClient.notifyReceipt(
+                IudClassificationNotifyReceiptSignalDTO.builder()
+                  .organizationId(debtPosition.getOrganizationId())
+                  .iud(i.getIud())
                   .iuv(i.getIuv())
                   .iur(i.getIur())
                   .transferIndex(t.getTransferIndex())

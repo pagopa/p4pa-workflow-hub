@@ -8,8 +8,8 @@ import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
-import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
-import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import java.util.List;
 class PaymentsConsumerTest {
 
   @Mock
-  private TransferClassificationWFClient wfClientMock;
+  private IudClassificationWFClient wfClientMock;
   @Mock
   private CreateAssessmentsWFClient createAssessmentsWFClientMock;
 
@@ -55,11 +55,11 @@ class PaymentsConsumerTest {
 
     // Then
     Mockito.verify(wfClientMock)
-      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv1", "iur1", 1));
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud1", "iuv1", "iur1", 1));
     Mockito.verify(wfClientMock)
-      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv3", "iur2", 1));
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud2", "iuv3", "iur2", 1));
     Mockito.verify(wfClientMock)
-      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv5", "iur1", 1));
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud3", "iuv5", "iur1", 1));
     Mockito.verify(createAssessmentsWFClientMock)
       .createAssessments(2L);
   }
@@ -79,11 +79,11 @@ class PaymentsConsumerTest {
 
     // Then
     Mockito.verify(wfClientMock)
-      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv1", "iur1", 1));
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud1", "iuv1", "iur1", 1));
     Mockito.verify(wfClientMock)
-      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv3", "iur2", 1));
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud2", "iuv3", "iur2", 1));
     Mockito.verify(wfClientMock)
-      .startTransferClassification(new TransferClassificationStartSignalDTO(1L, "iuv5", "iur1", 1));
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud3", "iuv5", "iur1", 1));
     Mockito.verify(createAssessmentsWFClientMock)
       .createAssessments(1L);
   }
