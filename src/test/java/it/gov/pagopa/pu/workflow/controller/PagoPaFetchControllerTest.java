@@ -1,8 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
-import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,43 +9,33 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(WorkflowControllerImpl.class)
+@WebMvcTest(PagoPaFetchControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
-class WorkflowControllerTest {
+class PagoPaFetchControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
-
   @MockitoBean
-  private WorkflowService serviceMock;
+  private OrganizationPaymentsReportingPagoPaFetchWFClient serviceMock;
 
   @Test
   void whenGetWorkflowStatusThenOk() throws Exception {
+    Long organizationId = 10L;
     String workflowId = "workflow-1";
-    WorkflowStatusDTO workflowStatusDTO = WorkflowStatusDTO.builder()
-      .workflowId(workflowId)
-      .status("ok")
-      .build();
 
-    Mockito.when(serviceMock.getWorkflowStatus(workflowId))
-      .thenReturn(workflowStatusDTO);
+    Mockito.when(serviceMock.retrieve(organizationId))
+      .thenReturn(workflowId);
 
-    MvcResult result = mockMvc.perform(
-        get("/workflowhub/workflows/workflow-1/status")
+    mockMvc.perform(
+        get("/workflowhub/workflow/pagopa-fetch/payments-reporting/{organizationId}", organizationId)
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .accept(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().is2xxSuccessful())
-      .andReturn();
-
-    WorkflowStatusDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowStatusDTO.class);
-    assertEquals(workflowStatusDTO, resultResponse);
+      .andExpect(content().json("{\"workflowId\":\"workflow-1\"}"));
   }
 }

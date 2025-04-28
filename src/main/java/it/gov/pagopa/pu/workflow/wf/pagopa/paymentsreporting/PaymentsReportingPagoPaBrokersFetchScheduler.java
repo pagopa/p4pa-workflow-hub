@@ -21,7 +21,11 @@ public class PaymentsReportingPagoPaBrokersFetchScheduler {
     WorkflowScheduleService workflowScheduleService,
     @Value("${schedule.payments-reporting-pagopa-brokers-fetch.cron-expression}") String cronExpression
   ) {
-    schedule = workflowScheduleService.schedule(PAYMENTS_REPORTING_PAGOPA_FETCH_SCHEDULEID, PaymentsReportingPagoPaBrokersFetchWF.class, PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH, cronExpression);
+    schedule = workflowScheduleService.schedule(
+      PAYMENTS_REPORTING_PAGOPA_FETCH_SCHEDULEID,
+      PaymentsReportingPagoPaBrokersFetchWF.class,
+      PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH,
+      cronExpression);
   }
 
 }

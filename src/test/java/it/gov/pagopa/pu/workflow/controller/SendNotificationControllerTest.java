@@ -30,7 +30,7 @@ class SendNotificationControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private SendNotificationService service;
+  private SendNotificationService serviceMock;
 
   @Test
   void givenSendNotificationIdWhenSendNotificationProcessThenOk() throws Exception {
@@ -41,7 +41,7 @@ class SendNotificationControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.sendNotificationProcess(sendNotificationId))
+    Mockito.when(serviceMock.sendNotificationProcess(sendNotificationId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -69,7 +69,7 @@ class SendNotificationControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.sendNotificationDateRetrieve(sendNotificationId))
+    Mockito.when(serviceMock.sendNotificationDateRetrieve(sendNotificationId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
