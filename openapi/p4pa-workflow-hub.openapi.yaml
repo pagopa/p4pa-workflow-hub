@@ -466,6 +466,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/pagopa-fetch/payments-reporting/{organizationId}:
+    get:
+      tags:
+        - PagoPaFetch
+      operationId: fetchOrganizationPaymentsReporting
+      description: Fetch organization Payments Reporting
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          description: The id of the organization.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: "Fetch correctly started"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
 security:
   - BearerAuth: [ ]
 components:

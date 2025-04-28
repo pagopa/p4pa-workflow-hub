@@ -33,7 +33,7 @@ class DebtPositionFineControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private DebtPositionFineService service;
+  private DebtPositionFineService serviceMock;
 
   @Test
   void whenHandleFineReductionExpirationThenOk() throws Exception {
@@ -46,7 +46,7 @@ class DebtPositionFineControllerTest {
     WorkflowCreatedDTO expected = new WorkflowCreatedDTO(expectedWorkflowId);
 
 
-    Mockito.when(service.expireFineReduction(debtPositionId))
+    Mockito.when(serviceMock.expireFineReduction(debtPositionId))
       .thenReturn(expected);
 
     MvcResult result = mockMvc.perform(

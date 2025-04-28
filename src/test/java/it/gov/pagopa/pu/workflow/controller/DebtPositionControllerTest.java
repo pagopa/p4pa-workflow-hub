@@ -41,7 +41,7 @@ class DebtPositionControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private DebtPositionService service;
+  private DebtPositionService serviceMock;
 
   @Test
   void whenSyncDebtPositionThenOk() throws Exception {
@@ -60,7 +60,7 @@ class DebtPositionControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.syncDebtPosition(debtPositionRequestDTO, paymentEventRequest, new WfExecutionParameters(true, false, executionConfig), accessToken))
+    Mockito.when(serviceMock.syncDebtPosition(debtPositionRequestDTO, paymentEventRequest, new WfExecutionParameters(true, false, executionConfig), accessToken))
       .thenReturn(expected);
 
     try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -94,7 +94,7 @@ class DebtPositionControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.syncDebtPosition(debtPositionRequestDTO, null, new WfExecutionParameters(false, false, null), accessToken))
+    Mockito.when(serviceMock.syncDebtPosition(debtPositionRequestDTO, null, new WfExecutionParameters(false, false, null), accessToken))
       .thenReturn(expected);
 
     try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -123,7 +123,7 @@ class DebtPositionControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.checkDpExpiration(debtPositionId)).thenReturn(expected);
+    Mockito.when(serviceMock.checkDpExpiration(debtPositionId)).thenReturn(expected);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/workflow/debt-position/{debtPositionId}/check-expiration", debtPositionId)
         .contentType(MediaType.APPLICATION_JSON))
