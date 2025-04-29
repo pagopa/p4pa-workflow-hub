@@ -62,7 +62,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
     }
   }
 
-  void handleCreateAssessments(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
+  private void handleCreateAssessments(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
     Set<Long> receiptIds;
     try {
       receiptIds = Set.of(Long.valueOf(event.getEventDescription().replace("receiptId:", "")));
