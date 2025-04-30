@@ -24,22 +24,13 @@ public class DebtPositionServiceImpl implements DebtPositionService {
   @Override
   public WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, WfExecutionParameters wfExecutionParameters, String accessToken) {
     log.debug("Starting workflow to sync DebtPosition: {} (massive: {}, partial: {})", debtPositionDTO.getDebtPositionId(), wfExecutionParameters.isMassive(), wfExecutionParameters.isPartialChange());
-    String workflowId = debtPositionSyncService.invokeWorkflow(debtPositionDTO, paymentEventRequest, wfExecutionParameters, accessToken);
-
-    return buildWorkflowCreatedDTO(workflowId);
+    return debtPositionSyncService.invokeWorkflow(debtPositionDTO, paymentEventRequest, wfExecutionParameters, accessToken);
   }
 
   @Override
   public WorkflowCreatedDTO checkDpExpiration(Long debtPositionId) {
     log.debug("Starting workflow for checking expiration of debt position with debtPositionId: {}", debtPositionId);
-    String workflowId = checkDebtPositionExpirationWfClient.checkDpExpiration(debtPositionId);
-
-    return buildWorkflowCreatedDTO(workflowId);
+    return checkDebtPositionExpirationWfClient.checkDpExpiration(debtPositionId);
   }
 
-  private WorkflowCreatedDTO buildWorkflowCreatedDTO(String workflowId) {
-    return WorkflowCreatedDTO.builder()
-      .workflowId(workflowId)
-      .build();
-  }
 }

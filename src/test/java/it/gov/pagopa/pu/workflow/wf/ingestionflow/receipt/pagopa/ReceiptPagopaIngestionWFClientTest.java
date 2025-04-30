@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion.ReceiptPagopaIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion.ReceiptPagopaIngestionWFImpl;
@@ -38,16 +39,16 @@ class ReceiptPagopaIngestionWFClientTest {
   void whenIngestThenOk() {
     // Given
     long ingestionFlowFileId = 1L;
-    String expectedWorkflowId = "ReceiptPagopaIngestionWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ReceiptPagopaIngestionWF-1", "RUNID");
 
     doReturn(wfMock).when(workflowServiceMock)
-      .buildWorkflowStub(ReceiptPagopaIngestionWF.class, ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF, expectedWorkflowId);
+      .buildWorkflowStub(ReceiptPagopaIngestionWF.class, ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF, expectedResult.getWorkflowId());
 
     // When
-    String workflowId = client.ingest(ingestionFlowFileId);
+    WorkflowCreatedDTO result = client.ingest(ingestionFlowFileId);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
     verify(wfMock).ingest(ingestionFlowFileId);
   }
 }

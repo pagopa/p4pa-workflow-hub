@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting;
 
 import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
@@ -19,7 +21,7 @@ public class PaymentsReportingIngestionWFClient {
     this.workflowService = workflowService;
   }
 
-  public String ingest(Long ingestionFlowFileId) {
+  public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
     log.info("Starting payments reporting ingestion flow file having id {}", ingestionFlowFileId);
     String taskQueue = PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF;
     String workflowId = generateWorkflowId(ingestionFlowFileId, PaymentsReportingIngestionWF.class);
@@ -28,7 +30,8 @@ public class PaymentsReportingIngestionWFClient {
       PaymentsReportingIngestionWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::ingest, ingestionFlowFileId);
-    return workflowId;
+    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::ingest, ingestionFlowFileId));
+    log.info("Started workflow: {}", wfExec);
+    return wfExec;
   }
 }

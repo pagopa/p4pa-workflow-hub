@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWFImpl;
@@ -37,16 +38,16 @@ class DebtPositionIngestionWFClientTest {
     // Given
     long ingestionFlowFileId = 1L;
     String taskQueue = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW;
-    String expectedWorkflowId = "DebtPositionIngestionFlowWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("DebtPositionIngestionFlowWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionIngestionFlowWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionIngestionFlowWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     // When
-    String workflowId = client.ingest(ingestionFlowFileId);
+    WorkflowCreatedDTO result = client.ingest(ingestionFlowFileId);
 
     // Then
-    Assertions.assertEquals(expectedWorkflowId, workflowId);
+    Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).ingest(ingestionFlowFileId);
   }
 }

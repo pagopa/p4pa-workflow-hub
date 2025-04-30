@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.assessments;
 
 import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWFImpl;
@@ -19,7 +21,7 @@ public class CreateAssessmentsWFClient {
     this.workflowService = workflowService;
   }
 
-  public String createAssessments(Long receiptId) {
+  public WorkflowCreatedDTO createAssessments(Long receiptId) {
     log.info("Starting create assessments for receipt with id: {}", receiptId);
 
     String taskQueue = CreateAssessmentsWFImpl.TASK_QUEUE_CREATE_ASSESSMENTS_WF;
@@ -29,7 +31,8 @@ public class CreateAssessmentsWFClient {
       CreateAssessmentsWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::createAssessment, receiptId);
-    return workflowId;
+    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::createAssessment, receiptId));
+    log.info("Started workflow: {}", wfExec);
+    return wfExec;
   }
 }

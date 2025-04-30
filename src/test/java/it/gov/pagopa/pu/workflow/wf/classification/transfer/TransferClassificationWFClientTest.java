@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.transfer;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
@@ -48,20 +49,23 @@ class TransferClassificationWFClientTest {
   @Test
   void whenClassifyThenOk() {
     // Given
-    String expectedWorkflowId = String.format("%s-%d-%s-%s-%d", "TransferClassificationWF", ORGANIZATION, IUV, IUR, INDEX);
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(String.format("%s-%d-%s-%s-%d", "TransferClassificationWF", ORGANIZATION, IUV, IUR, INDEX), "RUNID");
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowStubMock.signalWithStart(any(), any(), any()))
       .thenReturn(workflowExecutionMock);
+
     Mockito.when(workflowExecutionMock.getWorkflowId())
-      .thenReturn(expectedWorkflowId);
+      .thenReturn(expectedResult.getWorkflowId());
+    Mockito.when(workflowExecutionMock.getRunId())
+      .thenReturn(expectedResult.getRunId());
 
     // When
-    String actualWorkflowId = client.startTransferClassification(new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, INDEX));
+    WorkflowCreatedDTO result = client.startTransferClassification(new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, INDEX));
 
     // Then
-    assertEquals(expectedWorkflowId, actualWorkflowId);
-    Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedWorkflowId));
+    assertEquals(expectedResult, result);
+    Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedResult.getWorkflowId()));
     Mockito.verify(workflowStubMock).signalWithStart(
       eq(TransferClassificationWF.SIGNAL_METHOD_NAME_START_TRANSFER_CLASSIFICATION),
       any(Object[].class),

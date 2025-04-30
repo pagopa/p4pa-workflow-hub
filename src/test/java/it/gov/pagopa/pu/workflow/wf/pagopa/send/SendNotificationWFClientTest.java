@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWFImpl;
@@ -46,16 +47,16 @@ class SendNotificationWFClientTest {
     // Given
     String sendNotificationId = "sendNotificationId";
     String taskQueue = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS;
-    String expectedWorkflowId = "SendNotificationProcessWF-"+sendNotificationId;
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationProcessWF-"+sendNotificationId, "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationProcessWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationProcessWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(sendNotificationProcessWFMock);
 
     // When
-    String workflowId = client.startSendNotificationProcess(sendNotificationId);
+    WorkflowCreatedDTO result = client.startSendNotificationProcess(sendNotificationId);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
     verify(sendNotificationProcessWFMock).sendNotificationProcess(sendNotificationId);
   }
 
@@ -64,16 +65,16 @@ class SendNotificationWFClientTest {
     // Given
     String sendNotificationId = "sendNotificationId";
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
-    String expectedWorkflowId = "SendNotificationDateRetrieveWF-"+sendNotificationId;
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationDateRetrieveWF-"+sendNotificationId, "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationDateRetrieveWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationDateRetrieveWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(sendNotificationDateRetrieveWFMock);
 
     // When
-    String workflowId = client.startSendNotificationDateRetrieve(sendNotificationId);
+    WorkflowCreatedDTO result = client.startSendNotificationDateRetrieve(sendNotificationId);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
     verify(sendNotificationDateRetrieveWFMock).sendNotificationDateRetrieve(sendNotificationId);
   }
 

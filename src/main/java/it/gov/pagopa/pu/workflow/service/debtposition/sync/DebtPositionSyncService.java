@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.debtposition.sync;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.debtposition.sync.complete.DebtPositionCompleteChangeSyncService;
 import it.gov.pagopa.pu.workflow.service.debtposition.sync.config.WfExecutionConfigHandlerService;
 import it.gov.pagopa.pu.workflow.service.debtposition.sync.partial.DebtPositionPartialChangeSyncService;
@@ -21,7 +22,7 @@ public class DebtPositionSyncService {
     this.completeChangeSyncService = completeChangeSyncService;
   }
 
-  public String invokeWorkflow(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, WfExecutionParameters wfExecutionParameters, String accessToken) {
+  public WorkflowCreatedDTO invokeWorkflow(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, WfExecutionParameters wfExecutionParameters, String accessToken) {
     wfExecutionConfigHandlerService.persistAndConfigure(debtPositionDTO, wfExecutionParameters);
     if(wfExecutionParameters.isPartialChange()){
       return partialChangeSyncService.invokeWorkflow(debtPositionDTO, paymentEventRequest);

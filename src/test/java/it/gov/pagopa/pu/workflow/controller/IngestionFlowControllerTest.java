@@ -45,10 +45,11 @@ class IngestionFlowControllerTest {
     long ingestionFileId = 1L;
     IngestionFlowFile.IngestionFlowFileTypeEnum flowFileType = IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING;
     String workflowId = "workflow123";
+    String runId = "runId";
 
-    WorkflowCreatedDTO workflowCreatedDTO = WorkflowCreatedDTO.builder().workflowId(workflowId).build();
+    WorkflowCreatedDTO workflowCreatedDTO = WorkflowCreatedDTO.builder().workflowId(workflowId).runId(runId).build();
 
-    Mockito.when(serviceMock.ingest(ingestionFileId, flowFileType)).thenReturn(workflowId);
+    Mockito.when(serviceMock.ingest(ingestionFileId, flowFileType)).thenReturn(workflowCreatedDTO);
 
     MvcResult result = mockMvc.perform(post(basePath + "/ingestion-flow/{ingestionFileId}", ingestionFileId)
         .param("ingestionFlowFileType", flowFileType.name())

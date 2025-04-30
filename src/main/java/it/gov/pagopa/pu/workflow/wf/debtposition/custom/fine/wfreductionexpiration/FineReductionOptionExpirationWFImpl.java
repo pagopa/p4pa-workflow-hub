@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecu
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.config.DebtPositionFineWfConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper.FineWfExecutionConfigMapper;
@@ -38,7 +39,7 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
   }
 
   @Override
-  public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
+  public WorkflowCreatedDTO expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
     log.info("Handling fine reduction expiration for debtPositionId: {}", debtPositionId);
     DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
 

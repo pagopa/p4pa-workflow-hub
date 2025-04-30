@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWFImpl;
@@ -41,19 +42,19 @@ class CheckDebtPositionExpirationWfClientTest {
     // Given
     Long debtPositionId = 1L;
     String taskQueue = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
-    String expectedWorkflowId = "CheckDebtPositionExpirationWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("CheckDebtPositionExpirationWF-1", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(
         CheckDebtPositionExpirationWF.class,
         taskQueue,
-        expectedWorkflowId))
+        expectedResult.getWorkflowId()))
       .thenReturn(checkDebtPositionExpirationWFMock);
 
     // When
-    String workflowId = client.checkDpExpiration(debtPositionId);
+    WorkflowCreatedDTO result = client.checkDpExpiration(debtPositionId);
 
     // Then
-    Assertions.assertEquals(expectedWorkflowId, workflowId);
+    Assertions.assertEquals(expectedResult, result);
     Mockito.verify(checkDebtPositionExpirationWFMock).checkDpExpiration(debtPositionId);
   }
 

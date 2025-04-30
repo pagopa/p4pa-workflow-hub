@@ -1,8 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.classification.iuf;
 
-import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
@@ -22,34 +23,33 @@ public class IufClassificationWFClient {
     this.workflowService = workflowService;
   }
 
-  public String notifyTreasury(IufClassificationNotifyTreasurySignalDTO signalDTO) {
+  public WorkflowCreatedDTO notifyTreasury(IufClassificationNotifyTreasurySignalDTO signalDTO) {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIuf());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, workflowId);
-    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
+    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(untypedWorkflowStub.signalWithStart(
       IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
       new Object[]{signalDTO},
       new Object[]{}
-    );
+    ));
 
-    log.info("IUF receipt classification Workflow for Treasury started with workflowId: {}", wfExecution.getWorkflowId());
-    return workflowId;
+    logWfExec(wfExec);
+    return wfExec;
 
   }
 
-  public String notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
+  public WorkflowCreatedDTO notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIuf());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, workflowId);
-    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
+    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(untypedWorkflowStub.signalWithStart(
       IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,
       new Object[]{signalDTO},
       new Object[]{}
-    );
+    ));
 
-    log.info("IUF receipt classification Workflow for reporting started with workflowId: {}", wfExecution.getWorkflowId());
-    return workflowId;
-
+    logWfExec(wfExec);
+    return wfExec;
   }
 
  private static String generateWorkflowId(Long organizationId, String iuf) {
@@ -58,5 +58,9 @@ public class IufClassificationWFClient {
   }
   return Utilities.generateWorkflowId(String.format("%d-%s", organizationId, iuf), IufClassificationWF.class);
 }
+
+  private static void logWfExec(WorkflowCreatedDTO wfExec) {
+    log.info("Started workflow: {}", wfExec);
+  }
 
 }

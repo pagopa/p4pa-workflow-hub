@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWFImpl;
@@ -37,16 +38,16 @@ class PaymentNotificationIngestionWFClientTest {
     // Given
     long ingestionFlowFileId = 1L;
     String taskQueue = PaymentNotificationIngestionWFImpl.TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF;
-    String expectedWorkflowId = "PaymentNotificationIngestionWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("PaymentNotificationIngestionWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentNotificationIngestionWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentNotificationIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     // When
-    String workflowId = client.ingest(ingestionFlowFileId);
+    WorkflowCreatedDTO result = client.ingest(ingestionFlowFileId);
 
     // Then
-    Assertions.assertEquals(expectedWorkflowId, workflowId);
+    Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).ingest(ingestionFlowFileId);
   }
 }

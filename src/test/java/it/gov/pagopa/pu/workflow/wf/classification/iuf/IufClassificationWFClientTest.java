@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
@@ -54,21 +55,24 @@ class IufClassificationWFClientTest {
       .treasuryId("2T")
       .build();
 
-    String expectedWorkflowId = "IufClassificationWF-1-iuf123";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IufClassificationWF-1-iuf123","RUNID");
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowStubMock.signalWithStart(any(), any(), any()))
       .thenReturn(workflowExecutionMock);
+
     Mockito.when(workflowExecutionMock.getWorkflowId())
-      .thenReturn(expectedWorkflowId);
+      .thenReturn(expectedResult.getWorkflowId());
+    Mockito.when(workflowExecutionMock.getRunId())
+      .thenReturn(expectedResult.getRunId());
 
     // When
-    String workflowId = client.notifyTreasury(signalDTO);
+    WorkflowCreatedDTO result = client.notifyTreasury(signalDTO);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
-    Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedWorkflowId));
+    assertEquals(expectedResult, result);
+    Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedResult.getWorkflowId()));
     Mockito.verify(workflowStubMock).signalWithStart(
       eq(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY),
       any(Object[].class),
@@ -91,21 +95,24 @@ class IufClassificationWFClientTest {
         .build()))
       .build();
 
-    String expectedWorkflowId = "IufClassificationWF-1-iuf123";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IufClassificationWF-1-iuf123", "RUNID");
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowStubMock.signalWithStart(any(), any(), any()))
       .thenReturn(workflowExecutionMock);
+
     Mockito.when(workflowExecutionMock.getWorkflowId())
-      .thenReturn(expectedWorkflowId);
+      .thenReturn(expectedResult.getWorkflowId());
+    Mockito.when(workflowExecutionMock.getRunId())
+      .thenReturn(expectedResult.getRunId());
 
     // When
-    String workflowId = client.notifyPaymentsReporting(signalDTO);
+    WorkflowCreatedDTO result = client.notifyPaymentsReporting(signalDTO);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
-    Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedWorkflowId));
+    assertEquals(expectedResult, result);
+    Mockito.verify(workflowServiceMock).buildUntypedWorkflowStub(any(), eq(expectedResult.getWorkflowId()));
     Mockito.verify(workflowStubMock).signalWithStart(
       eq(IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING),
       any(Object[].class),

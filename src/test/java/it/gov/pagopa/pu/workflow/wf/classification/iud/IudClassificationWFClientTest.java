@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iud;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
@@ -59,7 +60,7 @@ class IudClassificationWFClientTest {
       .transferIndexes(Collections.singletonList(1))
       .build();
 
-    String expectedWorkflowId = "IudClassificationWF-1-iud123";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
@@ -70,10 +71,10 @@ class IudClassificationWFClientTest {
       .thenReturn(workflowExecutionMock);
 
     // When
-    String workflowId = client.notifyReceipt(signalDTO);
+    WorkflowCreatedDTO result = client.notifyReceipt(signalDTO);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
   }
 
   @Test
@@ -84,7 +85,7 @@ class IudClassificationWFClientTest {
       .iud("iud123")
       .build();
 
-    String expectedWorkflowId = "IudClassificationWF-1-iud123";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
       .thenReturn(workflowStubMock);
@@ -95,10 +96,10 @@ class IudClassificationWFClientTest {
       .thenReturn(workflowExecutionMock);
 
     // When
-    String workflowId = client.notifyPaymentNotification(signalDTO);
+    WorkflowCreatedDTO result = client.notifyPaymentNotification(signalDTO);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
   }
 
   @Test

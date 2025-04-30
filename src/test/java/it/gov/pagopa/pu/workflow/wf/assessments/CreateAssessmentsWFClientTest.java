@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.assessments;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWFImpl;
@@ -38,16 +39,16 @@ class CreateAssessmentsWFClientTest {
   void testCreateAssessment() {
     Long receiptId = 123L;
     String taskQueue = CreateAssessmentsWFImpl.TASK_QUEUE_CREATE_ASSESSMENTS_WF;
-    String expectedWorkflowId = "CreateAssessmentsWF-123";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("CreateAssessmentsWF-123", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(CreateAssessmentsWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(CreateAssessmentsWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     // When
-    String workflowId = client.createAssessments(receiptId);
+    WorkflowCreatedDTO result = client.createAssessments(receiptId);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
     verify(wfMock).createAssessment(receiptId);
   }
 }

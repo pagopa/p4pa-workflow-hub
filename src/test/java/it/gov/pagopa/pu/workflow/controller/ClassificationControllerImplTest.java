@@ -46,11 +46,12 @@ class ClassificationControllerImplTest {
   @Test
   void givenIdWhenClassifyThenCreateTransferClassificationWFSuccessfully() throws Exception {
     String expectedWorkflowId = String.format("%s-%d-%s-%s-%d", "TransferClassificationWF", ORGANIZATION, IUV, IUR, INDEX);
+    String runId = "runId";
 
-    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId);
+    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId, runId);
 
     when(transferClassificationWFClientMock.startTransferClassification(new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, INDEX)))
-      .thenReturn(expectedWorkflowId);
+      .thenReturn(workflowCreatedDTO);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/classification/transfer/{orgId}", ORGANIZATION)
       .param("iuv", IUV)
@@ -65,11 +66,12 @@ class ClassificationControllerImplTest {
   @Test
   void givenIdWhenClassifyThenCreateIudClassificationByPaymentNotificationSignalSuccessfully() throws Exception {
     String expectedWorkflowId = String.format("%s-%d-%s", "IudClassificationWF", ORGANIZATION, IUD);
+    String runId = "runId";
 
-    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId);
+    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId, runId);
 
     when(iudClassificationWFClientMock.notifyPaymentNotification(new IudClassificationNotifyPaymentNotificationSignalDTO(IUD, ORGANIZATION)))
-      .thenReturn(expectedWorkflowId);
+      .thenReturn(workflowCreatedDTO);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/classification/iud/{orgId}/notify-payment-notification", ORGANIZATION)
       .param("iud", IUD)
@@ -82,11 +84,12 @@ class ClassificationControllerImplTest {
   @Test
   void givenIdWhenClassifyThenCreateIudClassificationByReceiptSignalSuccessfully() throws Exception {
     String expectedWorkflowId = String.format("%s-%d-%s", "IudClassificationWF", ORGANIZATION, IUD);
+    String runId = "runId";
 
-    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId);
+    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId, runId);
     IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(ORGANIZATION, IUD, IUV, IUR, Collections.singletonList(INDEX));
     when(iudClassificationWFClientMock.notifyReceipt(signalDTO))
-      .thenReturn(expectedWorkflowId);
+      .thenReturn(workflowCreatedDTO);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/classification/iud/{orgId}/notify-receipt", ORGANIZATION)
       .param("iuv", IUV)

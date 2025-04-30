@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWFImpl;
@@ -40,16 +41,16 @@ class PaymentsReportingPagoPaOrganizationFetchWFClientTest {
     // Given
     long organizationId = 1L;
     String taskQueue = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH;
-    String expectedWorkflowId = "PaymentsReportingPagoPaOrganizationFetchWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("PaymentsReportingPagoPaOrganizationFetchWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingPagoPaOrganizationFetchWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingPagoPaOrganizationFetchWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     // When
-    String workflowId = client.retrieve(organizationId);
+    WorkflowCreatedDTO result = client.retrieve(organizationId);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
     verify(wfMock).retrieve(organizationId);
   }
 }

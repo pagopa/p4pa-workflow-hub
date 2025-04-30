@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp;
 
 import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWFImpl;
@@ -22,7 +24,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
   }
 
   @Override
-  public String checkDpExpiration(Long debtPositionId) {
+  public WorkflowCreatedDTO checkDpExpiration(Long debtPositionId) {
     log.info("Starting check debt position expiration WF: {}", debtPositionId);
     String taskQueue = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
     String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWF.class);
@@ -31,8 +33,9 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
       CheckDebtPositionExpirationWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::checkDpExpiration, debtPositionId);
-    return workflowId;
+    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::checkDpExpiration, debtPositionId));
+    logWfExec(wfExec);
+    return wfExec;
   }
 
   @Override
@@ -45,7 +48,8 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
       workflowId,
       nextDueDate
     );
-    WorkflowClient.start(workflow::checkDpExpiration, debtPositionId);
+    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::checkDpExpiration, debtPositionId));
+    logWfExec(wfExec);
   }
 
   @Override
@@ -53,6 +57,10 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
     String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWF.class);
     log.info("Cancelling next scheduling of workflow {}", workflowId);
     workflowService.cancelWorkflow(workflowId);
+  }
+
+  private static void logWfExec(WorkflowCreatedDTO wfExec) {
+    log.info("Started workflow: {}", wfExec);
   }
 
 }

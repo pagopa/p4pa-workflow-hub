@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWFImpl;
@@ -39,16 +40,16 @@ class TreasuryOpiIngestionWFClientTest {
     // Given
     long ingestionFlowFileId = 1L;
     String taskQueue = TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF;
-    String expectedWorkflowId = "TreasuryOpiIngestionWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("TreasuryOpiIngestionWF-1", "RUNID");
 
     doReturn(wfMock).when(workflowServiceMock)
-      .buildWorkflowStub(TreasuryOpiIngestionWF.class, taskQueue, expectedWorkflowId);
+      .buildWorkflowStub(TreasuryOpiIngestionWF.class, taskQueue, expectedResult.getWorkflowId());
 
     // When
-    String workflowId = client.ingest(ingestionFlowFileId);
+    WorkflowCreatedDTO result = client.ingest(ingestionFlowFileId);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
     verify(wfMock).ingest(ingestionFlowFileId);
   }
 }

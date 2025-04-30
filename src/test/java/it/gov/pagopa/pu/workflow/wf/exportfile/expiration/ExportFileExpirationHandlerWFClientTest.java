@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.exportfile.expiration;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWF;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWFImpl;
@@ -40,14 +41,14 @@ class ExportFileExpirationHandlerWFClientTest {
   void testCreateExportFileExpirationHandler() {
     Long exportFileId = 456L;
     String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
-    String expectedWorkflowId = "ExportFileExpirationHandlerWF-456";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ExportFileExpirationHandlerWF-456", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileExpirationHandlerWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileExpirationHandlerWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
-    String workflowId = client.exportFileExpirationHandler(exportFileId);
+    WorkflowCreatedDTO result = client.exportFileExpirationHandler(exportFileId);
 
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
     verify(wfMock).exportFileExpirationHandler(exportFileId);
   }
 

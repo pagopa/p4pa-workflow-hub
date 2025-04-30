@@ -35,10 +35,12 @@ class SendNotificationControllerTest {
   @Test
   void givenSendNotificationIdWhenSendNotificationProcessThenOk() throws Exception {
     String workflowId = "workflow-1";
+    String runId = "runId";
     String sendNotificationId = "sendNotificationId";
     String accessToken = "ACCESSTOKEN";
     WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
+      .runId(runId)
       .build();
 
     Mockito.when(serviceMock.sendNotificationProcess(sendNotificationId))

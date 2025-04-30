@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.exportfile.expiration;
 
 import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWFImpl;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWF;
@@ -21,7 +23,7 @@ public class ExportFileExpirationHandlerWFClient {
     this.workflowService = workflowService;
   }
 
-  public String exportFileExpirationHandler(Long exportFileId) {
+  public WorkflowCreatedDTO exportFileExpirationHandler(Long exportFileId) {
     log.info("Starting exportFileExpirationHandler for file with exportFileId: {}", exportFileId);
 
     String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
@@ -31,8 +33,9 @@ public class ExportFileExpirationHandlerWFClient {
       ExportFileExpirationHandlerWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::exportFileExpirationHandler, exportFileId);
-    return workflowId;
+    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::exportFileExpirationHandler, exportFileId));
+    logWfExec(wfExec);
+    return wfExec;
   }
 
   public void scheduleExportFileExpiration(Long exportFileId, LocalDate expirationDate) {
@@ -42,16 +45,16 @@ public class ExportFileExpirationHandlerWFClient {
     String workflowId = generateWorkflowId(exportFileId, ExportFileExpirationHandlerWF.class);
 
     ExportFileExpirationHandlerWF workflow = workflowService.buildWorkflowStubScheduled(
-
       ExportFileExpirationHandlerWF.class,
-
       taskQueue,
-
       workflowId,
-
       expirationDate
-
     );
-    WorkflowClient.start(workflow::exportFileExpirationHandler,exportFileId);
+    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::exportFileExpirationHandler, exportFileId));
+    logWfExec(wfExec);
+  }
+
+  private static void logWfExec(WorkflowCreatedDTO wfExec) {
+    log.info("Started workflow: {}", wfExec);
   }
 }

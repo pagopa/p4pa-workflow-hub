@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.service.ingestionflowfile;
 
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
@@ -36,7 +37,7 @@ class IngestionFlowFileStarterServiceTest {
 
   private IngestionFlowFileStarterService service;
 
-  private Map<IngestionFlowFile.IngestionFlowFileTypeEnum, Function<Long, String>> flowFileType2ClientInvoker;
+  private Map<IngestionFlowFile.IngestionFlowFileTypeEnum, Function<Long, WorkflowCreatedDTO>> flowFileType2ClientInvoker;
 
   @BeforeEach
   void init(){
@@ -73,20 +74,20 @@ class IngestionFlowFileStarterServiceTest {
   void whenThenInvokeClientIfAny(IngestionFlowFile.IngestionFlowFileTypeEnum ingestionFlowFileType){
     // Given
     long ingestionFlowFileId = 1L;
-    String expectedWorkflowId = "WORKFLOWID";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("WORKFLOWID", "RUNID");
 
-    Function<Long, String> expectedClientInvoker = flowFileType2ClientInvoker.get(ingestionFlowFileType);
+    Function<Long, WorkflowCreatedDTO> expectedClientInvoker = flowFileType2ClientInvoker.get(ingestionFlowFileType);
     if(expectedClientInvoker!=null){
       Mockito.when(expectedClientInvoker.apply(ingestionFlowFileId))
-        .thenReturn(expectedWorkflowId);
+        .thenReturn(expectedResult);
     }
 
     // When
     try{
-      String wfId = service.ingest(ingestionFlowFileId, ingestionFlowFileType);
+      WorkflowCreatedDTO wfExec = service.ingest(ingestionFlowFileId, ingestionFlowFileType);
 
       // Then
-      Assertions.assertEquals(expectedWorkflowId, wfId);
+      Assertions.assertEquals(expectedResult, wfExec);
     } catch (IngestionFlowTypeNotSupportedException e){
       Assertions.assertNull(expectedClientInvoker, "IngestionFlowFileType expected to be supported: " + ingestionFlowFileType);
     }

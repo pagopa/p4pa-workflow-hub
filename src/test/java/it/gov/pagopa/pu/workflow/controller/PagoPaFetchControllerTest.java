@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -27,15 +28,16 @@ class PagoPaFetchControllerTest {
   void whenGetWorkflowStatusThenOk() throws Exception {
     Long organizationId = 10L;
     String workflowId = "workflow-1";
+    String runId = "runId";
 
     Mockito.when(serviceMock.retrieve(organizationId))
-      .thenReturn(workflowId);
+      .thenReturn(new WorkflowCreatedDTO(workflowId, runId));
 
     mockMvc.perform(
         get("/workflowhub/workflow/pagopa-fetch/payments-reporting/{organizationId}", organizationId)
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .accept(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().is2xxSuccessful())
-      .andExpect(content().json("{\"workflowId\":\"workflow-1\"}"));
+      .andExpect(content().json("{\"workflowId\":\"workflow-1\",\"runId\":\"runId\"}"));
   }
 }
