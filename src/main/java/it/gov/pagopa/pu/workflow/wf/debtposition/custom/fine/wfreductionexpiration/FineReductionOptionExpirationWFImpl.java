@@ -39,7 +39,7 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
 
   @Override
   public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
-    log.info("Handling fine reduction expiration for debtPositionId: {}, wfExecutionConfig: {}", debtPositionId, wfExecutionConfig);
+    log.info("Handling fine reduction expiration for debtPositionId: {}", debtPositionId);
     DebtPositionDTO debtPositionDTO = debtPositionFineReductionOptionExpirationActivity.handleFineReductionExpiration(debtPositionId);
 
     if (debtPositionDTO == null){
@@ -47,7 +47,7 @@ public class FineReductionOptionExpirationWFImpl implements FineReductionOptionE
       return null;
     }
 
-    log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", wfExecutionConfig);
+    log.info("Mapping FineWfExecutionConfig to GenericWfExecutionConfig");
     GenericWfExecutionConfig genericWfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(wfExecutionConfig, debtPositionDTO);
 
     log.info("Synchronize debt position sync");
