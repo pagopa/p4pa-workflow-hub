@@ -95,7 +95,7 @@ class SynchronizeFineWFTest {
 
     try (
       MockedStatic<FineWfExecutionConfigMapper> mapperMock = Mockito.mockStatic(FineWfExecutionConfigMapper.class)) {
-      mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig, debtPositionDTO))
+      mapperMock.when(() -> FineWfExecutionConfigMapper.mapNotifiedInstallment(fineWfExecutionConfig, debtPositionDTO))
         .thenReturn(wfExecutionConfig);
 
       Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
@@ -128,7 +128,7 @@ class SynchronizeFineWFTest {
 
     try (
       MockedStatic<FineWfExecutionConfigMapper> mapperMock = Mockito.mockStatic(FineWfExecutionConfigMapper.class)) {
-      mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig, debtPositionDTO))
+      mapperMock.when(() -> FineWfExecutionConfigMapper.mapNotifiedInstallment(fineWfExecutionConfig, debtPositionDTO))
         .thenReturn(wfExecutionConfig);
 
       Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
@@ -160,7 +160,7 @@ class SynchronizeFineWFTest {
 
     try (
       MockedStatic<FineWfExecutionConfigMapper> mapperMock = Mockito.mockStatic(FineWfExecutionConfigMapper.class)) {
-      mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig, debtPositionDTO))
+      mapperMock.when(() -> FineWfExecutionConfigMapper.mapNotifiedInstallment(fineWfExecutionConfig, debtPositionDTO))
         .thenReturn(wfExecutionConfig);
 
       Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))

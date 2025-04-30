@@ -53,7 +53,7 @@ public class SynchronizeFineWFImpl implements SynchronizeFineWF, ApplicationCont
     DebtPositionDTO debtPosition = result.getDebtPositionDTO();
 
     log.info("Mapped FineWfExecutionConfig: {} to GenericWfExecutionConfig", wfExecutionConfig);
-    GenericWfExecutionConfig genericWfExecutionConfig = FineWfExecutionConfigMapper.mapReductionExpired(wfExecutionConfig, debtPosition);
+    GenericWfExecutionConfig genericWfExecutionConfig = FineWfExecutionConfigMapper.mapNotifiedInstallment(wfExecutionConfig, debtPosition);
 
     log.info("Synchronize fine {} with Nodo", debtPosition.getDebtPositionId());
     invokeSyncDebtPositionActivity.synchronizeDPSync(debtPosition, paymentEventRequest, massive, genericWfExecutionConfig);
