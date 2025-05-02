@@ -2,7 +2,9 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.export;
 
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWF;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -20,18 +22,20 @@ class ExportFileWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private ExportFileWF wfMock;
 
   private ExportFileWFClient client;
 
   @BeforeEach
   void init() {
-    client = new ExportFileWFClient(workflowServiceMock);
+    client = new ExportFileWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -44,6 +48,8 @@ class ExportFileWFClientTest {
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
+
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, exportFileId, exportFileType);
 
     // When
     WorkflowCreatedDTO result = client.exportFile(exportFileId, exportFileType);

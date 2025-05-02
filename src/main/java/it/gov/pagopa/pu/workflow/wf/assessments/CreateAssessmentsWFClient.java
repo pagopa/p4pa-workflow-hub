@@ -1,8 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.assessments;
 
-import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWFImpl;
@@ -16,9 +15,11 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class CreateAssessmentsWFClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public CreateAssessmentsWFClient(WorkflowService workflowService) {
+  public CreateAssessmentsWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
   public WorkflowCreatedDTO createAssessments(Long receiptId) {
@@ -31,8 +32,6 @@ public class CreateAssessmentsWFClient {
       CreateAssessmentsWF.class,
       taskQueue,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::createAssessment, receiptId));
-    log.info("Started workflow: {}", wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::createAssessment, receiptId);
   }
 }

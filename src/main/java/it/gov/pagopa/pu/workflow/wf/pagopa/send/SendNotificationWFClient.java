@@ -1,8 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send;
 
-import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWFImpl;
@@ -20,9 +19,11 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class SendNotificationWFClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public SendNotificationWFClient(WorkflowService workflowService) {
+  public SendNotificationWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
   public WorkflowCreatedDTO startSendNotificationProcess(String sendNotificationId) {
@@ -34,9 +35,7 @@ public class SendNotificationWFClient {
       SendNotificationProcessWF.class,
       taskQueue,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::sendNotificationProcess, sendNotificationId));
-    logWfExec(wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::sendNotificationProcess, sendNotificationId);
   }
 
   public WorkflowCreatedDTO startSendNotificationDateRetrieve(String sendNotificationId) {
@@ -47,9 +46,7 @@ public class SendNotificationWFClient {
       SendNotificationDateRetrieveWF.class,
       taskQueue,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::sendNotificationDateRetrieve, sendNotificationId));
-    logWfExec(wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
   }
 
   public void scheduleSendNotificationDateRetrieve(String sendNotificationId, Duration nextSchedule) {
@@ -62,11 +59,6 @@ public class SendNotificationWFClient {
       taskQueue,
       workflowId,
       nextSchedule);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::sendNotificationDateRetrieve, sendNotificationId));
-    logWfExec(wfExec);
-  }
-
-  private static void logWfExec(WorkflowCreatedDTO wfExec) {
-    log.info("Started workflow: {}", wfExec);
+    workflowClientService.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
   }
 }

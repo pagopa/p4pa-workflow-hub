@@ -1,8 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa;
 
-import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion.ReceiptPagopaIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion.ReceiptPagopaIngestionWFImpl;
@@ -16,9 +15,11 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class ReceiptPagopaIngestionWFClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public ReceiptPagopaIngestionWFClient(WorkflowService workflowService) {
+  public ReceiptPagopaIngestionWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
   public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
@@ -28,8 +29,6 @@ public class ReceiptPagopaIngestionWFClient {
       ReceiptPagopaIngestionWF.class,
       ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::ingest, ingestionFlowFileId));
-    log.info("Started workflow: {}", wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::ingest, ingestionFlowFileId);
   }
 }

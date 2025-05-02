@@ -1,8 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp;
 
-import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWFImpl;
@@ -18,9 +17,11 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositionExpirationWfClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public CheckDebtPositionExpirationWfClientImpl(WorkflowService workflowService) {
+  public CheckDebtPositionExpirationWfClientImpl(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
   @Override
@@ -33,9 +34,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
       CheckDebtPositionExpirationWF.class,
       taskQueue,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::checkDpExpiration, debtPositionId));
-    logWfExec(wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::checkDpExpiration, debtPositionId);
   }
 
   @Override
@@ -48,8 +47,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
       workflowId,
       nextDueDate
     );
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::checkDpExpiration, debtPositionId));
-    logWfExec(wfExec);
+    workflowClientService.start(workflow::checkDpExpiration, debtPositionId);
   }
 
   @Override
@@ -58,9 +56,4 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
     log.info("Cancelling next scheduling of workflow {}", workflowId);
     workflowService.cancelWorkflow(workflowId);
   }
-
-  private static void logWfExec(WorkflowCreatedDTO wfExec) {
-    log.info("Started workflow: {}", wfExec);
-  }
-
 }

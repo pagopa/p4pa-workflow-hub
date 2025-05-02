@@ -1,8 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
-import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWFImpl;
@@ -18,10 +17,13 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 @Slf4j
 @Service
 public class OrganizationPaymentsReportingPagoPaFetchWFClient {
-  private final WorkflowService workflowService;
 
-  public OrganizationPaymentsReportingPagoPaFetchWFClient(WorkflowService workflowService) {
+  private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
+
+  public OrganizationPaymentsReportingPagoPaFetchWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
   public WorkflowCreatedDTO retrieve(Long organizationId) {
@@ -33,9 +35,7 @@ public class OrganizationPaymentsReportingPagoPaFetchWFClient {
       PaymentsReportingPagoPaOrganizationFetchWF.class,
       taskQueue,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::retrieve, organizationId));
-    log.info("Started workflow: {}", wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::retrieve, organizationId);
   }
 
   /** Cannot invoke a WF from WF thread, using Async to use an external thread instead */

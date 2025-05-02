@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -19,18 +21,20 @@ class PaymentNotificationIngestionWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private PaymentNotificationIngestionWFImpl wfMock;
 
   private PaymentNotificationIngestionWFClient client;
 
   @BeforeEach
   void init() {
-    client = new PaymentNotificationIngestionWFClient(workflowServiceMock);
+    client = new PaymentNotificationIngestionWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -42,6 +46,8 @@ class PaymentNotificationIngestionWFClientTest {
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentNotificationIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
+
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);
 
     // When
     WorkflowCreatedDTO result = client.ingest(ingestionFlowFileId);

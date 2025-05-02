@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -18,8 +20,11 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class TreasuryOpiIngestionWFClientTest {
+
   @Mock
   private WorkflowService workflowServiceMock;
+  @Mock
+  private WorkflowClientService workflowClientServiceMock;
   @Mock
   private TreasuryOpiIngestionWF wfMock;
 
@@ -27,12 +32,12 @@ class TreasuryOpiIngestionWFClientTest {
 
   @BeforeEach
   void setUp() {
-    client = new TreasuryOpiIngestionWFClient(workflowServiceMock);
+    client = new TreasuryOpiIngestionWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -44,6 +49,8 @@ class TreasuryOpiIngestionWFClientTest {
 
     doReturn(wfMock).when(workflowServiceMock)
       .buildWorkflowStub(TreasuryOpiIngestionWF.class, taskQueue, expectedResult.getWorkflowId());
+
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);
 
     // When
     WorkflowCreatedDTO result = client.ingest(ingestionFlowFileId);

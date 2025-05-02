@@ -1,12 +1,11 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 
-import io.temporal.client.WorkflowClient;
 import io.temporal.workflow.Functions;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWFImpl;
@@ -31,9 +30,11 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 @Service
 public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPositionWfClient {
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public SynchronizeDebtPositionWfClientImpl(WorkflowService workflowService) {
+  public SynchronizeDebtPositionWfClientImpl(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
   @Override
@@ -121,8 +122,6 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
       wfInterfaceClass,
       taskQueue,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(wfMethodCall.apply(workflow), debtPositionDTO, paymentEventRequest, wfExecutionConfig));
-    log.info("Started workflow: {}", wfExec);
-    return wfExec;
+    return workflowClientService.start(wfMethodCall.apply(workflow), debtPositionDTO, paymentEventRequest, wfExecutionConfig);
   }
 }

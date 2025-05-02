@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -19,18 +21,20 @@ class DebtPositionIngestionWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private DebtPositionIngestionFlowWF wfMock;
 
   private DebtPositionIngestionWFClient client;
 
   @BeforeEach
   void init() {
-    client = new DebtPositionIngestionWFClient(workflowServiceMock);
+    client = new DebtPositionIngestionWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -42,6 +46,8 @@ class DebtPositionIngestionWFClientTest {
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionIngestionFlowWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
+
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);
 
     // When
     WorkflowCreatedDTO result = client.ingest(ingestionFlowFileId);

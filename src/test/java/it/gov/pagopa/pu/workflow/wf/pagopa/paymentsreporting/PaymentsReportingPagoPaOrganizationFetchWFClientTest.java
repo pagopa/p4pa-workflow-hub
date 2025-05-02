@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -22,18 +24,20 @@ class PaymentsReportingPagoPaOrganizationFetchWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private PaymentsReportingPagoPaOrganizationFetchWF wfMock;
 
   private OrganizationPaymentsReportingPagoPaFetchWFClient client;
 
   @BeforeEach
   void setUp() {
-    client = new OrganizationPaymentsReportingPagoPaFetchWFClient(workflowServiceMock);
+    client = new OrganizationPaymentsReportingPagoPaFetchWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(workflowServiceMock);
+    verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -45,6 +49,8 @@ class PaymentsReportingPagoPaOrganizationFetchWFClientTest {
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingPagoPaOrganizationFetchWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
+
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, organizationId);
 
     // When
     WorkflowCreatedDTO result = client.retrieve(organizationId);

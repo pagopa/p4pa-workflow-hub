@@ -1,11 +1,10 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine;
 
-import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.mapper.WorkflowCreatedMapper;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWFImpl;
@@ -23,9 +22,11 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class DebtPositionFineClientImpl implements DebtPositionFineClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public DebtPositionFineClientImpl(WorkflowService workflowService) {
+  public DebtPositionFineClientImpl(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
   @Override
@@ -38,9 +39,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       FineReductionOptionExpirationWF.class,
       taskQueue,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig));
-    logWfExec(wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
   }
 
   @Override
@@ -54,9 +53,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       taskQueue,
       workflowId,
       fineReductionExpirationDateTime);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig));
-    logWfExec(wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
   }
 
   @Override
@@ -69,16 +66,10 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       SynchronizeFineWF.class,
       taskQueue,
       workflowId);
-    WorkflowCreatedDTO wfExec = WorkflowCreatedMapper.map(WorkflowClient.start(workflow::synchronizeFineDP, debtPositionDTO, paymentEventRequest, massive, wfExecutionConfig));
-    logWfExec(wfExec);
-    return wfExec;
+    return workflowClientService.start(workflow::synchronizeFineDP, debtPositionDTO, paymentEventRequest, massive, wfExecutionConfig);
   }
 
   public static String generateExpireFineReductionWorkflowId(Long debtPositionId) {
     return generateWorkflowId(debtPositionId, FineReductionOptionExpirationWF.class);
-  }
-
-  private static void logWfExec(WorkflowCreatedDTO wfExec) {
-    log.info("Started workflow: {}", wfExec);
   }
 }

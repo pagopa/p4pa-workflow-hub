@@ -1,7 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.assessments;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,18 +23,20 @@ class CreateAssessmentsWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private CreateAssessmentsWF wfMock;
 
   private CreateAssessmentsWFClient client;
 
   @BeforeEach
   void setUp() {
-    client = new CreateAssessmentsWFClient(workflowServiceMock);
+    client = new CreateAssessmentsWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -44,11 +48,13 @@ class CreateAssessmentsWFClientTest {
     Mockito.when(workflowServiceMock.buildWorkflowStub(CreateAssessmentsWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, receiptId);
+
     // When
     WorkflowCreatedDTO result = client.createAssessments(receiptId);
 
     // Then
-    assertEquals(expectedResult, result);
+    assertSame(expectedResult, result);
     verify(wfMock).createAssessment(receiptId);
   }
 }
