@@ -5,7 +5,10 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWFImpl;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_nopagopa.SynchronizeNoPagoPAWF;
@@ -35,17 +38,19 @@ class SynchronizeDebtPositionWfClientTest {
 
   @Mock
   private WorkflowService workflowServiceMock;
+  @Mock
+  private WorkflowClientService workflowClientServiceMock;
 
   private SynchronizeDebtPositionWfClient client;
 
   @BeforeEach
   void init() {
-    client = new SynchronizeDebtPositionWfClientImpl(workflowServiceMock);
+    client = new SynchronizeDebtPositionWfClientImpl(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -105,12 +110,12 @@ class SynchronizeDebtPositionWfClientTest {
   private <T> void testInvokeWF(
     String taskQueue,
     Class<T> wfInterfaceClass,
-    TriFunction<DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig, String> clientInvoke,
+    TriFunction<DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig, WorkflowCreatedDTO> clientInvoke,
     Functions.Proc4<T, DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig> wfInvokeVerifier) {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
     debtPosition.setDebtPositionId(1L);
-    String expectedWorkflowId = wfInterfaceClass.getSimpleName()+"-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(wfInterfaceClass.getSimpleName()+"-1", "RUNID");
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     GenericWfExecutionConfig genericWfExecutionConfig = new GenericWfExecutionConfig();
     genericWfExecutionConfig.setIoMessages(new GenericWfExecutionConfig.IONotificationBaseOpsMessages());
@@ -120,14 +125,16 @@ class SynchronizeDebtPositionWfClientTest {
     Mockito.when(workflowServiceMock.buildWorkflowStub(
         wfInterfaceClass,
         taskQueue,
-        expectedWorkflowId))
+        expectedResult.getWorkflowId()))
       .thenReturn(wf);
 
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, debtPosition, paymentEventRequest, genericWfExecutionConfig);
+
     // When
-    String workflowId = clientInvoke.apply(debtPosition, paymentEventRequest, genericWfExecutionConfig);
+    WorkflowCreatedDTO result = clientInvoke.apply(debtPosition, paymentEventRequest, genericWfExecutionConfig);
 
     // Then
-    Assertions.assertEquals(expectedWorkflowId, workflowId);
+    Assertions.assertEquals(expectedResult, result);
     wfInvokeVerifier.apply(Mockito.verify(wf), debtPosition, paymentEventRequest, genericWfExecutionConfig);
   }
 }

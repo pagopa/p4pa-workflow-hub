@@ -20,6 +20,6 @@ public class PagoPaFetchControllerImpl implements PagoPaFetchApi {
   @Override
   public ResponseEntity<WorkflowCreatedDTO> fetchOrganizationPaymentsReporting(Long organizationId) {
     log.info("Requesting to fetch payments reporting data from PagoPa related to organization {}", organizationId);
-    return ResponseEntity.ok(new WorkflowCreatedDTO(paymentsReportingPagoPaFetchWFClient.retrieve(organizationId)));
+    return ResponseEntity.ok(paymentsReportingPagoPaFetchWFClient.retrieve(organizationId));
   }
 }

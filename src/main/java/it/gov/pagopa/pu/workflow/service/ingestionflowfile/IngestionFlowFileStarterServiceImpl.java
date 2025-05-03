@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.service.ingestionflowfile;
 
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
@@ -15,7 +16,7 @@ import java.util.function.Function;
 @Service
 public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileStarterService {
 
-  private final Map<IngestionFlowFile.IngestionFlowFileTypeEnum, Function<Long, String>> ingestionFlowFileType2WfStarter;
+  private final Map<IngestionFlowFile.IngestionFlowFileTypeEnum, Function<Long, WorkflowCreatedDTO>> ingestionFlowFileType2WfStarter;
 
   public IngestionFlowFileStarterServiceImpl(
     PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient,
@@ -34,7 +35,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
   }
 
   @Override
-  public String ingest(long ingestionFlowFileId, IngestionFlowFile.IngestionFlowFileTypeEnum flowFileType) {
+  public WorkflowCreatedDTO ingest(long ingestionFlowFileId, IngestionFlowFile.IngestionFlowFileTypeEnum flowFileType) {
     return ingestionFlowFileType2WfStarter.getOrDefault(flowFileType, x -> {
         throw new IngestionFlowTypeNotSupportedException("IngestionFlowFileType not supported: " + flowFileType);
       })

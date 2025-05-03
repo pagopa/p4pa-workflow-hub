@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.assessments;
 
-import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWFImpl;
@@ -14,12 +15,14 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class CreateAssessmentsWFClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public CreateAssessmentsWFClient(WorkflowService workflowService) {
+  public CreateAssessmentsWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
-  public String createAssessments(Long receiptId) {
+  public WorkflowCreatedDTO createAssessments(Long receiptId) {
     log.info("Starting create assessments for receipt with id: {}", receiptId);
 
     String taskQueue = CreateAssessmentsWFImpl.TASK_QUEUE_CREATE_ASSESSMENTS_WF;
@@ -29,7 +32,6 @@ public class CreateAssessmentsWFClient {
       CreateAssessmentsWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::createAssessment, receiptId);
-    return workflowId;
+    return workflowClientService.start(workflow::createAssessment, receiptId);
   }
 }

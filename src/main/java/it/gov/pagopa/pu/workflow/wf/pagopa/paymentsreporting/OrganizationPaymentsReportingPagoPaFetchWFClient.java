@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
-import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWFImpl;
@@ -16,13 +17,16 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 @Slf4j
 @Service
 public class OrganizationPaymentsReportingPagoPaFetchWFClient {
-  private final WorkflowService workflowService;
 
-  public OrganizationPaymentsReportingPagoPaFetchWFClient(WorkflowService workflowService) {
+  private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
+
+  public OrganizationPaymentsReportingPagoPaFetchWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
-  public String retrieve(Long organizationId) {
+  public WorkflowCreatedDTO retrieve(Long organizationId) {
     log.info("Starting fetch PagoPA payments reporting for the organization having id {}", organizationId);
     String taskQueue = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH;
     String workflowId = generateWorkflowId(organizationId, PaymentsReportingPagoPaOrganizationFetchWF.class);
@@ -31,13 +35,12 @@ public class OrganizationPaymentsReportingPagoPaFetchWFClient {
       PaymentsReportingPagoPaOrganizationFetchWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::retrieve, organizationId);
-    return workflowId;
+    return workflowClientService.start(workflow::retrieve, organizationId);
   }
 
   /** Cannot invoke a WF from WF thread, using Async to use an external thread instead */
   @Async
-  public Future<String> retrieveAsyncStart(Long organizationId) {
+  public Future<WorkflowCreatedDTO> retrieveAsyncStart(Long organizationId) {
     return CompletableFuture.completedFuture(retrieve(organizationId));
   }
 

@@ -1,6 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -18,18 +21,20 @@ class DebtPositionIngestionWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private DebtPositionIngestionFlowWF wfMock;
 
   private DebtPositionIngestionWFClient client;
 
   @BeforeEach
   void init() {
-    client = new DebtPositionIngestionWFClient(workflowServiceMock);
+    client = new DebtPositionIngestionWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -37,16 +42,18 @@ class DebtPositionIngestionWFClientTest {
     // Given
     long ingestionFlowFileId = 1L;
     String taskQueue = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW;
-    String expectedWorkflowId = "DebtPositionIngestionFlowWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("DebtPositionIngestionFlowWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionIngestionFlowWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionIngestionFlowWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);
+
     // When
-    String workflowId = client.ingest(ingestionFlowFileId);
+    WorkflowCreatedDTO result = client.ingest(ingestionFlowFileId);
 
     // Then
-    Assertions.assertEquals(expectedWorkflowId, workflowId);
+    Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).ingest(ingestionFlowFileId);
   }
 }

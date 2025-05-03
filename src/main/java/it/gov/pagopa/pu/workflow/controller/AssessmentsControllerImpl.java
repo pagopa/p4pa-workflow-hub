@@ -19,10 +19,6 @@ public class AssessmentsControllerImpl implements AssessmentsApi {
   @Override
   public ResponseEntity<WorkflowCreatedDTO> createAssessmentsByReceiptId(Long receiptId) {
     log.info("Creating create assessments Workflow for receipt id {} ", receiptId);
-    String workflowId = createAssessmentsWFClient.createAssessments(receiptId);
-
-    WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    log.info("workflow {} created successfully for receipt id {}", workflowId, receiptId);
-    return ResponseEntity.status(201).body(response);
+    return ResponseEntity.status(201).body(createAssessmentsWFClient.createAssessments(receiptId));
   }
 }

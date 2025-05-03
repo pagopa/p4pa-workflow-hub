@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecution
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPositionFineClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ class DebtPositionCustomWfSyncServiceTest {
   @Test
   void whenInvokeWorkflowThenOk() {
     // Given
-    String workflowId = "workflowId";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("workflowId", "runId");
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(new IONotificationMessage("subject", "message"), new IONotificationMessage("subject", "message"));
@@ -57,13 +58,13 @@ class DebtPositionCustomWfSyncServiceTest {
     wfExecutionParameters.setWfExecutionConfig(wfExecutionConfig);
 
     when(fineClientMock.synchronizeFineDP(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
-      .thenReturn(workflowId);
+      .thenReturn(expectedResult);
 
     // When
-    String result = service.invokeWorkflow(debtPositionDTO, paymentEventRequest, wfExecutionParameters);
+    WorkflowCreatedDTO result = service.invokeWorkflow(debtPositionDTO, paymentEventRequest, wfExecutionParameters);
 
     // Then
-    assertEquals(workflowId, result);
+    assertEquals(expectedResult, result);
     verify(fineClientMock).synchronizeFineDP(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig);
   }
 

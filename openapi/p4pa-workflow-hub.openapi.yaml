@@ -503,8 +503,13 @@ components:
   schemas:
     WorkflowCreatedDTO:
       type: object
+      required:
+        - workflowId
+        - runId
       properties:
         workflowId:
+          type: string
+        runId:
           type: string
     WorkflowErrorDTO:
       type: object

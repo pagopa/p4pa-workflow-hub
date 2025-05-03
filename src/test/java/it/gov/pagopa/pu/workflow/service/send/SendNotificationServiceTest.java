@@ -36,10 +36,11 @@ class SendNotificationServiceTest {
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
+      .runId("RUNID")
       .build();
 
     Mockito.when(sendNotificationWFClientMock.startSendNotificationProcess(Mockito.same(sendNotificationId)))
-      .thenReturn("WFID");
+      .thenReturn(expectedResult);
 
     // When
     WorkflowCreatedDTO result = service.sendNotificationProcess(sendNotificationId);
@@ -55,10 +56,11 @@ class SendNotificationServiceTest {
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
+      .runId("RUNID")
       .build();
 
     Mockito.when(sendNotificationWFClientMock.startSendNotificationDateRetrieve(Mockito.same(sendNotificationId)))
-      .thenReturn("WFID");
+      .thenReturn(expectedResult);
 
     // When
     WorkflowCreatedDTO result = service.sendNotificationDateRetrieve(sendNotificationId);

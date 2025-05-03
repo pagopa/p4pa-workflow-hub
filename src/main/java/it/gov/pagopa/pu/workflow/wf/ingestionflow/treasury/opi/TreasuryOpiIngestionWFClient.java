@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi;
 
-import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.wfingestion.TreasuryOpiIngestionWFImpl;
@@ -14,12 +15,14 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class TreasuryOpiIngestionWFClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public TreasuryOpiIngestionWFClient(WorkflowService workflowService) {
+  public TreasuryOpiIngestionWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
-  public String ingest(Long ingestionFlowFileId) {
+  public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
     log.info("Starting treasury OPI ingestion flow file having id {}", ingestionFlowFileId);
     String taskQueue = TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF;
     String workflowId = generateWorkflowId(ingestionFlowFileId, TreasuryOpiIngestionWF.class);
@@ -28,7 +31,6 @@ public class TreasuryOpiIngestionWFClient {
       TreasuryOpiIngestionWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::ingest, ingestionFlowFileId);
-    return workflowId;
+    return workflowClientService.start(workflow::ingest, ingestionFlowFileId);
   }
 }

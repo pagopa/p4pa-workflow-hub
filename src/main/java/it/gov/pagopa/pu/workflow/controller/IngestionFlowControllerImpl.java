@@ -22,14 +22,8 @@ public class IngestionFlowControllerImpl implements IngestionFlowApi {
   public ResponseEntity<WorkflowCreatedDTO> ingestFlowFile(Long ingestionFlowFileId, IngestionFlowFile.IngestionFlowFileTypeEnum flowFileType) {
     log.info("Creating IngestionFlowFile Workflow for ingestionFlowFileId {} of type {}", ingestionFlowFileId, flowFileType);
 
-    String workflowId = service.ingest(ingestionFlowFileId, flowFileType);
-
-    WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    response.setWorkflowId(workflowId);
-
-    log.info("Ingestion workflow {} created successfully for ingestionFileId {} of type {}", workflowId, ingestionFlowFileId, flowFileType);
-
-    return ResponseEntity.status(201).body(response);
+    WorkflowCreatedDTO wfExec = service.ingest(ingestionFlowFileId, flowFileType);
+    return ResponseEntity.status(201).body(wfExec);
   }
 
 }

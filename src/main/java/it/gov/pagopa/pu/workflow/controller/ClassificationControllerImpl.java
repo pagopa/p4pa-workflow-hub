@@ -28,32 +28,25 @@ public class ClassificationControllerImpl implements ClassificationApi {
 	@Override
   public ResponseEntity<WorkflowCreatedDTO> transferClassification(Long orgId, String iuv, String iur, Integer transferIndex) {
     log.info("Creating transfer classification Workflow for organization id {} and iuv {} and iur {} and transfer index {}", orgId, iuv, iur, transferIndex);
-    String workflowId = transferClassificationWFClient.startTransferClassification(new TransferClassificationStartSignalDTO(orgId, iuv, iur, transferIndex));
-
-    WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    log.info("workflow {} created successfully for organization id {} and iuv {} and iur {} and transfer index {}", workflowId, orgId, iuv, iur, transferIndex);
-    return ResponseEntity.status(201).body(response);
+    WorkflowCreatedDTO wfExec = transferClassificationWFClient.startTransferClassification(new TransferClassificationStartSignalDTO(orgId, iuv, iur, transferIndex));
+    return ResponseEntity.status(201).body(wfExec);
   }
 
   @Override
   public ResponseEntity<WorkflowCreatedDTO> iudClassificationByPaymentNotificationSignal(Long orgId, String iud) {
     log.info("Creating iud classification Workflow for organization id {} and iud", orgId, iud);
     IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = new IudClassificationNotifyPaymentNotificationSignalDTO(iud, orgId);
-    String workflowId = iudClassificationWFClient.notifyPaymentNotification(signalDTO);
+    WorkflowCreatedDTO wfExec =  iudClassificationWFClient.notifyPaymentNotification(signalDTO);
 
-    WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    log.info("workflow {} created successfully for organization id {} and iud {}", workflowId, orgId, iud);
-    return ResponseEntity.status(201).body(response);
+    return ResponseEntity.status(201).body(wfExec);
   }
 
   @Override
   public ResponseEntity<WorkflowCreatedDTO> iudClassificationByReceiptSignal(Long orgId, String iud, String iuv, String iur, List<Integer> transferIndexes) {
     log.info("Creating iud classification Workflow for organization id {} and iud {} and iuv {} and iur {} and transfer indexes {}", orgId, iud, iuv, iur, transferIndexes);
     IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(orgId, iud, iuv, iur, transferIndexes);
-    String workflowId = iudClassificationWFClient.notifyReceipt(signalDTO);
+    WorkflowCreatedDTO wfExec = iudClassificationWFClient.notifyReceipt(signalDTO);
 
-    WorkflowCreatedDTO response = new WorkflowCreatedDTO(workflowId);
-    log.info("workflow {} created successfully for organization id {} and iud {} and iuv {} and iur {} and transfer indexes {}", workflowId, orgId, iud, iuv, iur, transferIndexes);
-    return ResponseEntity.status(201).body(response);
+    return ResponseEntity.status(201).body(wfExec);
   }
 }
