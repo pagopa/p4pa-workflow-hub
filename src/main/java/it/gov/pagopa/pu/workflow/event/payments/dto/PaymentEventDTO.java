@@ -37,6 +37,7 @@ import java.time.OffsetDateTime;
 })
 public class PaymentEventDTO <T> {
   private String eventId;
+  private String traceId;
   private PaymentEventType eventType;
   private OffsetDateTime eventDateTime;
   private T payload;

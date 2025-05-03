@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
@@ -33,8 +35,13 @@ class PaymentsProducerServiceTest {
   private PaymentsProducerService paymentsProducerService;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     paymentsProducerService = new PaymentsProducerService(streamBridge);
+  }
+
+  @AfterEach
+  void clear(){
+    MDC.clear();
   }
 
   @Test
@@ -42,6 +49,8 @@ class PaymentsProducerServiceTest {
     // Given
     DebtPositionDTO debtPosition = buildDebtPositionDTO();
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
+    String traceId = "TRACEID";
+    MDC.put("traceId", traceId);
 
     // When
     paymentsProducerService.notifyDebtPositionPaymentsEvent(debtPosition, paymentEventRequest);
@@ -54,6 +63,7 @@ class PaymentsProducerServiceTest {
         PaymentEventDTO<?> payload = (PaymentEventDTO<?>)m.getPayload();
         String eventIdPrefix = paymentEventRequest.getPaymentEventType().getValue() + debtPosition.getDebtPositionId();
         Assertions.assertEquals(eventIdPrefix, payload.getEventId().substring(0, eventIdPrefix.length()));
+        Assertions.assertEquals(traceId, payload.getTraceId());
         Assertions.assertSame(debtPosition, payload.getPayload());
         Assertions.assertSame(paymentEventRequest.getEventDescription(), payload.getEventDescription());
         Assertions.assertSame(paymentEventRequest.getPaymentEventType(), payload.getEventType());
