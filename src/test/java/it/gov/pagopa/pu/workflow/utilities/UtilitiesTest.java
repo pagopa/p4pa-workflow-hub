@@ -1,9 +1,11 @@
 package it.gov.pagopa.pu.workflow.utilities;
 
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -13,7 +15,7 @@ import java.time.ZoneOffset;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class UtilitiesTest {
+public class UtilitiesTest {
 
   @Test
   void whenGenerateWorkflowIdThenOk(){
@@ -78,5 +80,26 @@ class UtilitiesTest {
     String workflowId = Utilities.generateWorkflowId("00000020f51bb4362eee2a4d", Utilities.class);
 
     assertEquals("Utilities-00000020f51bb4362eee2a4d", workflowId);
+  }
+
+  @Test
+  void testGetTraceId(){
+    // Given
+    String expectedResult = "TRACEID";
+    setTraceId(expectedResult);
+
+    // When
+    String result = Utilities.getTraceId();
+
+    // Then
+    Assertions.assertSame(expectedResult, result);
+    clearTraceIdContext();
+  }
+
+  public static void setTraceId(String traceId) {
+    MDC.put("traceId", traceId);
+  }
+  public static void clearTraceIdContext(){
+    MDC.clear();
   }
 }
