@@ -1633,7 +1633,11 @@
           }
         }
       },
-      "DebtPositionWorkflowType" : {
+      "DebtPositionSyncWfName" : {
+        "type" : "string",
+        "enum" : [ "fineWf" ]
+      },
+      "WorkflowType" : {
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1650,70 +1654,23 @@
           "updateTraceId" : {
             "type" : "string"
           },
-          "debtPositionId" : {
+          "workflowTypeId" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "workflowTypeOrgId" : {
-            "type" : "integer",
-            "format" : "int64"
+          "description" : {
+            "type" : "string"
           },
-          "executionConfig" : {
-            "type" : "string",
-            "format" : "byte"
+          "defaultExecutionConfig" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
           },
           "_links" : {
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "debtPositionId", "executionConfig" ]
-      },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
-      "PagedModelDebtPositionWorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "debtPositionWorkflowTypes" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/DebtPositionWorkflowType"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "DebtPositionSyncWfName" : {
-        "type" : "string",
-        "enum" : [ "fineWf" ]
+        "required" : [ "defaultExecutionConfig", "description" ]
       },
       "FineWfExecutionConfig" : {
         "allOf" : [ {
@@ -1754,6 +1711,49 @@
           },
           "message" : {
             "type" : "string"
+          }
+        }
+      },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "PagedModelWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypes" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowType"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
           }
         }
       },
@@ -1826,7 +1826,7 @@
           }
         }
       },
-      "WorkflowType" : {
+      "DebtPositionWorkflowType" : {
         "type" : "object",
         "properties" : {
           "creationDate" : {
@@ -1843,34 +1843,34 @@
           "updateTraceId" : {
             "type" : "string"
           },
-          "workflowTypeId" : {
+          "debtPositionId" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "description" : {
-            "type" : "string"
+          "workflowTypeOrgId" : {
+            "type" : "integer",
+            "format" : "int64"
           },
-          "defaultExecutionConfig" : {
-            "oneOf" : [ {
-              "$ref" : "#/components/schemas/FineWfExecutionConfig"
-            } ]
+          "executionConfig" : {
+            "type" : "string",
+            "format" : "byte"
           },
           "_links" : {
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "defaultExecutionConfig", "description" ]
+        "required" : [ "debtPositionId", "executionConfig" ]
       },
-      "PagedModelWorkflowType" : {
+      "PagedModelDebtPositionWorkflowType" : {
         "type" : "object",
         "properties" : {
           "_embedded" : {
             "type" : "object",
             "properties" : {
-              "workflowTypes" : {
+              "debtPositionWorkflowTypes" : {
                 "type" : "array",
                 "items" : {
-                  "$ref" : "#/components/schemas/WorkflowType"
+                  "$ref" : "#/components/schemas/DebtPositionWorkflowType"
                 }
               }
             }
@@ -2059,6 +2059,9 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
+          "updateTraceId" : {
+            "type" : "string"
+          },
           "paymentOptions" : {
             "type" : "array",
             "items" : {
@@ -2173,6 +2176,9 @@
           },
           "updateOperatorExternalId" : {
             "type" : "string"
+          },
+          "updateTraceId" : {
+            "type" : "string"
           }
         }
       },
@@ -2188,6 +2194,9 @@
           },
           "syncStatusTo" : {
             "$ref" : "#/components/schemas/InstallmentStatus"
+          },
+          "syncError" : {
+            "type" : "string"
           }
         }
       },
@@ -2228,6 +2237,9 @@
             "format" : "date-time"
           },
           "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
             "type" : "string"
           },
           "installments" : {
@@ -2350,6 +2362,9 @@
             "format" : "date-time"
           },
           "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
             "type" : "string"
           }
         }
