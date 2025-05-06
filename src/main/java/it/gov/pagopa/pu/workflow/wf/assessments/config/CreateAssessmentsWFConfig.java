@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.assessments.config;
 
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.classifications.AssessmentsCreationActivity;
+import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsCreationActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
