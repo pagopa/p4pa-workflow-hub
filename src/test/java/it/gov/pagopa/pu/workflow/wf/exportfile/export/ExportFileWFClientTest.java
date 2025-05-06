@@ -1,7 +1,10 @@
 package it.gov.pagopa.pu.workflow.wf.exportfile.export;
 
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWF;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -19,18 +22,20 @@ class ExportFileWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private ExportFileWF wfMock;
 
   private ExportFileWFClient client;
 
   @BeforeEach
   void init() {
-    client = new ExportFileWFClient(workflowServiceMock);
+    client = new ExportFileWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -39,16 +44,18 @@ class ExportFileWFClientTest {
     Long exportFileId = 1L;
     ExportFileTypeEnum exportFileType = ExportFileTypeEnum.PAID;
     String taskQueue = ExportFileWFImpl.TASK_QUEUE_EXPORT_FILE_WF;
-    String expectedWorkflowId = "ExportFileWF-" + exportFileType + "-" + exportFileId;
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ExportFileWF-" + exportFileType + "-" + exportFileId, "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, exportFileId, exportFileType);
+
     // When
-    String workflowId = client.exportFile(exportFileId, exportFileType);
+    WorkflowCreatedDTO result = client.exportFile(exportFileId, exportFileType);
 
     // Then
-    Assertions.assertEquals(expectedWorkflowId, workflowId);
+    Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).exportFile(exportFileId, exportFileType);
   }
 }

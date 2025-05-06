@@ -52,10 +52,11 @@ class DebtPositionServiceTest {
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
+      .runId("RUNID")
       .build();
 
     Mockito.when(debtPositionSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionParameters), Mockito.same(accessToken)))
-      .thenReturn("WFID");
+      .thenReturn(expectedResult);
 
     // When
     WorkflowCreatedDTO result = service.syncDebtPosition(debtPosition, paymentEventRequest, wfExecutionParameters, accessToken);
@@ -72,19 +73,19 @@ class DebtPositionServiceTest {
     );
   }
 
-  private void testWorkflowDP(Function<DebtPositionDTO, String> clientMockSetup, Function<DebtPositionDTO, WorkflowCreatedDTO> serviceMethod) {
+  private void testWorkflowDP(Function<DebtPositionDTO, WorkflowCreatedDTO> clientMockSetup, Function<DebtPositionDTO, WorkflowCreatedDTO> serviceMethod) {
     // when
-    String workflowId = "workflow-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("workflow-1", "runId");
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
-    Mockito.when(clientMockSetup.apply(debtPositionDTO)).thenReturn("workflow-1");
+    Mockito.when(clientMockSetup.apply(debtPositionDTO)).thenReturn(expectedResult);
 
     // given
-    WorkflowCreatedDTO workflowCreatedDTO = serviceMethod.apply(debtPositionDTO);
+    WorkflowCreatedDTO result = serviceMethod.apply(debtPositionDTO);
 
     // then
-    assertNotNull(workflowCreatedDTO);
-    assertEquals(workflowId, workflowCreatedDTO.getWorkflowId());
+    assertNotNull(result);
+    assertEquals(expectedResult, result);
   }
 
 }

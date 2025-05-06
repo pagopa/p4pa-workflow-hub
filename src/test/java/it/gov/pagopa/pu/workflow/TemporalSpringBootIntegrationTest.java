@@ -15,6 +15,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
@@ -127,9 +128,9 @@ class TemporalSpringBootIntegrationTest {
     when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenReturn(1);
 
-    String workflowId = workflowClient.ingest(1L);
+    WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
 
-    waitUntilWfCompletion(workflowId);
+    waitUntilWfCompletion(wfExec);
 
     verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
@@ -143,8 +144,8 @@ class TemporalSpringBootIntegrationTest {
 
   @Test
   void givenNotRetryableExceptionWhenExecuteWfThenStopExecutionWithoutRetries() {
-    String workflowId = workflowClient.ingest(1L);
-    waitUntilWfFailed(workflowId);
+    WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
+    waitUntilWfFailed(wfExec);
 
     verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
@@ -155,8 +156,8 @@ class TemporalSpringBootIntegrationTest {
     when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenThrow(new NotRetryableActivityException("extension"){});
 
-    String workflowId = workflowClient.ingest(1L);
-    waitUntilWfFailed(workflowId);
+    WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
+    waitUntilWfFailed(wfExec);
 
     verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
@@ -167,20 +168,20 @@ class TemporalSpringBootIntegrationTest {
     when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenThrow(new RuntimeException("RetryableActivityException"));
 
-    String workflowId = workflowClient.ingest(1L);
-    waitUntilWfFailed(workflowId);
+    WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
+    waitUntilWfFailed(wfExec);
 
     verify(statusActivitySpy, times(3)).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock, times(3)).updateStatus(anyLong(), any(), any(), any());
   }
 
   // PRIVATE METHODS
-  private void waitUntilWfCompletion(String workflowId) {
-    waitUntilWfStatus(workflowId, WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+  private void waitUntilWfCompletion(WorkflowCreatedDTO wfExec) {
+    waitUntilWfStatus(wfExec.getWorkflowId(), WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
   }
 
-  private void waitUntilWfFailed(String workflowId) {
-    waitUntilWfStatus(workflowId, WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_FAILED);
+  private void waitUntilWfFailed(WorkflowCreatedDTO wfExec) {
+    waitUntilWfStatus(wfExec.getWorkflowId(), WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_FAILED);
   }
 
   private void waitUntilWfStatus(String workflowId, WorkflowExecutionStatus status) {

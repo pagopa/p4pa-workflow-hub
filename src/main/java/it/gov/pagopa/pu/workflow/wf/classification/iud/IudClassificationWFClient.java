@@ -1,8 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.classification.iud;
 
-import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
@@ -15,38 +16,37 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class IudClassificationWFClient {
-  private final WorkflowService workflowService;
 
-  public IudClassificationWFClient(WorkflowService workflowService) {
+  private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
+
+  public IudClassificationWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
-  public String notifyReceipt(IudClassificationNotifyReceiptSignalDTO signalDTO) {
+  public WorkflowCreatedDTO notifyReceipt(IudClassificationNotifyReceiptSignalDTO signalDTO) {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIud());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, workflowId);
-    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
+    return workflowClientService.signalWithStart(
+      untypedWorkflowStub,
       IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_RECEIPT,
       new Object[]{signalDTO},
       new Object[]{}
     );
-
-    log.info("IUD classification Workflow for Receipt started with workflowId: {}", wfExecution.getWorkflowId());
-    return workflowId;
   }
 
-  public String notifyPaymentNotification(IudClassificationNotifyPaymentNotificationSignalDTO signalDTO) {
+  public WorkflowCreatedDTO notifyPaymentNotification(IudClassificationNotifyPaymentNotificationSignalDTO signalDTO) {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIud());
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, workflowId);
-    WorkflowExecution wfExecution = untypedWorkflowStub.signalWithStart(
+    return workflowClientService.signalWithStart(
+      untypedWorkflowStub,
       IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENT_NOTIFICATION,
       new Object[]{signalDTO},
       new Object[]{}
     );
-
-    log.info("IUD classification Workflow for Notification started with workflowId: {}", wfExecution.getWorkflowId());
-    return workflowId;
   }
 
   private static String generateWorkflowId(Long organizationId, String iud) {

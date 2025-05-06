@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send;
 
-import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWFImpl;
@@ -18,12 +19,14 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class SendNotificationWFClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public SendNotificationWFClient(WorkflowService workflowService) {
+  public SendNotificationWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
-  public String startSendNotificationProcess(String sendNotificationId) {
+  public WorkflowCreatedDTO startSendNotificationProcess(String sendNotificationId) {
     log.debug("Starting send notification process having id {}", sendNotificationId);
     String taskQueue = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS;
     String workflowId = generateWorkflowId(sendNotificationId, SendNotificationProcessWF.class);
@@ -32,11 +35,10 @@ public class SendNotificationWFClient {
       SendNotificationProcessWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::sendNotificationProcess, sendNotificationId);
-    return workflowId;
+    return workflowClientService.start(workflow::sendNotificationProcess, sendNotificationId);
   }
 
-  public String startSendNotificationDateRetrieve(String sendNotificationId) {
+  public WorkflowCreatedDTO startSendNotificationDateRetrieve(String sendNotificationId) {
     String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
     String workflowId = generateWorkflowId(sendNotificationId, SendNotificationDateRetrieveWF.class);
 
@@ -44,8 +46,7 @@ public class SendNotificationWFClient {
       SendNotificationDateRetrieveWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
-    return workflowId;
+    return workflowClientService.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
   }
 
   public void scheduleSendNotificationDateRetrieve(String sendNotificationId, Duration nextSchedule) {
@@ -58,6 +59,6 @@ public class SendNotificationWFClient {
       taskQueue,
       workflowId,
       nextSchedule);
-    WorkflowClient.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
+    workflowClientService.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
   }
 }

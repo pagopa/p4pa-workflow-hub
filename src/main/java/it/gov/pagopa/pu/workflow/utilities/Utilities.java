@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.utilities;
 
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import org.mapstruct.Named;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -32,5 +33,9 @@ public class Utilities {
   @Named("offsetDateTimeToLocalDateTime")
   public static LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
+  }
+
+  public static String getTraceId(){
+    return MDC.get("traceId");
   }
 }

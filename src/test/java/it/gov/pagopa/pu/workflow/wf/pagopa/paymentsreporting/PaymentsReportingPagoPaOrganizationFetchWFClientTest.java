@@ -1,6 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -21,18 +24,20 @@ class PaymentsReportingPagoPaOrganizationFetchWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private PaymentsReportingPagoPaOrganizationFetchWF wfMock;
 
   private OrganizationPaymentsReportingPagoPaFetchWFClient client;
 
   @BeforeEach
   void setUp() {
-    client = new OrganizationPaymentsReportingPagoPaFetchWFClient(workflowServiceMock);
+    client = new OrganizationPaymentsReportingPagoPaFetchWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(workflowServiceMock);
+    verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
@@ -40,16 +45,18 @@ class PaymentsReportingPagoPaOrganizationFetchWFClientTest {
     // Given
     long organizationId = 1L;
     String taskQueue = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH;
-    String expectedWorkflowId = "PaymentsReportingPagoPaOrganizationFetchWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("PaymentsReportingPagoPaOrganizationFetchWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingPagoPaOrganizationFetchWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingPagoPaOrganizationFetchWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, organizationId);
+
     // When
-    String workflowId = client.retrieve(organizationId);
+    WorkflowCreatedDTO result = client.retrieve(organizationId);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertEquals(expectedResult, result);
     verify(wfMock).retrieve(organizationId);
   }
 }

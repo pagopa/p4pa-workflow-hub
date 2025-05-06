@@ -1,14 +1,16 @@
 package it.gov.pagopa.pu.workflow.wf.classification.iud;
 
-import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWF;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWFImpl;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,9 +24,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,20 +34,29 @@ class IudClassificationWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
-  private WorkflowStub workflowStubMock;
+  private WorkflowClientService workflowClientServiceMock;
   @Mock
-  private WorkflowExecution workflowExecutionMock;
+  private WorkflowStub workflowStubMock;
 
   private IudClassificationWFClient client;
 
   @BeforeEach
   void setUp() {
-    client = new IudClassificationWFClient(workflowServiceMock);
+    client = new IudClassificationWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(workflowServiceMock);
+    verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock);
+  }
+
+  @Test
+  void testSignalMethodsExist() {
+    TemporalTestUtils.assertSignalMethodExists(IudClassificationWF.class,
+      IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_RECEIPT, IudClassificationNotifyReceiptSignalDTO.class);
+
+    TemporalTestUtils.assertSignalMethodExists(IudClassificationWF.class,
+      IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENT_NOTIFICATION, IudClassificationNotifyPaymentNotificationSignalDTO.class);
   }
 
   @Test
@@ -59,21 +70,22 @@ class IudClassificationWFClientTest {
       .transferIndexes(Collections.singletonList(1))
       .build();
 
-    String expectedWorkflowId = "IudClassificationWF-1-iud123";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
-    Mockito.when(workflowStubMock.signalWithStart(
+    Mockito.when(workflowClientServiceMock.signalWithStart(
+        same(workflowStubMock),
         eq(IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_RECEIPT),
-        any(),
-        any()))
-      .thenReturn(workflowExecutionMock);
+        argThat(o -> o[0] == signalDTO),
+        argThat(o -> o.length==0)))
+      .thenReturn(expectedResult);
 
     // When
-    String workflowId = client.notifyReceipt(signalDTO);
+    WorkflowCreatedDTO result = client.notifyReceipt(signalDTO);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
+    assertSame(expectedResult, result);
   }
 
   @Test
@@ -84,40 +96,22 @@ class IudClassificationWFClientTest {
       .iud("iud123")
       .build();
 
-    String expectedWorkflowId = "IudClassificationWF-1-iud123";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(any(String.class), any(String.class)))
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
-    Mockito.when(workflowStubMock.signalWithStart(
+    Mockito.when(workflowClientServiceMock.signalWithStart(
+        same(workflowStubMock),
         eq(IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENT_NOTIFICATION),
-        any(),
-        any()))
-      .thenReturn(workflowExecutionMock);
+        argThat(o -> o[0] == signalDTO),
+        argThat(o -> o.length==0)))
+      .thenReturn(expectedResult);
 
     // When
-    String workflowId = client.notifyPaymentNotification(signalDTO);
+    WorkflowCreatedDTO result = client.notifyPaymentNotification(signalDTO);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowId);
-  }
-
-  @Test
-  void testSignalMethodsExist() {
-    assertDoesNotThrow(() -> {
-      checkMethodExistsOnWfAndClientClasses(
-        IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_RECEIPT,
-        IudClassificationNotifyReceiptSignalDTO.class);
-
-      checkMethodExistsOnWfAndClientClasses(
-        IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENT_NOTIFICATION,
-        IudClassificationNotifyPaymentNotificationSignalDTO.class);
-    });
-  }
-
-  // Helper method to check that the method exists on both classes
-  private void checkMethodExistsOnWfAndClientClasses(String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
-    Assertions.assertNotNull(IudClassificationWF.class.getMethod(methodName, parameterTypes));
-    Assertions.assertNotNull(IudClassificationWFClient.class.getMethod(methodName, parameterTypes));
+    assertSame(expectedResult, result);
   }
 
   @ParameterizedTest

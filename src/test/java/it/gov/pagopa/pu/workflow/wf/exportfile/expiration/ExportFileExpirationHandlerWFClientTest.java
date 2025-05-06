@@ -1,6 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.exportfile.expiration;
 
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWF;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -22,32 +25,36 @@ class ExportFileExpirationHandlerWFClientTest {
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
   private ExportFileExpirationHandlerWF wfMock;
 
   private ExportFileExpirationHandlerWFClient client;
 
   @BeforeEach
   void setUp() {
-    client = new ExportFileExpirationHandlerWFClient(workflowServiceMock);
+    client = new ExportFileExpirationHandlerWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
   }
 
   @Test
   void testCreateExportFileExpirationHandler() {
     Long exportFileId = 456L;
     String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
-    String expectedWorkflowId = "ExportFileExpirationHandlerWF-456";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ExportFileExpirationHandlerWF-456", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileExpirationHandlerWF.class, taskQueue, expectedWorkflowId))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileExpirationHandlerWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
-    String workflowId = client.exportFileExpirationHandler(exportFileId);
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, exportFileId);
 
-    assertEquals(expectedWorkflowId, workflowId);
+    WorkflowCreatedDTO result = client.exportFileExpirationHandler(exportFileId);
+
+    assertEquals(expectedResult, result);
     verify(wfMock).exportFileExpirationHandler(exportFileId);
   }
 
@@ -58,10 +65,13 @@ class ExportFileExpirationHandlerWFClientTest {
     LocalDate dateTime = LocalDate.of(2025, 1, 1);
     String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
 
-    String expectedWorkflowId = "ExportFileExpirationHandlerWF-" + exportFileId;
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ExportFileExpirationHandlerWF-" + exportFileId, "runId");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(ExportFileExpirationHandlerWF.class, taskQueue, expectedWorkflowId, dateTime))
+    Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(ExportFileExpirationHandlerWF.class, taskQueue, expectedResult.getWorkflowId(), dateTime))
       .thenReturn(wfMock);
+
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, exportFileId);
+
     //when
     client.scheduleExportFileExpiration(exportFileId, dateTime);
     //then

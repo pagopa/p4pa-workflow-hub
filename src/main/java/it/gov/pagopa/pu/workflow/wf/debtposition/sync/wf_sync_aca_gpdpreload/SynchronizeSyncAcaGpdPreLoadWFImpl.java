@@ -1,12 +1,12 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca_gpdpreload;
 
 import io.temporal.spring.boot.WorkflowImpl;
-import it.gov.pagopa.payhub.activities.activity.debtposition.aca.SynchronizeInstallmentAcaActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.aca.SynchronizeInstallmentAcaActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWf;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
@@ -33,7 +33,7 @@ public class SynchronizeSyncAcaGpdPreLoadWFImpl extends BaseDPSynchronizeWf impl
   }
 
   @Override
-  protected IupdSyncStatusUpdateDTO synchronizeInstallment(DebtPositionDTO debtPosition, InstallmentDTO installment) {
+  protected SyncCompleteDTO synchronizeInstallment(DebtPositionDTO debtPosition, InstallmentDTO installment) {
     log.info("Synchronizing Installment with IUD: {} for DebtPosition ID: {} on ACA", installment.getIud(), debtPosition.getDebtPositionId());
     try{
       synchronizeInstallmentAcaActivity.synchronizeInstallmentAca(debtPosition, installment.getIud());

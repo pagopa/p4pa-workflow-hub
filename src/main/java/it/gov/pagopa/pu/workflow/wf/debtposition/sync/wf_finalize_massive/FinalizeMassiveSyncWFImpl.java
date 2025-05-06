@@ -4,7 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWf;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class FinalizeMassiveSyncWFImpl extends BaseDPSynchronizeWf implements Fi
   }
 
   @Override
-  protected IupdSyncStatusUpdateDTO synchronizeInstallment(DebtPositionDTO debtPosition, InstallmentDTO installment) {
+  protected SyncCompleteDTO synchronizeInstallment(DebtPositionDTO debtPosition, InstallmentDTO installment) {
     // Massive DebtPosition ingestion should not invoke any PagoPA API as finalization WF: the sync operation has been executed massively using specialized massive API
     return buildIupdSyncStatusUpdateDTO(installment);
   }

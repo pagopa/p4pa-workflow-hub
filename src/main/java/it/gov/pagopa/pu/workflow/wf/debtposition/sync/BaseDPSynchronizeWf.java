@@ -1,15 +1,12 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 
 import com.nimbusds.jose.util.Pair;
-import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.FinalizeDebtPositionSyncStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.util.DebtPositionUtilities;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.IupdSyncStatusUpdateDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -24,6 +21,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -72,39 +70,46 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     log.info("Synchronizing DebtPosition {} using Activity class {}", debtPositionId, getClass().getSimpleName());
 
-    Map<String, IupdSyncStatusUpdateDTO> finalizeStatusRequest = processToSyncInstallments(requestedDebtPosition);
+    SyncStatusUpdateRequestDTO finalizeStatusRequest = processToSyncInstallments(requestedDebtPosition);
     DebtPositionDTO finalizedDebtPositionDTO = finalizeSyncStatus(requestedDebtPosition, finalizeStatusRequest);
     publishEvent(paymentEventRequest, finalizedDebtPositionDTO);
-    callIONotificationActivity(requestedDebtPosition, finalizeStatusRequest, wfExecutionConfig!=null? wfExecutionConfig.getIoMessages() : null);
+    callIONotificationActivity(requestedDebtPosition, finalizeStatusRequest.getIupd2finalize(), wfExecutionConfig!=null? wfExecutionConfig.getIoMessages() : null);
     scheduleExpirationWF(finalizedDebtPositionDTO, debtPositionId);
 
     log.info("DebtPosition synchronized {}", debtPositionId);
   }
 
-  protected Map<String, IupdSyncStatusUpdateDTO> processToSyncInstallments(DebtPositionDTO debtPosition) {
-    return debtPosition.getPaymentOptions().stream()
+  protected SyncStatusUpdateRequestDTO processToSyncInstallments(DebtPositionDTO debtPosition) {
+    SyncStatusUpdateRequestDTO out = new SyncStatusUpdateRequestDTO();
+    out.setIupdSyncError(new HashMap<>());
+
+    out.setIupd2finalize(debtPosition.getPaymentOptions().stream()
       .flatMap(paymentOption -> paymentOption.getInstallments().stream())
       .filter(installment -> InstallmentStatus.TO_SYNC.equals(installment.getStatus()))
       .map(installment -> {
-          try {
-            return Pair.of(installment.getIud(), synchronizeInstallment(debtPosition, installment));
+        String iud = installment.getIud();
+        try {
+            return Pair.of(iud, synchronizeInstallment(debtPosition, installment));
           } catch (Exception e) {
-            String errorMessage = "Error occurred while synchronizing Installment with IUD: " + installment.getIud() + " for DebtPosition ID: " + debtPosition.getDebtPositionId() + ". Error: " + e.getMessage();
+            String errorMessage = "Error occurred while synchronizing Installment with IUD: " + iud + " for DebtPosition ID: " + debtPosition.getDebtPositionId() + ". Error: " + e.getMessage();
             log.error(errorMessage, e);
             publishPaymentEventActivity.publishDebtPositionErrorEvent(debtPosition, new PaymentEventRequestDTO(PaymentEventType.SYNC_ERROR, errorMessage));
+            out.getIupdSyncError().put(iud, new SyncErrorDTO(errorMessage));
             return null;
           }
         }
       )
       .filter(Objects::nonNull)
-      .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+      .collect(Collectors.toMap(Pair::getLeft, Pair::getRight)));
+
+    return out;
   }
 
   /**
-   * It will build a ready to be used {@link IupdSyncStatusUpdateDTO} starting from the input installment
+   * It will build a ready to be used {@link SyncCompleteDTO} starting from the input installment
    */
-  protected IupdSyncStatusUpdateDTO buildIupdSyncStatusUpdateDTO(InstallmentDTO installmentDTO) {
-    return IupdSyncStatusUpdateDTO.builder()
+  protected SyncCompleteDTO buildIupdSyncStatusUpdateDTO(InstallmentDTO installmentDTO) {
+    return SyncCompleteDTO.builder()
       .newStatus(Objects.requireNonNull(installmentDTO.getSyncStatus()).getSyncStatusTo())
       .build();
   }
@@ -112,15 +117,16 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
   /**
    * It will synchronize an Installment
    */
-  protected abstract IupdSyncStatusUpdateDTO synchronizeInstallment(DebtPositionDTO debtPosition, InstallmentDTO installment);
+  protected abstract SyncCompleteDTO synchronizeInstallment(DebtPositionDTO debtPosition, InstallmentDTO installment);
 
-  protected DebtPositionDTO finalizeSyncStatus(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap) {
+  protected DebtPositionDTO finalizeSyncStatus(DebtPositionDTO requestedDebtPosition, SyncStatusUpdateRequestDTO syncStatusUpdateRequestDTO) {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
-    if (!CollectionUtils.isEmpty(iupdSyncStatusUpdateDTOMap)) {
-      log.info("Finalizing sync statuses of debtPosition {}: {}", debtPositionId, iupdSyncStatusUpdateDTOMap);
-      return finalizeDebtPositionSyncStatusActivity.finalizeDebtPositionSyncStatus(debtPositionId, iupdSyncStatusUpdateDTOMap);
+    if (!CollectionUtils.isEmpty(syncStatusUpdateRequestDTO.getIupdSyncError())
+      || !CollectionUtils.isEmpty(syncStatusUpdateRequestDTO.getIupd2finalize())) {
+      log.info("Finalizing sync statuses of debtPosition {}: {}", debtPositionId, syncStatusUpdateRequestDTO);
+      return finalizeDebtPositionSyncStatusActivity.finalizeDebtPositionSyncStatus(debtPositionId, syncStatusUpdateRequestDTO);
     } else {
-      log.info("No sync statuses to finalized for debtPosition {}", debtPositionId);
+      log.info("No sync statuses to finalize for debtPosition {}", debtPositionId);
       return requestedDebtPosition;
     }
   }
@@ -132,11 +138,11 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     }
   }
 
-  protected void callIONotificationActivity(DebtPositionDTO requestedDebtPosition, Map<String, IupdSyncStatusUpdateDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
+  protected void callIONotificationActivity(DebtPositionDTO requestedDebtPosition, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
-    if (!CollectionUtils.isEmpty(iupdSyncStatusUpdateDTOMap)) {
+    if (!CollectionUtils.isEmpty(iudSyncCompleteDTOMap)) {
       log.info("Calling notifyIO activity on debtPosition {} (organizationId {}, debtPositionTypeOrgId {})", debtPositionId, requestedDebtPosition.getOrganizationId(), requestedDebtPosition.getDebtPositionTypeOrgId());
-      DebtPositionIoNotificationDTO ioNotifications = ioNotificationDebtPositionActivity.sendIoNotification(requestedDebtPosition, iupdSyncStatusUpdateDTOMap, ioMessages);
+      DebtPositionIoNotificationDTO ioNotifications = ioNotificationDebtPositionActivity.sendIoNotification(requestedDebtPosition, iudSyncCompleteDTOMap, ioMessages);
       if(ioNotifications != null){
         publishPaymentEventActivity.publishDebtPositionIoNotificationEvent(ioNotifications, new PaymentEventRequestDTO(PaymentEventType.IO_NOTIFIED, null));
       }

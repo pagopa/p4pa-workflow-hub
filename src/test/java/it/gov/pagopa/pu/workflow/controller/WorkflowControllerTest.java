@@ -27,7 +27,7 @@ class WorkflowControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private WorkflowService service;
+  private WorkflowService serviceMock;
 
   @Test
   void whenGetWorkflowStatusThenOk() throws Exception {
@@ -37,7 +37,7 @@ class WorkflowControllerTest {
       .status("ok")
       .build();
 
-    Mockito.when(service.getWorkflowStatus(workflowId))
+    Mockito.when(serviceMock.getWorkflowStatus(workflowId))
       .thenReturn(workflowStatusDTO);
 
     MvcResult result = mockMvc.perform(

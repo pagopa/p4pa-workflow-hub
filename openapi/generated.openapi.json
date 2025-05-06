@@ -22,6 +22,9 @@
     "name" : "Assessments",
     "description" : "the Assessments API"
   }, {
+    "name" : "PagoPaFetch",
+    "description" : "the PagoPaFetch API"
+  }, {
     "name" : "ExportFile",
     "description" : "the ExportFile API"
   }, {
@@ -1510,6 +1513,48 @@
           "BearerAuth" : [ ]
         } ]
       }
+    },
+    "/workflowhub/workflow/pagopa-fetch/payments-reporting/{organizationId}" : {
+      "get" : {
+        "tags" : [ "PagoPaFetch" ],
+        "description" : "Fetch organization Payments Reporting",
+        "operationId" : "fetchOrganizationPaymentsReporting",
+        "parameters" : [ {
+          "name" : "organizationId",
+          "in" : "path",
+          "description" : "The id of the organization.",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Fetch correctly started",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -1592,6 +1637,41 @@
         "type" : "string",
         "enum" : [ "fineWf" ]
       },
+      "WorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
+            "type" : "string"
+          },
+          "workflowTypeId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "defaultExecutionConfig" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        },
+        "required" : [ "defaultExecutionConfig", "description" ]
+      },
       "FineWfExecutionConfig" : {
         "allOf" : [ {
           "$ref" : "#/components/schemas/WfExecutionConfig"
@@ -1633,49 +1713,6 @@
             "type" : "string"
           }
         }
-      },
-      "WfExecutionConfig" : {
-        "type" : "object",
-        "discriminator" : {
-          "propertyName" : "workflowTypeName"
-        },
-        "properties" : {
-          "workflowTypeName" : {
-            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
-          }
-        }
-      },
-      "WorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateOperatorExternalId" : {
-            "type" : "string"
-          },
-          "workflowTypeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "defaultExecutionConfig" : {
-            "oneOf" : [ {
-              "$ref" : "#/components/schemas/FineWfExecutionConfig"
-            } ]
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        },
-        "required" : [ "defaultExecutionConfig", "description" ]
       },
       "PageMetadata" : {
         "type" : "object",
@@ -1720,6 +1757,17 @@
           }
         }
       },
+      "WfExecutionConfig" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "workflowTypeName"
+        },
+        "properties" : {
+          "workflowTypeName" : {
+            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
+          }
+        }
+      },
       "WorkflowTypeOrg" : {
         "type" : "object",
         "properties" : {
@@ -1732,6 +1780,9 @@
             "format" : "date-time"
           },
           "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
             "type" : "string"
           },
           "debtPositionTypeOrgId" : {
@@ -1789,6 +1840,9 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
+          "updateTraceId" : {
+            "type" : "string"
+          },
           "debtPositionId" : {
             "type" : "integer",
             "format" : "int64"
@@ -1843,6 +1897,9 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
+          "updateTraceId" : {
+            "type" : "string"
+          },
           "debtPositionId" : {
             "type" : "integer",
             "format" : "int64"
@@ -1870,6 +1927,9 @@
             "format" : "date-time"
           },
           "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
             "type" : "string"
           },
           "debtPositionTypeOrgId" : {
@@ -1902,6 +1962,9 @@
           "updateOperatorExternalId" : {
             "type" : "string"
           },
+          "updateTraceId" : {
+            "type" : "string"
+          },
           "workflowTypeId" : {
             "type" : "integer",
             "format" : "int64"
@@ -1922,8 +1985,12 @@
         "properties" : {
           "workflowId" : {
             "type" : "string"
+          },
+          "runId" : {
+            "type" : "string"
           }
-        }
+        },
+        "required" : [ "runId", "workflowId" ]
       },
       "CodeEnum" : {
         "type" : "string",
@@ -1990,6 +2057,9 @@
             "format" : "date-time"
           },
           "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
             "type" : "string"
           },
           "paymentOptions" : {
@@ -2106,6 +2176,9 @@
           },
           "updateOperatorExternalId" : {
             "type" : "string"
+          },
+          "updateTraceId" : {
+            "type" : "string"
           }
         }
       },
@@ -2121,6 +2194,9 @@
           },
           "syncStatusTo" : {
             "$ref" : "#/components/schemas/InstallmentStatus"
+          },
+          "syncError" : {
+            "type" : "string"
           }
         }
       },
@@ -2161,6 +2237,9 @@
             "format" : "date-time"
           },
           "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
             "type" : "string"
           },
           "installments" : {
@@ -2283,6 +2362,9 @@
             "format" : "date-time"
           },
           "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
             "type" : "string"
           }
         }

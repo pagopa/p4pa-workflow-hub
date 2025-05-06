@@ -39,7 +39,7 @@ class DebtPositionFineServiceTest {
   void whenExpireFineReduction(){
     // Given
     Long debtPositionId = 1L;
-    String expectedWorkflowId = "FineReductionOptionExpirationWF-1";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("FineReductionOptionExpirationWF-1", "RUNID");
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
 
@@ -50,12 +50,12 @@ class DebtPositionFineServiceTest {
         .thenReturn(wfExecutionConfig);
 
     Mockito.when(debtPositionFineClientMock.expireFineReduction(debtPositionId,  wfExecutionConfig))
-      .thenReturn(expectedWorkflowId);
+      .thenReturn(expectedResult);
 
     // When
-    WorkflowCreatedDTO workflowCreatedDTO = service.expireFineReduction(debtPositionId);
+    WorkflowCreatedDTO result = service.expireFineReduction(debtPositionId);
 
     // Then
-    assertEquals(expectedWorkflowId, workflowCreatedDTO.getWorkflowId());
+    assertEquals(expectedResult, result);
   }
 }

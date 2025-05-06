@@ -35,14 +35,16 @@ class AssessmentsControllerTest {
   @Test
   void whenCreateAssessmentsProcessThenOk() throws Exception {
     String workflowId = "workflow-1";
+    String runId = "runId";
     Long receiptId = 1L;
     String accessToken = "ACCESSTOKEN";
     WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
+      .runId(runId)
       .build();
 
     Mockito.when(createAssessmentsWFClientMock.createAssessments(receiptId))
-      .thenReturn(workflowId);
+      .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
       securityUtilsMockedStatic.when(SecurityUtils::getAccessToken)

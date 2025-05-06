@@ -33,20 +33,21 @@ class DebtPositionFineControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private DebtPositionFineService service;
+  private DebtPositionFineService serviceMock;
 
   @Test
   void whenHandleFineReductionExpirationThenOk() throws Exception {
     Long debtPositionId = 1L;
     String expectedWorkflowId = "FineReductionOptionExpirationWF-1";
+    String runId = "runId";
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
     FineWfExecutionConfig wfExecutionConfig = new FineWfExecutionConfig();
     wfExecutionConfig.setIoMessages(fineWfMessages);
-    WorkflowCreatedDTO expected = new WorkflowCreatedDTO(expectedWorkflowId);
+    WorkflowCreatedDTO expected = new WorkflowCreatedDTO(expectedWorkflowId, runId);
 
 
-    Mockito.when(service.expireFineReduction(debtPositionId))
+    Mockito.when(serviceMock.expireFineReduction(debtPositionId))
       .thenReturn(expected);
 
     MvcResult result = mockMvc.perform(

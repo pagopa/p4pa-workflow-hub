@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification;
 
-import io.temporal.client.WorkflowClient;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWFImpl;
@@ -14,12 +15,14 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class PaymentNotificationIngestionWFClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public PaymentNotificationIngestionWFClient(WorkflowService workflowService) {
+  public PaymentNotificationIngestionWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
-  public String ingest(Long ingestionFlowFileId) {
+  public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
     log.info("Starting payment notification ingestion flow file having id {}", ingestionFlowFileId);
     String taskQueue = PaymentNotificationIngestionWFImpl.TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF;
     String workflowId = generateWorkflowId(ingestionFlowFileId, PaymentNotificationIngestionWF.class);
@@ -28,7 +31,6 @@ public class PaymentNotificationIngestionWFClient {
       PaymentNotificationIngestionWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::ingest, ingestionFlowFileId);
-    return workflowId;
+    return workflowClientService.start(workflow::ingest, ingestionFlowFileId);
   }
 }

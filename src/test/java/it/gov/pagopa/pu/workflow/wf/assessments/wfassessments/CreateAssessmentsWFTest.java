@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.assessments.wfassessments;
 
-import it.gov.pagopa.payhub.activities.activity.classifications.AssessmentsCreationActivity;
+import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsCreationActivity;
 import it.gov.pagopa.pu.workflow.wf.assessments.config.CreateAssessmentsWFConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

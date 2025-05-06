@@ -1,9 +1,10 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine;
 
-import io.temporal.client.WorkflowClient;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWFImpl;
@@ -21,13 +22,15 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class DebtPositionFineClientImpl implements DebtPositionFineClient {
 
   private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
 
-  public DebtPositionFineClientImpl(WorkflowService workflowService) {
+  public DebtPositionFineClientImpl(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
   }
 
   @Override
-  public String expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
+  public WorkflowCreatedDTO expireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig) {
     log.info("Starting check debt position reduction expiration WF: {}", debtPositionId);
     String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
     String workflowId = generateExpireFineReductionWorkflowId(debtPositionId);
@@ -36,12 +39,11 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       FineReductionOptionExpirationWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
-    return workflowId;
+    return workflowClientService.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
   }
 
   @Override
-  public String scheduleExpireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig, OffsetDateTime fineReductionExpirationDateTime) {
+  public WorkflowCreatedDTO scheduleExpireFineReduction(Long debtPositionId, FineWfExecutionConfig wfExecutionConfig, OffsetDateTime fineReductionExpirationDateTime) {
     log.info("Starting schedule to check debt position reduction expiration WF: {}", debtPositionId);
     String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
     String workflowId = generateExpireFineReductionWorkflowId(debtPositionId);
@@ -51,12 +53,11 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       taskQueue,
       workflowId,
       fineReductionExpirationDateTime);
-    WorkflowClient.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
-    return workflowId;
+    return workflowClientService.start(workflow::expireFineReduction, debtPositionId, wfExecutionConfig);
   }
 
   @Override
-  public String synchronizeFineDP(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig) {
+  public WorkflowCreatedDTO synchronizeFineDP(DebtPositionDTO debtPositionDTO, PaymentEventRequestDTO paymentEventRequest, Boolean massive, FineWfExecutionConfig wfExecutionConfig) {
     log.info("Starting synchronizing fine WF: {}", debtPositionDTO.getDebtPositionId());
     String taskQueue = SynchronizeFineWFImpl.TASK_QUEUE_SYNC_FINE;
     String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), SynchronizeFineWF.class);
@@ -65,8 +66,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
       SynchronizeFineWF.class,
       taskQueue,
       workflowId);
-    WorkflowClient.start(workflow::synchronizeFineDP, debtPositionDTO, paymentEventRequest, massive, wfExecutionConfig);
-    return workflowId;
+    return workflowClientService.start(workflow::synchronizeFineDP, debtPositionDTO, paymentEventRequest, massive, wfExecutionConfig);
   }
 
   public static String generateExpireFineReductionWorkflowId(Long debtPositionId) {

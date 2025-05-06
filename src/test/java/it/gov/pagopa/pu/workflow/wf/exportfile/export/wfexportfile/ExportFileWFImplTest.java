@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.exportflow.debtposition.ExportFileActivity;
+import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileActivity;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;

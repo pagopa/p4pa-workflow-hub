@@ -30,7 +30,7 @@ class ExportFileControllerImplTest {
   @Autowired
   private ObjectMapper objectMapper;
   @MockitoBean
-  private ExportFileService service;
+  private ExportFileService serviceMock;
 
   @Test
   void givenExportFileIdWhenExpireExportFileThenOk() throws Exception {
@@ -41,7 +41,7 @@ class ExportFileControllerImplTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.expireExportFile(exportFileId))
+    Mockito.when(serviceMock.expireExportFile(exportFileId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -70,7 +70,7 @@ class ExportFileControllerImplTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(service.exportFile(exportFileId, exportFileType))
+    Mockito.when(serviceMock.exportFile(exportFileId, exportFileType))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {

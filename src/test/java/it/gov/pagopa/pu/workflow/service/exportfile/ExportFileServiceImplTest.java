@@ -40,10 +40,11 @@ class ExportFileServiceImplTest {
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
+      .runId("runId")
       .build();
 
     Mockito.when(exportFileExpirationHandlerWFClientMock.exportFileExpirationHandler(Mockito.same(exportFileId)))
-      .thenReturn("WFID");
+      .thenReturn(expectedResult);
 
     WorkflowCreatedDTO result = service.expireExportFile(exportFileId);
 
@@ -56,11 +57,12 @@ class ExportFileServiceImplTest {
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
+      .runId("runId")
       .build();
 
     Mockito.when(exportFileWFClientMock.exportFile(Mockito.same(exportFileId), Mockito.any(
         ExportFile.ExportFileTypeEnum.class)))
-      .thenReturn("WFID");
+      .thenReturn(expectedResult);
 
     WorkflowCreatedDTO result = service.exportFile(exportFileId, ExportFileTypeEnum.PAID);
 

@@ -1,10 +1,10 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.config;
 
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.debtposition.FinalizeDebtPositionSyncStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.aca.SynchronizeInstallmentAcaActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.gpd.SynchronizeInstallmentGpdActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.FinalizeDebtPositionSyncStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.aca.SynchronizeInstallmentAcaActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpd.SynchronizeInstallmentGpdActivity;
+import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;

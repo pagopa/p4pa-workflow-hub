@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.organization.BrokersRetrieverAct
 import it.gov.pagopa.payhub.activities.activity.organization.OrganizationBrokeredActiveRetrieverActivity;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.config.BrokersPaymentsReportingPagoPaFetchWfConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -64,7 +65,7 @@ class PaymentsReportingPagoPaBrokersFetchWFTest {
     when(brokersRetrieverActivityMock.fetchAllBrokers()).thenReturn(List.of(broker));
     when(organizationBrokeredActiveRetrieverActivityMock.retrieveBrokeredOrganizations(1L)).thenReturn(List.of(organization));
     when(organizationPaymentsReportingPagoPaFetchWFClientMock.retrieveAsyncStart(organization.getOrganizationId()))
-      .thenReturn(CompletableFuture.completedFuture("workflowId"));
+      .thenReturn(CompletableFuture.completedFuture(new WorkflowCreatedDTO("workflowId", "runId")));
 
     workflow.retrieve();
 

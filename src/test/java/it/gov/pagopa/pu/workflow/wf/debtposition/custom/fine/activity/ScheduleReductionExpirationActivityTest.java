@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity;
 
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPositionFineClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,15 +35,15 @@ class ScheduleReductionExpirationActivityTest {
     FineWfExecutionConfig fineConfig = FineWfExecutionConfig.builder()
       .ioMessages(new FineWfExecutionConfig.IONotificationFineWfMessages(ioNotificationMessage, null))
       .build();
-    String workflowId = "workflowId";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("workflowId", "runId");
 
     Mockito.when(clientMock.scheduleExpireFineReduction(debtPositionId, fineConfig, OFFSET_DATE_TIME))
-      .thenReturn(workflowId);
+      .thenReturn(expectedResult);
 
     //When
-    String result = activity.scheduleExpireFineReduction(debtPositionId, fineConfig, OFFSET_DATE_TIME);
+    WorkflowCreatedDTO result = activity.scheduleExpireFineReduction(debtPositionId, fineConfig, OFFSET_DATE_TIME);
 
     //Then
-    assertEquals(workflowId, result);
+    assertEquals(expectedResult, result);
   }
 }

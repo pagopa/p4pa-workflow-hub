@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.integration.support.MessageBuilder;
@@ -55,6 +56,7 @@ public class PaymentsProducerService {
     streamBridge.send("paymentsProducer-out-0", binder,
       MessageBuilder.withPayload(PaymentEventDTO.builder()
           .eventId(eventId)
+          .traceId(MDC.get("traceId"))
           .eventType(paymentEventRequest.getPaymentEventType())
           .eventDateTime(OffsetDateTime.now())
           .payload(payload)

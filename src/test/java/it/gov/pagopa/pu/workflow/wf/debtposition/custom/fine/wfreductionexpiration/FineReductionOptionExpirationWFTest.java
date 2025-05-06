@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.config.DebtPositionFineWfConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper.FineWfExecutionConfigMapper;
@@ -62,7 +63,7 @@ class FineReductionOptionExpirationWFTest {
   void whenExpireFineReductionThenOk() {
     // Given
     Long debtPositionId = 1L;
-    String workflowId = "workflowId";
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("workflowId", "runId");
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
     GenericWfExecutionConfig wfExecutionConfig =
       new GenericWfExecutionConfig(new GenericWfExecutionConfig.IONotificationBaseOpsMessages(new IONotificationMessage("subject", "message"), null, null));
@@ -80,13 +81,13 @@ class FineReductionOptionExpirationWFTest {
         .thenReturn(wfExecutionConfig);
 
       Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, null, false, wfExecutionConfig))
-        .thenReturn(workflowId);
+        .thenReturn(expectedResult);
 
       // When
-      String result = wf.expireFineReduction(debtPositionId, fineWfExecutionConfig);
+      WorkflowCreatedDTO result = wf.expireFineReduction(debtPositionId, fineWfExecutionConfig);
 
       // Then
-      assertEquals(workflowId, result);
+      assertEquals(expectedResult, result);
     }
   }
 
@@ -103,7 +104,7 @@ class FineReductionOptionExpirationWFTest {
       .thenReturn(null);
 
     // When
-    String result = wf.expireFineReduction(debtPositionId, fineWfExecutionConfig);
+    WorkflowCreatedDTO result = wf.expireFineReduction(debtPositionId, fineWfExecutionConfig);
 
     // Then
     assertNull(result);
