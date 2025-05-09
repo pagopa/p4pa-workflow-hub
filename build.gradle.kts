@@ -47,7 +47,7 @@ dependencyManagement {
   }
 }
 
-val springDocOpenApiVersion = "2.8.5"
+val springDocOpenApiVersion = "2.8.6"
 val openApiToolsVersion = "0.2.6"
 val springWolfAsyncApiVersion = "1.13.0"
 val micrometerVersion = "1.4.3"
