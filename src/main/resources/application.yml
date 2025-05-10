@@ -235,22 +235,22 @@ management:
       group:
         readiness.include: "*"
         liveness.include: livenessState,diskSpace,ping
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${artifactId}
+    export:
       prometheus:
         enabled: true
-    metrics:
-      tags:
-        application: ${artifactId}
-      export:
-        prometheus:
-          enabled: true
-          step: 1m
-          descriptions: true
-      enable:
-        jvm: true
-        process: true
-        system: true
-        http: true
-        logback: true
+        step: 1m
+        descriptions: true
+    enable:
+      jvm: true
+      process: true
+      system: true
+      http: true
+      logback: true
 
 springwolf:
   docket:
