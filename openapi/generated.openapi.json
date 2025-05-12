@@ -1510,8 +1510,7 @@
           "readOnly" : {
             "type" : "boolean"
           }
-        },
-        "title" : "AbstractJsonSchemaProperty"
+        }
       },
       "Item" : {
         "type" : "object",
@@ -1531,8 +1530,7 @@
               "type" : "string"
             }
           }
-        },
-        "title" : "Item"
+        }
       },
       "JsonSchema" : {
         "type" : "object",
@@ -1567,8 +1565,7 @@
           "$schema" : {
             "type" : "string"
           }
-        },
-        "title" : "JsonSchema"
+        }
       },
       "RepresentationModelObject" : {
         "type" : "object",
@@ -1576,13 +1573,11 @@
           "_links" : {
             "$ref" : "#/components/schemas/Links"
           }
-        },
-        "title" : "RepresentationModel"
+        }
       },
       "DebtPositionSyncWfName" : {
         "type" : "string",
-        "enum" : [ "fineWf" ],
-        "title" : "DebtPositionSyncWfName"
+        "enum" : [ "fineWf" ]
       },
       "FineWfExecutionConfig" : {
         "allOf" : [ {
@@ -1613,8 +1608,7 @@
           "reductionExpired" : {
             "$ref" : "#/components/schemas/IONotificationMessage"
           }
-        },
-        "title" : "IONotificationFineWfMessages"
+        }
       },
       "IONotificationMessage" : {
         "type" : "object",
@@ -1625,20 +1619,7 @@
           "message" : {
             "type" : "string"
           }
-        },
-        "title" : "IONotificationMessage"
-      },
-      "WfExecutionConfig" : {
-        "type" : "object",
-        "discriminator" : {
-          "propertyName" : "workflowTypeName"
-        },
-        "properties" : {
-          "workflowTypeName" : {
-            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
-          }
-        },
-        "title" : "WfExecutionConfig"
+        }
       },
       "PageMetadata" : {
         "type" : "object",
@@ -1659,8 +1640,18 @@
             "type" : "integer",
             "format" : "int64"
           }
+        }
+      },
+      "WfExecutionConfig" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "workflowTypeName"
         },
-        "title" : "PageMetadata"
+        "properties" : {
+          "workflowTypeName" : {
+            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
+          }
+        }
       },
       "WorkflowTypeOrg" : {
         "type" : "object",
@@ -1696,8 +1687,7 @@
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "debtPositionTypeOrgId", "defaultExecutionConfig", "workflowTypeId" ],
-        "title" : "EntityModel"
+        "required" : [ "debtPositionTypeOrgId", "defaultExecutionConfig", "workflowTypeId" ]
       },
       "DebtPositionWorkflowTypeRequestBody" : {
         "type" : "object",
@@ -1777,8 +1767,7 @@
       },
       "CodeEnum" : {
         "type" : "string",
-        "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_CONFLICT", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR", "WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG" ],
-        "title" : "CodeEnum"
+        "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_CONFLICT", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR", "WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG" ]
       },
       "WorkflowErrorDTO" : {
         "type" : "object",
@@ -1794,13 +1783,11 @@
       },
       "IngestionFlowFileTypeEnum" : {
         "type" : "string",
-        "enum" : [ "RECEIPT", "RECEIPT_PAGOPA", "PAYMENTS_REPORTING", "PAYMENTS_REPORTING_PAGOPA", "TREASURY_OPI", "TREASURY_CSV", "TREASURY_XLS", "TREASURY_POSTE", "DP_INSTALLMENTS", "PAYMENT_NOTIFICATION" ],
-        "title" : "IngestionFlowFileTypeEnum"
+        "enum" : [ "RECEIPT", "RECEIPT_PAGOPA", "PAYMENTS_REPORTING", "PAYMENTS_REPORTING_PAGOPA", "TREASURY_OPI", "TREASURY_CSV", "TREASURY_XLS", "TREASURY_POSTE", "DP_INSTALLMENTS", "PAYMENT_NOTIFICATION" ]
       },
       "ExportFileTypeEnum" : {
         "type" : "string",
-        "enum" : [ "PAID", "CLASSIFICATIONS", "PAYMENTS_REPORTING", "RECEIPTS_ARCHIVING" ],
-        "title" : "ExportFileTypeEnum"
+        "enum" : [ "PAID", "CLASSIFICATIONS", "PAYMENTS_REPORTING", "RECEIPTS_ARCHIVING" ]
       },
       "DebtPositionDTO" : {
         "type" : "object",
@@ -1862,23 +1849,19 @@
               "$ref" : "#/components/schemas/PaymentOptionDTO"
             }
           }
-        },
-        "title" : "DebtPositionDTO"
+        }
       },
       "DebtPositionOrigin" : {
         "type" : "string",
-        "enum" : [ "ORDINARY", "ORDINARY_SIL", "SPONTANEOUS", "SECONDARY_ORG", "RECEIPT_FILE", "RECEIPT_PAGOPA", "REPORTING_PAGOPA" ],
-        "title" : "DebtPositionOrigin"
+        "enum" : [ "ORDINARY", "ORDINARY_SIL", "SPONTANEOUS", "SECONDARY_ORG", "RECEIPT_FILE", "RECEIPT_PAGOPA", "REPORTING_PAGOPA" ]
       },
       "DebtPositionStatus" : {
         "type" : "string",
-        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "EXPIRED", "UNPAID", "DRAFT" ],
-        "title" : "DebtPositionStatus"
+        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "EXPIRED", "UNPAID", "DRAFT" ]
       },
       "EntityTypeEnum" : {
         "type" : "string",
-        "enum" : [ "F", "G" ],
-        "title" : "EntityTypeEnum"
+        "enum" : [ "F", "G" ]
       },
       "InstallmentDTO" : {
         "type" : "object",
@@ -1978,13 +1961,11 @@
           "updateTraceId" : {
             "type" : "string"
           }
-        },
-        "title" : "InstallmentDTO"
+        }
       },
       "InstallmentStatus" : {
         "type" : "string",
-        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ],
-        "title" : "InstallmentStatus"
+        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
       },
       "InstallmentSyncStatus" : {
         "type" : "object",
@@ -1998,8 +1979,7 @@
           "syncError" : {
             "type" : "string"
           }
-        },
-        "title" : "InstallmentSyncStatus"
+        }
       },
       "PaymentOptionDTO" : {
         "type" : "object",
@@ -2049,18 +2029,15 @@
               "$ref" : "#/components/schemas/InstallmentDTO"
             }
           }
-        },
-        "title" : "PaymentOptionDTO"
+        }
       },
       "PaymentOptionStatus" : {
         "type" : "string",
-        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ],
-        "title" : "PaymentOptionStatus"
+        "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
       },
       "PaymentOptionTypeEnum" : {
         "type" : "string",
-        "enum" : [ "SINGLE_INSTALLMENT", "REDUCED_SINGLE_INSTALLMENT", "INSTALLMENTS", "DOWN_PAYMENT" ],
-        "title" : "PaymentOptionTypeEnum"
+        "enum" : [ "SINGLE_INSTALLMENT", "REDUCED_SINGLE_INSTALLMENT", "INSTALLMENTS", "DOWN_PAYMENT" ]
       },
       "PersonDTO" : {
         "type" : "object",
@@ -2095,8 +2072,7 @@
           "email" : {
             "type" : "string"
           }
-        },
-        "title" : "PersonDTO"
+        }
       },
       "SyncDebtPositionRequestDTO" : {
         "type" : "object",
@@ -2110,8 +2086,7 @@
             } ]
           }
         },
-        "required" : [ "debtPosition" ],
-        "title" : "SyncDebtPositionRequestDTO"
+        "required" : [ "debtPosition" ]
       },
       "TransferDTO" : {
         "type" : "object",
@@ -2173,13 +2148,11 @@
           "updateTraceId" : {
             "type" : "string"
           }
-        },
-        "title" : "TransferDTO"
+        }
       },
       "PaymentEventType" : {
         "type" : "string",
-        "enum" : [ "DP_CREATED", "DP_UPDATED", "DP_CANCELLED", "DPI_ADDED", "DPI_UPDATED", "DPI_CANCELLED", "DPI_EXPIRED", "DPI_REPORTED", "RT_RECEIVED", "SYNC_ERROR", "IO_NOTIFIED", "SEND_NOTIFICATION_CREATED", "SEND_NOTIFICATION_ERROR", "SEND_NOTIFICATION_DATE" ],
-        "title" : "PaymentEventType"
+        "enum" : [ "DP_CREATED", "DP_UPDATED", "DP_CANCELLED", "DPI_ADDED", "DPI_UPDATED", "DPI_CANCELLED", "DPI_EXPIRED", "DPI_REPORTED", "RT_RECEIVED", "SYNC_ERROR", "IO_NOTIFIED", "SEND_NOTIFICATION_CREATED", "SEND_NOTIFICATION_ERROR", "SEND_NOTIFICATION_DATE" ]
       },
       "WorkflowStatusDTO" : {
         "type" : "object",
@@ -2226,8 +2199,7 @@
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "defaultExecutionConfig", "description" ],
-        "title" : "EntityModel"
+        "required" : [ "defaultExecutionConfig", "description" ]
       },
       "PagedModelWorkflowType" : {
         "type" : "object",
@@ -2249,8 +2221,7 @@
           "page" : {
             "$ref" : "#/components/schemas/PageMetadata"
           }
-        },
-        "title" : "PagedModel"
+        }
       },
       "PagedModelWorkflowTypeOrg" : {
         "type" : "object",
@@ -2272,8 +2243,7 @@
           "page" : {
             "$ref" : "#/components/schemas/PageMetadata"
           }
-        },
-        "title" : "PagedModel"
+        }
       },
       "DebtPositionWorkflowType" : {
         "type" : "object",
@@ -2308,8 +2278,7 @@
             "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "debtPositionId", "executionConfig" ],
-        "title" : "EntityModel"
+        "required" : [ "debtPositionId", "executionConfig" ]
       },
       "PagedModelDebtPositionWorkflowType" : {
         "type" : "object",
@@ -2331,8 +2300,7 @@
           "page" : {
             "$ref" : "#/components/schemas/PageMetadata"
           }
-        },
-        "title" : "PagedModel"
+        }
       },
       "Link" : {
         "type" : "object",
