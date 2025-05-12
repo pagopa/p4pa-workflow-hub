@@ -95,7 +95,7 @@ public class RepositoryRestCustomConfiguration {
         if (op.getRequestBody() != null) {
           Schema<?> schema = op.getRequestBody().getContent().get(MediaType.APPLICATION_JSON_VALUE).getSchema();
           String ref = schema.get$ref();
-          if (ref.contains(SPRING_DATA_REST_MODEL_PREFIX)) {
+          if (ref != null && ref.contains(SPRING_DATA_REST_MODEL_PREFIX)) {
             schema.set$ref(ref.replace(SPRING_DATA_REST_MODEL_PREFIX, ""));
           }
         }
