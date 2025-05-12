@@ -6,6 +6,69 @@ info:
 servers:
   - url: "http://localhost:8080/workflowhub"
 paths:
+  /workflow-type-org:
+    post:
+      tags:
+        - WorkflowTypeOrg
+      operationId: saveWorkflowTypeOrg
+      description: To save a new WorkflowTypeOrg.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: 'WorkflowTypeOrg'
+      responses:
+        '200':
+          description: "WorkflowTypeOrg created"
+          content:
+            application/json:
+              schema:
+                type: 'WorkflowTypeOrg'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflows/{workflowId}/status:
+    get:
+      tags:
+        - Workflow
+      operationId: getWorkflowStatus
+      summary: Get Workflow Status
+      description: Retrieve the current status of a Temporal workflow by its ID.
+      parameters:
+        - name: workflowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Workflow status retrieved successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowStatusDTO'
+        '404':
+          description: "Workflow not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflow/debt-position/sync:
     post:
       tags:
@@ -110,7 +173,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /ingestion-flow/{ingestionFlowFileId}:
+  /workflow/ingestion-flow/{ingestionFlowFileId}:
     post:
       tags:
         - IngestionFlow
@@ -144,7 +207,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /export-file/{exportFileId}:
+  /workflow/export-file/{exportFileId}:
     post:
       tags:
         - ExportFile
@@ -178,7 +241,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /export-file/{exportFileId}/expire:
+  /workflow/export-file/{exportFileId}/expire:
     post:
       tags:
         - ExportFile
@@ -205,7 +268,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /classification/transfer/{orgId}:
+  /workflow/classification/transfer/{orgId}:
     post:
       tags:
         - Classification
@@ -251,7 +314,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /classification/iud/{orgId}/notify-receipt:
+  /workflow/classification/iud/{orgId}/notify-receipt:
     post:
       tags:
         - Classification
@@ -313,7 +376,7 @@ paths:
                 $ref: '#/components/schemas/WorkflowCreatedDTO'
               example:
                 code: "WORKFLOW_BAD_REQUEST"
-  /classification/iud/{orgId}/notify-payment-notification:
+  /workflow/classification/iud/{orgId}/notify-payment-notification:
     post:
       tags:
         - Classification
@@ -355,38 +418,6 @@ paths:
                 $ref: '#/components/schemas/WorkflowCreatedDTO'
               example:
                 code: "WORKFLOW_BAD_REQUEST"
-  /workflows/{workflowId}/status:
-    get:
-      tags:
-        - Workflow
-      operationId: getWorkflowStatus
-      summary: Get Workflow Status
-      description: Retrieve the current status of a Temporal workflow by its ID.
-      parameters:
-        - name: workflowId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: "Workflow status retrieved successfully"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowStatusDTO'
-        '404':
-          description: "Workflow not found"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowErrorDTO'
-        '500':
-          description: Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflow/send-notification/{sendNotificationId}/start:
     get:
       tags:
