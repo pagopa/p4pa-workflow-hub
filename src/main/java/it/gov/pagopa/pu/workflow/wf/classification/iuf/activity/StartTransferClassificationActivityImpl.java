@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.classification.iuf.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
+import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWFImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_LOCAL_ACTIVITY)
+@ActivityImpl(taskQueues = {IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_LOCAL_ACTIVITY, IudClassificationWFImpl.TASK_QUEUE_IUD_CLASSIFICATION_LOCAL_ACTIVITY})
 public class StartTransferClassificationActivityImpl implements StartTransferClassificationActivity {
 
   private final TransferClassificationWFClient transferClassificationWFClient;

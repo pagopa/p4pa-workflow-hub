@@ -145,7 +145,7 @@ spring:
 
   cloud:
     function:
-      definition: paymentsConsumer, paymentsProducer
+      definition: paymentsConsumer;paymentsProducer
     stream:
       binders:
         kafka-payments-producer:

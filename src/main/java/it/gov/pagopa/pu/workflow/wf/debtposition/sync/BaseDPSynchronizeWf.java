@@ -123,7 +123,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     if (!CollectionUtils.isEmpty(syncStatusUpdateRequestDTO.getIupdSyncError())
       || !CollectionUtils.isEmpty(syncStatusUpdateRequestDTO.getIupd2finalize())) {
-      log.info("Finalizing sync statuses of debtPosition {}: {}", debtPositionId, syncStatusUpdateRequestDTO);
+      log.info("Finalizing sync statuses of debtPosition {}: {}", debtPositionId, syncStatusUpdateRequestDTO.toString().replace('\n', ' '));
       return finalizeDebtPositionSyncStatusActivity.finalizeDebtPositionSyncStatus(debtPositionId, syncStatusUpdateRequestDTO);
     } else {
       log.info("No sync statuses to finalize for debtPosition {}", debtPositionId);
@@ -133,7 +133,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
 
   protected void publishEvent(PaymentEventRequestDTO paymentEventRequest, DebtPositionDTO finalizedDebtPositionDTO) {
     if (paymentEventRequest != null) {
-      log.info("Publishing event {} on debtPosition {}", paymentEventRequest.getPaymentEventType(), finalizedDebtPositionDTO.getDebtPositionId());
+      log.info("Calling activity publish event {} on debtPosition {}", paymentEventRequest.getPaymentEventType(), finalizedDebtPositionDTO.getDebtPositionId());
       publishPaymentEventActivity.publishDebtPositionEvent(finalizedDebtPositionDTO, paymentEventRequest);
     }
   }
