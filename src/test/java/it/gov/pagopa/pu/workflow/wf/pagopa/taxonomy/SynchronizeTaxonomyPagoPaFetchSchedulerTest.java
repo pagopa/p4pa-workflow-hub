@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy;
 
 import io.temporal.client.schedules.ScheduleHandle;
-import it.gov.pagopa.pu.workflow.service.WorkflowScheduleService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
