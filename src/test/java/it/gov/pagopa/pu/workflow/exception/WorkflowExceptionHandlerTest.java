@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
 import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowTypeNotFoundException;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
@@ -121,8 +122,18 @@ class WorkflowExceptionHandlerTest {
   }
 
   @Test
-  void handleNotFoundWorkflowError() throws Exception {
+  void handleWorkflowNotFoundException() throws Exception {
     doThrow(new WorkflowNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+  }
+
+  @Test
+  void handleWorkflowTypeNotFoundException() throws Exception {
+    doThrow(new WorkflowTypeNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isNotFound())

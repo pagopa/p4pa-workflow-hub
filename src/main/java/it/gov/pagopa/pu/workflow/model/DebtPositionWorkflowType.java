@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
@@ -15,6 +16,7 @@ import java.io.Serializable;
 @Table(name = "debt_position_workflow_type")
 @AllArgsConstructor
 @NoArgsConstructor
+@SuperBuilder
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class DebtPositionWorkflowType extends BaseEntity implements Serializable {

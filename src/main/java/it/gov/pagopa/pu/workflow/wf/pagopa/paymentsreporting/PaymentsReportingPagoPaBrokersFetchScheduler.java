@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
 import io.temporal.client.schedules.ScheduleHandle;
-import it.gov.pagopa.pu.workflow.service.WorkflowScheduleService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWFImpl;
 import lombok.Getter;

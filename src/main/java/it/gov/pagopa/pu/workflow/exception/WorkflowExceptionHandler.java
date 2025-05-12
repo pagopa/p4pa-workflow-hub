@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowErrorDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowTypeNotFoundException;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,8 +55,8 @@ public class WorkflowExceptionHandler {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INVALID_SYNC_DP_WF_EXECUTION_CONFIG);
   }
 
-  @ExceptionHandler({WorkflowNotFoundException.class})
-  public ResponseEntity<WorkflowErrorDTO> handleNotFoundWorkflowError(RuntimeException ex, HttpServletRequest request) {
+  @ExceptionHandler({WorkflowNotFoundException.class, WorkflowTypeNotFoundException.class})
+  public ResponseEntity<WorkflowErrorDTO> handleNotFoundException(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CodeEnum.NOT_FOUND);
   }
 

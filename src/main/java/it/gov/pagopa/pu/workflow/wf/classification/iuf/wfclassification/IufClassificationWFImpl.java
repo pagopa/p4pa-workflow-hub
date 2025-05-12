@@ -8,7 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActi
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
-import it.gov.pagopa.pu.workflow.service.WorkflowServiceImpl;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;

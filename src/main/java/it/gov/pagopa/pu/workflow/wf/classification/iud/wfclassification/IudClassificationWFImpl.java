@@ -4,7 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIudActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IudClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
-import it.gov.pagopa.pu.workflow.service.WorkflowServiceImpl;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.config.IudClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;

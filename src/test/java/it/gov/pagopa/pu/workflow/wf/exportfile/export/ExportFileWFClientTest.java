@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.export;
 
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
-import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWF;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWFImpl;
