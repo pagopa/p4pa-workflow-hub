@@ -125,6 +125,7 @@
                       "province": "string"
                     },
                     "dueDate": "2015-07-20",
+                    "ingestionFlowFileGenerateAdvice": true,
                     "ingestionFlowFileId": 0,
                     "ingestionFlowFileLineNumber": 0,
                     "installmentId": 0,
@@ -233,6 +234,7 @@
                         "province": "string"
                       },
                       "dueDate": "2015-07-20",
+                      "ingestionFlowFileGenerateAdvice": true,
                       "ingestionFlowFileId": 0,
                       "ingestionFlowFileLineNumber": 0,
                       "installmentId": 0,
@@ -546,6 +548,9 @@
             "type": "string",
             "format": "date"
           },
+          "ingestionFlowFileGenerateAdvice": {
+            "type": "boolean"
+          },
           "ingestionFlowFileId": {
             "type": "integer",
             "format": "int64"
@@ -642,6 +647,7 @@
               "province": "string"
             },
             "dueDate": "2015-07-20",
+            "ingestionFlowFileGenerateAdvice": true,
             "ingestionFlowFileId": 0,
             "ingestionFlowFileLineNumber": 0,
             "installmentId": 0,
@@ -900,6 +906,7 @@
                   "province": "string"
                 },
                 "dueDate": "2015-07-20",
+                "ingestionFlowFileGenerateAdvice": true,
                 "ingestionFlowFileId": 0,
                 "ingestionFlowFileLineNumber": 0,
                 "installmentId": 0,
