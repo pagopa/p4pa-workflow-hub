@@ -563,11 +563,33 @@ components:
       type: object
       required:
         - workflowId
+        - workflowType
+        - status
+        - runId
+        - taskQueue
       properties:
         workflowId:
           type: string
+        workflowType:
+          type: string
         status:
           type: string
+        runId:
+          type: string
+        taskQueue:
+          type: string
+        startDateTime:
+          type: string
+          format: date-time
+        executionDateTime:
+          type: string
+          format: date-time
+        endDateTime:
+          type: string
+          format: date-time
+        duration:
+          type: string
+          format: duration
     PaymentEventType:
       type: string
       enum:

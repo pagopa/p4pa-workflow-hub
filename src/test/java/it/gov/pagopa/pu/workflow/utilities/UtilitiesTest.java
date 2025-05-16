@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.utilities;
 
+import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
@@ -9,10 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -141,5 +139,42 @@ public class UtilitiesTest {
   }
   public static void clearTraceIdContext(){
     MDC.clear();
+  }
+
+  @Test
+  void givenEmptyTimeStampWhenProtobufTimestamp2OffsetDateTimeThenNull(){
+    Assertions.assertNull(Utilities.protobufTimestamp2OffsetDateTime(Timestamp.getDefaultInstance()));
+  }
+
+  @Test
+  void whenProtobufTimestamp2OffsetDateTimeThenReturnConversion(){
+    // Given
+    OffsetDateTime now = OffsetDateTime.now();
+    Timestamp ts = Timestamp.getDefaultInstance().toBuilder()
+      .setSeconds(now.toEpochSecond())
+      .setNanos(now.getNano())
+      .build();
+
+    // When
+    OffsetDateTime result = Utilities.protobufTimestamp2OffsetDateTime(ts);
+
+    // Then
+    Assertions.assertEquals(now, result);
+  }
+
+  @Test
+  void whenProtobufDuration2DurationThenReturnConversion(){
+    // Given
+    Duration expectedResult = Duration.ofMillis(537L);
+    com.google.protobuf.Duration d = com.google.protobuf.Duration.getDefaultInstance().toBuilder()
+      .setSeconds(expectedResult.getSeconds())
+      .setNanos(expectedResult.getNano())
+      .build();
+
+    // When
+    Duration result = Utilities.protobufDuration2Duration(d);
+
+    // Then
+    Assertions.assertEquals(expectedResult, result);
   }
 }

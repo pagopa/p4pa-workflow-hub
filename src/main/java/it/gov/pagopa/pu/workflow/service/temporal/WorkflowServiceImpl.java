@@ -14,7 +14,9 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -23,9 +25,13 @@ import java.time.*;
 @Slf4j
 public class WorkflowServiceImpl implements WorkflowService {
 
+  private final String namespace;
   private final WorkflowClient workflowClient;
 
-  public WorkflowServiceImpl(WorkflowClient workflowClient) {
+  public WorkflowServiceImpl(
+    @Value("${spring.temporal.namespace}") String namespace,
+    WorkflowClient workflowClient) {
+    this.namespace = namespace;
     this.workflowClient = workflowClient;
   }
 
@@ -55,14 +61,21 @@ public class WorkflowServiceImpl implements WorkflowService {
       log.debug("Retrieving workflow status for workflowId: {}", workflowId);
       WorkflowExecutionInfo info = WorkflowClientHelper.describeWorkflowInstance(
         workflowClient.getWorkflowServiceStubs(),
-        "default",
+        namespace,
         WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(),
         new NoopScope()
       );
 
       return WorkflowStatusDTO.builder()
         .workflowId(workflowId)
+        .workflowType(info.getType().getName())
+        .runId(info.getExecution().getRunId())
+        .taskQueue(info.getTaskQueue())
         .status(info.getStatus().name())
+        .startDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getStartTime()))
+        .executionDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getExecutionTime()))
+        .endDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getCloseTime()))
+        .duration(Utilities.protobufDuration2Duration(info.getExecutionDuration()).toString())
         .build();
 
     } catch (StatusRuntimeException e) {
