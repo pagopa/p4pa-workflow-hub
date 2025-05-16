@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.service.temporal;
 
 import com.uber.m3.tally.NoopScope;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.client.WorkflowClient;
@@ -63,10 +65,16 @@ public class WorkflowServiceImpl implements WorkflowService {
         .status(info.getStatus().name())
         .build();
 
-    } catch (io.temporal.client.WorkflowNotFoundException e) {
+    } catch (StatusRuntimeException e) {
+      if(Status.NOT_FOUND.getCode().equals(e.getStatus().getCode())) {
+        log.error("Workflow with ID {} not found", workflowId);
+        throw new WorkflowNotFoundException(e.getMessage());
+      }
+      log.error("An error occurred while retrieving the workflow status: {}", e.getMessage());
+      throw new WorkflowInternalErrorException(e.getMessage());
+    }  catch (io.temporal.client.WorkflowNotFoundException e) {
       log.error("Workflow with ID {} not found", workflowId);
       throw new WorkflowNotFoundException(e.getMessage());
-
     } catch (TemporalException e) {
       log.error("An error occurred while retrieving the workflow status: {}", e.getMessage());
       throw new WorkflowInternalErrorException(e.getMessage());
