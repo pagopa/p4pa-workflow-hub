@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +76,7 @@ public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngest
       return ingestionResult;
     } catch (Exception e) {
       PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
-      result.setErrorDescription(e.getMessage());
+      result.setErrorDescription(Utilities.getWorkflowExceptionMessage(e));
       return result;
     }
   }

@@ -1,5 +1,7 @@
 package it.gov.pagopa.pu.workflow.utilities;
 
+import io.temporal.failure.ActivityFailure;
+import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import org.mapstruct.Named;
 import org.slf4j.MDC;
@@ -23,6 +25,16 @@ public class Utilities {
       throw new WorkflowInternalErrorException("The ID or the workflow must not be null");
     }
     return String.format("%s-%s", workflowInterface.getSimpleName(), id);
+  }
+
+  public static String getWorkflowExceptionMessage(Exception e){
+    if(e instanceof ActivityFailure activityFailure){
+      if(activityFailure.getCause() instanceof ApplicationFailure applicationFailure) {
+        return applicationFailure.getOriginalMessage();
+      }
+      return activityFailure.getMessage();
+    }
+    return e.getMessage();
   }
 
   @Named("offsetDateTimeToInstant")

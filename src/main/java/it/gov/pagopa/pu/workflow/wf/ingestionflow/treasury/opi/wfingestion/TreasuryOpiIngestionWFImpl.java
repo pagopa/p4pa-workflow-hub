@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.treasury.TreasuryO
 import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -80,7 +81,7 @@ public class TreasuryOpiIngestionWFImpl implements TreasuryOpiIngestionWF, Appli
     } catch (Exception e){
       ingestionResult = TreasuryIufIngestionFlowFileResult.builder()
         .iuf2TreasuryIdMap(Collections.emptyMap())
-        .errorDescription("Unexpected error when processing TreasuryOPI file: " + e.getMessage())
+        .errorDescription("Unexpected error when processing TreasuryOPI file: " + Utilities.getWorkflowExceptionMessage(e))
         .build();
     }
     return ingestionResult;

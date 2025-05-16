@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.activity.NotifyPaymentNotificationToIudClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.config.PaymentNotificationIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +78,7 @@ Long orgId= ingestionResult.getOrganizationId();
       return ingestionResult;
     } catch (Exception e) {
       IngestionFlowFileResult ingestionFlowFileResult = new IngestionFlowFileResult();
-      ingestionFlowFileResult.setErrorDescription(e.getMessage());
+      ingestionFlowFileResult.setErrorDescription(Utilities.getWorkflowExceptionMessage(e));
       return ingestionFlowFileResult;
     }
   }

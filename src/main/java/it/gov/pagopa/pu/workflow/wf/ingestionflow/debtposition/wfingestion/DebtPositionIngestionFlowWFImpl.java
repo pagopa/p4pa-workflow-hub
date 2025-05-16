@@ -12,6 +12,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIng
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.Constants;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -102,7 +103,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     try {
       ingestionResult = installmentIngestionFlowFileActivity.processFile(ingestionFlowFileId);
     } catch (Exception e) {
-      String error = "Unexpected error when processing DebtPositionIngestion file: " + e.getMessage();
+      String error = "Unexpected error when processing DebtPositionIngestion file: " + Utilities.getWorkflowExceptionMessage(e);
       log.error(error);
       ingestionResult = InstallmentIngestionFlowFileResult.builder()
         .errorDescription(error)
