@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.Insta
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -83,7 +84,7 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
-      .thenReturn("");
+      .thenReturn(new SyncIngestedDebtPositionDTO("", null));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
@@ -114,7 +115,7 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
-      .thenReturn("\nError on synchronizeIngestedDebtPositionActivity");
+      .thenReturn(new SyncIngestedDebtPositionDTO("\nError on synchronizeIngestedDebtPositionActivity", null));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
@@ -154,7 +155,7 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenThrow(new RuntimeException("DUMMY"));
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
-      .thenReturn("\nError on synchronizeIngestedDebtPositionActivity");
+      .thenReturn(new SyncIngestedDebtPositionDTO("\nError on synchronizeIngestedDebtPositionActivity", null));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
@@ -197,7 +198,7 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
-      .thenReturn("");
+      .thenReturn(new SyncIngestedDebtPositionDTO("", null));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
