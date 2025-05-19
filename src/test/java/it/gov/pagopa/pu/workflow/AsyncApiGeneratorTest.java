@@ -36,8 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
   "springwolf.enabled=true",
   "springwolf.use-fqn=false",
-  "spring.cloud.stream.bindings.paymentsConsumer-in-0.consumer.auto-startup=false",
-  "spring.cloud.stream.bindings.paymentsProducer-out-0.producer.auto-startup=false",
+  "spring.cloud.function.definition=",
   "spring.temporal.enabled=false",
   "spring.temporal.connection.target="
 })
