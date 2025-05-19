@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomi
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.ScheduleSendNotificationDateRetrieveActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
@@ -77,7 +78,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       if (notification != null) {
         for (DebtPositionSendNotificationDTO p : SendNotification2DebtPositionSendNotificationsMapper.map(notification)) {
           publishSendNotificationPaymentEventActivity.publishSendNotificationErrorEvent(p,
-            new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, e.getMessage()));
+            new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, Utilities.getWorkflowExceptionMessage(e)));
         }
       } else {
         log.info("Provided unknown sendNotificationId {}", sendNotificationId);

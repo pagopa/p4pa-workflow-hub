@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
       exportFileResult = exportFileActivity.executeExport(
         exportFileId, exportFileType);
     } catch(Exception e){
-      errorDescription = e.getMessage();
+      errorDescription = Utilities.getWorkflowExceptionMessage(e);
     }
 
     updateExportFileWithProcessingResult(exportFileId, errorDescription, exportFileResult);

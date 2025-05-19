@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
-import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

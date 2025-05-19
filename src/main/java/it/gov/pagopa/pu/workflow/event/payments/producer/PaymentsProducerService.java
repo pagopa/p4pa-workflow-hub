@@ -8,12 +8,16 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotification
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Component
 public class PaymentsProducerService {
@@ -27,17 +31,13 @@ public class PaymentsProducerService {
     this.streamBridge = streamBridge;
   }
 
-    /*
-    Producer not connected on startup, but just on-demand
-    To connect on startup uncomment these lines and configure bean name (spring.cloud.function.definition)
-    @Configuration
-    static class PaymentsProducerConfig {
-        @Bean
-        public Supplier<Message<Object>> paymentsProducer() {
-            return () -> null;
-        }
+  @Configuration
+  static class PaymentsProducerConfig {
+    @Bean
+    public Supplier<Message<PaymentEventDTO<Object>>> paymentsProducer() {
+      return () -> null;
     }
-    */
+  }
 
   public void notifyDebtPositionPaymentsEvent(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest) {
     notifyPaymentsEvent(debtPosition.getOrganizationId(), String.valueOf(debtPosition.getDebtPositionId()), debtPosition, paymentEventRequest);

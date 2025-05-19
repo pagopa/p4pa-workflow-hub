@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity;
 
-import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

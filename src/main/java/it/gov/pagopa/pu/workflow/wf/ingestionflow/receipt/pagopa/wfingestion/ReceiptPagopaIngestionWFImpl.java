@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPag
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -53,7 +54,7 @@ public class ReceiptPagopaIngestionWFImpl implements ReceiptPagopaIngestionWF, A
       log.error("Error processFile for receipt id[{}]", ingestionFlowFileId, e);
       success = false;
       ingestionResult = new ReceiptPagopaIngestionFlowFileResult();
-      ingestionResult.setErrorDescription("error processing receipt id[%s]: %s".formatted(ingestionFlowFileId, e.getMessage()));
+      ingestionResult.setErrorDescription("error processing receipt id[%s]: %s".formatted(ingestionFlowFileId, Utilities.getWorkflowExceptionMessage(e)));
     }
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,

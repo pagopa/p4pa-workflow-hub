@@ -1,11 +1,14 @@
 package it.gov.pagopa.pu.workflow;
 
+import io.github.springwolf.core.asyncapi.schemas.converters.SchemaTitleModelConverter;
+import io.swagger.v3.core.converter.ModelConverters;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.schedules.ScheduleClient;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFetchScheduler;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -37,8 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
   "logging.level.org.springdoc.core.utils.SpringDocAnnotationsUtils=OFF",
   "springdoc.api-docs.enabled=true",
   "springdoc.swagger-ui.enabled=false",
-  "spring.cloud.stream.bindings.paymentsConsumer-in-0.consumer.auto-startup=false",
-  "spring.cloud.stream.bindings.paymentsProducer-out-0.producer.auto-startup=false",
+  "springwolf.enabled=false",
+  "spring.cloud.function.definition=",
   "spring.temporal.enabled=false",
   "spring.temporal.connection.target="
 })
@@ -57,6 +60,16 @@ class OpenApiGeneratorTest {
   @MockitoBean
   private SynchronizeTaxonomyPagoPaFetchScheduler synchronizeTaxonomyPagoPaFetchSchedulerMock;
 
+  @BeforeEach
+  void init() {
+    // removing ModelConverters configured by SpringWolf which will cause the setting of the title in each schema
+    boolean openapi31 = true;
+    ModelConverters modelConverters = ModelConverters.getInstance(openapi31);
+    modelConverters.getConverters().stream()
+      .filter(SchemaTitleModelConverter.class::isInstance)
+      .forEach(modelConverters::removeConverter);
+  }
+
   @Test
   void generateAndVerifyCommit() throws Exception {
     MvcResult result = mockMvc.perform(
@@ -67,8 +80,7 @@ class OpenApiGeneratorTest {
       .andReturn();
 
     String openApiResult = result.getResponse().getContentAsString()
-      .replace("\r", "")
-      .replace("EntityModel", "");
+      .replace("\r", "");
 
     Assertions.assertTrue(openApiResult.startsWith("{\n  \"openapi\" : \"3."));
 

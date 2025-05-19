@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.controller;
 
 import it.gov.pagopa.pu.workflow.controller.generated.WorkflowApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
-import it.gov.pagopa.pu.workflow.service.WorkflowService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

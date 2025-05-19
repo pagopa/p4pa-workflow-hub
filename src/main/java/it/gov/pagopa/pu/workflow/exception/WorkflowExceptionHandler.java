@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowErrorDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowTypeNotFoundException;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,44 +42,44 @@ public class WorkflowExceptionHandler {
 
   @ExceptionHandler(WorkflowExecutionAlreadyStarted.class)
   public ResponseEntity<WorkflowErrorDTO> handleWorkflowExecutionAlreadyStarted(WorkflowExecutionAlreadyStarted ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CodeEnum.CONFLICT);
+    return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CodeEnum.WORKFLOW_CONFLICT);
   }
 
   @ExceptionHandler(value = IngestionFlowTypeNotSupportedException.class)
   public ResponseEntity<WorkflowErrorDTO> handleIngestionFlowTypeNotSupportedException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INGESTION_FLOW_FILE_NOT_SUPPORTED);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED);
   }
 
   @ExceptionHandler(value = InvalidWfExecutionConfigException.class)
   public ResponseEntity<WorkflowErrorDTO> handleInvalidWfExecutionConfigException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.INVALID_SYNC_DP_WF_EXECUTION_CONFIG);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG);
   }
 
-  @ExceptionHandler({WorkflowNotFoundException.class})
-  public ResponseEntity<WorkflowErrorDTO> handleNotFoundWorkflowError(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CodeEnum.NOT_FOUND);
+  @ExceptionHandler({WorkflowNotFoundException.class, WorkflowTypeNotFoundException.class})
+  public ResponseEntity<WorkflowErrorDTO> handleNotFoundException(RuntimeException ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CodeEnum.WORKFLOW_NOT_FOUND);
   }
 
   @ExceptionHandler({WorkflowInternalErrorException.class})
   public ResponseEntity<WorkflowErrorDTO> handleInternalError(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.GENERIC_ERROR);
+    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.WORKFLOW_GENERIC_ERROR);
   }
 
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
   public ResponseEntity<WorkflowErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.BAD_REQUEST);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST);
   }
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})
   public ResponseEntity<WorkflowErrorDTO> handleServletException(Exception ex, HttpServletRequest request) {
     HttpStatusCode httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    WorkflowErrorDTO.CodeEnum errorCode = WorkflowErrorDTO.CodeEnum.GENERIC_ERROR;
+    WorkflowErrorDTO.CodeEnum errorCode = WorkflowErrorDTO.CodeEnum.WORKFLOW_GENERIC_ERROR;
     if (ex instanceof ErrorResponse errorResponse) {
       httpStatus = errorResponse.getStatusCode();
       if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
-        errorCode = WorkflowErrorDTO.CodeEnum.NOT_FOUND;
+        errorCode = WorkflowErrorDTO.CodeEnum.WORKFLOW_NOT_FOUND;
       } else if (httpStatus.is4xxClientError()) {
-        errorCode = WorkflowErrorDTO.CodeEnum.BAD_REQUEST;
+        errorCode = WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST;
       }
     }
     return handleException(ex, request, httpStatus, errorCode);
@@ -95,7 +96,7 @@ public class WorkflowExceptionHandler {
 
   @ExceptionHandler({RuntimeException.class})
   public ResponseEntity<WorkflowErrorDTO> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.GENERIC_ERROR);
+    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.WORKFLOW_GENERIC_ERROR);
   }
 
   static ResponseEntity<WorkflowErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatusCode httpStatus, WorkflowErrorDTO.CodeEnum errorEnum) {

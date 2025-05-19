@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.utils;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.workflow.Functions;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.service.WorkflowClientService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 

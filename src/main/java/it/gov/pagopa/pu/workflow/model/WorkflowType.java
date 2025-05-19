@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -16,6 +17,7 @@ import java.io.Serializable;
 @Table(name = "workflow_type")
 @AllArgsConstructor
 @NoArgsConstructor
+@SuperBuilder
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class WorkflowType extends BaseEntity implements Serializable {
