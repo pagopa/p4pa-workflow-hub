@@ -41,8 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
   "springdoc.api-docs.enabled=true",
   "springdoc.swagger-ui.enabled=false",
   "springwolf.enabled=false",
-  "spring.cloud.stream.bindings.paymentsConsumer-in-0.consumer.auto-startup=false",
-  "spring.cloud.stream.bindings.paymentsProducer-out-0.producer.auto-startup=false",
+  "spring.cloud.function.definition=",
   "spring.temporal.enabled=false",
   "spring.temporal.connection.target="
 })

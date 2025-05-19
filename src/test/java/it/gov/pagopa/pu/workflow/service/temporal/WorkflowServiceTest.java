@@ -11,6 +11,7 @@ import io.temporal.client.WorkflowServiceException;
 import io.temporal.client.WorkflowStub;
 import io.temporal.internal.client.WorkflowClientHelper;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
@@ -89,9 +90,9 @@ class WorkflowServiceTest {
       .workflowType("WFTYPE")
       .runId("RUNID")
       .taskQueue("TASKQUEUE")
-      .startDateTime(OffsetDateTime.now())
-      .executionDateTime(OffsetDateTime.now().plusMinutes(1))
-      .endDateTime(OffsetDateTime.now().plusDays(1))
+      .startDateTime(OffsetDateTime.now(Utilities.ZONEID))
+      .executionDateTime(OffsetDateTime.now(Utilities.ZONEID).plusMinutes(1))
+      .endDateTime(OffsetDateTime.now(Utilities.ZONEID).plusDays(1))
       .duration("PT0S")
       .status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_RUNNING.name())
       .build();

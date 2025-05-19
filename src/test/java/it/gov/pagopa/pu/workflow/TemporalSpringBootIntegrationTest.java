@@ -48,13 +48,14 @@ import static org.mockito.Mockito.*;
   "spring.datasource.username=sa",
   "spring.datasource.password=sa",
 
+  "spring.cloud.function.definition=",
+
   "spring.temporal.test-server.enabled: true",
   "spring.temporal.workers[0].task-queue: PaymentsReportingIngestionWF",
   "spring.temporal.workers[0].name: mock",
   "spring.temporal.workers[0].activity-beans[0]: updateIngestionFlowStatusActivityImpl",
   "spring.temporal.workers[0].activity-beans[1]: fileActivityMock",
   "spring.temporal.workers[0].activity-beans[2]: emailActivityMock",
-  "spring.cloud.stream.default-binder: kafka-payments-producer",
 
   "workflow.payments-reporting-ingestion.retry-maximum-attempts: 3",
   "workflow.payments-reporting-ingestion.retry-maximum-interval: 100",
