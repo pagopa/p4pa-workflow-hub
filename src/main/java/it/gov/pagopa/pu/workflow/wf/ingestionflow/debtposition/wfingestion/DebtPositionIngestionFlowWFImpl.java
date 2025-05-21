@@ -5,6 +5,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.InstallmentIngestionFlowFileActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.MassiveNoticeGenerationStatusRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
@@ -12,6 +13,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIng
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.utilities.Constants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
@@ -34,12 +36,15 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
    * The threshold is very high ({@link Constants#THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW}), lock acquire is the first activity called, we are not interested on WF history, we will clear it before real limit
    */
   private static final int LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY = 1000;
+  private static final int MAX_ATTEMPTS = 20;
+  private static final Duration RETRY_INTERVAL = Duration.ofSeconds(30);
 
   private IngestionFlowFileProcessingLockerActivity ingestionFlowFileProcessingLockerActivity;
   private InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
   private SynchronizeIngestedDebtPositionActivity synchronizeIngestedDebtPositionActivity;
+  private MassiveNoticeGenerationStatusRetrieverActivity massiveNoticeGenerationStatusRetrieverActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -56,6 +61,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
     sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
     synchronizeIngestedDebtPositionActivity = wfConfig.buildSynchronizeIngestedDebtPositionActivityStub();
+    massiveNoticeGenerationStatusRetrieverActivity = wfConfig.buildMassiveNoticeGenerationStatusRetrieverActivity();
   }
 
   @Override
@@ -71,6 +77,10 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
 
     mergeErrorDescriptions(ingestionResult, syncDpResult.getErrorsDescription());
     boolean success = ingestionResult.getErrorDescription() == null;
+
+    if (StringUtils.isNotBlank(syncDpResult.getPdfGeneratedId()) && success) {
+      retrieveNoticesGenerationStatus(ingestionResult, syncDpResult.getPdfGeneratedId());
+    }
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
       IngestionFlowFileStatus.PROCESSING,
@@ -122,4 +132,21 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     }
   }
 
+  private void retrieveNoticesGenerationStatus(InstallmentIngestionFlowFileResult ingestionResult, String pdfGeneratedId) {
+    int attemptCounter = 0;
+    while (attemptCounter < MAX_ATTEMPTS &&
+      massiveNoticeGenerationStatusRetrieverActivity.retrieveNoticesGenerationStatus(ingestionResult.getOrganizationId(), pdfGeneratedId) == null) {
+      attemptCounter++;
+
+      if (attemptCounter >= MAX_ATTEMPTS) {
+        log.info("Max attempts reached, continuing as new for pdfGeneratedId {}", pdfGeneratedId);
+        Workflow.continueAsNew(ingestionResult, pdfGeneratedId);
+      }
+
+      log.info("Generation status not retrieved, retrying for pdfGeneratedId {} (attempt {})", pdfGeneratedId, attemptCounter);
+      Workflow.sleep(RETRY_INTERVAL);
+    }
+
+    log.info("Generation status retrieved for pdfGeneratedId {}", pdfGeneratedId);
+  }
 }
