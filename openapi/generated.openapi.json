@@ -1621,17 +1621,6 @@
           }
         }
       },
-      "WfExecutionConfig" : {
-        "type" : "object",
-        "discriminator" : {
-          "propertyName" : "workflowTypeName"
-        },
-        "properties" : {
-          "workflowTypeName" : {
-            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
-          }
-        }
-      },
       "PageMetadata" : {
         "type" : "object",
         "properties" : {
@@ -1650,6 +1639,17 @@
           "number" : {
             "type" : "integer",
             "format" : "int64"
+          }
+        }
+      },
+      "WfExecutionConfig" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "workflowTypeName"
+        },
+        "properties" : {
+          "workflowTypeName" : {
+            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
           }
         }
       },
@@ -2250,28 +2250,6 @@
           }
         }
       },
-      "PagedModelWorkflowTypeOrg" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "workflowTypeOrgs" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
       "DebtPositionWorkflowType" : {
         "type" : "object",
         "properties" : {
@@ -2317,6 +2295,28 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/DebtPositionWorkflowType"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PagedModelWorkflowTypeOrg" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypeOrgs" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
                 }
               }
             }
