@@ -36,7 +36,7 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
    * The threshold is very high ({@link Constants#THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW}), lock acquire is the first activity called, we are not interested on WF history, we will clear it before real limit
    */
   private static final int LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY = 1000;
-  private static final int MAX_ATTEMPTS = 20;
+  private static final int MAX_ATTEMPTS = 30;
   private static final Duration RETRY_INTERVAL = Duration.ofSeconds(30);
 
   private IngestionFlowFileProcessingLockerActivity ingestionFlowFileProcessingLockerActivity;
@@ -138,15 +138,16 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
       massiveNoticeGenerationStatusRetrieverActivity.retrieveNoticesGenerationStatus(ingestionResult.getOrganizationId(), pdfGeneratedId) == null) {
       attemptCounter++;
 
-      if (attemptCounter >= MAX_ATTEMPTS) {
-        log.info("Max attempts reached, continuing as new for pdfGeneratedId {}", pdfGeneratedId);
-        Workflow.continueAsNew(ingestionResult, pdfGeneratedId);
-      }
-
       log.info("Generation status not retrieved, retrying for pdfGeneratedId {} (attempt {})", pdfGeneratedId, attemptCounter);
       Workflow.sleep(RETRY_INTERVAL);
     }
 
-    log.info("Generation status retrieved for pdfGeneratedId {}", pdfGeneratedId);
+    if (attemptCounter >= MAX_ATTEMPTS) {
+      String errorMessage = String.format("Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.", pdfGeneratedId);
+      log.error(errorMessage);
+      mergeErrorDescriptions(ingestionResult, errorMessage);
+    } else {
+      log.info("Generation status retrieved for pdfGeneratedId {}", pdfGeneratedId);
+    }
   }
 }

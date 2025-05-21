@@ -171,7 +171,7 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenThrow(new RuntimeException("DUMMY"));
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
-      .thenReturn(new SyncIngestedDebtPositionDTO("\nError on synchronizeIngestedDebtPositionActivity", null));
+      .thenReturn(new SyncIngestedDebtPositionDTO("\nError on synchronizeIngestedDebtPositionActivity", "generatedId"));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
@@ -290,7 +290,7 @@ class DebtPositionIngestionFlowWFImplTest {
   }
 
   @Test
-  void whenMassiveNoticeGenerationStatusRetriesThenContinueAsNew() {
+  void whenMassiveNoticeGenerationStatusRetriesMaxAttemptsReached() {
     Long ingestionFlowFileId = 1L;
     String pdfGeneratedId = "generatedId";
 
@@ -299,15 +299,15 @@ class DebtPositionIngestionFlowWFImplTest {
     installmentIngestionFlowFileResult.setTotalRows(10L);
     installmentIngestionFlowFileResult.setOrganizationId(123L);
 
-    AtomicInteger attemptCounter = new AtomicInteger(0);
     Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
       .thenReturn(new SyncIngestedDebtPositionDTO("", pdfGeneratedId));
 
+    AtomicInteger attemptCounter = new AtomicInteger(0);
     Mockito.doAnswer(invocation -> {
-        if (attemptCounter.incrementAndGet() <= 20) {
+        if (attemptCounter.incrementAndGet() <= 30) {
           return null;
         }
         return new SignedUrlResultDTO();
@@ -316,23 +316,28 @@ class DebtPositionIngestionFlowWFImplTest {
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
-      workflowMock.when(() -> Workflow.continueAsNew(Mockito.any())).then(invocation -> null);
 
       wf.ingest(ingestionFlowFileId);
 
+      String errorDescription = String.format("""
+        There were errors during the synchronization of the ingested Debt Position:Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.
+        """, pdfGeneratedId).stripTrailing();
+
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock, Mockito.times(20))
+      Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock, Mockito.times(30))
         .retrieveNoticesGenerationStatus(installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
-        Mockito.eq(ingestionFlowFileId),
-        Mockito.eq(IngestionFlowFileStatus.PROCESSING),
-        Mockito.eq(IngestionFlowFileStatus.COMPLETED),
-        Mockito.same(installmentIngestionFlowFileResult)
-      );
+        ingestionFlowFileId,
+        IngestionFlowFileStatus.PROCESSING,
+        IngestionFlowFileStatus.COMPLETED,
+        InstallmentIngestionFlowFileResult.builder()
+          .processedRows(installmentIngestionFlowFileResult.getProcessedRows())
+          .totalRows(installmentIngestionFlowFileResult.getTotalRows())
+          .errorDescription(errorDescription)
+          .organizationId(123L)
+          .build());
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
-
-      workflowMock.verify(() -> Workflow.continueAsNew(installmentIngestionFlowFileResult, pdfGeneratedId), Mockito.times(1));
     }
   }
 
