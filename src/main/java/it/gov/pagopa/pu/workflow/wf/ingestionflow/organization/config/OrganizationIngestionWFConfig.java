@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
   @Configuration
-  @ConfigurationProperties(prefix = "workflow.payments-reporting-ingestion")
+  @ConfigurationProperties(prefix = "workflow.organization-ingestion")
   public class OrganizationIngestionWFConfig extends BaseWfConfig {
 
     public OrganizationIngestionActivity buildOrganizationIngestionActivityStub() {
