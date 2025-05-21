@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.Synch
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
+import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.Constants;
@@ -65,10 +66,10 @@ public class DebtPositionIngestionFlowWFImpl implements DebtPositionIngestionFlo
     log.info("Lock successfully acquired for ingestionFlowFileId {}", ingestionFlowFileId);
     InstallmentIngestionFlowFileResult ingestionResult = processFile(ingestionFlowFileId);
 
-    String additionalError
+    SyncIngestedDebtPositionDTO syncDpResult
       = synchronizeIngestedDebtPositionActivity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
-    mergeErrorDescriptions(ingestionResult, additionalError);
+    mergeErrorDescriptions(ingestionResult, syncDpResult.getErrorsDescription());
     boolean success = ingestionResult.getErrorDescription() == null;
 
     updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
