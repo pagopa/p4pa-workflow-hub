@@ -518,6 +518,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/taxonomy/synchronize:
+    get:
+      tags:
+        - Taxonomy
+      operationId: synchronizeTaxonomy
+      description: Synchronize Taxonomy with PagoPa
+      responses:
+        '200':
+          description: "Taxonomy synchronized correctly"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
         '500':
           description: Server Error
           content:

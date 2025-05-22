@@ -20,6 +20,11 @@ public class WorkflowClientServiceImpl implements WorkflowClientService{
   }
 
   @Override
+  public WorkflowCreatedDTO start(Functions.Proc workflow) {
+    return mapAndLogWfExec(WorkflowClient.start(workflow));
+  }
+
+  @Override
   public <A1> WorkflowCreatedDTO start(Functions.Proc1<A1> workflow, A1 arg1) {
     return mapAndLogWfExec(WorkflowClient.start(workflow, arg1));
   }
