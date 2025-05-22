@@ -85,7 +85,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
         .newStatus(ExportFileStatus.COMPLETED)
         .filePathName(exportFileResult.getFilePath())
         .fileName(exportFileResult.getFileName())
-        //TODO field fileSize depends on task P4ADEV-2598
+        .fileSize(exportFileResult.getFileSize())
         //TODO field expirationDate depends on task P4ADEV-2600
         .exportedRows(exportFileResult.getExportedRows())
         .build();

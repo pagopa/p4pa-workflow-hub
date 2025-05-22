@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowType
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.OrganizationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
@@ -34,6 +35,8 @@ class IngestionFlowFileStarterServiceTest {
   private ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClientMock;
   @Mock
   private PaymentNotificationIngestionWFClient paymentNotificationIngestionWFClientMock;
+  @Mock
+  private OrganizationIngestionWFClient organizationIngestionWFClientMock;
 
   private IngestionFlowFileStarterService service;
 
@@ -46,14 +49,16 @@ class IngestionFlowFileStarterServiceTest {
       treasuryOpiIngestionWFClientMock,
       debtPositionIngestionWFClientMock,
       receiptPagopaIngestionWFClientMock,
-      paymentNotificationIngestionWFClientMock);
+      paymentNotificationIngestionWFClientMock,
+      organizationIngestionWFClientMock);
 
     flowFileType2ClientInvoker = Map.of(
       IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClientMock::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClientMock::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClientMock::ingest,
-      IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION, paymentNotificationIngestionWFClientMock::ingest
+      IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION, paymentNotificationIngestionWFClientMock::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.ORGANIZATIONS, organizationIngestionWFClientMock::ingest
 
     );
   }
@@ -65,7 +70,8 @@ class IngestionFlowFileStarterServiceTest {
       treasuryOpiIngestionWFClientMock,
       debtPositionIngestionWFClientMock,
       receiptPagopaIngestionWFClientMock,
-      paymentNotificationIngestionWFClientMock
+      paymentNotificationIngestionWFClientMock,
+      organizationIngestionWFClientMock
     );
   }
 
