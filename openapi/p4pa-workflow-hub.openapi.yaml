@@ -543,6 +543,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
         '500':
           description: Server Error
           content:

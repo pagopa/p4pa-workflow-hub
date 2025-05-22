@@ -20,6 +20,11 @@ public class WorkflowClientServiceImpl implements WorkflowClientService{
   }
 
   @Override
+  public WorkflowCreatedDTO start(Functions.Proc workflow) {
+    return mapAndLogWfExec(WorkflowClient.start(workflow));
+  }
+
+  @Override
   public <A1> WorkflowCreatedDTO start(Functions.Proc1<A1> workflow, A1 arg1) {
     return mapAndLogWfExec(WorkflowClient.start(workflow, arg1));
   }
@@ -48,10 +53,5 @@ public class WorkflowClientServiceImpl implements WorkflowClientService{
   public WorkflowCreatedDTO signalWithStart(WorkflowStub workflowStub, String signalName, Object[] signalArgs, Object[] startArgs){
     WorkflowExecution wfExec = workflowStub.signalWithStart(signalName, signalArgs, startArgs);
     return mapAndLogWfExec(wfExec);
-  }
-
-  @Override
-  public WorkflowCreatedDTO start(Functions.Proc workflow) {
-    return mapAndLogWfExec(WorkflowClient.start(workflow));
   }
 }
