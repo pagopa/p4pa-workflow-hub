@@ -65,6 +65,7 @@ class ExportFileWFImplTest {
     exportFileResult.setFilePath("filePath");
     exportFileResult.setFileName("fileName");
     exportFileResult.setExportedRows(10L);
+    exportFileResult.setFileSize(12L);
     exportFileResult.setExportDate(LocalDate.now());
     LocalDate expectedDueDate = exportFileResult.getExportDate().plusDays(expirationDays);
     UpdateStatusRequest processingUpdateStatusRequest = new UpdateStatusRequest(
@@ -74,7 +75,7 @@ class ExportFileWFImplTest {
     UpdateStatusRequest completedUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.PROCESSING, ExportFileStatus.COMPLETED,
-      exportFileResult.getFilePath(), exportFileResult.getFileName(),null,
+      exportFileResult.getFilePath(), exportFileResult.getFileName(),12L,
       exportFileResult.getExportedRows(),null);
 
     Mockito.doNothing().when(updateExportFileStatusActivityMock).updateStatus(Mockito.any());
@@ -107,6 +108,7 @@ class ExportFileWFImplTest {
           && p.getOldStatus().equals(completedUpdateStatusRequest.getOldStatus())
           && p.getNewStatus().equals(completedUpdateStatusRequest.getNewStatus())
           && p.getFileName().equals(completedUpdateStatusRequest.getFileName())
+          && p.getFileSize().equals(completedUpdateStatusRequest.getFileSize())
           && p.getFilePathName()
           .equals(completedUpdateStatusRequest.getFilePathName())
           && p.getExportedRows()
