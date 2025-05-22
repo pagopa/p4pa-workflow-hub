@@ -91,6 +91,9 @@ spring:
       - task-queue: PaymentNotificationIngestionWF_LOCAL
         capacity:
           max-concurrent-activity-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
+      - task-queue: OrganizationIngestionWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_ORGANIZATION_POLLER_SIZE:2}"
       # classification
       - task-queue: IudClassificationWF
         capacity:
