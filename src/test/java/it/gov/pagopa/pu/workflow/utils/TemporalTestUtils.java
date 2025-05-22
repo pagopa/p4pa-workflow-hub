@@ -89,4 +89,15 @@ public class TemporalTestUtils {
       return true;
     });
   }
+
+  public static void configureWorkflowClientServiceMock(WorkflowClientService workflowClientServiceMock, WorkflowCreatedDTO expectedResult){
+    Mockito.when(workflowClientServiceMock.start(TemporalTestUtils.buildArgumentMatcherProc()))
+      .thenReturn(expectedResult);
+  }
+  public static Functions.Proc buildArgumentMatcherProc(){
+    return Mockito.argThat((Functions.Proc f) -> {
+      f.apply();
+      return true;
+    });
+  }
 }

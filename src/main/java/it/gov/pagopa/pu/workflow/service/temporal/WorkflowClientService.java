@@ -5,6 +5,7 @@ import io.temporal.workflow.Functions;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 
 public interface WorkflowClientService {
+  WorkflowCreatedDTO start(Functions.Proc workflow);
   <A1> WorkflowCreatedDTO start(Functions.Proc1<A1> workflow, A1 arg1);
   <A1, A2> WorkflowCreatedDTO start(Functions.Proc2<A1, A2> workflow, A1 arg1, A2 arg2);
   <A1, A2, A3> WorkflowCreatedDTO start(Functions.Proc3<A1, A2, A3> workflow, A1 arg1, A2 arg2, A3 arg3);
