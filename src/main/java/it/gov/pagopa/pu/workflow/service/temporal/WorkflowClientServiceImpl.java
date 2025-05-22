@@ -49,4 +49,9 @@ public class WorkflowClientServiceImpl implements WorkflowClientService{
     WorkflowExecution wfExec = workflowStub.signalWithStart(signalName, signalArgs, startArgs);
     return mapAndLogWfExec(wfExec);
   }
+
+  @Override
+  public WorkflowCreatedDTO start(Functions.Proc workflow) {
+    return mapAndLogWfExec(WorkflowClient.start(workflow));
+  }
 }
