@@ -1,80 +1,48 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion;
 
 import io.temporal.spring.boot.WorkflowImpl;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaIngestionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaNotifySilActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaSendEmailActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
-import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+
+import java.util.function.Function;
 
 @Slf4j
 @WorkflowImpl(taskQueues = ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF)
-public class ReceiptPagopaIngestionWFImpl implements ReceiptPagopaIngestionWF, ApplicationContextAware {
+public class ReceiptPagopaIngestionWFImpl extends BaseIngestionFlowFileWFImpl<ReceiptPagopaIngestionFlowFileResult> implements ReceiptPagopaIngestionWF {
   public static final String TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF = "ReceiptPagopaIngestionWF";
 
-  private ReceiptPagopaIngestionActivity receiptPagopaIngestionActivity;
-  private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private ReceiptPagopaNotifySilActivity receiptPagopaNotifySilActivity;
   private ReceiptPagopaSendEmailActivity receiptPagopaSendEmailActivity;
 
-  /**
-   * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
-   * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
-   * In {@link TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
-   * Use this as an example to override based on the particular workflow.
-   */
   @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+  protected Function<Long, ReceiptPagopaIngestionFlowFileResult> buildActivityStubs(ApplicationContext applicationContext) {
     ReceiptPagopaIngestionWfConfig wfConfig = applicationContext.getBean(ReceiptPagopaIngestionWfConfig.class);
 
-    receiptPagopaIngestionActivity = wfConfig.buildReceiptPagopaIngestionActivityStub();
-    updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
+    ReceiptPagopaIngestionActivity receiptPagopaIngestionActivity = wfConfig.buildReceiptPagopaIngestionActivityStub();
     receiptPagopaNotifySilActivity = wfConfig.buildReceiptPagopaNotifySilActivityStub();
     receiptPagopaSendEmailActivity = wfConfig.buildReceiptPagopaSendEmailActivityStub();
+
+    return receiptPagopaIngestionActivity::processFile;
   }
 
   @Override
-  public void ingest(Long ingestionFlowFileId) {
-    log.info("Handling Receipt Pagopa ingestionFlowFileId {}", ingestionFlowFileId);
-
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    ReceiptPagopaIngestionFlowFileResult ingestionResult;
-    boolean success = true;
+  protected void afterProcessing(Long ingestionFlowFileId, ReceiptPagopaIngestionFlowFileResult result) {
     try {
-      ingestionResult = receiptPagopaIngestionActivity.processFile(ingestionFlowFileId);
+      receiptPagopaNotifySilActivity.handleNotifySil(result.getReceiptDTO(), result.getInstallmentDTO());
     } catch (Exception e) {
-      log.error("Error processFile for receipt id[{}]", ingestionFlowFileId, e);
-      success = false;
-      ingestionResult = new ReceiptPagopaIngestionFlowFileResult();
-      ingestionResult.setErrorDescription("error processing receipt id[%s]: %s".formatted(ingestionFlowFileId, Utilities.getWorkflowExceptionMessage(e)));
+      log.error("Error in notify SIL for receipt id[{}]", ingestionFlowFileId, e);
     }
-
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
-      IngestionFlowFileStatus.PROCESSING,
-      success
-        ? IngestionFlowFileStatus.COMPLETED
-        : IngestionFlowFileStatus.ERROR,
-      ingestionResult);
-
-    if (success) {
-      try {
-        receiptPagopaNotifySilActivity.handleNotifySil(ingestionResult.getReceiptDTO(), ingestionResult.getInstallmentDTO());
-      } catch (Exception e) {
-        log.error("Error in notify SIL for receipt id[{}]", ingestionFlowFileId, e);
-      }
-
-      receiptPagopaSendEmailActivity.sendEmail(ingestionResult.getReceiptDTO(), ingestionResult.getInstallmentDTO());
-    }
-
-    log.info("Receipt Pagopa ingestion with ID {} is completed", ingestionFlowFileId);
+    receiptPagopaSendEmailActivity.sendEmail(result.getReceiptDTO(), result.getInstallmentDTO());
   }
 
+  @Override
+  protected void sendEmail(Long ingestionFlowFileId, boolean success) {
+    // Do Nothing
+  }
 }

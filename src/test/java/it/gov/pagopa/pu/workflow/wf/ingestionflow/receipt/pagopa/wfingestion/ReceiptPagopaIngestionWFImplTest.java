@@ -4,11 +4,13 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaIngestionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaNotifySilActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaSendEmailActivity;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,11 +38,18 @@ class ReceiptPagopaIngestionWFImplTest {
 
   @BeforeEach
   void setUp() {
+    BaseIngestionFlowFileWFConfig baseIngestionFlowFileWFConfigMock = mock(BaseIngestionFlowFileWFConfig.class);
     ReceiptPagopaIngestionWfConfig receiptPagopaIngestionWfConfigMock = mock(ReceiptPagopaIngestionWfConfig.class);
     ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
-    Mockito.when(receiptPagopaIngestionWfConfigMock.buildUpdateIngestionFlowStatusActivityStub())
-      .thenReturn(updateIngestionFlowStatusActivityMock);
+    Mockito.doReturn(baseIngestionFlowFileWFConfigMock)
+      .when(applicationContextMock)
+      .getBean(BaseIngestionFlowFileWFConfig.class);
+
+    Mockito.doReturn(receiptPagopaIngestionWfConfigMock)
+      .when(applicationContextMock)
+      .getBean(ReceiptPagopaIngestionWfConfig.class);
+
     Mockito.when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaIngestionActivityStub())
       .thenReturn(receiptPagopaIngestionActivityMock);
     Mockito.when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaNotifySilActivityStub())
@@ -48,8 +57,8 @@ class ReceiptPagopaIngestionWFImplTest {
     Mockito.when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaSendEmailActivityStub())
       .thenReturn(receiptPagopaSendEmailActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(ReceiptPagopaIngestionWfConfig.class))
-      .thenReturn(receiptPagopaIngestionWfConfigMock);
+    Mockito.when(baseIngestionFlowFileWFConfigMock.buildUpdateIngestionFlowStatusActivityStub())
+      .thenReturn(updateIngestionFlowStatusActivityMock);
 
     wf = new ReceiptPagopaIngestionWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -88,8 +97,8 @@ class ReceiptPagopaIngestionWFImplTest {
     Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId))
       .thenThrow(new NotRetryableActivityException("DUMMY"));
 
-    ReceiptPagopaIngestionFlowFileResult ingestionFlowFileResult = ReceiptPagopaIngestionFlowFileResult.builder()
-      .errorDescription("error processing receipt id[1]: DUMMY")
+    IngestionFlowFileResult ingestionFlowFileResult = IngestionFlowFileResult.builder()
+      .errorDescription("DUMMY")
       .build();
 
     // When
@@ -114,7 +123,8 @@ class ReceiptPagopaIngestionWFImplTest {
 
     Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId)).thenReturn(result);
 
-    Mockito.doThrow(new NotRetryableActivityException("DUMMY")).when(receiptPagopaNotifySilActivityMock).handleNotifySil(receiptDTO, installmentDTO);
+    Mockito.doThrow(new NotRetryableActivityException("DUMMY")).when(receiptPagopaNotifySilActivityMock)
+      .handleNotifySil(receiptDTO, installmentDTO);
 
     // When
     Assertions.assertDoesNotThrow(() -> wf.ingest(ingestionFlowFileId));
