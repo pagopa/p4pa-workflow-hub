@@ -120,6 +120,7 @@ class TemporalSpringBootIntegrationTest {
     result.setTransfers(List.of(paymentsReportingTransferDTO));
 
     IngestionFlowFileResult expectedIngestionFlowFileResult = IngestionFlowFileResult.builder()
+      .organizationId(result.getOrganizationId())
       .totalRows(result.getTotalRows())
       .processedRows(result.getProcessedRows())
       .build();

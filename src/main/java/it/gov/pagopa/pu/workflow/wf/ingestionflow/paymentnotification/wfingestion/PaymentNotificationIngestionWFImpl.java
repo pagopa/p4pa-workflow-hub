@@ -1,32 +1,23 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion;
 
 import io.temporal.spring.boot.WorkflowImpl;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentnotification.PaymentNotificationIngestionActivity;
-import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.activity.NotifyPaymentNotificationToIudClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.config.PaymentNotificationIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWFImpl.TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF)
-public class PaymentNotificationIngestionWFImpl implements PaymentNotificationIngestionWF, ApplicationContextAware {
+public class PaymentNotificationIngestionWFImpl extends BaseIngestionFlowFileWFImpl<PaymentNotificationIngestionFlowFileResult> implements PaymentNotificationIngestionWF {
   public static final String TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF = "PaymentNotificationIngestionWF";
   public static final String TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_LOCAL_ACTIVITY = "PaymentNotificationIngestionWF_LOCAL";
 
-  private PaymentNotificationIngestionActivity paymentNotificationIngestionActivity;
-  private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
-  private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private NotifyPaymentNotificationToIudClassificationActivity notifyPaymentNotificationToIudClassificationActivity;
 
   /**
@@ -36,51 +27,20 @@ public class PaymentNotificationIngestionWFImpl implements PaymentNotificationIn
    * Use this as an example to override based on the particular workflow.
    */
   @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+  public PaymentNotificationIngestionActivity buildActivityStubs(ApplicationContext applicationContext) {
     PaymentNotificationIngestionWfConfig wfConfig = applicationContext.getBean(PaymentNotificationIngestionWfConfig.class);
 
-    paymentNotificationIngestionActivity = wfConfig.buildPaymentNotificationIngestionActivityStub();
-    sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
-    updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
+    PaymentNotificationIngestionActivity paymentNotificationIngestionActivity = wfConfig.buildPaymentNotificationIngestionActivityStub();
     notifyPaymentNotificationToIudClassificationActivity = wfConfig.buildNotifyPaymentNotificationToIudClassificationActivityStub();
+
+    return paymentNotificationIngestionActivity;
   }
 
   @Override
-  public void ingest(Long ingestionFlowFileId) {
-    log.info("Handling Payment Notification IngestionFlowFileId {}", ingestionFlowFileId);
-
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    IngestionFlowFileResult ingestionFlowFileResult = processFile(ingestionFlowFileId);
-
-    boolean success = ingestionFlowFileResult.getErrorDescription()==null;
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
-      IngestionFlowFileStatus.PROCESSING,
-      success
-        ? IngestionFlowFileStatus.COMPLETED
-        : IngestionFlowFileStatus.ERROR,
-      ingestionFlowFileResult);
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
-
-    log.info("Payment Notification Ingestion completed for file with ID {} with success {} and errorDescription {}",
-      ingestionFlowFileId, success, ingestionFlowFileResult.getErrorDescription());
+  protected void afterProcessing(Long ingestionFlowFileId, PaymentNotificationIngestionFlowFileResult ingestionResult) {
+    ingestionResult.getIudList().forEach(
+      iud -> notifyPaymentNotificationToIudClassificationActivity.signalIudClassificationWithStart(
+        ingestionResult.getOrganizationId(),
+        iud));
   }
-
-  private IngestionFlowFileResult processFile(Long ingestionFlowFileId) {
-    try{
-      PaymentNotificationIngestionFlowFileResult ingestionResult = paymentNotificationIngestionActivity.processFile(ingestionFlowFileId);
-Long orgId= ingestionResult.getOrganizationId();
-
-      ingestionResult.getIudList().forEach(
-        iud -> notifyPaymentNotificationToIudClassificationActivity.signalIudClassificationWithStart(
-          orgId,
-          iud));
-
-      return ingestionResult;
-    } catch (Exception e) {
-      IngestionFlowFileResult ingestionFlowFileResult = new IngestionFlowFileResult();
-      ingestionFlowFileResult.setErrorDescription(Utilities.getWorkflowExceptionMessage(e));
-      return ingestionFlowFileResult;
-    }
-  }
-
 }

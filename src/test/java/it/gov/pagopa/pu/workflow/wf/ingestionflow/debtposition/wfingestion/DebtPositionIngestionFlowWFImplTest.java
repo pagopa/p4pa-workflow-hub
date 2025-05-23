@@ -7,10 +7,12 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.Insta
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.MassiveNoticeGenerationStatusRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
+import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,24 +47,31 @@ class DebtPositionIngestionFlowWFImplTest {
 
   @BeforeEach
   void setUp() {
+    BaseIngestionFlowFileWFConfig baseIngestionFlowFileWFConfigMock = Mockito.mock(BaseIngestionFlowFileWFConfig.class);
     DebtPositionIngestionFlowWfConfig debtPositionIngestionFlowWfConfigMock = Mockito.mock(DebtPositionIngestionFlowWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+
+    Mockito.doReturn(debtPositionIngestionFlowWfConfigMock)
+      .when(applicationContextMock)
+      .getBean(DebtPositionIngestionFlowWfConfig.class);
+
+    Mockito.doReturn(baseIngestionFlowFileWFConfigMock)
+      .when(applicationContextMock)
+      .getBean(BaseIngestionFlowFileWFConfig.class);
+
+    Mockito.when(baseIngestionFlowFileWFConfigMock.buildUpdateIngestionFlowStatusActivityStub())
+      .thenReturn(updateIngestionFlowStatusActivityMock);
+    Mockito.when(baseIngestionFlowFileWFConfigMock.buildSendEmailIngestionFlowActivityStub())
+      .thenReturn(sendEmailIngestionFlowActivityMock);
 
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildIngestionFlowFileProcessingLockerActivityStub())
       .thenReturn(ingestionFlowFileProcessingLockerActivityMock);
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildInstallmentIngestionFlowFileActivityStub())
       .thenReturn(installmentIngestionFlowFileActivityMock);
-    Mockito.when(debtPositionIngestionFlowWfConfigMock.buildUpdateIngestionFlowStatusActivityStub())
-      .thenReturn(updateIngestionFlowStatusActivityMock);
-    Mockito.when(debtPositionIngestionFlowWfConfigMock.buildSendEmailIngestionFlowActivityStub())
-      .thenReturn(sendEmailIngestionFlowActivityMock);
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildSynchronizeIngestedDebtPositionActivityStub())
       .thenReturn(synchronizeIngestedDebtPositionActivityMock);
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildMassiveNoticeGenerationStatusRetrieverActivity())
       .thenReturn(massiveNoticeGenerationStatusRetrieverActivityMock);
-
-    Mockito.when(applicationContextMock.getBean(DebtPositionIngestionFlowWfConfig.class))
-      .thenReturn(debtPositionIngestionFlowWfConfigMock);
 
     wf = new DebtPositionIngestionFlowWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -166,6 +175,46 @@ class DebtPositionIngestionFlowWFImplTest {
     InstallmentIngestionFlowFileResult installmentIngestionFlowFileResult = new InstallmentIngestionFlowFileResult();
     installmentIngestionFlowFileResult.setProcessedRows(5L);
     installmentIngestionFlowFileResult.setTotalRows(10L);
+    installmentIngestionFlowFileResult.setErrorDescription("Some rows have errors");
+
+    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
+    Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId))
+      .thenReturn(installmentIngestionFlowFileResult);
+
+    Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
+      .thenReturn(new SyncIngestedDebtPositionDTO("\nError on synchronizeIngestedDebtPositionActivity", "generatedId"));
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
+
+      wf.ingest(ingestionFlowFileId);
+
+      String errorDescription = """
+        Some rows have errors
+
+        There were errors during the synchronization of the ingested Debt Position:
+        Error on synchronizeIngestedDebtPositionActivity
+        """.stripTrailing();
+
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+        ingestionFlowFileId,
+        IngestionFlowFileStatus.PROCESSING,
+        IngestionFlowFileStatus.ERROR,
+        InstallmentIngestionFlowFileResult.builder()
+          .processedRows(5L)
+          .totalRows(10L)
+          .errorDescription(errorDescription)
+          .build()
+      );
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
+    }
+  }
+
+  @Test
+  void givenExceptionDuringFileProcessWhenIngestThenKo() {
+    long ingestionFlowFileId = 1L;
 
     Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenThrow(new RuntimeException("DUMMY"));
@@ -179,7 +228,7 @@ class DebtPositionIngestionFlowWFImplTest {
       wf.ingest(ingestionFlowFileId);
 
       String errorDescription = """
-        Unexpected error when processing DebtPositionIngestion file: DUMMY
+        DUMMY
 
         There were errors during the synchronization of the ingested Debt Position:
         Error on synchronizeIngestedDebtPositionActivity
@@ -191,7 +240,7 @@ class DebtPositionIngestionFlowWFImplTest {
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
         IngestionFlowFileStatus.ERROR,
-        InstallmentIngestionFlowFileResult.builder()
+        IngestionFlowFileResult.builder()
           .errorDescription(errorDescription)
           .build()
       );
@@ -320,7 +369,7 @@ class DebtPositionIngestionFlowWFImplTest {
       wf.ingest(ingestionFlowFileId);
 
       String errorDescription = String.format("""
-        There were errors during the synchronization of the ingested Debt Position:Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.
+        There were errors during the notice generation of the ingested Debt Position:Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.
         """, pdfGeneratedId).stripTrailing();
 
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
@@ -330,14 +379,14 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
-        IngestionFlowFileStatus.COMPLETED,
+        IngestionFlowFileStatus.ERROR,
         InstallmentIngestionFlowFileResult.builder()
           .processedRows(installmentIngestionFlowFileResult.getProcessedRows())
           .totalRows(installmentIngestionFlowFileResult.getTotalRows())
           .errorDescription(errorDescription)
           .organizationId(123L)
           .build());
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
     }
   }
 

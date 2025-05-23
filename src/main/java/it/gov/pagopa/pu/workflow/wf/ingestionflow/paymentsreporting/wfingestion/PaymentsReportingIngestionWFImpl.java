@@ -1,83 +1,39 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion;
 
 import io.temporal.spring.boot.WorkflowImpl;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
-import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
-import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF)
-public class PaymentsReportingIngestionWFImpl implements PaymentsReportingIngestionWF, ApplicationContextAware {
+public class PaymentsReportingIngestionWFImpl extends BaseIngestionFlowFileWFImpl<PaymentsReportingIngestionFlowFileActivityResult> implements PaymentsReportingIngestionWF {
   public static final String TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF = "PaymentsReportingIngestionWF";
   public static final String TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_LOCAL_ACTIVITY = "PaymentsReportingIngestionWF_LOCAL";
 
-  private PaymentsReportingIngestionFlowFileActivity paymentsReportingIngestionFlowFileActivity;
-  private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
-  private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
   private NotifyPaymentsReportingToIufClassificationActivity notifyPaymentsReportingToIufClassificationActivity;
 
-  /**
-   * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
-   * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
-   * In {@link TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
-   * Use this as an example to override based on the particular workflow.
-   */
   @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+  protected PaymentsReportingIngestionFlowFileActivity buildActivityStubs(ApplicationContext applicationContext) {
     PaymentsReportingIngestionWfConfig wfConfig = applicationContext.getBean(PaymentsReportingIngestionWfConfig.class);
 
-    paymentsReportingIngestionFlowFileActivity = wfConfig.buildPaymentsReportingIngestionFlowFileActivityStub();
-    sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
-    updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
+    PaymentsReportingIngestionFlowFileActivity paymentsReportingIngestionFlowFileActivity = wfConfig.buildPaymentsReportingIngestionFlowFileActivityStub();
     notifyPaymentsReportingToIufClassificationActivity = wfConfig.buildNotifyPaymentsReportingToIufClassificationActivityStub();
+
+    return paymentsReportingIngestionFlowFileActivity;
   }
 
   @Override
-  public void ingest(Long ingestionFlowFileId) {
-    log.info("Handling PaymentsReporting IngestingFlowFileId {}", ingestionFlowFileId);
-
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    PaymentsReportingIngestionFlowFileActivityResult ingestionFlowFileResult = processFile(ingestionFlowFileId);
-
-    boolean success = ingestionFlowFileResult.getErrorDescription()==null;
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
-      IngestionFlowFileStatus.PROCESSING,
-      success
-        ? IngestionFlowFileStatus.COMPLETED
-        : IngestionFlowFileStatus.ERROR,
-      ingestionFlowFileResult);
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
-
-    log.info("PaymentsReporting Ingestion completed for file with ID {} with success {} and errorDescription {}",
-      ingestionFlowFileId, success, ingestionFlowFileResult.getErrorDescription());
-  }
-
-  private PaymentsReportingIngestionFlowFileActivityResult processFile(Long ingestionFlowFileId) {
-    try{
-      PaymentsReportingIngestionFlowFileActivityResult ingestionResult = paymentsReportingIngestionFlowFileActivity.processFile(ingestionFlowFileId);
-
-      notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
-        ingestionResult.getOrganizationId(),
-        ingestionResult.getIuf(),
-        ingestionResult.getTransfers());
-
-      return ingestionResult;
-    } catch (Exception e) {
-      PaymentsReportingIngestionFlowFileActivityResult result = new PaymentsReportingIngestionFlowFileActivityResult();
-      result.setErrorDescription(Utilities.getWorkflowExceptionMessage(e));
-      return result;
-    }
+  protected void afterProcessing(Long ingestionFlowFileId, PaymentsReportingIngestionFlowFileActivityResult result) {
+    notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
+      result.getOrganizationId(),
+      result.getIuf(),
+      result.getTransfers());
   }
 }
