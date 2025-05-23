@@ -10,6 +10,8 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptP
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
+import java.util.function.Function;
+
 @Slf4j
 @WorkflowImpl(taskQueues = ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF)
 public class ReceiptPagopaIngestionWFImpl extends BaseIngestionFlowFileWFImpl<ReceiptPagopaIngestionFlowFileResult> implements ReceiptPagopaIngestionWF {
@@ -19,14 +21,14 @@ public class ReceiptPagopaIngestionWFImpl extends BaseIngestionFlowFileWFImpl<Re
   private ReceiptPagopaSendEmailActivity receiptPagopaSendEmailActivity;
 
   @Override
-  protected ReceiptPagopaIngestionActivity buildActivityStubs(ApplicationContext applicationContext) {
+  protected Function<Long, ReceiptPagopaIngestionFlowFileResult> buildActivityStubs(ApplicationContext applicationContext) {
     ReceiptPagopaIngestionWfConfig wfConfig = applicationContext.getBean(ReceiptPagopaIngestionWfConfig.class);
 
     ReceiptPagopaIngestionActivity receiptPagopaIngestionActivity = wfConfig.buildReceiptPagopaIngestionActivityStub();
     receiptPagopaNotifySilActivity = wfConfig.buildReceiptPagopaNotifySilActivityStub();
     receiptPagopaSendEmailActivity = wfConfig.buildReceiptPagopaSendEmailActivityStub();
 
-    return receiptPagopaIngestionActivity;
+    return receiptPagopaIngestionActivity::processFile;
   }
 
   @Override

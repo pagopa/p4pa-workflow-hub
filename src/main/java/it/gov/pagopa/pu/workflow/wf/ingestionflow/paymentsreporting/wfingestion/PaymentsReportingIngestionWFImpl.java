@@ -9,6 +9,8 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.Payme
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
+import java.util.function.Function;
+
 import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF;
 
 @Slf4j
@@ -20,13 +22,13 @@ public class PaymentsReportingIngestionWFImpl extends BaseIngestionFlowFileWFImp
   private NotifyPaymentsReportingToIufClassificationActivity notifyPaymentsReportingToIufClassificationActivity;
 
   @Override
-  protected PaymentsReportingIngestionFlowFileActivity buildActivityStubs(ApplicationContext applicationContext) {
+  protected Function<Long, PaymentsReportingIngestionFlowFileActivityResult> buildActivityStubs(ApplicationContext applicationContext) {
     PaymentsReportingIngestionWfConfig wfConfig = applicationContext.getBean(PaymentsReportingIngestionWfConfig.class);
 
     PaymentsReportingIngestionFlowFileActivity paymentsReportingIngestionFlowFileActivity = wfConfig.buildPaymentsReportingIngestionFlowFileActivityStub();
     notifyPaymentsReportingToIufClassificationActivity = wfConfig.buildNotifyPaymentsReportingToIufClassificationActivityStub();
 
-    return paymentsReportingIngestionFlowFileActivity;
+    return paymentsReportingIngestionFlowFileActivity::processFile;
   }
 
   @Override

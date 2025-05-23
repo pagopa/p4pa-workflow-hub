@@ -10,6 +10,8 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.config.Pay
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
+import java.util.function.Function;
+
 import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWFImpl.TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF;
 
 @Slf4j
@@ -27,13 +29,13 @@ public class PaymentNotificationIngestionWFImpl extends BaseIngestionFlowFileWFI
    * Use this as an example to override based on the particular workflow.
    */
   @Override
-  public PaymentNotificationIngestionActivity buildActivityStubs(ApplicationContext applicationContext) {
+  public Function<Long, PaymentNotificationIngestionFlowFileResult> buildActivityStubs(ApplicationContext applicationContext) {
     PaymentNotificationIngestionWfConfig wfConfig = applicationContext.getBean(PaymentNotificationIngestionWfConfig.class);
 
     PaymentNotificationIngestionActivity paymentNotificationIngestionActivity = wfConfig.buildPaymentNotificationIngestionActivityStub();
     notifyPaymentNotificationToIudClassificationActivity = wfConfig.buildNotifyPaymentNotificationToIudClassificationActivityStub();
 
-    return paymentNotificationIngestionActivity;
+    return paymentNotificationIngestionActivity::processFile;
   }
 
   @Override

@@ -1,11 +1,11 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow;
 
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessorActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,15 +13,18 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
+import java.util.function.Function;
+
 import static org.mockito.Mockito.mock;
 
-public abstract class BaseIngestionFlowFileWFTest<A extends IngestionFlowFileProcessorActivity<R>, R extends IngestionFlowFileResult> {
+public abstract class BaseIngestionFlowFileWFTest<R extends IngestionFlowFileResult> {
 
   @Mock
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivityMock;
   @Mock
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivityMock;
-  private A ingestionFlowFileProcessorActivityMock;
+  private Object ingestionFlowFileProcessorActivityMock;
+  private Function<Long, R> activityInvoker;
 
   private BaseIngestionFlowFileWFImpl<R> wf;
 
@@ -37,7 +40,9 @@ public abstract class BaseIngestionFlowFileWFTest<A extends IngestionFlowFilePro
     Mockito.when(configMock.buildUpdateIngestionFlowStatusActivityStub()).thenReturn(updateIngestionFlowStatusActivityMock);
     Mockito.when(configMock.buildSendEmailIngestionFlowActivityStub()).thenReturn(sendEmailIngestionFlowActivityMock);
 
-    ingestionFlowFileProcessorActivityMock = configureIngestionFlowFileProcessorActivityMock(applicationContextMock);
+    Pair<Object, Function<Long, R>> mock2Invoker = configureIngestionFlowFileProcessorActivityMock(applicationContextMock);
+    ingestionFlowFileProcessorActivityMock = mock2Invoker.getKey();
+    activityInvoker = mock2Invoker.getValue();
 
     wf = buildWf();
     wf.setApplicationContext(applicationContextMock);
@@ -52,7 +57,8 @@ public abstract class BaseIngestionFlowFileWFTest<A extends IngestionFlowFilePro
     );
   }
 
-  protected abstract A configureIngestionFlowFileProcessorActivityMock(ApplicationContext applicationContextMock);
+  /** It will return the activity processor mock and a function which will invoke it */
+  protected abstract Pair<Object, Function<Long, R>> configureIngestionFlowFileProcessorActivityMock(ApplicationContext applicationContextMock);
 
   protected abstract BaseIngestionFlowFileWFImpl<R> buildWf();
 
@@ -64,7 +70,7 @@ public abstract class BaseIngestionFlowFileWFTest<A extends IngestionFlowFilePro
       .errorDescription("DUMMY")
       .build();
 
-    Mockito.when(ingestionFlowFileProcessorActivityMock.processFile(ingestionFlowFileId))
+    Mockito.when(activityInvoker.apply(ingestionFlowFileId))
       .thenThrow(new RuntimeException("DUMMY"));
 
     // When
@@ -83,7 +89,7 @@ public abstract class BaseIngestionFlowFileWFTest<A extends IngestionFlowFilePro
 
     R expectedResult = buildExpectedIngestionFlowFileResult();
 
-    Mockito.when(ingestionFlowFileProcessorActivityMock.processFile(ingestionFlowFileId))
+    Mockito.when(activityInvoker.apply(ingestionFlowFileId))
       .thenReturn(expectedResult);
 
     // When

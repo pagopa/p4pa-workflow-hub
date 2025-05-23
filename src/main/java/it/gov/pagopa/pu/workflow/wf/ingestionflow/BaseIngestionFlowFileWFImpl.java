@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow;
 
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessorActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
@@ -13,10 +12,12 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.util.function.Function;
+
 @Slf4j
 public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileResult> implements BaseIngestionFlowFileWF, ApplicationContextAware {
 
-  private IngestionFlowFileProcessorActivity<T> ingestionFlowFileProcessorActivity;
+  private Function<Long, T> ingestionFlowFileProcessorActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
 
@@ -37,7 +38,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   }
 
   /** To be overridden by extended class in order to build further required activities */
-  protected abstract IngestionFlowFileProcessorActivity<T> buildActivityStubs(ApplicationContext applicationContext);
+  protected abstract Function<Long, T> buildActivityStubs(ApplicationContext applicationContext);
 
   @Override
   public void ingest(Long ingestionFlowFileId) {
@@ -66,7 +67,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   private IngestionFlowFileResult processFile(Long ingestionFlowFileId) {
     IngestionFlowFileResult out = null;
     try {
-      T result = ingestionFlowFileProcessorActivity.processFile(ingestionFlowFileId);
+      T result = ingestionFlowFileProcessorActivity.apply(ingestionFlowFileId);
       out = result;
       afterProcessing(ingestionFlowFileId, result);
       return out;

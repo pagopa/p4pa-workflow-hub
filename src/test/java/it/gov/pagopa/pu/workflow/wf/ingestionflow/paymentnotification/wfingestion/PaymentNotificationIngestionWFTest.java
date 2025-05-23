@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFTest;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.activity.NotifyPaymentNotificationToIudClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.config.PaymentNotificationIngestionWfConfig;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -13,9 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
+import java.util.function.Function;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentNotificationIngestionWFTest extends BaseIngestionFlowFileWFTest<PaymentNotificationIngestionActivity, PaymentNotificationIngestionFlowFileResult> {
+class PaymentNotificationIngestionWFTest extends BaseIngestionFlowFileWFTest<PaymentNotificationIngestionFlowFileResult> {
 
   @Mock
   private PaymentNotificationIngestionActivity paymentNotificationIngestionActivityMock;
@@ -24,7 +26,7 @@ class PaymentNotificationIngestionWFTest extends BaseIngestionFlowFileWFTest<Pay
   private NotifyPaymentNotificationToIudClassificationActivity notifyPaymentNotificationToIudClassificationActivityMock;
 
   @Override
-  protected PaymentNotificationIngestionActivity configureIngestionFlowFileProcessorActivityMock(ApplicationContext applicationContextMock) {
+  protected Pair<Object, Function<Long, PaymentNotificationIngestionFlowFileResult>> configureIngestionFlowFileProcessorActivityMock(ApplicationContext applicationContextMock) {
     PaymentNotificationIngestionWfConfig paymentNotificationIngestionWfConfigMock = Mockito.mock(PaymentNotificationIngestionWfConfig.class);
 
     Mockito.doReturn(paymentNotificationIngestionWfConfigMock)
@@ -36,7 +38,7 @@ class PaymentNotificationIngestionWFTest extends BaseIngestionFlowFileWFTest<Pay
     Mockito.when(paymentNotificationIngestionWfConfigMock.buildNotifyPaymentNotificationToIudClassificationActivityStub())
       .thenReturn(notifyPaymentNotificationToIudClassificationActivityMock);
 
-    return paymentNotificationIngestionActivityMock;
+    return Pair.of(paymentNotificationIngestionActivityMock, paymentNotificationIngestionActivityMock::processFile);
   }
 
   @Override

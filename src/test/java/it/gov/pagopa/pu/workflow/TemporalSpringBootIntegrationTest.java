@@ -57,10 +57,10 @@ import static org.mockito.Mockito.*;
   "spring.temporal.workers[0].activity-beans[1]: fileActivityMock",
   "spring.temporal.workers[0].activity-beans[2]: emailActivityMock",
 
-  "workflow.payments-reporting-ingestion.retry-maximum-attempts: 3",
-  "workflow.payments-reporting-ingestion.retry-maximum-interval: 100",
-  "workflow.payments-reporting-ingestion.retry-backoff-coefficient: 1",
-  "workflow.payments-reporting-ingestion.start-to-close-timeout-in-seconds: 100"
+  "workflow.base-ingestion-flow.retry-maximum-attempts: 3",
+  "workflow.base-ingestion-flow.retry-maximum-interval: 100",
+  "workflow.base-ingestion-flow.retry-backoff-coefficient: 1",
+  "workflow.base-ingestion-flow.start-to-close-timeout-in-seconds: 100"
 })
 class TemporalSpringBootIntegrationTest {
 
@@ -137,9 +137,9 @@ class TemporalSpringBootIntegrationTest {
     verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(fileActivityMock).processFile(1L);
-    verify(emailActivityMock).sendEmail(1L, true);
     verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
     verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
+    verify(emailActivityMock).sendEmail(1L, true);
     verify(iufClassificationWFClientMock)
       .notifyPaymentsReporting(new IufClassificationNotifyPaymentsReportingSignalDTO(result.getOrganizationId(), result.getIuf(), result.getTransfers()));
   }

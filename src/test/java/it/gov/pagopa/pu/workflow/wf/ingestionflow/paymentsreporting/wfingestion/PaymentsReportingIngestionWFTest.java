@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsR
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFTest;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity.NotifyPaymentsReportingToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config.PaymentsReportingIngestionWfConfig;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -13,9 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
+import java.util.function.Function;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentsReportingIngestionWFTest extends BaseIngestionFlowFileWFTest<PaymentsReportingIngestionFlowFileActivity, PaymentsReportingIngestionFlowFileActivityResult> {
+class PaymentsReportingIngestionWFTest extends BaseIngestionFlowFileWFTest<PaymentsReportingIngestionFlowFileActivityResult> {
 
   @Mock
   private PaymentsReportingIngestionFlowFileActivity paymentsReportingIngestionFlowFileActivityMock;
@@ -23,7 +25,7 @@ class PaymentsReportingIngestionWFTest extends BaseIngestionFlowFileWFTest<Payme
   private NotifyPaymentsReportingToIufClassificationActivity notifyPaymentsReportingToIufClassificationActivityMock;
 
   @Override
-  protected PaymentsReportingIngestionFlowFileActivity configureIngestionFlowFileProcessorActivityMock(ApplicationContext applicationContextMock) {
+  protected Pair<Object, Function<Long, PaymentsReportingIngestionFlowFileActivityResult>> configureIngestionFlowFileProcessorActivityMock(ApplicationContext applicationContextMock) {
     PaymentsReportingIngestionWfConfig paymentsReportingIngestionWfConfigMock = Mockito.mock(PaymentsReportingIngestionWfConfig.class);
 
     Mockito.doReturn(paymentsReportingIngestionWfConfigMock)
@@ -34,8 +36,8 @@ class PaymentsReportingIngestionWFTest extends BaseIngestionFlowFileWFTest<Payme
       .thenReturn(paymentsReportingIngestionFlowFileActivityMock);
     Mockito.when(paymentsReportingIngestionWfConfigMock.buildNotifyPaymentsReportingToIufClassificationActivityStub())
       .thenReturn(notifyPaymentsReportingToIufClassificationActivityMock);
-    
-    return paymentsReportingIngestionFlowFileActivityMock;
+
+    return Pair.of(paymentsReportingIngestionFlowFileActivityMock, paymentsReportingIngestionFlowFileActivityMock::processFile);
   }
 
   @Override

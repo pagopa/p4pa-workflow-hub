@@ -9,6 +9,8 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOp
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
+import java.util.function.Function;
+
 @Slf4j
 @WorkflowImpl(taskQueues = TreasuryOpiIngestionWFImpl.TASK_QUEUE_TREASURY_OPI_INGESTION_WF)
 public class TreasuryOpiIngestionWFImpl extends BaseIngestionFlowFileWFImpl<TreasuryIufIngestionFlowFileResult> implements TreasuryOpiIngestionWF {
@@ -19,13 +21,13 @@ public class TreasuryOpiIngestionWFImpl extends BaseIngestionFlowFileWFImpl<Trea
 
 
   @Override
-  protected TreasuryOpiIngestionActivity buildActivityStubs(ApplicationContext applicationContext) {
+  protected Function<Long, TreasuryIufIngestionFlowFileResult> buildActivityStubs(ApplicationContext applicationContext) {
     TreasuryOpiIngestionWfConfig wfConfig = applicationContext.getBean(TreasuryOpiIngestionWfConfig.class);
 
     TreasuryOpiIngestionActivity treasuryOpiIngestionActivity = wfConfig.buildTreasuryOpiIngestionActivityStub();
     notifyTreasuryToIufClassificationActivity = wfConfig.buildNotifyTreasuryToIufClassificationActivityStub();
 
-    return treasuryOpiIngestionActivity;
+    return treasuryOpiIngestionActivity::processFile;
   }
 
   @Override

@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.treasury.TreasuryIufIngesti
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFTest;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config.TreasuryOpiIngestionWfConfig;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -12,18 +13,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TreasuryOpiIngestionWFImplTest extends BaseIngestionFlowFileWFTest<TreasuryOpiIngestionActivity, TreasuryIufIngestionFlowFileResult> {
+class TreasuryOpiIngestionWFImplTest extends BaseIngestionFlowFileWFTest<TreasuryIufIngestionFlowFileResult> {
   @Mock
   private TreasuryOpiIngestionActivity treasuryOpiIngestionActivityMock;
   @Mock
   private NotifyTreasuryToIufClassificationActivity notifyTreasuryToIufClassificationActivityMock;
 
   @Override
-  protected TreasuryOpiIngestionActivity configureIngestionFlowFileProcessorActivityMock(ApplicationContext applicationContextMock) {
+  protected Pair<Object, Function<Long, TreasuryIufIngestionFlowFileResult>> configureIngestionFlowFileProcessorActivityMock(ApplicationContext applicationContextMock) {
     TreasuryOpiIngestionWfConfig treasuryOpiIngestionWfConfigMock = mock(TreasuryOpiIngestionWfConfig.class);
 
     Mockito.doReturn(treasuryOpiIngestionWfConfigMock)
@@ -35,7 +37,7 @@ class TreasuryOpiIngestionWFImplTest extends BaseIngestionFlowFileWFTest<Treasur
     when(treasuryOpiIngestionWfConfigMock.buildNotifyTreasuryToIufClassificationActivityStub())
       .thenReturn(notifyTreasuryToIufClassificationActivityMock);
 
-    return treasuryOpiIngestionActivityMock;
+    return Pair.of(treasuryOpiIngestionActivityMock, treasuryOpiIngestionActivityMock::processFile);
   }
 
   @Override

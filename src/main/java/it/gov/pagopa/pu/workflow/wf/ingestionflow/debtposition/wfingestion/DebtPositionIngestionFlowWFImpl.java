@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 @Slf4j
 @WorkflowImpl(taskQueues = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW)
@@ -37,7 +38,7 @@ public class DebtPositionIngestionFlowWFImpl extends BaseIngestionFlowFileWFImpl
   private MassiveNoticeGenerationStatusRetrieverActivity massiveNoticeGenerationStatusRetrieverActivity;
 
   @Override
-  protected InstallmentIngestionFlowFileActivity buildActivityStubs(ApplicationContext applicationContext) {
+  protected Function<Long, InstallmentIngestionFlowFileResult> buildActivityStubs(ApplicationContext applicationContext) {
     DebtPositionIngestionFlowWfConfig wfConfig = applicationContext.getBean(DebtPositionIngestionFlowWfConfig.class);
 
     InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivity = wfConfig.buildInstallmentIngestionFlowFileActivityStub();
@@ -45,7 +46,7 @@ public class DebtPositionIngestionFlowWFImpl extends BaseIngestionFlowFileWFImpl
     synchronizeIngestedDebtPositionActivity = wfConfig.buildSynchronizeIngestedDebtPositionActivityStub();
     massiveNoticeGenerationStatusRetrieverActivity = wfConfig.buildMassiveNoticeGenerationStatusRetrieverActivity();
 
-    return installmentIngestionFlowFileActivity;
+    return installmentIngestionFlowFileActivity::processFile;
   }
 
   @Override
