@@ -45,7 +45,7 @@ class DebtPositionGenericSyncServiceTest {
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
 
-    debtPosition.setFlagPagoPaPayment(false);
+    debtPosition.setFlagPuPagoPaPayment(false);
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("WFID", "RUNID");
     Mockito.when(wfClientMock.synchronizeNoPagoPADP(Mockito.same(debtPosition), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionConfig)))
       .thenReturn(expectedResult);
@@ -94,7 +94,7 @@ class DebtPositionGenericSyncServiceTest {
     Mockito.when(interactionModelRetrieverServiceMock.retrieveInteractionModel(organizationId, accessToken))
       .thenReturn(interactionModel);
 
-    debtPosition.setFlagPagoPaPayment(true);
+    debtPosition.setFlagPuPagoPaPayment(true);
     WorkflowCreatedDTO expectedResult = null;
     if (expectedWfClientInvoke != null) {
       expectedResult = new WorkflowCreatedDTO("WFID", "RUNID");
