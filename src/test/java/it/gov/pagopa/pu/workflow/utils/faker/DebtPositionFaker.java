@@ -24,7 +24,7 @@ public class DebtPositionFaker {
       .validityDate(DATE)
       .flagIuvVolatile(false)
       .multiDebtor(false)
-      .flagPagoPaPayment(false)
+      .flagPuPagoPaPayment(false)
       .creationDate(OFFSET_DATE_TIME)
       .updateDate(OFFSET_DATE_TIME)
       .paymentOptions(List.of(buildPaymentOptionDTO()))

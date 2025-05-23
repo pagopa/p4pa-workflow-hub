@@ -25,7 +25,7 @@ public class DebtPositionGenericSyncService {
       debtPositionDTO.getDebtPositionId(),
       paymentEventRequest!=null? paymentEventRequest.getPaymentEventType() : null);
 
-    if (Boolean.FALSE.equals(debtPositionDTO.getFlagPagoPaPayment())) {
+    if (Boolean.FALSE.equals(debtPositionDTO.getFlagPuPagoPaPayment())) {
       return wfClient.synchronizeNoPagoPADP(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
     }
 
