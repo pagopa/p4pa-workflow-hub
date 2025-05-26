@@ -1,8 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config;
 
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
@@ -17,14 +15,6 @@ public class PaymentsReportingIngestionWfConfig extends BaseWfConfig {
 
   public PaymentsReportingIngestionFlowFileActivity buildPaymentsReportingIngestionFlowFileActivityStub() {
     return Workflow.newActivityStub(PaymentsReportingIngestionFlowFileActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
-  }
-
-  public UpdateIngestionFlowStatusActivity buildUpdateIngestionFlowStatusActivityStub() {
-    return Workflow.newActivityStub(UpdateIngestionFlowStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
-  }
-
-  public SendEmailIngestionFlowActivity buildSendEmailIngestionFlowActivityStub() {
-    return Workflow.newActivityStub(SendEmailIngestionFlowActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
   public NotifyPaymentsReportingToIufClassificationActivity buildNotifyPaymentsReportingToIufClassificationActivityStub() {
