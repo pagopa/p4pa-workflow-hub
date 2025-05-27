@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomi
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -46,7 +47,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
 
     setProcessingStatus(ingestionFlowFileId);
     IngestionFlowFileResult result = processFile(ingestionFlowFileId);
-    finallyAfterProcessing(ingestionFlowFileId, result);
+    tryProcessingAndMergeError(() -> finallyAfterProcessing(ingestionFlowFileId, result), "finallyAfterProcessing", result);
     boolean success = finalizeStatus(ingestionFlowFileId, result);
     sendEmail(ingestionFlowFileId, success);
 
@@ -62,6 +63,10 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   /** To act finally after processing. If the processing activity has not thrown an exception, the <i>result</i> parameter would be of {@link T} type */
   protected void finallyAfterProcessing(Long ingestionFlowFileId, IngestionFlowFileResult result){
     // Do Nothing
+  }
+
+  protected void setProcessingStatus(Long ingestionFlowFileId) {
+    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
   }
 
   private IngestionFlowFileResult processFile(Long ingestionFlowFileId) {
@@ -80,8 +85,21 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
     }
   }
 
-  protected void setProcessingStatus(Long ingestionFlowFileId) {
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+  protected void tryProcessingAndMergeError(Runnable process, String phase, IngestionFlowFileResult result){
+    try{
+      process.run();
+    } catch (Exception e) {
+      mergeErrorDescriptions(result, phase, Utilities.getWorkflowExceptionMessage(e));
+    }
+  }
+
+  protected void mergeErrorDescriptions(IngestionFlowFileResult ingestionResult, String phase, String additionalError) {
+    if (!StringUtils.isEmpty(additionalError)) {
+      String ingestionResultErrorDescription = ingestionResult.getErrorDescription();
+      ingestionResult.setErrorDescription(
+        (ingestionResultErrorDescription == null ? "" : ingestionResultErrorDescription + "\n\n") +
+          "There were errors during the " + phase + " of the ingested file:" + additionalError);
+    }
   }
 
   protected boolean finalizeStatus(Long ingestionFlowFileId, IngestionFlowFileResult result) {

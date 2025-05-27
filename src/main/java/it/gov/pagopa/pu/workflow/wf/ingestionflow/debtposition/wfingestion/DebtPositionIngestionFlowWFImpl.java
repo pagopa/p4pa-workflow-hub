@@ -84,15 +84,6 @@ public class DebtPositionIngestionFlowWFImpl extends BaseIngestionFlowFileWFImpl
     }
   }
 
-  private void mergeErrorDescriptions(IngestionFlowFileResult ingestionResult, String phase, String additionalError) {
-    if (!StringUtils.isEmpty(additionalError)) {
-      String ingestionResultErrorDescription = ingestionResult.getErrorDescription();
-      ingestionResult.setErrorDescription(
-        (ingestionResultErrorDescription == null ? "" : ingestionResultErrorDescription + "\n\n") +
-          "There were errors during the " + phase + " of the ingested Debt Position:" + additionalError);
-    }
-  }
-
   private void retrieveNoticesGenerationStatus(IngestionFlowFileResult ingestionResult, String pdfGeneratedId) {
     int attemptCounter = 0;
     while (attemptCounter < MAX_ATTEMPTS &&

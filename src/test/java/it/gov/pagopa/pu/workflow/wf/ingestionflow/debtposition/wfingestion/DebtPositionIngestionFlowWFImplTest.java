@@ -148,7 +148,7 @@ class DebtPositionIngestionFlowWFImplTest {
       wf.ingest(ingestionFlowFileId);
 
       String errorDescription = """
-        There were errors during the synchronization of the ingested Debt Position:
+        There were errors during the synchronization of the ingested file:
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
@@ -192,7 +192,7 @@ class DebtPositionIngestionFlowWFImplTest {
       String errorDescription = """
         Some rows have errors
 
-        There were errors during the synchronization of the ingested Debt Position:
+        There were errors during the synchronization of the ingested file:
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
@@ -230,7 +230,7 @@ class DebtPositionIngestionFlowWFImplTest {
       String errorDescription = """
         DUMMY
 
-        There were errors during the synchronization of the ingested Debt Position:
+        There were errors during the synchronization of the ingested file:
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
@@ -369,7 +369,7 @@ class DebtPositionIngestionFlowWFImplTest {
       wf.ingest(ingestionFlowFileId);
 
       String errorDescription = String.format("""
-        There were errors during the notice generation of the ingested Debt Position:Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.
+        There were errors during the notice generation of the ingested file:Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.
         """, pdfGeneratedId).stripTrailing();
 
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
