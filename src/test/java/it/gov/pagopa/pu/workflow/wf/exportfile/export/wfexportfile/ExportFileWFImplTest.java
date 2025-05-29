@@ -1,17 +1,15 @@
 package it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile;
 
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileActivity;
+import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
-import java.time.Duration;
-import java.time.LocalDate;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +20,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.Duration;
+import java.time.LocalDate;
 
 @ExtendWith(MockitoExtension.class)
 class ExportFileWFImplTest {
@@ -71,12 +72,12 @@ class ExportFileWFImplTest {
     UpdateStatusRequest processingUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.REQUESTED, ExportFileStatus.PROCESSING, null, null,
-      null,null,null);
+      null,null,null, Utilities.toOffsetDateTimeEndOfTheDay(expectedDueDate));
     UpdateStatusRequest completedUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.PROCESSING, ExportFileStatus.COMPLETED,
       exportFileResult.getFilePath(), exportFileResult.getFileName(),12L,
-      exportFileResult.getExportedRows(),null);
+      exportFileResult.getExportedRows(),null, Utilities.toOffsetDateTimeEndOfTheDay(expectedDueDate));
 
     Mockito.doNothing().when(updateExportFileStatusActivityMock).updateStatus(Mockito.any());
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenReturn(exportFileResult);
@@ -100,6 +101,7 @@ class ExportFileWFImplTest {
           && p.getFileSize() == null
           && p.getExportedRows() == null
           && p.getErrorDescription() == null
+          && p.getExpirationDate() == null
       ));
       inOrder.verify(exportFileActivityMock).executeExport(exportFileId,exportFileType);
       inOrder.verify(updateExportFileStatusActivityMock).updateStatus(Mockito.argThat(p->
@@ -113,6 +115,7 @@ class ExportFileWFImplTest {
           .equals(completedUpdateStatusRequest.getFilePathName())
           && p.getExportedRows()
           .equals(completedUpdateStatusRequest.getExportedRows())
+          && p.getExpirationDate().equals(completedUpdateStatusRequest.getExpirationDate())
       ));
       Mockito.verify(scheduleExportFileExpirationActivityMock).scheduleExportFileExpiration(exportFileId,
         expectedDueDate
@@ -127,12 +130,12 @@ class ExportFileWFImplTest {
     UpdateStatusRequest processingUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.REQUESTED, ExportFileStatus.PROCESSING, null, null,
-      null,null,null);
+      null,null,null, null);
     String errorMessage = "errorMessage";
     UpdateStatusRequest errorUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.PROCESSING, ExportFileStatus.ERROR, null, null,
-      null, null,errorMessage);
+      null, null,errorMessage, null);
 
     Mockito.doNothing().when(updateExportFileStatusActivityMock).updateStatus(Mockito.any());
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenThrow(new RuntimeException(
@@ -154,6 +157,7 @@ class ExportFileWFImplTest {
           && p.getFileSize() == null
           && p.getExportedRows() == null
           && p.getErrorDescription() == null
+          && p.getExpirationDate() == null
       ));
       inOrder.verify(exportFileActivityMock).executeExport(exportFileId,exportFileType);
       inOrder.verify(updateExportFileStatusActivityMock).updateStatus(Mockito.argThat(p->
@@ -166,6 +170,7 @@ class ExportFileWFImplTest {
           && p.getFilePathName() == null
           && p.getFileSize() == null
           && p.getExportedRows() == null
+          && p.getExpirationDate() == null
       ));
       Mockito.verifyNoInteractions(scheduleExportFileExpirationActivityMock);
     }

@@ -8,10 +8,9 @@ import org.mapstruct.Named;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+import java.time.*;
+
+import static it.gov.pagopa.payhub.activities.util.Utilities.ZONEID;
 
 @Component
 public class Utilities {
@@ -56,7 +55,7 @@ public class Utilities {
 
   public static OffsetDateTime protobufTimestamp2OffsetDateTime(Timestamp ts) {
     if (ts.getSeconds() > 0) {
-      return Instant.ofEpochSecond(ts.getSeconds(), ts.getNanos()).atZone(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID).toOffsetDateTime();
+      return Instant.ofEpochSecond(ts.getSeconds(), ts.getNanos()).atZone(ZONEID).toOffsetDateTime();
     } else {
       return null;
     }
@@ -65,4 +64,13 @@ public class Utilities {
   public static Duration protobufDuration2Duration(com.google.protobuf.Duration d) {
     return Duration.ofSeconds(d.getSeconds(), d.getNanos());
   }
+
+  public static OffsetDateTime toOffsetDateTimeEndOfTheDay(LocalDate localDate) {
+    if (localDate == null) {
+      return null;
+    }
+    LocalDateTime endOfDay = LocalDateTime.of(localDate, LocalTime.MAX.truncatedTo(java.time.temporal.ChronoUnit.MILLIS));
+    return endOfDay.atZone(ZONEID).toOffsetDateTime();
+  }
+
 }
