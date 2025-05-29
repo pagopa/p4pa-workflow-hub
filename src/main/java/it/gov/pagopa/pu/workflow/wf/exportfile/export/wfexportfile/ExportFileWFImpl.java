@@ -20,6 +20,8 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.time.LocalDate;
 
+import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEndOfTheDay;
+
 @Slf4j
 @WorkflowImpl(taskQueues = ExportFileWFImpl.TASK_QUEUE_EXPORT_FILE_WF)
 public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
@@ -86,7 +88,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
         .filePathName(exportFileResult.getFilePath())
         .fileName(exportFileResult.getFileName())
         .fileSize(exportFileResult.getFileSize())
-        .expirationDate(Utilities.toOffsetDateTimeEndOfTheDay(exportFileResult.getExportDate().plusDays(expirationDays)))
+        .expirationDate(toOffsetDateTimeEndOfTheDay(exportFileResult.getExportDate().plusDays(expirationDays)))
         .exportedRows(exportFileResult.getExportedRows())
         .build();
     }else{

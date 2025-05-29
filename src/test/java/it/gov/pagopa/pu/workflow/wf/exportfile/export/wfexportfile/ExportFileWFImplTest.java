@@ -7,7 +7,6 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +22,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
 import java.time.LocalDate;
+
+import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEndOfTheDay;
 
 @ExtendWith(MockitoExtension.class)
 class ExportFileWFImplTest {
@@ -72,12 +73,12 @@ class ExportFileWFImplTest {
     UpdateStatusRequest processingUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.REQUESTED, ExportFileStatus.PROCESSING, null, null,
-      null,null,null, Utilities.toOffsetDateTimeEndOfTheDay(expectedDueDate));
+      null,null,null, toOffsetDateTimeEndOfTheDay(expectedDueDate));
     UpdateStatusRequest completedUpdateStatusRequest = new UpdateStatusRequest(
       exportFileId,
       ExportFileStatus.PROCESSING, ExportFileStatus.COMPLETED,
       exportFileResult.getFilePath(), exportFileResult.getFileName(),12L,
-      exportFileResult.getExportedRows(),null, Utilities.toOffsetDateTimeEndOfTheDay(expectedDueDate));
+      exportFileResult.getExportedRows(),null, toOffsetDateTimeEndOfTheDay(expectedDueDate));
 
     Mockito.doNothing().when(updateExportFileStatusActivityMock).updateStatus(Mockito.any());
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenReturn(exportFileResult);
