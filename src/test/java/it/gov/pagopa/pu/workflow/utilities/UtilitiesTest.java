@@ -177,4 +177,22 @@ public class UtilitiesTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
   }
+
+  @Test
+  void givenLocalDateWhenToOffsetDateTimeEndOfTheDayThenReturnOffsetDateTime() {
+    OffsetDateTime expected = LocalDateTime.of(LocalDate.now(),
+        LocalTime.MAX.truncatedTo(java.time.temporal.ChronoUnit.MILLIS))
+      .atZone(ZoneId.of("Europe/Rome")).toOffsetDateTime();
+
+    OffsetDateTime result = Utilities.toOffsetDateTimeEndOfTheDay(
+      LocalDate.now());
+
+    assertTrue(expected.isEqual(result));
+  }
+
+  @Test
+  void givenNullLocalDateWhenToOffsetDateTimeEndOfTheDayThenReturnNull() {
+    OffsetDateTime result = Utilities.toOffsetDateTimeEndOfTheDay(null);
+    assertNull(result);
+  }
 }
