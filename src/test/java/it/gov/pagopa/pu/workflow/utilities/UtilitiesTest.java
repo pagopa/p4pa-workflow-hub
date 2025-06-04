@@ -97,6 +97,23 @@ public class UtilitiesTest {
   }
 
   @Test
+  void givenInstantToOffsetDateTimeThenSuccess(){
+    Instant instant = Instant.parse("2025-01-09T10:30:00Z");
+    OffsetDateTime expectedOffsetDateTime = OffsetDateTime.of(2025, 1, 9, 10, 30, 0, 0, ZoneOffset.UTC)
+      .atZoneSameInstant(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID)
+      .toOffsetDateTime();
+
+    OffsetDateTime result = Utilities.instantToOffsetDateTime(instant);
+    assertEquals(expectedOffsetDateTime, result);
+
+  }
+
+  @Test
+  void givenInstantToOffsetDateTimeWhenNullThenSuccess() {
+    assertNull(Utilities.instantToOffsetDateTime(null));
+  }
+
+  @Test
   void givenOffsetDateTimeToLocalDateTimeThenSuccess() {
     OffsetDateTime offsetDateTime = OffsetDateTime.of(2025, 1, 9, 10, 30, 0, 0, ZoneOffset.UTC);
     LocalDateTime expectedLocalDateTime = LocalDateTime.of(2025, 1, 9, 10, 30, 0);

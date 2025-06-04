@@ -69,6 +69,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /schedules/{scheduleId}/info:
+    get:
+      tags:
+        - Schedule
+      operationId: getScheduleInfo
+      summary: Get Schedule info
+      description: Retrieve the info of a Temporal schedule by its ID.
+      parameters:
+        - name: scheduleId
+          in: path
+          required: true
+          schema:
+            type: 'ScheduleEnum'
+      responses:
+        '200':
+          description: "Workflow status retrieved successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleInfoDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflow/debt-position/sync:
     post:
       tags:
@@ -647,5 +673,72 @@ components:
           type: 'DebtPositionDTO'
         executionConfig:
           type: 'WfExecutionConfig'
+    ScheduleInfoDTO:
+      type: object
+      required:
+        - scheduleId
+        - numActions
+        - numActionsMissedCatchupWindow
+        - numActionsSkippedOverlap
+        - runningActions
+        - recentActions
+        - nextActionTimes
+        - createdAt
+        - lastUpdatedAt
+      properties:
+        scheduleId:
+          type: 'ScheduleEnum'
+        numActions:
+          type: integer
+          format: int64
+        numActionsMissedCatchupWindow:
+          type: integer
+          format: int64
+        numActionsSkippedOverlap:
+          type: integer
+          format: int64
+        runningActions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleExecutionInfoDTO'
+        recentActions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecentScheduleExecutionInfoDTO'
+        nextActionTimes:
+          type: array
+          items:
+            type: string
+            format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        lastUpdatedAt:
+          type: string
+          format: date-time
+    ScheduleExecutionInfoDTO:
+      type: object
+      required:
+        - workflowId
+        - runId
+      properties:
+        workflowId:
+          type: string
+        runId:
+          type: string
+    RecentScheduleExecutionInfoDTO:
+      allOf:
+        - $ref: "#/components/schemas/ScheduleExecutionInfoDTO"
+        - type: object
+          required:
+            - scheduledAt
+            - startedAt
+          properties:
+            scheduledAt:
+              type: string
+              format: date-time
+            startedAt:
+              type: string
+              format: date-time
 
 

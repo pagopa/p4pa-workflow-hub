@@ -1,9 +1,6 @@
 package it.gov.pagopa.pu.workflow.service.temporal;
 
-import com.google.protobuf.Timestamp;
 import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.api.common.v1.WorkflowType;
-import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
@@ -11,11 +8,10 @@ import io.temporal.client.WorkflowServiceException;
 import io.temporal.client.WorkflowStub;
 import io.temporal.internal.client.WorkflowClientHelper;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
-import it.gov.pagopa.pu.workflow.utils.TestUtils;
+import it.gov.pagopa.pu.workflow.mapper.WorkflowStatusDTOMapper;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
@@ -28,7 +24,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.*;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -38,6 +33,8 @@ class WorkflowServiceTest {
 
   @Mock
   private WorkflowClient workflowClientMock;
+  @Mock
+  private WorkflowStatusDTOMapper mapperMock;
   @Mock
   private PaymentsReportingIngestionWF wfMock;
   @Mock
@@ -52,12 +49,12 @@ class WorkflowServiceTest {
 
   @BeforeEach
   void init() {
-    workflowService = Mockito.spy(new WorkflowServiceImpl(namespace, workflowClientMock));
+    workflowService = Mockito.spy(new WorkflowServiceImpl(namespace, workflowClientMock, mapperMock));
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowClientMock, wfMock, checkDebtPositionExpirationWFMock);
+    Mockito.verifyNoMoreInteractions(workflowClientMock, wfMock, checkDebtPositionExpirationWFMock, mapperMock);
   }
 
   @Test
@@ -85,28 +82,11 @@ class WorkflowServiceTest {
   void givenGetWorkflowStatusThenSuccess() {
     // Given
     String workflowId = "test-workflow-id";
-    WorkflowStatusDTO expectedResult = WorkflowStatusDTO.builder()
-      .workflowId(workflowId)
-      .workflowType("WFTYPE")
-      .runId("RUNID")
-      .taskQueue("TASKQUEUE")
-      .startDateTime(OffsetDateTime.now(Utilities.ZONEID))
-      .executionDateTime(OffsetDateTime.now(Utilities.ZONEID).plusMinutes(1))
-      .endDateTime(OffsetDateTime.now(Utilities.ZONEID).plusDays(1))
-      .duration("PT0S")
-      .status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_RUNNING.name())
-      .build();
-
-    when(workflowExecutionInfoMock.getType()).thenReturn(WorkflowType.newBuilder().setName(expectedResult.getWorkflowType()).build());
-    when(workflowExecutionInfoMock.getStatus()).thenReturn(WorkflowExecutionStatus.valueOf(expectedResult.getStatus()));
-    when(workflowExecutionInfoMock.getExecution().getRunId()).thenReturn(expectedResult.getRunId());
-    when(workflowExecutionInfoMock.getTaskQueue()).thenReturn(expectedResult.getTaskQueue());
-    when(workflowExecutionInfoMock.getStartTime()).thenReturn(offsetDateTime2ProtobufTimestamp(Objects.requireNonNull(expectedResult.getStartDateTime())));
-    when(workflowExecutionInfoMock.getExecutionTime()).thenReturn(offsetDateTime2ProtobufTimestamp(Objects.requireNonNull(expectedResult.getExecutionDateTime())));
-    when(workflowExecutionInfoMock.getCloseTime()).thenReturn(offsetDateTime2ProtobufTimestamp(Objects.requireNonNull(expectedResult.getEndDateTime())));
-    when(workflowExecutionInfoMock.getExecutionDuration()).thenReturn(com.google.protobuf.Duration.getDefaultInstance());
+    WorkflowStatusDTO expectedResult = new WorkflowStatusDTO();
 
     when(workflowClientMock.getWorkflowServiceStubs()).thenReturn(workflowServiceStubsMock);
+    when(mapperMock.map(workflowId, workflowExecutionInfoMock))
+      .thenReturn(expectedResult);
 
     try (MockedStatic<WorkflowClientHelper> mockedStatic = mockStatic(WorkflowClientHelper.class)) {
       mockedStatic.when(() -> WorkflowClientHelper.describeWorkflowInstance(
@@ -120,21 +100,16 @@ class WorkflowServiceTest {
       WorkflowStatusDTO result = workflowService.getWorkflowStatus(workflowId);
 
       // Then
-      TestUtils.checkNotNullFields(result);
-      assertEquals(expectedResult, result);
+      assertSame(expectedResult, result);
     }
   }
-
-  private static Timestamp offsetDateTime2ProtobufTimestamp(OffsetDateTime dt) {
-    return Timestamp.newBuilder().setSeconds(dt.toEpochSecond()).setNanos(dt.getNano()).build();
-  }
-
 
   @Test
   void givenGetWorkflowStatusWhenWorkflowNotFoundThenThrowWorkflowNotFoundException() {
     String workflowId = "test-workflow-id";
 
-    when(workflowExecutionInfoMock.getType()).thenThrow(new io.temporal.client.WorkflowNotFoundException(WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), "Workflow not found", null));
+    when(mapperMock.map(workflowId, workflowExecutionInfoMock))
+      .thenThrow(new io.temporal.client.WorkflowNotFoundException(WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), "Workflow not found", null));
 
     when(workflowClientMock.getWorkflowServiceStubs()).thenReturn(workflowServiceStubsMock);
 

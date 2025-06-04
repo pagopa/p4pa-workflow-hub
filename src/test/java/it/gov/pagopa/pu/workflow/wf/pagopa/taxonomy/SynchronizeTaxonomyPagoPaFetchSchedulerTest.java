@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy;
 
 import io.temporal.client.schedules.ScheduleHandle;
+import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWFImpl;
@@ -30,7 +31,7 @@ class SynchronizeTaxonomyPagoPaFetchSchedulerTest {
 
     ScheduleHandle expectedResult = Mockito.mock(ScheduleHandle.class);
     Mockito.when(workflowScheduleServiceMock.schedule(
-        SynchronizeTaxonomyPagoPaFetchScheduler.SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_SCHEDULEID,
+        ScheduleEnum.SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH,
         SynchronizeTaxonomyPagoPaFetchWF.class,
         SynchronizeTaxonomyPagoPaFetchWFImpl.TASK_QUEUE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH,
         cronExpression

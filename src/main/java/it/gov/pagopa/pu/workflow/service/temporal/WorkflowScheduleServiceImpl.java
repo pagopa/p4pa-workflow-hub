@@ -3,6 +3,9 @@ package it.gov.pagopa.pu.workflow.service.temporal;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.schedules.*;
 import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.workflow.dto.generated.ScheduleInfoDTO;
+import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
+import it.gov.pagopa.pu.workflow.mapper.ScheduleInfoDTOMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +16,15 @@ import java.util.List;
 public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
 
   private final ScheduleClient scheduleClient;
+  private final ScheduleInfoDTOMapper scheduleInfoDTOMapper;
 
-  public WorkflowScheduleServiceImpl(ScheduleClient scheduleClient) {
+  public WorkflowScheduleServiceImpl(ScheduleClient scheduleClient, ScheduleInfoDTOMapper scheduleInfoDTOMapper) {
     this.scheduleClient = scheduleClient;
+    this.scheduleInfoDTOMapper = scheduleInfoDTOMapper;
   }
 
   @Override
-  public ScheduleHandle schedule(String scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression) {
+  public ScheduleHandle schedule(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression) {
     log.info("Scheduling {}", taskQueue);
 
     ScheduleHandle handle = getSchedule(scheduleId);
@@ -42,9 +47,9 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
     return handle;
   }
 
-  private ScheduleHandle scheduleInner(Class<?> workflowInterface, String taskQueue, String scheduleId, String cronExpression) {
+  private ScheduleHandle scheduleInner(Class<?> workflowInterface, String taskQueue, ScheduleEnum scheduleId, String cronExpression) {
     WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
-      .setWorkflowId(scheduleId)
+      .setWorkflowId(scheduleId.getValue())
       .setTaskQueue(taskQueue)
       .build();
 
@@ -62,11 +67,16 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
       .build();
 
     return scheduleClient.createSchedule(
-      scheduleId, schedule, ScheduleOptions.newBuilder().build());
+      scheduleId.getValue(), schedule, ScheduleOptions.newBuilder().build());
   }
 
   @Override
-  public ScheduleHandle getSchedule(String scheduleId) {
-    return scheduleClient.getHandle(scheduleId);
+  public ScheduleHandle getSchedule(ScheduleEnum scheduleId) {
+    return scheduleClient.getHandle(scheduleId.getValue());
+  }
+
+  @Override
+  public ScheduleInfoDTO getScheduleInfo(ScheduleEnum scheduleId) {
+    return scheduleInfoDTOMapper.map(scheduleId, getSchedule(scheduleId).describe().getInfo());
   }
 }

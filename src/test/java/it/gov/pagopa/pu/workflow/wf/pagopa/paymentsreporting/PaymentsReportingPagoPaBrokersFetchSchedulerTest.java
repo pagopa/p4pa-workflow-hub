@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 
 import io.temporal.client.schedules.ScheduleHandle;
+import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWFImpl;
@@ -30,7 +31,7 @@ class PaymentsReportingPagoPaBrokersFetchSchedulerTest {
 
     ScheduleHandle expectedResult = Mockito.mock(ScheduleHandle.class);
     Mockito.when(workflowScheduleServiceMock.schedule(
-        PaymentsReportingPagoPaBrokersFetchScheduler.PAYMENTS_REPORTING_PAGOPA_FETCH_SCHEDULEID,
+        ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH,
         PaymentsReportingPagoPaBrokersFetchWF.class,
         PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH,
         cronExpression

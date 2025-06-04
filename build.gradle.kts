@@ -198,7 +198,8 @@ openApiGenerate {
     "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
     "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
     "FineWfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig",
-    "WorkflowTypeOrg" to "it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg"
+    "WorkflowTypeOrg" to "it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg",
+    "ScheduleEnum" to "it.gov.pagopa.pu.workflow.enums.ScheduleEnum"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",

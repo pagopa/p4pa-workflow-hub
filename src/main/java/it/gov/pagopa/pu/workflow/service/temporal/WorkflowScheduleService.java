@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.service.temporal;
 
 import io.temporal.client.schedules.ScheduleHandle;
+import it.gov.pagopa.pu.workflow.dto.generated.ScheduleInfoDTO;
+import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 
 /**
  * It allows to configure a recurrent Workflow.<BR />
@@ -8,6 +10,7 @@ import io.temporal.client.schedules.ScheduleHandle;
  * */
 public interface WorkflowScheduleService {
 
-  ScheduleHandle schedule(String scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression);
-  ScheduleHandle getSchedule(String scheduleId);
+  ScheduleHandle schedule(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression);
+  ScheduleHandle getSchedule(ScheduleEnum scheduleId);
+  ScheduleInfoDTO getScheduleInfo(ScheduleEnum scheduleId);
 }

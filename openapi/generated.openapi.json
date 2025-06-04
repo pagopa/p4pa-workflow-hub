@@ -40,6 +40,9 @@
     "name" : "Classification",
     "description" : "the Classification API"
   }, {
+    "name" : "Schedule",
+    "description" : "the Schedule API"
+  }, {
     "name" : "Workflow",
     "description" : "the Workflow API"
   }, {
@@ -1552,6 +1555,47 @@
           "BearerAuth" : [ ]
         } ]
       }
+    },
+    "/workflowhub/schedules/{scheduleId}/info" : {
+      "get" : {
+        "tags" : [ "Schedule" ],
+        "summary" : "Get Schedule info",
+        "description" : "Retrieve the info of a Temporal schedule by its ID.",
+        "operationId" : "getScheduleInfo",
+        "parameters" : [ {
+          "name" : "scheduleId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/ScheduleEnum"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ScheduleInfoDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -2247,6 +2291,90 @@
           }
         },
         "required" : [ "runId", "status", "taskQueue", "workflowId", "workflowType" ]
+      },
+      "RecentScheduleExecutionInfoDTO" : {
+        "type" : "object",
+        "properties" : {
+          "workflowId" : {
+            "type" : "string"
+          },
+          "runId" : {
+            "type" : "string"
+          },
+          "scheduledAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "startedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "required" : [ "runId", "scheduledAt", "startedAt", "workflowId" ]
+      },
+      "ScheduleEnum" : {
+        "type" : "string",
+        "enum" : [ "PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH", "SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH" ]
+      },
+      "ScheduleExecutionInfoDTO" : {
+        "type" : "object",
+        "properties" : {
+          "workflowId" : {
+            "type" : "string"
+          },
+          "runId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "runId", "workflowId" ]
+      },
+      "ScheduleInfoDTO" : {
+        "type" : "object",
+        "properties" : {
+          "scheduleId" : {
+            "$ref" : "#/components/schemas/ScheduleEnum"
+          },
+          "numActions" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "numActionsMissedCatchupWindow" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "numActionsSkippedOverlap" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "runningActions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ScheduleExecutionInfoDTO"
+            }
+          },
+          "recentActions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RecentScheduleExecutionInfoDTO"
+            }
+          },
+          "nextActionTimes" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "format" : "date-time"
+            }
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "lastUpdatedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "required" : [ "createdAt", "lastUpdatedAt", "nextActionTimes", "numActions", "numActionsMissedCatchupWindow", "numActionsSkippedOverlap", "recentActions", "runningActions", "scheduleId" ]
       },
       "DebtPositionWorkflowType" : {
         "type" : "object",
