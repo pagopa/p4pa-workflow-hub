@@ -673,7 +673,7 @@ components:
         workflowType:
           type: string
         status:
-          type: string
+          type: 'WorkflowExecutionStatus'
         runId:
           type: string
         taskQueue:

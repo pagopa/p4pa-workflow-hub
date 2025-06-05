@@ -14,7 +14,7 @@ public class WorkflowStatusDTOMapper {
       .workflowType(info.getType().getName())
       .runId(info.getExecution().getRunId())
       .taskQueue(info.getTaskQueue())
-      .status(info.getStatus().name())
+      .status(info.getStatus())
       .startDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getStartTime()))
       .executionDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getExecutionTime()))
       .endDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getCloseTime()))

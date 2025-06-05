@@ -33,13 +33,13 @@ class WorkflowStatusDTOMapperTest {
       .executionDateTime(OffsetDateTime.now(Utilities.ZONEID).plusMinutes(1))
       .endDateTime(OffsetDateTime.now(Utilities.ZONEID).plusDays(1))
       .duration("PT0S")
-      .status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_RUNNING.name())
+      .status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_RUNNING)
       .build();
 
     WorkflowExecutionInfo workflowExecutionInfoMock = Mockito.mock(WorkflowExecutionInfo.class, RETURNS_DEEP_STUBS);
 
     when(workflowExecutionInfoMock.getType()).thenReturn(WorkflowType.newBuilder().setName(expectedResult.getWorkflowType()).build());
-    when(workflowExecutionInfoMock.getStatus()).thenReturn(WorkflowExecutionStatus.valueOf(expectedResult.getStatus()));
+    when(workflowExecutionInfoMock.getStatus()).thenReturn(expectedResult.getStatus());
     when(workflowExecutionInfoMock.getExecution().getRunId()).thenReturn(expectedResult.getRunId());
     when(workflowExecutionInfoMock.getTaskQueue()).thenReturn(expectedResult.getTaskQueue());
     when(workflowExecutionInfoMock.getStartTime()).thenReturn(offsetDateTime2ProtobufTimestamp(Objects.requireNonNull(expectedResult.getStartDateTime())));

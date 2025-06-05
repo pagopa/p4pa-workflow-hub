@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.service;
 
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
-import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.TooManyAttemptsException;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,12 +47,10 @@ public class WorkflowCompletionService {
 
         maxAttempts = Math.max(maxAttempts, 1);
         int attempts = 0;
-        WorkflowExecutionStatus workflowStatus;
 
         do {
-          WorkflowStatusDTO statusDTO = workflowService.getWorkflowStatus(workflowId);
-          log.debug("Retrieved workflow status: {}", statusDTO);
-            workflowStatus = transcodeStatus(statusDTO.getStatus());
+          WorkflowExecutionStatus workflowStatus = workflowService.getWorkflowStatus(workflowId).getStatus();
+          log.debug("Retrieved workflow status: {}", workflowStatus);
 
             if (workflowStatus != null && wfTerminationStatuses.contains(workflowStatus)) {
                 return workflowStatus;
@@ -72,17 +69,5 @@ public class WorkflowCompletionService {
 
         log.info("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxAttempts);
         throw new TooManyAttemptsException("Maximum number of retries reached for workflow " + workflowId);
-    }
-
-    private WorkflowExecutionStatus transcodeStatus(String status) {
-        if (status == null) {
-            return null;
-        }
-        try {
-            return WorkflowExecutionStatus.valueOf(status);
-        } catch (IllegalArgumentException e) {
-            log.error("Unknown workflow status received: {}", status);
-            return null;
-        }
     }
 }

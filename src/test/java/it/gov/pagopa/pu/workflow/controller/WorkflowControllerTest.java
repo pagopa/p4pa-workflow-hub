@@ -40,7 +40,7 @@ class WorkflowControllerTest {
     String workflowId = "workflow-1";
     WorkflowStatusDTO workflowStatusDTO = WorkflowStatusDTO.builder()
       .workflowId(workflowId)
-      .status("ok")
+      .status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED)
       .build();
 
     Mockito.when(serviceMock.getWorkflowStatus(workflowId))

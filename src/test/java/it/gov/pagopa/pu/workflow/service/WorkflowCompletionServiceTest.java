@@ -37,7 +37,7 @@ class WorkflowCompletionServiceTest {
     void givenWaitTerminationStatusThenSuccess() {
         // Given
         Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED));
 
         // When
         WorkflowExecutionStatus result = service.waitTerminationStatus(WORKFLOW_ID, 3, 100);
@@ -50,7 +50,7 @@ class WorkflowCompletionServiceTest {
     void givenWaitTerminationStatusWhenStatusFailedThenTerminate() {
         // Given
         Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_FAILED.name()));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_FAILED));
 
         // When
         WorkflowExecutionStatus result = service.waitTerminationStatus(WORKFLOW_ID, 3, 100);
@@ -69,9 +69,9 @@ class WorkflowCompletionServiceTest {
                     public WorkflowStatusDTO answer(InvocationOnMock invocation) {
                         count++;
                         if (count < 3) {
-                            return new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name());
+                            return new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING);
                         }
-                        return new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name());
+                        return new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED);
                     }
                 });
 
@@ -90,9 +90,9 @@ class WorkflowCompletionServiceTest {
         Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID))
                 .thenAnswer(invocation -> {
                     Thread.currentThread().interrupt();
-                    return new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING.name());
+                    return new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING);
                 })
-                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED.name()));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_COMPLETED));
 
         // When
         WorkflowExecutionStatus result = service.waitTerminationStatus(WORKFLOW_ID, 3, 100);
@@ -105,7 +105,7 @@ class WorkflowCompletionServiceTest {
     void givenWaitTerminationStatusWhenUnknownStatusThenThrowsTooManyAttemptsException() {
         // Given
         Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID))
-                .thenReturn(new WorkflowStatusDTO().status("RUNNING"));
+                .thenReturn(new WorkflowStatusDTO().status(WORKFLOW_EXECUTION_STATUS_RUNNING));
 
         // When & Then
         TooManyAttemptsException exception = assertThrows(TooManyAttemptsException.class, () ->
