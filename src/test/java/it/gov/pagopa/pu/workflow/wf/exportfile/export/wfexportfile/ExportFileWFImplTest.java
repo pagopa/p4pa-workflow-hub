@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileActivity;
 import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.exportflow.email.SendEmailExportFileActivity;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
@@ -33,6 +34,8 @@ class ExportFileWFImplTest {
   @Mock
   private UpdateExportFileStatusActivity updateExportFileStatusActivityMock;
   @Mock
+  private SendEmailExportFileActivity sendEmailExportFileActivityMock;
+  @Mock
   private ScheduleExportFileExpirationActivity scheduleExportFileExpirationActivityMock;
 
   private ExportFileWFImpl wf;
@@ -48,6 +51,8 @@ class ExportFileWFImplTest {
       .thenReturn(exportFileActivityMock);
     Mockito.when(exportFileWFConfigMock.buildUpdateExportFileStatusActivityStub())
       .thenReturn(updateExportFileStatusActivityMock);
+    Mockito.when(exportFileWFConfigMock.buildSendEmailExportFileActivityStub())
+        .thenReturn(sendEmailExportFileActivityMock);
     Mockito.when(exportFileWFConfigMock.buildScheduleExportFileExpirationActivityStub())
       .thenReturn(scheduleExportFileExpirationActivityMock);
 
@@ -81,6 +86,7 @@ class ExportFileWFImplTest {
       exportFileResult.getExportedRows(),null, toOffsetDateTimeEndOfTheDay(expectedDueDate));
 
     Mockito.doNothing().when(updateExportFileStatusActivityMock).updateStatus(Mockito.any());
+    Mockito.doNothing().when(sendEmailExportFileActivityMock).sendEmail(exportFileId, true);
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenReturn(exportFileResult);
 
     Mockito.doNothing().when(scheduleExportFileExpirationActivityMock).scheduleExportFileExpiration(exportFileId,
@@ -118,6 +124,7 @@ class ExportFileWFImplTest {
           .equals(completedUpdateStatusRequest.getExportedRows())
           && p.getExpirationDate().equals(completedUpdateStatusRequest.getExpirationDate())
       ));
+      Mockito.verify(sendEmailExportFileActivityMock).sendEmail(exportFileId, true);
       Mockito.verify(scheduleExportFileExpirationActivityMock).scheduleExportFileExpiration(exportFileId,
         expectedDueDate
       );
@@ -139,6 +146,7 @@ class ExportFileWFImplTest {
       null, null,errorMessage, null);
 
     Mockito.doNothing().when(updateExportFileStatusActivityMock).updateStatus(Mockito.any());
+    Mockito.doNothing().when(sendEmailExportFileActivityMock).sendEmail(exportFileId, false);
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenThrow(new RuntimeException(
       errorMessage));
 
@@ -173,6 +181,7 @@ class ExportFileWFImplTest {
           && p.getExportedRows() == null
           && p.getExpirationDate() == null
       ));
+      Mockito.verify(sendEmailExportFileActivityMock).sendEmail(exportFileId, false);
       Mockito.verifyNoInteractions(scheduleExportFileExpirationActivityMock);
     }
   }
