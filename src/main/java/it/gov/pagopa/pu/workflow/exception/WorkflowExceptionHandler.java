@@ -69,7 +69,7 @@ public class WorkflowExceptionHandler {
 
   @ExceptionHandler({TooManyAttemptsException.class})
   public ResponseEntity<WorkflowErrorDTO> handleTooManyAttemptsException(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.TOO_MANY_REQUESTS, WorkflowErrorDTO.CodeEnum.WORKFLOW_TOO_MANY_REQUESTS);
+    return handleException(ex, request, HttpStatus.REQUEST_TIMEOUT, WorkflowErrorDTO.CodeEnum.WORKFLOW_REQUEST_TIMEOUT);
   }
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})

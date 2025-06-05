@@ -656,7 +656,7 @@ components:
             - WORKFLOW_BAD_REQUEST
             - WORKFLOW_GENERIC_ERROR
             - WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG
-            - WORKFLOW_TOO_MANY_REQUESTS
+            - WORKFLOW_REQUEST_TIMEOUT
         message:
           type: string
     WorkflowStatusDTO:

@@ -268,8 +268,8 @@ class WorkflowExceptionHandlerTest {
     doThrow(new TooManyAttemptsException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
-      .andExpect(MockMvcResultMatchers.status().isTooManyRequests())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_TOO_MANY_REQUESTS"))
+      .andExpect(MockMvcResultMatchers.status().isRequestTimeout())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_REQUEST_TIMEOUT"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
   }
 
