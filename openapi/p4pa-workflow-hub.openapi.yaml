@@ -120,7 +120,7 @@ paths:
             type: integer
       responses:
         '200':
-          description: "Workflow status retrieved successfully"
+          description: "Workflow completed successfully"
           content:
             application/json:
               schema:

@@ -5,10 +5,7 @@ import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
-import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowTypeNotFoundException;
+import it.gov.pagopa.pu.workflow.exception.custom.*;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
@@ -264,6 +261,16 @@ class WorkflowExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. fieldName: resolved message"));
+  }
+
+  @Test
+  void handleTooManyAttemptsException() throws Exception {
+    doThrow(new TooManyAttemptsException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isTooManyRequests())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_TOO_MANY_REQUESTS"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
   }
 
   @Test
