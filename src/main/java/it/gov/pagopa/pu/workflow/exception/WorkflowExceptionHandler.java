@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowErrorDTO;
-import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowTypeNotFoundException;
+import it.gov.pagopa.pu.workflow.exception.custom.*;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,6 +65,11 @@ public class WorkflowExceptionHandler {
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
   public ResponseEntity<WorkflowErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST);
+  }
+
+  @ExceptionHandler({TooManyAttemptsException.class})
+  public ResponseEntity<WorkflowErrorDTO> handleTooManyAttemptsException(RuntimeException ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.TOO_MANY_REQUESTS, WorkflowErrorDTO.CodeEnum.WORKFLOW_TOO_MANY_REQUESTS);
   }
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})

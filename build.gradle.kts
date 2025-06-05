@@ -199,7 +199,8 @@ openApiGenerate {
     "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
     "FineWfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig",
     "WorkflowTypeOrg" to "it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg",
-    "ScheduleEnum" to "it.gov.pagopa.pu.workflow.enums.ScheduleEnum"
+    "ScheduleEnum" to "it.gov.pagopa.pu.workflow.enums.ScheduleEnum",
+    "WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",
