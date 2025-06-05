@@ -40,6 +40,9 @@
     "name" : "Classification",
     "description" : "the Classification API"
   }, {
+    "name" : "Schedule",
+    "description" : "the Schedule API"
+  }, {
     "name" : "Workflow",
     "description" : "the Workflow API"
   }, {
@@ -709,6 +712,73 @@
             "description" : "No Content"
           }
         }
+      }
+    },
+    "/workflowhub/workflows/{workflowId}/wait-completion" : {
+      "post" : {
+        "tags" : [ "Workflow" ],
+        "summary" : "Wait for workflow completion",
+        "description" : "Wait for the status completed of the workflow",
+        "operationId" : "waitWorkflowCompletion",
+        "parameters" : [ {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "maxAttempts",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "retryDelayMs",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow completed successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowExecutionStatus"
+                }
+              }
+            }
+          },
+          "408" : {
+            "description" : "Request Timeout",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
       }
     },
     "/workflowhub/workflow/ingestion-flow/{ingestionFlowFileId}" : {
@@ -1552,6 +1622,47 @@
           "BearerAuth" : [ ]
         } ]
       }
+    },
+    "/workflowhub/schedules/{scheduleId}/info" : {
+      "get" : {
+        "tags" : [ "Schedule" ],
+        "summary" : "Get Schedule info",
+        "description" : "Retrieve the info of a Temporal schedule by its ID.",
+        "operationId" : "getScheduleInfo",
+        "parameters" : [ {
+          "name" : "scheduleId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/ScheduleEnum"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow status retrieved successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ScheduleInfoDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
     }
   },
   "components" : {
@@ -1630,27 +1741,6 @@
           }
         }
       },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
       "DebtPositionSyncWfName" : {
         "type" : "string",
         "enum" : [ "fineWf" ]
@@ -1705,6 +1795,27 @@
         "properties" : {
           "workflowTypeName" : {
             "$ref" : "#/components/schemas/DebtPositionSyncWfName"
+          }
+        }
+      },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -1808,21 +1919,13 @@
         },
         "required" : [ "defaultExecutionConfig", "description" ]
       },
-      "WorkflowCreatedDTO" : {
-        "type" : "object",
-        "properties" : {
-          "workflowId" : {
-            "type" : "string"
-          },
-          "runId" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "runId", "workflowId" ]
+      "WorkflowExecutionStatus" : {
+        "type" : "string",
+        "enum" : [ "WORKFLOW_EXECUTION_STATUS_UNSPECIFIED", "WORKFLOW_EXECUTION_STATUS_RUNNING", "WORKFLOW_EXECUTION_STATUS_COMPLETED", "WORKFLOW_EXECUTION_STATUS_FAILED", "WORKFLOW_EXECUTION_STATUS_CANCELED", "WORKFLOW_EXECUTION_STATUS_TERMINATED", "WORKFLOW_EXECUTION_STATUS_CONTINUED_AS_NEW", "WORKFLOW_EXECUTION_STATUS_TIMED_OUT", "UNRECOGNIZED" ]
       },
       "CodeEnum" : {
         "type" : "string",
-        "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_CONFLICT", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR", "WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG" ]
+        "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_CONFLICT", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR", "WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG", "WORKFLOW_REQUEST_TIMEOUT" ]
       },
       "WorkflowErrorDTO" : {
         "type" : "object",
@@ -1835,6 +1938,18 @@
           }
         },
         "required" : [ "code", "message" ]
+      },
+      "WorkflowCreatedDTO" : {
+        "type" : "object",
+        "properties" : {
+          "workflowId" : {
+            "type" : "string"
+          },
+          "runId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "runId", "workflowId" ]
       },
       "IngestionFlowFileTypeEnum" : {
         "type" : "string",
@@ -2222,7 +2337,7 @@
             "type" : "string"
           },
           "status" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/WorkflowExecutionStatus"
           },
           "runId" : {
             "type" : "string"
@@ -2248,84 +2363,89 @@
         },
         "required" : [ "runId", "status", "taskQueue", "workflowId", "workflowType" ]
       },
-      "DebtPositionWorkflowType" : {
+      "RecentScheduleExecutionInfoDTO" : {
         "type" : "object",
         "properties" : {
-          "creationDate" : {
+          "workflowId" : {
+            "type" : "string"
+          },
+          "runId" : {
+            "type" : "string"
+          },
+          "scheduledAt" : {
             "type" : "string",
             "format" : "date-time"
           },
-          "updateDate" : {
+          "startedAt" : {
             "type" : "string",
             "format" : "date-time"
-          },
-          "updateOperatorExternalId" : {
-            "type" : "string"
-          },
-          "updateTraceId" : {
-            "type" : "string"
-          },
-          "debtPositionId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "workflowTypeOrgId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "executionConfig" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
           }
         },
-        "required" : [ "debtPositionId", "executionConfig" ]
+        "required" : [ "runId", "scheduledAt", "startedAt", "workflowId" ]
       },
-      "PagedModelDebtPositionWorkflowType" : {
+      "ScheduleEnum" : {
+        "type" : "string",
+        "enum" : [ "PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH", "SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH" ]
+      },
+      "ScheduleExecutionInfoDTO" : {
         "type" : "object",
         "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "debtPositionWorkflowTypes" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/DebtPositionWorkflowType"
-                }
-              }
-            }
+          "workflowId" : {
+            "type" : "string"
           },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
+          "runId" : {
+            "type" : "string"
           }
-        }
+        },
+        "required" : [ "runId", "workflowId" ]
       },
-      "PagedModelWorkflowTypeOrg" : {
+      "ScheduleInfoDTO" : {
         "type" : "object",
         "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "workflowTypeOrgs" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
-                }
-              }
+          "scheduleId" : {
+            "$ref" : "#/components/schemas/ScheduleEnum"
+          },
+          "numActions" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "numActionsMissedCatchupWindow" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "numActionsSkippedOverlap" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "runningActions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ScheduleExecutionInfoDTO"
             }
           },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
+          "recentActions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RecentScheduleExecutionInfoDTO"
+            }
           },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
+          "nextActionTimes" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "format" : "date-time"
+            }
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "lastUpdatedAt" : {
+            "type" : "string",
+            "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "createdAt", "lastUpdatedAt", "nextActionTimes", "numActions", "numActionsMissedCatchupWindow", "numActionsSkippedOverlap", "recentActions", "runningActions", "scheduleId" ]
       },
       "WorkflowType" : {
         "type" : "object",
@@ -2372,6 +2492,85 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/WorkflowType"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PagedModelWorkflowTypeOrg" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypeOrgs" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "DebtPositionWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
+            "type" : "string"
+          },
+          "debtPositionId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "workflowTypeOrgId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "executionConfig" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        },
+        "required" : [ "debtPositionId", "executionConfig" ]
+      },
+      "PagedModelDebtPositionWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "debtPositionWorkflowTypes" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/DebtPositionWorkflowType"
                 }
               }
             }

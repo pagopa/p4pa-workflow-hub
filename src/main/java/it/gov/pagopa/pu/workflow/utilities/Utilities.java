@@ -45,6 +45,11 @@ public class Utilities {
     return offsetDateTime != null ? offsetDateTime.toInstant() : null;
   }
 
+  @Named("instantToOffsetDateTime")
+  public static OffsetDateTime instantToOffsetDateTime(Instant instant) {
+    return instant != null ? instant.atZone(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID).toOffsetDateTime() : null;
+  }
+
   @Named("offsetDateTimeToLocalDateTime")
   public static LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;

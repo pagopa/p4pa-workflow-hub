@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionInges
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.OrganizationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.ReceiptIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient,
     TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient,
     DebtPositionIngestionWFClient debtPositionIngestionWFClient,
+    ReceiptIngestionWFClient receiptIngestionWFClient,
     ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient,
     PaymentNotificationIngestionWFClient paymentNotificationIngestionWFClient,
     OrganizationIngestionWFClient organizationIngestionWFClient){
@@ -30,6 +32,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
       IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION, paymentNotificationIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.ORGANIZATIONS, organizationIngestionWFClient::ingest

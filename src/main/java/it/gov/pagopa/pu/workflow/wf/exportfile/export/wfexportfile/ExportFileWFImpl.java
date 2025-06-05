@@ -4,6 +4,7 @@ import io.micrometer.common.util.StringUtils;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileActivity;
 import it.gov.pagopa.payhub.activities.activity.exportflow.UpdateExportFileStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.exportflow.email.SendEmailExportFileActivity;
 import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
@@ -33,6 +34,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
 
   private ExportFileActivity exportFileActivity;
   private UpdateExportFileStatusActivity updateExportFileStatusActivity;
+  private SendEmailExportFileActivity sendEmailExportFileActivity;
   private ScheduleExportFileExpirationActivity scheduleExportFileExpirationActivity;
 
   /**
@@ -46,6 +48,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
     ExportFileWFConfig wfConfig = applicationContext.getBean(ExportFileWFConfig.class);
     exportFileActivity = wfConfig.buildExportFileActivityStub();
     updateExportFileStatusActivity = wfConfig.buildUpdateExportFileStatusActivityStub();
+    sendEmailExportFileActivity = wfConfig.buildSendEmailExportFileActivityStub();
     scheduleExportFileExpirationActivity = wfConfig.buildScheduleExportFileExpirationActivityStub();
   }
 
@@ -71,9 +74,11 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
 
     if(StringUtils.isBlank(errorDescription) && exportFileResult!=null && exportFileResult.getExportDate()!=null){
       scheduleExportFileExpiration(exportFileId, exportFileResult.getExportDate().plusDays(expirationDays));
+      sendEmailExportFileActivity.sendEmail(exportFileId, true);
+    }else {
+      sendEmailExportFileActivity.sendEmail(exportFileId, false);
     }
 
-    //TODO sendEmailActivity will be added with the task P4ADEV-2597
     log.info("Completed export file workflow for exportFileId: {}", exportFileId);
   }
 

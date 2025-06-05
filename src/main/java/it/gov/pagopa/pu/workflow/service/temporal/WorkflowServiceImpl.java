@@ -14,7 +14,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.mapper.WorkflowStatusDTOMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,12 +27,14 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   private final String namespace;
   private final WorkflowClient workflowClient;
+  private final WorkflowStatusDTOMapper mapper;
 
   public WorkflowServiceImpl(
     @Value("${spring.temporal.namespace}") String namespace,
-    WorkflowClient workflowClient) {
+    WorkflowClient workflowClient, WorkflowStatusDTOMapper mapper) {
     this.namespace = namespace;
     this.workflowClient = workflowClient;
+    this.mapper = mapper;
   }
 
   @Override
@@ -66,18 +68,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         new NoopScope()
       );
 
-      return WorkflowStatusDTO.builder()
-        .workflowId(workflowId)
-        .workflowType(info.getType().getName())
-        .runId(info.getExecution().getRunId())
-        .taskQueue(info.getTaskQueue())
-        .status(info.getStatus().name())
-        .startDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getStartTime()))
-        .executionDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getExecutionTime()))
-        .endDateTime(Utilities.protobufTimestamp2OffsetDateTime(info.getCloseTime()))
-        .duration(Utilities.protobufDuration2Duration(info.getExecutionDuration()).toString())
-        .build();
-
+      return mapper.map(workflowId, info);
     } catch (StatusRuntimeException e) {
       if(Status.NOT_FOUND.getCode().equals(e.getStatus().getCode())) {
         log.error("Workflow with ID {} not found", workflowId);

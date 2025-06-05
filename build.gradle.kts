@@ -60,7 +60,7 @@ val guavaVersion = "33.4.8-jre"
 val postgresJdbcVersion = "42.7.5"
 val podamVersion = "8.0.2.RELEASE"
 
-val p4paActivitiesVersion = "1.118.1"
+val p4paActivitiesVersion = "1.120.1"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -198,7 +198,9 @@ openApiGenerate {
     "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
     "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
     "FineWfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig",
-    "WorkflowTypeOrg" to "it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg"
+    "WorkflowTypeOrg" to "it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg",
+    "ScheduleEnum" to "it.gov.pagopa.pu.workflow.enums.ScheduleEnum",
+    "WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus"
   ))
   configOptions.set(mapOf(
     "dateLibrary" to "java8",
