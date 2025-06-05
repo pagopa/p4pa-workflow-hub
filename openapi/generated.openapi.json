@@ -755,8 +755,8 @@
               }
             }
           },
-          "429" : {
-            "description" : "Too Many Requests",
+          "408" : {
+            "description" : "Request Timeout",
             "content" : {
               "application/json" : {
                 "schema" : {
