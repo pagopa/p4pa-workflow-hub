@@ -88,6 +88,9 @@ spring:
       - task-queue: DebtPositionIngestionFlowWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_INGESTION_DP_POLLER_SIZE:2}"
+      - task-queue: DebtPositionTypeIngestionFlowWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_DEBT_POS_TYPE_POLLER_SIZE:2}"
       - task-queue: PaymentNotificationIngestionWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
@@ -336,6 +339,12 @@ workflow:
     retry-initial-interval-in-millis: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  debt-position-type-ingestion:
+    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   receipt-ingestion:
     start-to-close-timeout-in-seconds: "\${RECEIPT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
