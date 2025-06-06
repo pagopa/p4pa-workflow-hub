@@ -88,6 +88,9 @@ spring:
       - task-queue: DebtPositionIngestionFlowWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_INGESTION_DP_POLLER_SIZE:2}"
+      - task-queue: DebtPositionTypeIngestionFlowWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_DEBT_POS_TYPE_POLLER_SIZE:2}"
       - task-queue: PaymentNotificationIngestionWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
