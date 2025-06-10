@@ -5,10 +5,10 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine.DebtPos
 import it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine.DebtPositionSynchronizeFineActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity.CancelReductionExpirationScheduleActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity.ScheduleReductionExpirationActivity;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,19 +26,19 @@ public class DebtPositionFineWfConfig extends BaseWfConfig {
 
   public InvokeSyncDebtPositionActivity buildInvokeSyncDebtPositionActivityStub(){
     return Workflow.newActivityStub(InvokeSyncDebtPositionActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-      SynchronizeDebtPositionWfConfig.TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY,
+      TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC_LOCAL,
       this));
   }
 
   public CancelReductionExpirationScheduleActivity buildCancelReductionExpirationScheduleActivityStub(){
     return Workflow.newActivityStub(CancelReductionExpirationScheduleActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-      SynchronizeDebtPositionWfConfig.TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY,
+      TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC_LOCAL,
       this));
   }
 
   public ScheduleReductionExpirationActivity buildScheduleReductionExpirationActivityStub(){
     return Workflow.newActivityStub(ScheduleReductionExpirationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-      SynchronizeDebtPositionWfConfig.TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY,
+      TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC_LOCAL,
       this));
   }
 }

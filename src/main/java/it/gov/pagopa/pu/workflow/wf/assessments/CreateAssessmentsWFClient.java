@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.assessments;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
-import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class CreateAssessmentsWFClient {
   public WorkflowCreatedDTO createAssessments(Long receiptId) {
     log.info("Starting create assessments for receipt with id: {}", receiptId);
 
-    String taskQueue = CreateAssessmentsWFImpl.TASK_QUEUE_CREATE_ASSESSMENTS_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_RESERVED_CREATION;
     String workflowId  = generateWorkflowId(receiptId, CreateAssessmentsWF.class);
 
     CreateAssessmentsWF workflow = workflowService.buildWorkflowStub(

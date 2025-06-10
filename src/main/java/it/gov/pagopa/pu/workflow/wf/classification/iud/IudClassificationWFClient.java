@@ -5,11 +5,11 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWF;
-import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,8 @@ public class IudClassificationWFClient {
   public WorkflowCreatedDTO notifyReceipt(IudClassificationNotifyReceiptSignalDTO signalDTO) {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, workflowId);
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_RECEIPT,
@@ -40,7 +41,8 @@ public class IudClassificationWFClient {
   public WorkflowCreatedDTO notifyPaymentNotification(IudClassificationNotifyPaymentNotificationSignalDTO signalDTO) {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, workflowId);
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENT_NOTIFICATION,

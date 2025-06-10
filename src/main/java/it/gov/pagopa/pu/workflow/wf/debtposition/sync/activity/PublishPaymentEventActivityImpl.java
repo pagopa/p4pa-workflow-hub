@@ -5,13 +5,13 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificati
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = SynchronizeDebtPositionWfConfig.TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY)
+@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL)
 public class PublishPaymentEventActivityImpl implements PublishPaymentEventActivity {
 
   private final PaymentsProducerService paymentsProducerService;

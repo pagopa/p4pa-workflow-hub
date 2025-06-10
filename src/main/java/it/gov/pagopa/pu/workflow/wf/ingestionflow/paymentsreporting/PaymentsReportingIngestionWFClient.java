@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class PaymentsReportingIngestionWFClient {
 
   public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
     log.info("Starting payments reporting ingestion flow file having id {}", ingestionFlowFileId);
-    String taskQueue = PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, PaymentsReportingIngestionWF.class);
 
     PaymentsReportingIngestionWF workflow = workflowService.buildWorkflowStub(

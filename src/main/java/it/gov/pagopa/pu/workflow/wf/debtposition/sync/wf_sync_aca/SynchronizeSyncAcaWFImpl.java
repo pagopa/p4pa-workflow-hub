@@ -7,15 +7,14 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWf;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@WorkflowImpl(taskQueues = SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC)
 public class SynchronizeSyncAcaWFImpl extends BaseDPSynchronizeWf implements SynchronizeSyncAcaWF {
-
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF = "DebtPositionSynchronize_SYNC+ACA_WF";
 
   private SynchronizeInstallmentAcaActivity synchronizeInstallmentAcaActivity;
 

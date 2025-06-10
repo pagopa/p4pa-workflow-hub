@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wforganizationfetch.PaymentsReportingPagoPaOrganizationFetchWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class OrganizationPaymentsReportingPagoPaFetchWFClient {
 
   public WorkflowCreatedDTO retrieve(Long organizationId) {
     log.info("Starting fetch PagoPA payments reporting for the organization having id {}", organizationId);
-    String taskQueue = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     String workflowId = generateWorkflowId(organizationId, PaymentsReportingPagoPaOrganizationFetchWF.class);
 
     PaymentsReportingPagoPaOrganizationFetchWF workflow = workflowService.buildWorkflowStub(

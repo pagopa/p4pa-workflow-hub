@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.wfingestion.ReceiptIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.wfingestion.ReceiptIngestionWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,7 @@ public class ReceiptIngestionWFClient {
 
   public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
     log.info("Starting receipt ingestion flow file having id {}", ingestionFlowFileId);
-    String taskQueue = ReceiptIngestionWFImpl.TASK_QUEUE_RECEIPT_INGESTION_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, ReceiptIngestionWF.class);
 
     ReceiptIngestionWF workflow = workflowService.buildWorkflowStub(

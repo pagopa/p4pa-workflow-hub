@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
@@ -24,10 +25,8 @@ import java.time.LocalDate;
 import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEndOfTheDay;
 
 @Slf4j
-@WorkflowImpl(taskQueues = ExportFileWFImpl.TASK_QUEUE_EXPORT_FILE_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_EXPORT_MEDIUM_PRIORITY)
 public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_EXPORT_FILE_WF = "ExportFileWF";
-  public static final String TASK_QUEUE_EXPORT_FILE_LOCAL_ACTIVITY = "ExportFileWF_LOCAL";
 
   @Value("${schedule.export-file-expiration.days}")
   private int expirationDays;

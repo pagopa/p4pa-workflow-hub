@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +10,7 @@ import java.time.LocalDate;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = {
-  SynchronizeDebtPositionWfConfig.TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY,
-  "CheckDebtPositionExpirationWF_LOCAL" //FIXME DEPRECATED, to remove once not more WF are scheduled on this
-})
+@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL)
 public class ScheduleCheckDpExpirationActivityImpl implements ScheduleCheckDpExpirationActivity {
 
   private final CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient;

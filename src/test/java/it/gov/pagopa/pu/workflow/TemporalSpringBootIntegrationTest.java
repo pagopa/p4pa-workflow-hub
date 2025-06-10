@@ -51,7 +51,7 @@ import static org.mockito.Mockito.*;
   "spring.cloud.function.definition=",
 
   "spring.temporal.test-server.enabled: true",
-  "spring.temporal.workers[0].task-queue: PaymentsReportingIngestionWF",
+  "spring.temporal.workers[0].task-queue: IngestionFlowFileWF",
   "spring.temporal.workers[0].name: mock",
   "spring.temporal.workers[0].activity-beans[0]: updateIngestionFlowStatusActivityImpl",
   "spring.temporal.workers[0].activity-beans[1]: fileActivityMock",

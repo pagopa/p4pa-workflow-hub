@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWFImpl;
@@ -40,7 +41,7 @@ class TaxonomyWFClientTest {
   @Test
   void whenSynchronizeTaxonomyThenOk() {
     // Given
-    String taskQueue = SynchronizeTaxonomyPagoPaFetchWFImpl.TASK_QUEUE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SynchronizeTaxonomyPagoPaFetchWF-ON-DEMAND", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(SynchronizeTaxonomyPagoPaFetchWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -54,5 +55,7 @@ class TaxonomyWFClientTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).synchronize();
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SynchronizeTaxonomyPagoPaFetchWFImpl.class);
   }
 }

@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.assessments;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWF;
 import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsWFImpl;
@@ -42,7 +43,7 @@ class CreateAssessmentsWFClientTest {
   @Test
   void testCreateAssessment() {
     Long receiptId = 123L;
-    String taskQueue = CreateAssessmentsWFImpl.TASK_QUEUE_CREATE_ASSESSMENTS_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_RESERVED_CREATION;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("CreateAssessmentsWF-123", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(CreateAssessmentsWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -56,5 +57,7 @@ class CreateAssessmentsWFClientTest {
     // Then
     assertSame(expectedResult, result);
     verify(wfMock).createAssessment(receiptId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, CreateAssessmentsWFImpl.class);
   }
 }

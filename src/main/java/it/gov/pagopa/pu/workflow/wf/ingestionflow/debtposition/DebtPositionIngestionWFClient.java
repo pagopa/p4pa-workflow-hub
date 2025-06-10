@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.wfingestion.DebtPositionIngestionFlowWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class DebtPositionIngestionWFClient {
 
   public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
     log.info("Starting debt position ingestion flow file having id {}", ingestionFlowFileId);
-    String taskQueue = DebtPositionIngestionFlowWFImpl.TASK_QUEUE_DEBT_POSITION_INGESTION_FLOW;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, DebtPositionIngestionFlowWF.class);
 
     DebtPositionIngestionFlowWF workflow = workflowService.buildWorkflowStub(

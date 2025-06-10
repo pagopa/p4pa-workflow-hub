@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.organization;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.wfingestion.OrganizationIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.wfingestion.OrganizationIngestionWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,7 @@ public class OrganizationIngestionWFClient {
 
   public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
     log.info("Starting organization ingestion flow file having id {}", ingestionFlowFileId);
-    String taskQueue = OrganizationIngestionWFImpl.TASK_QUEUE_ORGANIZATION_INGESTION_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, OrganizationIngestionWF.class);
 
     OrganizationIngestionWF workflow = workflowService.buildWorkflowStub(

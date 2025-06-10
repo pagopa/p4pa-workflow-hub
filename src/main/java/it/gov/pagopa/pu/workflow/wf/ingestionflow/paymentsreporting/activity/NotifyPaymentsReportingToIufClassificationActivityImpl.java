@@ -2,9 +2,9 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_LOCAL_ACTIVITY)
+@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY_LOCAL)
 public class NotifyPaymentsReportingToIufClassificationActivityImpl implements NotifyPaymentsReportingToIufClassificationActivity {
 
   private final IufClassificationWFClient iufClassificationWFClient;

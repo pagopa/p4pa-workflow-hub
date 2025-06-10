@@ -3,6 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting;
 import io.temporal.client.schedules.ScheduleHandle;
 import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -30,10 +32,11 @@ class PaymentsReportingPagoPaBrokersFetchSchedulerTest {
     String cronExpression = "cron";
 
     ScheduleHandle expectedResult = Mockito.mock(ScheduleHandle.class);
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     Mockito.when(workflowScheduleServiceMock.schedule(
         ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH,
         PaymentsReportingPagoPaBrokersFetchWF.class,
-        PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH,
+        taskQueue,
         cronExpression
       ))
       .thenReturn(expectedResult);
@@ -44,5 +47,7 @@ class PaymentsReportingPagoPaBrokersFetchSchedulerTest {
 
     // Then
     Assertions.assertSame(expectedResult, result);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, PaymentsReportingPagoPaBrokersFetchWFImpl.class);
   }
 }

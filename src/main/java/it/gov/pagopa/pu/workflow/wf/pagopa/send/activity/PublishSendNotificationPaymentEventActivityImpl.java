@@ -3,14 +3,14 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.activity;
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS_LOCAL_ACTIVITY)
+@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION_LOCAL)
 public class PublishSendNotificationPaymentEventActivityImpl implements PublishSendNotificationPaymentEventActivity {
 
   private final PaymentsProducerService paymentsProducerService;

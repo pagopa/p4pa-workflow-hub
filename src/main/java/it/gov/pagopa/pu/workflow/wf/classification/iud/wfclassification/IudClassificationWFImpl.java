@@ -5,11 +5,12 @@ import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIud
 import it.gov.pagopa.payhub.activities.activity.classifications.IudClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IudClassificationActivityResult;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.config.IudClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
+import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -19,13 +20,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF;
-
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE_IUF_CLASSIFICATION_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY)
 public class IudClassificationWFImpl implements IudClassificationWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_IUF_CLASSIFICATION_WF = "IudClassificationWF";
-  public static final String TASK_QUEUE_IUD_CLASSIFICATION_LOCAL_ACTIVITY = "IudClassificationWF_LOCAL";
 
   private ClearClassifyIudActivity clearClassifyIudActivity;
   private IudClassificationActivity iudClassificationActivity;

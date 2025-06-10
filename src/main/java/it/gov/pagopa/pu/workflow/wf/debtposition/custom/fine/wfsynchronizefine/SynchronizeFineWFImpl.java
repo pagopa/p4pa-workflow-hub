@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity.CancelReductionExpirationScheduleActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity.ScheduleReductionExpirationActivity;
@@ -20,10 +21,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @Slf4j
-@WorkflowImpl(taskQueues = SynchronizeFineWFImpl.TASK_QUEUE_SYNC_FINE)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC)
 public class SynchronizeFineWFImpl implements SynchronizeFineWF, ApplicationContextAware {
-
-  public static final String TASK_QUEUE_SYNC_FINE = "DebtPositionSynchronize_fine_WF";
 
   private DebtPositionSynchronizeFineActivity debtPositionSynchronizeFineActivity;
   private InvokeSyncDebtPositionActivity invokeSyncDebtPositionActivity;
