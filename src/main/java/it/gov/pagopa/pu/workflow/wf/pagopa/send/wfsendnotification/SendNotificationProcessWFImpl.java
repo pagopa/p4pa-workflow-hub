@@ -65,7 +65,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
     try {
       preloadSendFileActivity.preloadSendFile(sendNotificationId);
       uploadSendFileActivity.uploadSendFile(sendNotificationId);
-      deliveryNotificationActivity.deliveryNotification(sendNotificationId);
+      deliveryNotificationActivity.deliverySendNotification(sendNotificationId);
 
       SendNotificationDTO sendNotificationDTO = waitDeliveryAcceptance(sendNotificationId);
 

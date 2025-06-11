@@ -45,17 +45,17 @@ class ExportFileExpirationHandlerWFImplTest {
 
     workflow.exportFileExpirationHandler(exportFileId);
 
-    verify(exportFileExpirationHandlerActivityMock).handleExpiration(exportFileId);
+    verify(exportFileExpirationHandlerActivityMock).handleExportExpiration(exportFileId);
   }
 
   @Test
   void givenExceptionWhenCreateExportFileExpirationHandlerThenLogError() {
     Long exportFileId = 456L;
-    doThrow(new RuntimeException("Test exception")).when(exportFileExpirationHandlerActivityMock).handleExpiration(exportFileId);
+    doThrow(new RuntimeException("Test exception")).when(exportFileExpirationHandlerActivityMock).handleExportExpiration(exportFileId);
 
     assertThrows(RuntimeException.class, () -> workflow.exportFileExpirationHandler(exportFileId));
 
-    verify(exportFileExpirationHandlerActivityMock).handleExpiration(exportFileId);
+    verify(exportFileExpirationHandlerActivityMock).handleExportExpiration(exportFileId);
   }
 }
 

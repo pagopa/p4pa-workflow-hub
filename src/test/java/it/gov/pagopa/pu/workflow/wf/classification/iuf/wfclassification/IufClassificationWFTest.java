@@ -107,7 +107,7 @@ class IufClassificationWFTest {
         .organizationId(1L).treasuryId(treasuryId).iuf(iuf).build();
 
     Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1L);
-    Mockito.when(iufClassificationActivityMock.classify(1L, treasuryId, iuf)).thenReturn(
+    Mockito.when(iufClassificationActivityMock.classifyIuf(1L, treasuryId, iuf)).thenReturn(
       IufClassificationActivityResult.builder()
         .organizationId(1L)
         .transfers2classify(Collections.singletonList(

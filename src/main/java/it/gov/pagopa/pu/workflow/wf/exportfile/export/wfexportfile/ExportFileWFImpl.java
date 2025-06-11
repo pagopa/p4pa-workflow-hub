@@ -73,9 +73,9 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
 
     if(StringUtils.isBlank(errorDescription) && exportFileResult!=null && exportFileResult.getExportDate()!=null){
       scheduleExportFileExpiration(exportFileId, exportFileResult.getExportDate().plusDays(expirationDays));
-      sendEmailExportFileActivity.sendEmail(exportFileId, true);
+      sendEmailExportFileActivity.sendExportCompletedEmail(exportFileId, true);
     }else {
-      sendEmailExportFileActivity.sendEmail(exportFileId, false);
+      sendEmailExportFileActivity.sendExportCompletedEmail(exportFileId, false);
     }
 
     log.info("Completed export file workflow for exportFileId: {}", exportFileId);
@@ -107,7 +107,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
   }
 
   private void updateExportFileStatus(UpdateStatusRequest updateStatusRequest) {
-    updateExportFileStatusActivity.updateStatus(updateStatusRequest);
+    updateExportFileStatusActivity.updateExportStatus(updateStatusRequest);
   }
 
   private void scheduleExportFileExpiration(Long exportFileId, LocalDate expirationDate) {

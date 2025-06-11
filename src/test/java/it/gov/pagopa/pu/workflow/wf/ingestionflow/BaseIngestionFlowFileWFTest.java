@@ -77,9 +77,9 @@ public abstract class BaseIngestionFlowFileWFTest<R extends IngestionFlowFileRes
     wf.ingest(ingestionFlowFileId);
 
     // Then
-    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, expectedResult);
-    Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
+    Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, expectedResult);
+    Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, false);
   }
 
   @Test
@@ -97,11 +97,11 @@ public abstract class BaseIngestionFlowFileWFTest<R extends IngestionFlowFileRes
 
     // Then
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(Mockito.eq(ingestionFlowFileId), Mockito.eq(IngestionFlowFileStatus.UPLOADED), Mockito.eq(IngestionFlowFileStatus.PROCESSING), Mockito.isNull());
+      .updateIngestionFlowFileStatus(Mockito.eq(ingestionFlowFileId), Mockito.eq(IngestionFlowFileStatus.UPLOADED), Mockito.eq(IngestionFlowFileStatus.PROCESSING), Mockito.isNull());
     Mockito.verify(updateIngestionFlowStatusActivityMock)
-      .updateStatus(Mockito.eq(ingestionFlowFileId), Mockito.eq(IngestionFlowFileStatus.PROCESSING), Mockito.eq(IngestionFlowFileStatus.COMPLETED), Mockito.same(expectedResult));
+      .updateIngestionFlowFileStatus(Mockito.eq(ingestionFlowFileId), Mockito.eq(IngestionFlowFileStatus.PROCESSING), Mockito.eq(IngestionFlowFileStatus.COMPLETED), Mockito.same(expectedResult));
     Mockito.verify(sendEmailIngestionFlowActivityMock)
-      .sendEmail(ingestionFlowFileId, true);
+      .sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true);
 
     verifyExtraMocks(ingestionFlowFileId, expectedResult);
   }

@@ -34,11 +34,11 @@ public class ReceiptPagopaIngestionWFImpl extends BaseIngestionFlowFileWFImpl<Re
   @Override
   protected void afterProcessing(Long ingestionFlowFileId, ReceiptPagopaIngestionFlowFileResult result) {
     try {
-      receiptPagopaNotifySilActivity.handleNotifySil(result.getReceiptDTO(), result.getInstallmentDTO());
+      receiptPagopaNotifySilActivity.notifyReceiptToSil(result.getReceiptDTO(), result.getInstallmentDTO());
     } catch (Exception e) {
       log.error("Error in notify SIL for receipt id[{}]", ingestionFlowFileId, e);
     }
-    receiptPagopaSendEmailActivity.sendEmail(result.getReceiptDTO(), result.getInstallmentDTO());
+    receiptPagopaSendEmailActivity.sendReceiptHandledEmail(result.getReceiptDTO(), result.getInstallmentDTO());
   }
 
   @Override

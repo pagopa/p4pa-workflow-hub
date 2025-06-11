@@ -45,7 +45,7 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
     toClassify.stream().distinct()
       .forEach(item -> {
         log.info("Handling Transfer classification for semantic key {}", item);
-        transferClassificationActivity.classify(item);
+        transferClassificationActivity.classifyTransfer(item);
         log.info("Ingestion to classify Transfers with semantic key {} is completed", item);
       });
   }

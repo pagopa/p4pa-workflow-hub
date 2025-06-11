@@ -25,7 +25,7 @@ public class ExportFileExpirationHandlerWFImpl implements ExportFileExpirationHa
   public void exportFileExpirationHandler(Long exportFileId) {
     log.info("Creating exportFileExpirationHandler for exportFileId: {}", exportFileId);
 
-    exportFileExpirationHandlerActivity.handleExpiration(exportFileId);
+    exportFileExpirationHandlerActivity.handleExportExpiration(exportFileId);
 
     log.info("ExportFileExpirationHandler creation for exportFileId {} is completed", exportFileId);
   }

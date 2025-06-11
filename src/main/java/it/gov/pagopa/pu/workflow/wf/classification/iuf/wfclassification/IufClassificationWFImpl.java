@@ -85,7 +85,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
     log.info("IUF receipt classification cleared {} records for {}", clearedResult, signalDTO);
 
-    IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+    IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.classifyIuf(signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
     toNotify.add(iufClassificationActivityResult);
   }
 

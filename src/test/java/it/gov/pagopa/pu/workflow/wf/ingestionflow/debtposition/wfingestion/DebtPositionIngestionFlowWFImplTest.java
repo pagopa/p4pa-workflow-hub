@@ -99,7 +99,7 @@ class DebtPositionIngestionFlowWFImplTest {
     installmentIngestionFlowFileResult.setTotalRows(10L);
     installmentIngestionFlowFileResult.setOrganizationId(123L);
 
-    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
+    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
@@ -114,17 +114,17 @@ class DebtPositionIngestionFlowWFImplTest {
 
       wf.ingest(ingestionFlowFileId);
 
-      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock).retrieveNoticesGenerationStatus(
         installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
-      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFileStatus.PROCESSING),
         Mockito.eq(IngestionFlowFileStatus.COMPLETED),
         Mockito.same(installmentIngestionFlowFileResult)
       );
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true);
     }
   }
 
@@ -136,7 +136,7 @@ class DebtPositionIngestionFlowWFImplTest {
     installmentIngestionFlowFileResult.setProcessedRows(5L);
     installmentIngestionFlowFileResult.setTotalRows(10L);
 
-    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
+    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
@@ -152,9 +152,9 @@ class DebtPositionIngestionFlowWFImplTest {
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
-      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
         IngestionFlowFileStatus.ERROR,
@@ -164,7 +164,7 @@ class DebtPositionIngestionFlowWFImplTest {
           .errorDescription(errorDescription)
           .build()
       );
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, false);
     }
   }
 
@@ -177,7 +177,7 @@ class DebtPositionIngestionFlowWFImplTest {
     installmentIngestionFlowFileResult.setTotalRows(10L);
     installmentIngestionFlowFileResult.setErrorDescription("Some rows have errors");
 
-    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
+    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId))
       .thenReturn(installmentIngestionFlowFileResult);
 
@@ -196,9 +196,9 @@ class DebtPositionIngestionFlowWFImplTest {
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
-      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
         IngestionFlowFileStatus.ERROR,
@@ -208,7 +208,7 @@ class DebtPositionIngestionFlowWFImplTest {
           .errorDescription(errorDescription)
           .build()
       );
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, false);
     }
   }
 
@@ -216,7 +216,7 @@ class DebtPositionIngestionFlowWFImplTest {
   void givenExceptionDuringFileProcessWhenIngestThenKo() {
     long ingestionFlowFileId = 1L;
 
-    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
+    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenThrow(new RuntimeException("DUMMY"));
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
@@ -234,9 +234,9 @@ class DebtPositionIngestionFlowWFImplTest {
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
-      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
         IngestionFlowFileStatus.ERROR,
@@ -244,7 +244,7 @@ class DebtPositionIngestionFlowWFImplTest {
           .errorDescription(errorDescription)
           .build()
       );
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, false);
     }
   }
 
@@ -258,7 +258,7 @@ class DebtPositionIngestionFlowWFImplTest {
     installmentIngestionFlowFileResult.setTotalRows(10L);
     installmentIngestionFlowFileResult.setOrganizationId(123L);
 
-    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId))
+    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId))
       .thenReturn(false)
       .thenReturn(false)
       .thenReturn(true);
@@ -278,17 +278,17 @@ class DebtPositionIngestionFlowWFImplTest {
 
       wf.ingest(ingestionFlowFileId);
 
-      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock, Mockito.times(3)).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock, Mockito.times(3)).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock, Mockito.times(3)).retrieveNoticesGenerationStatus(
         installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
-      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFileStatus.PROCESSING),
         Mockito.eq(IngestionFlowFileStatus.COMPLETED),
         Mockito.same(installmentIngestionFlowFileResult)
       );
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true);
     }
   }
 
@@ -308,7 +308,7 @@ class DebtPositionIngestionFlowWFImplTest {
         return false;
       }
       return true;
-    }).when(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
+    }).when(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
@@ -324,17 +324,17 @@ class DebtPositionIngestionFlowWFImplTest {
 
       wf.ingest(ingestionFlowFileId);
 
-      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock, Mockito.times(1001)).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock, Mockito.times(1001)).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock).retrieveNoticesGenerationStatus(
         installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
-      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFileStatus.PROCESSING),
         Mockito.eq(IngestionFlowFileStatus.COMPLETED),
         Mockito.same(installmentIngestionFlowFileResult)
       );
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, true);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true);
     }
   }
 
@@ -348,7 +348,7 @@ class DebtPositionIngestionFlowWFImplTest {
     installmentIngestionFlowFileResult.setTotalRows(10L);
     installmentIngestionFlowFileResult.setOrganizationId(123L);
 
-    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireProcessingLock(ingestionFlowFileId)).thenReturn(true);
+    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
     Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
 
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
@@ -372,11 +372,11 @@ class DebtPositionIngestionFlowWFImplTest {
         There were errors during the notice generation of the ingested file:Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.
         """, pdfGeneratedId).stripTrailing();
 
-      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireProcessingLock(ingestionFlowFileId);
+      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock, Mockito.times(30))
         .retrieveNoticesGenerationStatus(installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
-      Mockito.verify(updateIngestionFlowStatusActivityMock).updateStatus(
+      Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
         IngestionFlowFileStatus.ERROR,
@@ -386,7 +386,7 @@ class DebtPositionIngestionFlowWFImplTest {
           .errorDescription(errorDescription)
           .organizationId(123L)
           .build());
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendEmail(ingestionFlowFileId, false);
+      Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, false);
     }
   }
 

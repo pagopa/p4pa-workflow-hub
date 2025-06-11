@@ -75,7 +75,7 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
   public void notifyPaymentNotification(IudClassificationNotifyPaymentNotificationSignalDTO signalDTO) {
     deleteClassification(signalDTO.getOrganizationId(), signalDTO.getIud());
 
-    IudClassificationActivityResult activityResult = iudClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getIud());
+    IudClassificationActivityResult activityResult = iudClassificationActivity.classifyIud(signalDTO.getOrganizationId(), signalDTO.getIud());
 
     addToNotifyQueue(activityResult.getOrganizationId(),
       activityResult.getIuv(),

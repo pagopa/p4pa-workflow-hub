@@ -58,7 +58,7 @@ public class DebtPositionIngestionFlowWFImpl extends BaseIngestionFlowFileWFImpl
 
   private void acquireLock(Long ingestionFlowFileId) {
     int attemptCounter = 0;
-    while (!ingestionFlowFileProcessingLockerActivity.acquireProcessingLock(ingestionFlowFileId)) {
+    while (!ingestionFlowFileProcessingLockerActivity.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)) {
       attemptCounter++;
 
       if (attemptCounter >= LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY) {
