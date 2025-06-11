@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPag
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaNotifySilActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaSendEmailActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +14,8 @@ import org.springframework.context.ApplicationContext;
 import java.util.function.Function;
 
 @Slf4j
-@WorkflowImpl(taskQueues = ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY)
 public class ReceiptPagopaIngestionWFImpl extends BaseIngestionFlowFileWFImpl<ReceiptPagopaIngestionFlowFileResult> implements ReceiptPagopaIngestionWF {
-  public static final String TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF = "ReceiptPagopaIngestionWF";
 
   private ReceiptPagopaNotifySilActivity receiptPagopaNotifySilActivity;
   private ReceiptPagopaSendEmailActivity receiptPagopaSendEmailActivity;

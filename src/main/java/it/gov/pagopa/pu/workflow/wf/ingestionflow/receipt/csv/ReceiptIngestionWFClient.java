@@ -1,10 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.wfingestion.ReceiptIngestionWF;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.wfingestion.ReceiptIngestionWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

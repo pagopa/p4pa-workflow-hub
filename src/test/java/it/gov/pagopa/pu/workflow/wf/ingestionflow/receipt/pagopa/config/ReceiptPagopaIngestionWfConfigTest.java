@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.config;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config;
 
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import org.junit.jupiter.api.Test;
@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-class ReceiptIngestionWfConfigTest {
+class ReceiptPagopaIngestionWfConfigTest {
 
-  private final ReceiptIngestionWfConfig config = new ReceiptIngestionWfConfig();
+  private final ReceiptPagopaIngestionWfConfig config = new ReceiptPagopaIngestionWfConfig();
 
   private final Map<Class<?>, Class<?>> localActivityInterface2Impl = Map.of();
 

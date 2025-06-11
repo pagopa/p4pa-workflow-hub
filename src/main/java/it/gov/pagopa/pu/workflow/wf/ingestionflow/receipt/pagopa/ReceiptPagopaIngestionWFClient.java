@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion.ReceiptPagopaIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion.ReceiptPagopaIngestionWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class ReceiptPagopaIngestionWFClient {
     String workflowId = generateWorkflowId(ingestionFlowFileId, ReceiptPagopaIngestionWF.class);
     ReceiptPagopaIngestionWF workflow = workflowService.buildWorkflowStub(
       ReceiptPagopaIngestionWF.class,
-      ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF,
+      TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY,
       workflowId);
     return workflowClientService.start(workflow::ingest, ingestionFlowFileId);
   }
