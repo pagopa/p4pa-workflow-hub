@@ -2,16 +2,16 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.exportflow.ExportFileExpirationHandlerActivity;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.config.ExportFileExpirationHandlerWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-@WorkflowImpl(taskQueues = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY)
 @Slf4j
 public class ExportFileExpirationHandlerWFImpl implements ExportFileExpirationHandlerWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF = "ExportFileExpirationHandlerWF";
 
   private ExportFileExpirationHandlerActivity exportFileExpirationHandlerActivity;
 
@@ -25,7 +25,7 @@ public class ExportFileExpirationHandlerWFImpl implements ExportFileExpirationHa
   public void exportFileExpirationHandler(Long exportFileId) {
     log.info("Creating exportFileExpirationHandler for exportFileId: {}", exportFileId);
 
-    exportFileExpirationHandlerActivity.handleExpiration(exportFileId);
+    exportFileExpirationHandlerActivity.handleExportExpiration(exportFileId);
 
     log.info("ExportFileExpirationHandler creation for exportFileId {} is completed", exportFileId);
   }

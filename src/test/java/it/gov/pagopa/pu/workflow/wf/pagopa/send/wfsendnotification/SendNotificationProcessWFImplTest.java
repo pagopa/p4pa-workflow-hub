@@ -96,7 +96,7 @@ class SendNotificationProcessWFImplTest {
 
     Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
-    Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
     Mockito.verify(notificationStatusActivityMock).getSendNotificationStatus(sendNotificationId);
     SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
       Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
@@ -132,7 +132,7 @@ class SendNotificationProcessWFImplTest {
 
     Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
-    Mockito.verify(deliveryNotificationActivityMock).deliveryNotification(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
     Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).getSendNotificationStatus(sendNotificationId);
     SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
       Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationErrorEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, "Exceeded max retry attempts to wait for ACCEPTED status (attempts:10) on sendNotificationId testId. Last status was: COMPLETE"))

@@ -62,11 +62,11 @@ class TransferClassificationWFImplTest {
       workflowMock.verify(() -> Workflow.await(Mockito.argThat(Supplier::get)));
 
       Mockito.verify(transferClassificationActivityMock)
-        .classify(new TransferSemanticKeyDTO(1L, "iuv1", "iur1", 1));
+        .classifyTransfer(new TransferSemanticKeyDTO(1L, "iuv1", "iur1", 1));
       Mockito.verify(transferClassificationActivityMock)
-        .classify(new TransferSemanticKeyDTO(2L, "iuv1", "iur1", 1));
+        .classifyTransfer(new TransferSemanticKeyDTO(2L, "iuv1", "iur1", 1));
       Mockito.verify(transferClassificationActivityMock)
-        .classify(new TransferSemanticKeyDTO(2L, "iuv2", "iur2", 2));
+        .classifyTransfer(new TransferSemanticKeyDTO(2L, "iuv2", "iur2", 2));
     }
   }
 

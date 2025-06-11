@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.exportfile.expiration;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWF;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.wfexpiration.ExportFileExpirationHandlerWFImpl;
@@ -44,7 +45,7 @@ class ExportFileExpirationHandlerWFClientTest {
   @Test
   void testCreateExportFileExpirationHandler() {
     Long exportFileId = 456L;
-    String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ExportFileExpirationHandlerWF-456", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileExpirationHandlerWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -56,6 +57,8 @@ class ExportFileExpirationHandlerWFClientTest {
 
     assertEquals(expectedResult, result);
     verify(wfMock).exportFileExpirationHandler(exportFileId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, ExportFileExpirationHandlerWFImpl.class);
   }
 
   @Test
@@ -63,7 +66,7 @@ class ExportFileExpirationHandlerWFClientTest {
     //given
     Long exportFileId = 1L;
     LocalDate dateTime = LocalDate.of(2025, 1, 1);
-    String taskQueue = ExportFileExpirationHandlerWFImpl.TASK_QUEUE_EXPORT_FILE_EXPIRATION_HANDLER_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
 
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ExportFileExpirationHandlerWF-" + exportFileId, "runId");
 
@@ -76,5 +79,7 @@ class ExportFileExpirationHandlerWFClientTest {
     client.scheduleExportFileExpiration(exportFileId, dateTime);
     //then
     verify(wfMock).exportFileExpirationHandler(exportFileId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, ExportFileExpirationHandlerWFImpl.class);
   }
 }

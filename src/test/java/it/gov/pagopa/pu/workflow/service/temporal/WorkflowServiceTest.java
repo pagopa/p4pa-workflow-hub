@@ -12,9 +12,9 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import it.gov.pagopa.pu.workflow.mapper.WorkflowStatusDTOMapper;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.wfingestion.PaymentsReportingIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,16 +63,17 @@ class WorkflowServiceTest {
     long ingestionFlowFileId = 1L;
     String workflowId = String.valueOf(ingestionFlowFileId);
 
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     when(workflowClientMock.newWorkflowStub(
       Mockito.eq(PaymentsReportingIngestionWF.class),
       Mockito.<WorkflowOptions>argThat(options ->
-        PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF.equals(options.getTaskQueue()) &&
+        taskQueue.equals(options.getTaskQueue()) &&
           workflowId.equals(options.getWorkflowId())
       )))
       .thenReturn(wfMock);
 
     // When
-    PaymentsReportingIngestionWF result = workflowService.buildWorkflowStub(PaymentsReportingIngestionWF.class, PaymentsReportingIngestionWFImpl.TASK_QUEUE_PAYMENTS_REPORTING_INGESTION_WF, workflowId);
+    PaymentsReportingIngestionWF result = workflowService.buildWorkflowStub(PaymentsReportingIngestionWF.class, taskQueue, workflowId);
 
     // Then
     Assertions.assertSame(wfMock, result);

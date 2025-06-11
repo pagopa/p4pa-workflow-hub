@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion.ReceiptPagopaIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.wfingestion.ReceiptPagopaIngestionWFImpl;
@@ -46,8 +47,9 @@ class ReceiptPagopaIngestionWFClientTest {
     long ingestionFlowFileId = 1L;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ReceiptPagopaIngestionWF-1", "RUNID");
 
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     doReturn(wfMock).when(workflowServiceMock)
-      .buildWorkflowStub(ReceiptPagopaIngestionWF.class, ReceiptPagopaIngestionWFImpl.TASK_QUEUE_RECEIPT_PAGOPA_INGESTION_WF, expectedResult.getWorkflowId());
+      .buildWorkflowStub(ReceiptPagopaIngestionWF.class, taskQueue, expectedResult.getWorkflowId());
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);
 
@@ -57,5 +59,7 @@ class ReceiptPagopaIngestionWFClientTest {
     // Then
     assertEquals(expectedResult, result);
     verify(wfMock).ingest(ingestionFlowFileId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, ReceiptPagopaIngestionWFImpl.class);
   }
 }

@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWFImpl;
@@ -31,6 +32,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Map;
+
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +45,15 @@ class SynchronizeDebtPositionWfClientTest {
   private WorkflowClientService workflowClientServiceMock;
 
   private SynchronizeDebtPositionWfClient client;
+
+  private final Map<Class<?>, Class<?>> wfInterface2impl = Map.of(
+    SynchronizeNoPagoPAWF.class, SynchronizeNoPagoPAWFImpl.class,
+    SynchronizeSyncWF.class, SynchronizeSyncWFImpl.class,
+    SynchronizeSyncAcaWF.class, SynchronizeSyncAcaWFImpl.class,
+    SynchronizeSyncGpdPreLoadWF.class, SynchronizeSyncGpdPreLoadWFImpl.class,
+    SynchronizeSyncAcaGpdPreLoadWF.class, SynchronizeSyncAcaGpdPreLoadWFImpl.class,
+    SynchronizeAsyncGpdWF.class, SynchronizeAsyncGpdWFImpl.class
+  );
 
   @BeforeEach
   void init() {
@@ -56,7 +68,6 @@ class SynchronizeDebtPositionWfClientTest {
   @Test
   void whenSynchronizeDPNoPagoPAThenInvokeWF() {
     testInvokeWF(
-      SynchronizeNoPagoPAWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_NO_PAGOPA_WF,
       SynchronizeNoPagoPAWF.class,
       client::synchronizeNoPagoPADP,
       SynchronizeNoPagoPAWF::synchronizeDPNoPagoPA);
@@ -65,7 +76,6 @@ class SynchronizeDebtPositionWfClientTest {
   @Test
   void whenSynchronizeDPSyncThenInvokeWF() {
     testInvokeWF(
-      SynchronizeSyncWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF,
       SynchronizeSyncWF.class,
       client::synchronizeDPSync,
       SynchronizeSyncWF::synchronizeDPSync);
@@ -74,7 +84,6 @@ class SynchronizeDebtPositionWfClientTest {
   @Test
   void whenSynchronizeDPSyncAcaThenInvokeWF() {
     testInvokeWF(
-      SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF,
       SynchronizeSyncAcaWF.class,
       client::synchronizeDPSyncAca,
       SynchronizeSyncAcaWF::synchronizeDPSyncAca);
@@ -83,7 +92,6 @@ class SynchronizeDebtPositionWfClientTest {
   @Test
   void whenSynchronizeDPSyncGpdPreLoadThenInvokeWF() {
     testInvokeWF(
-      SynchronizeSyncGpdPreLoadWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_GPDPRELOAD_WF,
       SynchronizeSyncGpdPreLoadWF.class,
       client::synchronizeDPSyncGpdPreLoad,
       SynchronizeSyncGpdPreLoadWF::synchronizeDPSyncGpdPreLoad);
@@ -92,7 +100,6 @@ class SynchronizeDebtPositionWfClientTest {
   @Test
   void whenSynchronizeDPSyncAcaGpdPreLoadThenInvokeWF() {
     testInvokeWF(
-      SynchronizeSyncAcaGpdPreLoadWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_GPDPRELOAD_WF,
       SynchronizeSyncAcaGpdPreLoadWF.class,
       client::synchronizeDPSyncAcaGpdPreLoad,
       SynchronizeSyncAcaGpdPreLoadWF::synchronizeDPSyncAcaGpdPreLoad);
@@ -101,14 +108,12 @@ class SynchronizeDebtPositionWfClientTest {
   @Test
   void whenSynchronizeDPAsyncGpdThenInvokeWF() {
     testInvokeWF(
-      SynchronizeAsyncGpdWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_ASYNC_GPD_WF,
       SynchronizeAsyncGpdWF.class,
       client::synchronizeDPAsyncGpd,
       SynchronizeAsyncGpdWF::synchronizeDPAsyncGpd);
   }
 
   private <T> void testInvokeWF(
-    String taskQueue,
     Class<T> wfInterfaceClass,
     TriFunction<DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig, WorkflowCreatedDTO> clientInvoke,
     Functions.Proc4<T, DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig> wfInvokeVerifier) {
@@ -122,6 +127,7 @@ class SynchronizeDebtPositionWfClientTest {
 
     T wf = Mockito.mock(wfInterfaceClass);
 
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC;
     Mockito.when(workflowServiceMock.buildWorkflowStub(
         wfInterfaceClass,
         taskQueue,
@@ -136,5 +142,7 @@ class SynchronizeDebtPositionWfClientTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
     wfInvokeVerifier.apply(Mockito.verify(wf), debtPosition, paymentEventRequest, genericWfExecutionConfig);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, wfInterface2impl.get(wfInterfaceClass));
   }
 }

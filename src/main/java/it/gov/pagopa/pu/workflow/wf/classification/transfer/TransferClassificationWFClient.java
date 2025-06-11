@@ -5,10 +5,10 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWF;
-import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,8 @@ public class TransferClassificationWFClient {
     log.info("Starting Transfer Classification for semantic key: {}", signalDTO);
 
     String workflowId = generateWorkflowId(signalDTO.getOrgId(), signalDTO.getIuv(), signalDTO.getIur(), signalDTO.getTransferIndex());
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(TransferClassificationWFImpl.TASK_QUEUE_TRANSFER_CLASSIFICATION_WF, workflowId);
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       TransferClassificationWF.SIGNAL_METHOD_NAME_START_TRANSFER_CLASSIFICATION,

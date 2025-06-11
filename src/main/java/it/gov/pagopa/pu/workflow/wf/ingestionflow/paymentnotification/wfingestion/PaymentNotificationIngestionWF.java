@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWF;
 
 /**
  * Workflow to ingest PaymentNotification file
- * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1339031693/Classificazione+incassi#3.2.-Pagamento-Notificati>Confluence page</a>
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1776583085/Import+Pagamenti+Notificati>Confluence page</a>
  */
 @WorkflowInterface
 public interface PaymentNotificationIngestionWF extends BaseIngestionFlowFileWF {

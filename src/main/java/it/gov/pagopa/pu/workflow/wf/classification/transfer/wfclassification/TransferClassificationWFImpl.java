@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassifi
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +17,8 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TransferClassificationWFImpl.TASK_QUEUE_TRANSFER_CLASSIFICATION_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY)
 public class TransferClassificationWFImpl implements TransferClassificationWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_TRANSFER_CLASSIFICATION_WF = "TransferClassificationWF";
 
   private TransferClassificationActivity transferClassificationActivity;
 
@@ -45,7 +45,7 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
     toClassify.stream().distinct()
       .forEach(item -> {
         log.info("Handling Transfer classification for semantic key {}", item);
-        transferClassificationActivity.classify(item);
+        transferClassificationActivity.classifyTransfer(item);
         log.info("Ingestion to classify Transfers with semantic key {} is completed", item);
       });
   }

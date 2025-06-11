@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.organization;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.wfingestion.OrganizationIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.wfingestion.OrganizationIngestionWFImpl;
@@ -41,7 +42,7 @@ class OrganizationIngestionWFClientTest {
   void whenIngestThenOk() {
     // Given
     long ingestionFlowFileId = 1L;
-    String taskQueue = OrganizationIngestionWFImpl.TASK_QUEUE_ORGANIZATION_INGESTION_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("OrganizationIngestionWF-1", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(OrganizationIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -55,5 +56,7 @@ class OrganizationIngestionWFClientTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).ingest(ingestionFlowFileId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, OrganizationIngestionWFImpl.class);
   }
 }

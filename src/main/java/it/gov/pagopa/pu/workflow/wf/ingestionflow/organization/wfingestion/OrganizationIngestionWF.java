@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWF;
 
 /**
  * Workflow to ingest Organization file
+ * * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1797521599/Import+Enti>Confluence page</a>
  */
 @WorkflowInterface
 public interface OrganizationIngestionWF extends BaseIngestionFlowFileWF {

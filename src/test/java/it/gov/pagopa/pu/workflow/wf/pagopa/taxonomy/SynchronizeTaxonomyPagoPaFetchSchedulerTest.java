@@ -3,6 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy;
 import io.temporal.client.schedules.ScheduleHandle;
 import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -30,10 +32,11 @@ class SynchronizeTaxonomyPagoPaFetchSchedulerTest {
     String cronExpression = "cron";
 
     ScheduleHandle expectedResult = Mockito.mock(ScheduleHandle.class);
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     Mockito.when(workflowScheduleServiceMock.schedule(
         ScheduleEnum.SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH,
         SynchronizeTaxonomyPagoPaFetchWF.class,
-        SynchronizeTaxonomyPagoPaFetchWFImpl.TASK_QUEUE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH,
+        taskQueue,
         cronExpression
       ))
       .thenReturn(expectedResult);
@@ -44,5 +47,7 @@ class SynchronizeTaxonomyPagoPaFetchSchedulerTest {
 
     // Then
     Assertions.assertSame(expectedResult, result);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SynchronizeTaxonomyPagoPaFetchWFImpl.class);
   }
 }

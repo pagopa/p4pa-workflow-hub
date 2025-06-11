@@ -4,6 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentnotification.PaymentNotificationIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentnotification.PaymentNotificationIngestionFlowFileResult;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.activity.NotifyPaymentNotificationToIudClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.config.PaymentNotificationIngestionWfConfig;
@@ -12,13 +13,9 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.function.Function;
 
-import static it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWFImpl.TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF;
-
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY)
 public class PaymentNotificationIngestionWFImpl extends BaseIngestionFlowFileWFImpl<PaymentNotificationIngestionFlowFileResult> implements PaymentNotificationIngestionWF {
-  public static final String TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF = "PaymentNotificationIngestionWF";
-  public static final String TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_LOCAL_ACTIVITY = "PaymentNotificationIngestionWF_LOCAL";
 
   private NotifyPaymentNotificationToIudClassificationActivity notifyPaymentNotificationToIudClassificationActivity;
 

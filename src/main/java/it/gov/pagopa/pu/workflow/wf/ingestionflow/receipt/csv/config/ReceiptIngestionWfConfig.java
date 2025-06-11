@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.config;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptIngestionActivity;

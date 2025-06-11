@@ -1,10 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositionType;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.DebtPositionTypeIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.wfingestion.DebtPositionTypeIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.wfingestion.DebtPositionTypeIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -42,7 +42,7 @@ class DebtPositionTypeIngestionWFClientTest {
   void whenIngestThenOk() {
     // Given
     long ingestionFlowFileId = 1L;
-    String taskQueue = DebtPositionTypeIngestionWFImpl.TASK_QUEUE_DEBT_POSITION_TYPE_INGESTION_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("DebtPositionTypeIngestionWF-1", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionTypeIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -56,5 +56,7 @@ class DebtPositionTypeIngestionWFClientTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).ingest(ingestionFlowFileId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, DebtPositionTypeIngestionWFImpl.class);
   }
 }

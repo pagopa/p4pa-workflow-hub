@@ -1,11 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositionType.wfingestion;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.wfingestion;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtpositiontype.DebtPositionTypeIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtpositiontype.DebtPositionTypeIngestionFlowFileResult;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFTest;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.config.DebtPositionTypeIngestionWFConfig;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.wfingestion.DebtPositionTypeIngestionWFImpl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

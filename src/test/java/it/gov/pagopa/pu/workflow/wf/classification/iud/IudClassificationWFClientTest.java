@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
@@ -72,7 +73,8 @@ class IudClassificationWFClientTest {
 
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, expectedResult.getWorkflowId()))
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
         same(workflowStubMock),
@@ -86,6 +88,8 @@ class IudClassificationWFClientTest {
 
     // Then
     assertSame(expectedResult, result);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, IudClassificationWFImpl.class);
   }
 
   @Test
@@ -98,7 +102,8 @@ class IudClassificationWFClientTest {
 
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(IudClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF, expectedResult.getWorkflowId()))
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
         same(workflowStubMock),
@@ -112,6 +117,8 @@ class IudClassificationWFClientTest {
 
     // Then
     assertSame(expectedResult, result);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, IudClassificationWFImpl.class);
   }
 
   @ParameterizedTest

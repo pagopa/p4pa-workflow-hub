@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.assessments.wfassessments;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsCreationActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.assessments.config.CreateAssessmentsWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -10,9 +11,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @Slf4j
-@WorkflowImpl(taskQueues = CreateAssessmentsWFImpl.TASK_QUEUE_CREATE_ASSESSMENTS_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_RESERVED_CREATION)
 public class CreateAssessmentsWFImpl implements CreateAssessmentsWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_CREATE_ASSESSMENTS_WF = "CreateAssessmentsWF";
 
   private AssessmentsCreationActivity assessmentsCreationActivity;
 

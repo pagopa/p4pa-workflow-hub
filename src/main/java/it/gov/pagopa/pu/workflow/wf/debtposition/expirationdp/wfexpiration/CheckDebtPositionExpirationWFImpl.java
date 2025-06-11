@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.DebtPositionExpirationActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.config.CheckDebtPositionExpirationWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -11,14 +12,10 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.time.LocalDate;
 
-import static it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
-
 
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY)
 public class CheckDebtPositionExpirationWFImpl implements CheckDebtPositionExpirationWF, ApplicationContextAware {
-
-  public static final String TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF = "CheckDebtPositionExpirationWF";
 
   private DebtPositionExpirationActivity debtPositionExpirationActivity;
 

@@ -85,8 +85,8 @@ class ExportFileWFImplTest {
       exportFileResult.getFilePath(), exportFileResult.getFileName(),12L,
       exportFileResult.getExportedRows(),null, toOffsetDateTimeEndOfTheDay(expectedDueDate));
 
-    Mockito.doNothing().when(updateExportFileStatusActivityMock).updateStatus(Mockito.any());
-    Mockito.doNothing().when(sendEmailExportFileActivityMock).sendEmail(exportFileId, true);
+    Mockito.doNothing().when(updateExportFileStatusActivityMock).updateExportStatus(Mockito.any());
+    Mockito.doNothing().when(sendEmailExportFileActivityMock).sendExportCompletedEmail(exportFileId, true);
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenReturn(exportFileResult);
 
     Mockito.doNothing().when(scheduleExportFileExpirationActivityMock).scheduleExportFileExpiration(exportFileId,
@@ -98,7 +98,7 @@ class ExportFileWFImplTest {
       wf.exportFile(exportFileId,exportFileType);
 
       InOrder inOrder = Mockito.inOrder(updateExportFileStatusActivityMock, exportFileActivityMock);
-      inOrder.verify(updateExportFileStatusActivityMock).updateStatus(Mockito.argThat(p->
+      inOrder.verify(updateExportFileStatusActivityMock).updateExportStatus(Mockito.argThat(p->
         p.getExportFileId()
           .equals(processingUpdateStatusRequest.getExportFileId())
           && p.getOldStatus().equals(processingUpdateStatusRequest.getOldStatus())
@@ -111,7 +111,7 @@ class ExportFileWFImplTest {
           && p.getExpirationDate() == null
       ));
       inOrder.verify(exportFileActivityMock).executeExport(exportFileId,exportFileType);
-      inOrder.verify(updateExportFileStatusActivityMock).updateStatus(Mockito.argThat(p->
+      inOrder.verify(updateExportFileStatusActivityMock).updateExportStatus(Mockito.argThat(p->
         p.getExportFileId()
           .equals(completedUpdateStatusRequest.getExportFileId())
           && p.getOldStatus().equals(completedUpdateStatusRequest.getOldStatus())
@@ -124,7 +124,7 @@ class ExportFileWFImplTest {
           .equals(completedUpdateStatusRequest.getExportedRows())
           && p.getExpirationDate().equals(completedUpdateStatusRequest.getExpirationDate())
       ));
-      Mockito.verify(sendEmailExportFileActivityMock).sendEmail(exportFileId, true);
+      Mockito.verify(sendEmailExportFileActivityMock).sendExportCompletedEmail(exportFileId, true);
       Mockito.verify(scheduleExportFileExpirationActivityMock).scheduleExportFileExpiration(exportFileId,
         expectedDueDate
       );
@@ -145,8 +145,8 @@ class ExportFileWFImplTest {
       ExportFileStatus.PROCESSING, ExportFileStatus.ERROR, null, null,
       null, null,errorMessage, null);
 
-    Mockito.doNothing().when(updateExportFileStatusActivityMock).updateStatus(Mockito.any());
-    Mockito.doNothing().when(sendEmailExportFileActivityMock).sendEmail(exportFileId, false);
+    Mockito.doNothing().when(updateExportFileStatusActivityMock).updateExportStatus(Mockito.any());
+    Mockito.doNothing().when(sendEmailExportFileActivityMock).sendExportCompletedEmail(exportFileId, false);
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenThrow(new RuntimeException(
       errorMessage));
 
@@ -156,7 +156,7 @@ class ExportFileWFImplTest {
       wf.exportFile(exportFileId,exportFileType);
 
       InOrder inOrder = Mockito.inOrder(updateExportFileStatusActivityMock, exportFileActivityMock);
-      inOrder.verify(updateExportFileStatusActivityMock).updateStatus(Mockito.argThat(p->
+      inOrder.verify(updateExportFileStatusActivityMock).updateExportStatus(Mockito.argThat(p->
         p.getExportFileId()
           .equals(processingUpdateStatusRequest.getExportFileId())
           && p.getOldStatus().equals(processingUpdateStatusRequest.getOldStatus())
@@ -169,7 +169,7 @@ class ExportFileWFImplTest {
           && p.getExpirationDate() == null
       ));
       inOrder.verify(exportFileActivityMock).executeExport(exportFileId,exportFileType);
-      inOrder.verify(updateExportFileStatusActivityMock).updateStatus(Mockito.argThat(p->
+      inOrder.verify(updateExportFileStatusActivityMock).updateExportStatus(Mockito.argThat(p->
         p.getExportFileId()
           .equals(errorUpdateStatusRequest.getExportFileId())
           && p.getOldStatus().equals(errorUpdateStatusRequest.getOldStatus())
@@ -181,7 +181,7 @@ class ExportFileWFImplTest {
           && p.getExportedRows() == null
           && p.getExpirationDate() == null
       ));
-      Mockito.verify(sendEmailExportFileActivityMock).sendEmail(exportFileId, false);
+      Mockito.verify(sendEmailExportFileActivityMock).sendExportCompletedEmail(exportFileId, false);
       Mockito.verifyNoInteractions(scheduleExportFileExpirationActivityMock);
     }
   }

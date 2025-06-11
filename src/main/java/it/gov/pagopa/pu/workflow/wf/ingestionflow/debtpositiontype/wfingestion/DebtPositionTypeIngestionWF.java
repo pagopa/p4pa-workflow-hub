@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWF;
 
 /**
  * Workflow to ingest DebtPositionType file
- * * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1287585835/Posizione+Debitoria>Confluence page</a>
+ * * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1797554267/Import+Tipologia+Posizione+Debitoria>Confluence page</a>
  */
 @WorkflowInterface
 public interface DebtPositionTypeIngestionWF extends BaseIngestionFlowFileWF {
