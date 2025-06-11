@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -74,6 +75,8 @@ class TemporalSpringBootIntegrationTest {
 
   @Autowired
   private WorkflowClient temporalClient;
+  @Value("${spring.temporal.namespace}")
+  private String temporalNamespace;
 
   // disabling scheduling due to temporal test server not support
   @MockitoBean
@@ -189,7 +192,7 @@ class TemporalSpringBootIntegrationTest {
   private void waitUntilWfStatus(String workflowId, WorkflowExecutionStatus status) {
     WorkflowExecutionInfo info;
     do {
-      info = WorkflowClientHelper.describeWorkflowInstance(temporalClient.getWorkflowServiceStubs(), "default", WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), new NoopScope());
+      info = WorkflowClientHelper.describeWorkflowInstance(temporalClient.getWorkflowServiceStubs(), temporalNamespace, WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), new NoopScope());
     } while (!wfTerminationStatuses.contains(info.getStatus()));
 
     Assertions.assertEquals(status, info.getStatus());

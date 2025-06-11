@@ -22,7 +22,7 @@ spring:
     rest:
       basePath: crud
   temporal:
-    namespace: "\${TEMPORAL_SERVER_NAMESPACE:default}"
+    namespace: "\${TEMPORAL_SERVER_NAMESPACE:pu}"
     connection:
       enable-https: "\${TEMPORAL_SERVER_ENABLE_HTTPS:false}"
       target: "\${TEMPORAL_SERVER_HOST:localhost}:\${TEMPORAL_SERVER_PORT:7233}"
