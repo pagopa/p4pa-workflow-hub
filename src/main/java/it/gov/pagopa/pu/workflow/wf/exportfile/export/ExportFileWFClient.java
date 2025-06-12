@@ -4,8 +4,8 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWF;
-import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class ExportFileWFClient {
   public WorkflowCreatedDTO exportFile(Long exportFileId, ExportFile.ExportFileTypeEnum exportFileType) {
     log.info("Starting export file for export file with id: {} and export file type: {}", exportFileId, exportFileType);
 
-    String taskQueue = ExportFileWFImpl.TASK_QUEUE_EXPORT_FILE_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_EXPORT_MEDIUM_PRIORITY;
     String workflowId  = generateWorkflowId(exportFileType+"-"+exportFileId, ExportFileWF.class);
 
     ExportFileWF workflow = workflowService.buildWorkflowStub(

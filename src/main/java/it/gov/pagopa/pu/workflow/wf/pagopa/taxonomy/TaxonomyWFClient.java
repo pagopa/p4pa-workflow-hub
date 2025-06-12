@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class TaxonomyWFClient {
 
   public WorkflowCreatedDTO synchronizeTaxonomy() {
     log.info("Starting synchronizeTaxonomy {}", ON_DEMAND);
-    String taskQueue = SynchronizeTaxonomyPagoPaFetchWFImpl.TASK_QUEUE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     String workflowId = generateWorkflowId(ON_DEMAND, SynchronizeTaxonomyPagoPaFetchWF.class);
 
     SynchronizeTaxonomyPagoPaFetchWF workflow = workflowService.buildWorkflowStub(

@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.config.DebtPositionFineWfConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper.FineWfExecutionConfigMapper;
@@ -16,10 +17,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @Slf4j
-@WorkflowImpl(taskQueues = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC)
 public class FineReductionOptionExpirationWFImpl implements FineReductionOptionExpirationWF, ApplicationContextAware {
-
-  public static final String TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION = "FineReductionOptionExpirationWF";
 
   private DebtPositionFineReductionOptionExpirationActivity debtPositionFineReductionOptionExpirationActivity;
   private InvokeSyncDebtPositionActivity invokeSyncDebtPositionActivity;

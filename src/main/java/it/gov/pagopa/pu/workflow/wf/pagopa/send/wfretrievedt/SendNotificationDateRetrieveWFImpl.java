@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.mapper.SendNotification2DebtPositionSendNotificationsMapper;
@@ -18,9 +19,8 @@ import org.springframework.context.ApplicationContextAware;
 import java.time.Duration;
 
 @Slf4j
-@WorkflowImpl(taskQueues = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY)
 public class SendNotificationDateRetrieveWFImpl implements SendNotificationDateRetrieveWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE = "SendNotificationDateRetrieveWF";
 
   private static final Duration RETRY_INTERVAL = Duration.ofHours(12);
 

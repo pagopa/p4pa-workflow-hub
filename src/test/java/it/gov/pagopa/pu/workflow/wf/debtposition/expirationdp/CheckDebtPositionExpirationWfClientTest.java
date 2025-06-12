@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWFImpl;
@@ -43,7 +44,7 @@ class CheckDebtPositionExpirationWfClientTest {
   void whenCheckDpExpirationThenSuccess() {
     // Given
     Long debtPositionId = 1L;
-    String taskQueue = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("CheckDebtPositionExpirationWF-1", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(
@@ -60,6 +61,8 @@ class CheckDebtPositionExpirationWfClientTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
     Mockito.verify(checkDebtPositionExpirationWFMock).checkDpExpiration(debtPositionId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, CheckDebtPositionExpirationWFImpl.class);
   }
 
   @Test
@@ -69,9 +72,10 @@ class CheckDebtPositionExpirationWfClientTest {
     LocalDate offsetDateTime = LocalDate.of(2025, 1, 1);
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("CheckDebtPositionExpirationWF-1", "runId");
 
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(
         CheckDebtPositionExpirationWF.class,
-        CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF,
+        taskQueue,
         expectedResult.getWorkflowId(),
         offsetDateTime))
       .thenReturn(checkDebtPositionExpirationWFMock);
@@ -83,6 +87,8 @@ class CheckDebtPositionExpirationWfClientTest {
 
     // Then
     Mockito.verify(checkDebtPositionExpirationWFMock).checkDpExpiration(debtPositionId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, CheckDebtPositionExpirationWFImpl.class);
   }
 
   @Test

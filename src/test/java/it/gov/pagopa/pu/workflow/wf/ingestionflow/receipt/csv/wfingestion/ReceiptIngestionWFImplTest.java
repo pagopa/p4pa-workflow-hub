@@ -1,10 +1,10 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.wfingestion;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.wfingestion;
 
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptIngestionActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptIngestionFlowFileResult;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFTest;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.config.ReceiptIngestionWfConfig;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.config.ReceiptIngestionWfConfig;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

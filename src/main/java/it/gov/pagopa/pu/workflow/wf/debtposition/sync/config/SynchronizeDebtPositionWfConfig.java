@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpdprel
 import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.CancelCheckDpExpirationScheduleActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.ScheduleCheckDpExpirationActivity;
@@ -17,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "workflow.debt-position-synchronize")
 public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY = "SynchronizeDP_LOCAL";
 
   public FinalizeDebtPositionSyncStatusActivity buildFinalizeDebtPositionSyncStatusActivityStub() {
     return Workflow.newActivityStub(FinalizeDebtPositionSyncStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
@@ -26,7 +26,7 @@ public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
   public PublishPaymentEventActivity buildPublishPaymentEventActivityStub() {
     return Workflow.newActivityStub(PublishPaymentEventActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-        TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY, this));
+        TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL, this));
   }
 
   public IONotificationDebtPositionActivity buildIONotificationDebtPositionActivityStub() {
@@ -36,12 +36,12 @@ public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
   public CancelCheckDpExpirationScheduleActivity buildCancelCheckDpExpirationScheduleActivityStub() {
     return Workflow.newActivityStub(CancelCheckDpExpirationScheduleActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-        TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY, this));
+        TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL, this));
   }
 
   public ScheduleCheckDpExpirationActivity buildScheduleCheckDpExpirationActivityStub() {
     return Workflow.newActivityStub(ScheduleCheckDpExpirationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-      TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY,
+      TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL,
       this));
   }
 

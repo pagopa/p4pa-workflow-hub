@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.exportfile.export.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.exportfile.expiration.ExportFileExpirationHandlerWFClient;
-import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = ExportFileWFImpl.TASK_QUEUE_EXPORT_FILE_LOCAL_ACTIVITY)
+@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_EXPORT_MEDIUM_PRIORITY_LOCAL)
 public class ScheduleExportFileExpirationActivityImpl implements ScheduleExportFileExpirationActivity {
 
   private final ExportFileExpirationHandlerWFClient exportFileExpirationHandlerWFClient;

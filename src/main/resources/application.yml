@@ -22,7 +22,7 @@ spring:
     rest:
       basePath: crud
   temporal:
-    namespace: "\${TEMPORAL_SERVER_NAMESPACE:default}"
+    namespace: "\${TEMPORAL_SERVER_NAMESPACE:pu}"
     connection:
       enable-https: "\${TEMPORAL_SERVER_ENABLE_HTTPS:false}"
       target: "\${TEMPORAL_SERVER_HOST:localhost}:\${TEMPORAL_SERVER_PORT:7233}"
@@ -30,124 +30,62 @@ spring:
       packages:
         - it.gov.pagopa.pu.workflow.wf
     workers:
+      # generic
+      - task-queue: LowPriorityWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_LOW_PRIORITY_POLLER_SIZE:3}"
       # debt position
-      - task-queue: CheckDebtPositionExpirationWF_LOCAL
+      - task-queue: DebtPositionWF
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_CHECK_DEBT_POSITION_EXPIRATION_POLLER_SIZE:2}"
-      - task-queue: CheckDebtPositionExpirationWF
+          max-concurrent-activity-task-pollers: "\${WF_DP_LOW_PRIORITY_POLLER_SIZE:3}"
+      - task-queue: DebtPositionSyncWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CHECK_DEBT_POSITION_EXPIRATION_POLLER_SIZE:2}"
-      # debt position sync
-      - task-queue: SynchronizeDP_LOCAL
+          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_POLLER_SIZE:10}"
+      - task-queue: DebtPositionSyncWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_SYNC_LOCAL_SIZE:5}"
-      - task-queue: DebtPositionSynchronize_NoPagoPA_WF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_NOPAGOPA_SIZE:1}"
-      - task-queue: DebtPositionSynchronize_SYNC_WF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_SYNC_POLLER_SIZE:5}"
-      - task-queue: DebtPositionSynchronize_SYNC+ACA_WF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_ACA_POLLER_SIZE:5}"
-      - task-queue: DebtPositionSynchronize_SYNC+GPDPRELOAD_WF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_GPDPRELOAD_POLLER_SIZE:3}"
-      - task-queue: DebtPositionSynchronize_SYNC+ACA+GPDPRELOAD_WF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_ACAGPDPRELOAD_POLLER_SIZE:3}"
-      - task-queue: DebtPositionSynchronize_ASYNC_GPD_WF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_MODE_GPD_POLLER_SIZE:5}"
-      - task-queue: DebtPositionSynchronize_finalizeMassive_WF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_MASSIVE_SYNC_FINALIZE_POLLER_SIZE:3}"
+          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE:5}"
       # debt position custom WF sync
-      - task-queue: DebtPositionSynchronize_fine_WF
+      - task-queue: DebtPositionCustomSyncWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_SYNC_CUSTOM_FINE_POLLER_SIZE:5}"
-      - task-queue: FineReductionOptionExpirationWF
+          max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_POLLER_SIZE:5}"
+      - task-queue: DebtPositionCustomSyncWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_FINE_REDUCTION_EXPIRATION_POLLER_SIZE:3}"
+          max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_POLLER_SIZE:5}"
       # ingestion flow
-      - task-queue: PaymentsReportingIngestionWF
+      - task-queue: IngestionFlowFileWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENTS_REPORTING_POLLER_SIZE:2}"
-      - task-queue: PaymentsReportingIngestionWF_LOCAL
+          max-concurrent-workflow-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+      - task-queue: IngestionFlowFileWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_INGESTION_PAYMENTS_REPORTING_POLLER_SIZE:2}"
-      - task-queue: TreasuryOpiIngestionWF
+          max-concurrent-activity-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
+      # export file
+      - task-queue: ExportFileWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_TREASURY_OPI_POLLER_SIZE:2}"
-      - task-queue: TreasuryOpiIngestionWF_LOCAL
+          max-concurrent-activity-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+      - task-queue: ExportFileWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_INGESTION_TREASURY_OPI_POLLER_SIZE:2}"
-      - task-queue: ReceiptPagopaIngestionWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_RT_POLLER_SIZE:2}"
-      - task-queue: DebtPositionIngestionFlowWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_DP_POLLER_SIZE:2}"
-      - task-queue: PaymentNotificationIngestionWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
-      - task-queue: PaymentNotificationIngestionWF_LOCAL
-        capacity:
-          max-concurrent-activity-task-pollers: "\${WF_INGESTION_PAYMENT_NOTIFICATION_POLLER_SIZE:2}"
-      - task-queue: OrganizationIngestionWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_INGESTION_ORGANIZATION_POLLER_SIZE:2}"
+          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
       # classification
-      - task-queue: IudClassificationWF
+      - task-queue: ClassificationWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_IUD_POLLER_SIZE:5}"
-      - task-queue: IudClassificationWF_LOCAL
+          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+      - task-queue: ClassificationWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_CLASSIFICATION_IUD_POLLER_SIZE:5}"
-      - task-queue: IufClassificationWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CASSIFICATION_IUF_POLLER_SIZE:5}"
-      - task-queue: IufClassificationWF_LOCAL
-        capacity:
-          max-concurrent-activity-task-pollers: "\${WF_CASSIFICATION_IUF_POLLER_SIZE:5}"
-      - task-queue: TransferClassificationWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_TRANSFER_POLLER_SIZE:5}"
-      # pagopa payments reporting
-      - task-queue: PaymentsReportingPagoPaBrokersFetchWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_PAYMENTS_REPORTING_BROKERS_FETCH_POLLER_SIZE:1}"
-      - task-queue: PaymentsReportingPagoPaOrganizationFetchWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_PAYMENTS_REPORTING_PAGOPA_FETCH_POLLER_SIZE:3}"
-      # pagopa taxonomy sync
-      - task-queue: SynchronizeTaxonomyPagoPaFetchWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_SYNC_TAXONOMY_POLLER_SIZE:1}"
+          max-concurrent-activity-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
       # pagopa send
       - task-queue: SendNotificationProcessWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_SEND_NOTIFICATION_POLLER_SIZE:3}"
+          max-concurrent-workflow-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_POLLER_SIZE:3}"
       - task-queue: SendNotificationProcessWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_SEND_NOTIFICATION_POLLER_SIZE:2}"
-      - task-queue: SendNotificationDateRetrieveWF
+          max-concurrent-activity-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_POLLER_SIZE:2}"
+      - task-queue: SendWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_SEND_NOTIFICATION_DT_RETRIEVE_POLLER_SIZE:3}"
+          max-concurrent-workflow-task-pollers: "\${WF_SEND_LOW_PRIORITY_POLLER_SIZE:3}"
       # assessments
-      - task-queue: CreateAssessmentsWF
+      - task-queue: AssessmentCreationWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CREATE_ASSESSMENT_POLLER_SIZE:3}"
-      # export file
-      - task-queue: ExportFileWF_LOCAL
-        capacity:
-          max-concurrent-activity-task-pollers: "\${WF_EXPORT_FILE_POLLER_SIZE:2}"
-      - task-queue: ExportFileWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_FILE_POLLER_SIZE:5}"
-      - task-queue: ExportFileExpirationHandlerWF
-        capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_FILE_EXPIRATION_POLLER_SIZE:2}"
+          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_POLLER_SIZE:5}"
 
   cloud:
     function:
@@ -238,6 +176,7 @@ management:
     health:
       probes.enabled: true
       logging.slow-indicator-threshold: "\${HEALTH_ACTUATOR_LOGGER_TIMEOUT_DURATION:PT1S}"
+      show-details: "\${HEALTH_ACTUATOR_SHOW_DETAILS:when-authorized}"
       group:
         readiness.include: "*"
         liveness.include: livenessState,diskSpace,ping
@@ -336,6 +275,12 @@ workflow:
     retry-initial-interval-in-millis: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  debt-position-type-ingestion:
+    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   receipt-ingestion:
     start-to-close-timeout-in-seconds: "\${RECEIPT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"

@@ -66,7 +66,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   }
 
   protected void setProcessingStatus(Long ingestionFlowFileId) {
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    updateIngestionFlowStatusActivity.updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
   }
 
   private IngestionFlowFileResult processFile(Long ingestionFlowFileId) {
@@ -104,7 +104,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
 
   protected boolean finalizeStatus(Long ingestionFlowFileId, IngestionFlowFileResult result) {
     boolean success = result.getErrorDescription() == null;
-    updateIngestionFlowStatusActivity.updateStatus(ingestionFlowFileId,
+    updateIngestionFlowStatusActivity.updateIngestionFlowFileStatus(ingestionFlowFileId,
       IngestionFlowFileStatus.PROCESSING,
       success
         ? IngestionFlowFileStatus.COMPLETED
@@ -114,7 +114,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   }
 
   protected void sendEmail(Long ingestionFlowFileId, boolean success) {
-    sendEmailIngestionFlowActivity.sendEmail(ingestionFlowFileId, success);
+    sendEmailIngestionFlowActivity.sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, success);
   }
 
 }

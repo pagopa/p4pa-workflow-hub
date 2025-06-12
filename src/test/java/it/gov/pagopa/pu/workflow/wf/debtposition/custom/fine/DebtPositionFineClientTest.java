@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.wfreductionexpiration.FineReductionOptionExpirationWFImpl;
@@ -52,7 +53,7 @@ class DebtPositionFineClientTest {
   void whenExpireFineReductionThenSuccess() {
     // Given
     Long debtPositionId = 1L;
-    String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("FineReductionOptionExpirationWF-1", "runId");
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
@@ -74,13 +75,15 @@ class DebtPositionFineClientTest {
     // Then
     Assertions.assertSame(expectedResult, result);
     Mockito.verify(fineReductionOptionExpirationWFMock).expireFineReduction(debtPositionId, wfExecutionConfig);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, FineReductionOptionExpirationWFImpl.class);
   }
 
   @Test
   void whenScheduleExpireFineReductionThenSuccess() {
     // Given
     Long debtPositionId = 1L;
-    String taskQueue = FineReductionOptionExpirationWFImpl.TASK_QUEUE_FINE_REDUCTION_OPTION_EXPIRATION;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("FineReductionOptionExpirationWF-1", "runId");
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
@@ -104,6 +107,8 @@ class DebtPositionFineClientTest {
     // Then
     Assertions.assertSame(expectedResult, result);
     Mockito.verify(fineReductionOptionExpirationWFMock).expireFineReduction(debtPositionId, wfExecutionConfig);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, FineReductionOptionExpirationWFImpl.class);
   }
 
   @Test
@@ -111,7 +116,7 @@ class DebtPositionFineClientTest {
     // Given
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO();
-    String taskQueue = SynchronizeFineWFImpl.TASK_QUEUE_SYNC_FINE;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SynchronizeFineWF-1", "runId");
     FineWfExecutionConfig.IONotificationFineWfMessages fineWfMessages =
       new FineWfExecutionConfig.IONotificationFineWfMessages(null, new IONotificationMessage("subject", "message"));
@@ -136,5 +141,7 @@ class DebtPositionFineClientTest {
     // Then
     Assertions.assertSame(expectedResult, result);
     Mockito.verify(synchronizeFineWFMock).synchronizeFineDP(debtPositionDTO, paymentEventRequest, massive, wfExecutionConfig);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SynchronizeFineWFImpl.class);
   }
 }

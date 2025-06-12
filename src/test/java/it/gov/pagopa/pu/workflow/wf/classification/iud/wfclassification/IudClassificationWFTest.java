@@ -122,7 +122,7 @@ class IudClassificationWFTest {
 
     when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))
       .thenReturn(1L);
-    when(iudClassificationActivityMock.classify(orgId, iud))
+    when(iudClassificationActivityMock.classifyIud(orgId, iud))
       .thenReturn(activityResult);
 
     // When

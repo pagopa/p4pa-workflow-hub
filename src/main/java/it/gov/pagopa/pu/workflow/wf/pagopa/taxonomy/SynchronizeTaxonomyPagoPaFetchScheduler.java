@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy;
 import io.temporal.client.schedules.ScheduleHandle;
 import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWFImpl;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,11 @@ public class SynchronizeTaxonomyPagoPaFetchScheduler {
     WorkflowScheduleService workflowScheduleService,
     @Value("${schedule.synchronize-taxonomy-pagopa-fetch.cron-expression}") String cronExpression
   ) {
-    this.schedule = workflowScheduleService.schedule(ScheduleEnum.SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH, SynchronizeTaxonomyPagoPaFetchWF.class, SynchronizeTaxonomyPagoPaFetchWFImpl.TASK_QUEUE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH, cronExpression);
+    this.schedule = workflowScheduleService.schedule(
+      ScheduleEnum.SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH,
+      SynchronizeTaxonomyPagoPaFetchWF.class,
+      TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY,
+      cronExpression);
   }
 
 }

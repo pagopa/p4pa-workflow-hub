@@ -4,10 +4,11 @@ import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowType
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.DebtPositionTypeIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.OrganizationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.ReceiptIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.ReceiptIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,8 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     ReceiptIngestionWFClient receiptIngestionWFClient,
     ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient,
     PaymentNotificationIngestionWFClient paymentNotificationIngestionWFClient,
-    OrganizationIngestionWFClient organizationIngestionWFClient){
+    OrganizationIngestionWFClient organizationIngestionWFClient,
+    DebtPositionTypeIngestionWFClient debtPositionTypeIngestionWFClient){
     ingestionFlowFileType2WfStarter = Map.of(
       IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest,
@@ -35,8 +37,8 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
       IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION, paymentNotificationIngestionWFClient::ingest,
-      IngestionFlowFile.IngestionFlowFileTypeEnum.ORGANIZATIONS, organizationIngestionWFClient::ingest
-
+      IngestionFlowFile.IngestionFlowFileTypeEnum.ORGANIZATIONS, organizationIngestionWFClient::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE, debtPositionTypeIngestionWFClient::ingest
     );
   }
 

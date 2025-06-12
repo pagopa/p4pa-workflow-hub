@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,7 @@ import static it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPosition
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = SynchronizeDebtPositionWfConfig.TASK_QUEUE_SYNCHRONIZE_DP_LOCAL_ACTIVITY)
+@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC_LOCAL)
 public class CancelReductionExpirationScheduleActivityImpl implements CancelReductionExpirationScheduleActivity {
 
   private final WorkflowService workflowService;

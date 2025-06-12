@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPa
 import it.gov.pagopa.payhub.activities.activity.paymentsreporting.OrganizationPaymentsReportingPagoPaRetrieverActivity;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.PaymentsReportingIdDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.config.OrganizationPaymentsReportingPagoPaFetchWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -14,9 +15,8 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.List;
 
 @Slf4j
-@WorkflowImpl(taskQueues = PaymentsReportingPagoPaOrganizationFetchWFImpl.TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY)
 public class PaymentsReportingPagoPaOrganizationFetchWFImpl implements PaymentsReportingPagoPaOrganizationFetchWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_ORGANIZATION_PAYMENTS_REPORTING_PAGOPA_FETCH = "PaymentsReportingPagoPaOrganizationFetchWF";
 
   private OrganizationPaymentsReportingPagoPaListRetrieverActivity organizationPaymentsReportingPagoPaListRetrieverActivity;
   private OrganizationPaymentsReportingPagoPaRetrieverActivity organizationPaymentsReportingPagoPaRetrieverActivity;

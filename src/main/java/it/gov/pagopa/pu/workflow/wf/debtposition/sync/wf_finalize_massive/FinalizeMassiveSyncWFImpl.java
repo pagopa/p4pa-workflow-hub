@@ -6,14 +6,13 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWf;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@WorkflowImpl(taskQueues = FinalizeMassiveSyncWFImpl.TASK_QUEUE_FINALIZE_MASSIVE_DP_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC)
 public class FinalizeMassiveSyncWFImpl extends BaseDPSynchronizeWf implements FinalizeMassiveSyncWF {
-
-  public static final String TASK_QUEUE_FINALIZE_MASSIVE_DP_WF = "DebtPositionSynchronize_finalizeMassive_WF";
 
   @Override
   public void finalizeMassiveSync(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {

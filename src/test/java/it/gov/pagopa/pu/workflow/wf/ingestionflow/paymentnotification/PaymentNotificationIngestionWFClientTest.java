@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWF;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.wfingestion.PaymentNotificationIngestionWFImpl;
@@ -41,7 +42,7 @@ class PaymentNotificationIngestionWFClientTest {
   void whenIngestThenOk() {
     // Given
     long ingestionFlowFileId = 1L;
-    String taskQueue = PaymentNotificationIngestionWFImpl.TASK_QUEUE_PAYMENT_NOTIFICATION_INGESTION_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("PaymentNotificationIngestionWF-1", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentNotificationIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -55,5 +56,7 @@ class PaymentNotificationIngestionWFClientTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).ingest(ingestionFlowFileId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, PaymentNotificationIngestionWFImpl.class);
   }
 }

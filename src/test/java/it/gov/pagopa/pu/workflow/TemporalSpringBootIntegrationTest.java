@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.*;
   "spring.cloud.function.definition=",
 
   "spring.temporal.test-server.enabled: true",
-  "spring.temporal.workers[0].task-queue: PaymentsReportingIngestionWF",
+  "spring.temporal.workers[0].task-queue: IngestionFlowFileWF",
   "spring.temporal.workers[0].name: mock",
   "spring.temporal.workers[0].activity-beans[0]: updateIngestionFlowStatusActivityImpl",
   "spring.temporal.workers[0].activity-beans[1]: fileActivityMock",
@@ -74,6 +75,8 @@ class TemporalSpringBootIntegrationTest {
 
   @Autowired
   private WorkflowClient temporalClient;
+  @Value("${spring.temporal.namespace}")
+  private String temporalNamespace;
 
   // disabling scheduling due to temporal test server not support
   @MockitoBean
@@ -134,12 +137,12 @@ class TemporalSpringBootIntegrationTest {
 
     waitUntilWfCompletion(wfExec);
 
-    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(fileActivityMock).processFile(1L);
-    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
+    verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
     verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
-    verify(emailActivityMock).sendEmail(1L, true);
+    verify(emailActivityMock).sendIngestionFlowFileCompleteEmail(1L, true);
     verify(iufClassificationWFClientMock)
       .notifyPaymentsReporting(new IufClassificationNotifyPaymentsReportingSignalDTO(result.getOrganizationId(), result.getIuf(), result.getTransfers()));
   }
@@ -149,7 +152,7 @@ class TemporalSpringBootIntegrationTest {
     WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
     waitUntilWfFailed(wfExec);
 
-    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
   }
 
@@ -161,7 +164,7 @@ class TemporalSpringBootIntegrationTest {
     WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
     waitUntilWfFailed(wfExec);
 
-    verify(statusActivitySpy).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
   }
 
@@ -173,7 +176,7 @@ class TemporalSpringBootIntegrationTest {
     WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
     waitUntilWfFailed(wfExec);
 
-    verify(statusActivitySpy, times(3)).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    verify(statusActivitySpy, times(3)).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
     verify(ingestionFlowFileServiceMock, times(3)).updateStatus(anyLong(), any(), any(), any());
   }
 
@@ -189,7 +192,7 @@ class TemporalSpringBootIntegrationTest {
   private void waitUntilWfStatus(String workflowId, WorkflowExecutionStatus status) {
     WorkflowExecutionInfo info;
     do {
-      info = WorkflowClientHelper.describeWorkflowInstance(temporalClient.getWorkflowServiceStubs(), "default", WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), new NoopScope());
+      info = WorkflowClientHelper.describeWorkflowInstance(temporalClient.getWorkflowServiceStubs(), temporalNamespace, WorkflowExecution.newBuilder().setWorkflowId(workflowId).build(), new NoopScope());
     } while (!wfTerminationStatuses.contains(info.getStatus()));
 
     Assertions.assertEquals(status, info.getStatus());

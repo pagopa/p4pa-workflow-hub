@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.wfexpiration.CheckDebtPositionExpirationWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
   @Override
   public WorkflowCreatedDTO checkDpExpiration(Long debtPositionId) {
     log.info("Starting check debt position expiration WF: {}", debtPositionId);
-    String taskQueue = CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWF.class);
 
     CheckDebtPositionExpirationWF workflow = workflowService.buildWorkflowStub(
@@ -43,7 +43,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
     String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWF.class);
     CheckDebtPositionExpirationWF workflow = workflowService.buildWorkflowStubScheduled(
       CheckDebtPositionExpirationWF.class,
-      CheckDebtPositionExpirationWFImpl.TASK_QUEUE_CHECK_DEBT_POSITION_EXPIRATION_WF,
+      TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY,
       workflowId,
       nextDueDate
     );

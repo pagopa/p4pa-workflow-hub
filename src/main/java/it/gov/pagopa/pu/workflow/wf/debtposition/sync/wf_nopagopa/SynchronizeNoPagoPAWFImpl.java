@@ -6,16 +6,15 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWf;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
 @Slf4j
-@WorkflowImpl(taskQueues = SynchronizeNoPagoPAWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_NO_PAGOPA_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC)
 public class SynchronizeNoPagoPAWFImpl extends BaseDPSynchronizeWf implements SynchronizeNoPagoPAWF {
-
-  public static final String TASK_QUEUE_SYNCHRONIZE_DP_NO_PAGOPA_WF = "DebtPositionSynchronize_NoPagoPA_WF";
 
   @Override
   public void synchronizeDPNoPagoPA(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {

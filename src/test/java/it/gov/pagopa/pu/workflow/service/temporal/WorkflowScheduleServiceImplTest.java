@@ -5,8 +5,8 @@ import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.dto.generated.ScheduleInfoDTO;
 import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.mapper.ScheduleInfoDTOMapper;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.wfbrokersfetch.PaymentsReportingPagoPaBrokersFetchWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class WorkflowScheduleServiceImplTest {
   void givenNewScheduleWhenScheduleThenCreateIt() {
     // Given
     Class<?> workflowInterface = PaymentsReportingPagoPaBrokersFetchWF.class;
-    String taskQueue = PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     ScheduleEnum scheduleId = ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH;
     String cronExpression = "0/5 * * * *";
     ScheduleHandle previousHandle = Mockito.mock(ScheduleHandle.class);
@@ -80,7 +80,7 @@ class WorkflowScheduleServiceImplTest {
   void givenAlreadyExistentScheduleWhenScheduleThenReturnIt() {
     // Given
     Class<?> workflowInterface = PaymentsReportingPagoPaBrokersFetchWF.class;
-    String taskQueue = PaymentsReportingPagoPaBrokersFetchWFImpl.TASK_QUEUE_BROKERS_PAYMENTS_REPORTING_PAGOPA_FETCH;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     ScheduleEnum scheduleId = ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH;
     String cronExpression = "0/5 * * * *";
     ScheduleHandle previousHandle = Mockito.mock(ScheduleHandle.class);

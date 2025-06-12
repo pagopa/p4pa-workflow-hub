@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWFImpl;
@@ -50,7 +51,7 @@ class SendNotificationWFClientTest {
   void givenSendNotificationIdWhenStartSendNotificationProcessThenOk() {
     // Given
     String sendNotificationId = "sendNotificationId";
-    String taskQueue = SendNotificationProcessWFImpl.TASK_QUEUE_SEND_NOTIFICATION_PROCESS;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationProcessWF-"+sendNotificationId, "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationProcessWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -64,13 +65,15 @@ class SendNotificationWFClientTest {
     // Then
     assertEquals(expectedResult, result);
     verify(sendNotificationProcessWFMock).sendNotificationProcess(sendNotificationId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationProcessWFImpl.class);
   }
 
   @Test
   void givenSendNotificationIdWhenStartSendNotificationRetrieveNotificationDateThenOk() {
     // Given
     String sendNotificationId = "sendNotificationId";
-    String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationDateRetrieveWF-"+sendNotificationId, "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationDateRetrieveWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -84,13 +87,15 @@ class SendNotificationWFClientTest {
     // Then
     assertEquals(expectedResult, result);
     verify(sendNotificationDateRetrieveWFMock).sendNotificationDateRetrieve(sendNotificationId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationDateRetrieveWFImpl.class);
   }
 
   @Test
   void givenSendNotificationIdWhenScheduleSendNotificationDateRetrieveThenOk() {
     // Given
     String sendNotificationId = "sendNotificationId";
-    String taskQueue = SendNotificationDateRetrieveWFImpl.TASK_QUEUE_SEND_NOTIFICATION_DATE_RETRIEVE;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
     String expectedWorkflowId = "SendNotificationDateRetrieveWF-"+sendNotificationId;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(expectedWorkflowId, "runId");
 
@@ -104,5 +109,7 @@ class SendNotificationWFClientTest {
 
     // Then
     verify(sendNotificationDateRetrieveWFMock).sendNotificationDateRetrieve(sendNotificationId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationDateRetrieveWFImpl.class);
   }
 }

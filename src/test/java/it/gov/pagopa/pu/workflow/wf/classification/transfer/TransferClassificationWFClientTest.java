@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWF;
@@ -59,7 +60,8 @@ class TransferClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(String.format("%s-%d-%s-%s-%d", "TransferClassificationWF", ORGANIZATION, IUV, IUR, INDEX), "RUNID");
     TransferClassificationStartSignalDTO signalDTO = new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, INDEX);
 
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(TransferClassificationWFImpl.TASK_QUEUE_TRANSFER_CLASSIFICATION_WF, expectedResult.getWorkflowId()))
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
         same(workflowStubMock),
@@ -73,6 +75,8 @@ class TransferClassificationWFClientTest {
 
     // Then
     assertSame(expectedResult, result);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, TransferClassificationWFImpl.class);
   }
 
   @Test

@@ -1,11 +1,22 @@
 package it.gov.pagopa.pu.workflow.utils;
 
+import io.temporal.activity.ActivityOptions;
 import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.spring.boot.ActivityImpl;
+import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Functions;
+import io.temporal.workflow.Workflow;
+import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Map;
 
 public class TemporalTestUtils {
   private TemporalTestUtils(){}
@@ -99,5 +110,35 @@ public class TemporalTestUtils {
       f.apply();
       return true;
     });
+  }
+
+  public static void verifyWorkflowTaskQueueConfiguration(String taskQueue, Class<?> wfImpl){
+    Assertions.assertEquals(taskQueue, wfImpl.getAnnotation(WorkflowImpl.class).taskQueues()[0]);
+  }
+
+  public static void verifyActivityStubConfiguration(BaseWfConfig config, Map<Class<?>, Class<?>> localActivityInterface2Impl) throws InvocationTargetException, IllegalAccessException {
+    config.setRetryInitialIntervalInMillis(1);
+    config.setRetryBackoffCoefficient(1.0);
+    try(MockedStatic<Workflow> workflowMockedStatic = Mockito.mockStatic(Workflow.class)) {
+      for (Method method : config.getClass().getMethods()) {
+        if (method.getName().startsWith("build")) {
+          Class<?> activityInterface = method.getReturnType();
+          Class<?> localActivityImplClass = localActivityInterface2Impl.get(activityInterface);
+          String expectedTaskQueue = localActivityImplClass != null
+            ? localActivityImplClass.getAnnotation(ActivityImpl.class).taskQueues()[0]
+            : null;
+
+          ArgumentCaptor<ActivityOptions> activityOptionsCaptor = ArgumentCaptor.captor();
+          Object expectedStub = Mockito.mock(activityInterface);
+          workflowMockedStatic.when(() -> Workflow.newActivityStub(Mockito.eq(activityInterface), activityOptionsCaptor.capture()))
+            .thenReturn(expectedStub);
+
+          Object stub = method.invoke(config);
+
+          Assertions.assertSame(expectedStub, stub);
+          Assertions.assertEquals(expectedTaskQueue, activityOptionsCaptor.getValue().getTaskQueue());
+        }
+      }
+    }
   }
 }

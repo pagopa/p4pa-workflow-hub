@@ -9,6 +9,7 @@ import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTran
 import it.gov.pagopa.payhub.activities.dto.classifications.Transfer2ClassifyDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.activity.StartTransferClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.config.IufClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
@@ -23,13 +24,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl.TASK_QUEUE_IUF_CLASSIFICATION_WF;
-
 @Slf4j
-@WorkflowImpl(taskQueues = TASK_QUEUE_IUF_CLASSIFICATION_WF)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY)
 public class IufClassificationWFImpl implements IufClassificationWF, ApplicationContextAware {
-  public static final String TASK_QUEUE_IUF_CLASSIFICATION_WF = "IufClassificationWF";
-  public static final String TASK_QUEUE_IUF_CLASSIFICATION_LOCAL_ACTIVITY = "IufClassificationWF_LOCAL";
 
   private static final List<String> PAYMENT_OUTCOME_CODES_FOR_IMPLICIT_RECEIPT = List.of("8", "9");
 
@@ -88,7 +85,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
 
     log.info("IUF receipt classification cleared {} records for {}", clearedResult, signalDTO);
 
-    IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.classify(signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
+    IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.classifyIuf(signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
     toNotify.add(iufClassificationActivityResult);
   }
 

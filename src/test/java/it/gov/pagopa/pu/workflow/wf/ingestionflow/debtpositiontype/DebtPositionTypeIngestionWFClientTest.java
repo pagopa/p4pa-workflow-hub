@@ -1,11 +1,12 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.wfingestion.ReceiptIngestionWF;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.wfingestion.ReceiptIngestionWFImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.wfingestion.DebtPositionTypeIngestionWF;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.wfingestion.DebtPositionTypeIngestionWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,20 +17,20 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class ReceiptIngestionWFClientTest {
+class DebtPositionTypeIngestionWFClientTest {
 
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
   private WorkflowClientService workflowClientServiceMock;
   @Mock
-  private ReceiptIngestionWF wfMock;
+  private DebtPositionTypeIngestionWF wfMock;
 
-  private ReceiptIngestionWFClient client;
+  private DebtPositionTypeIngestionWFClient client;
 
   @BeforeEach
   void init() {
-    client = new ReceiptIngestionWFClient(workflowServiceMock, workflowClientServiceMock);
+    client = new DebtPositionTypeIngestionWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
@@ -41,10 +42,10 @@ class ReceiptIngestionWFClientTest {
   void whenIngestThenOk() {
     // Given
     long ingestionFlowFileId = 1L;
-    String taskQueue = ReceiptIngestionWFImpl.TASK_QUEUE_RECEIPT_INGESTION_WF;
-    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ReceiptIngestionWF-1", "RUNID");
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("DebtPositionTypeIngestionWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(ReceiptIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionTypeIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);
@@ -55,5 +56,7 @@ class ReceiptIngestionWFClientTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).ingest(ingestionFlowFileId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, DebtPositionTypeIngestionWFImpl.class);
   }
 }

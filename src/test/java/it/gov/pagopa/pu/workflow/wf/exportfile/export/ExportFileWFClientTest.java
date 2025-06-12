@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTyp
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWF;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.wfexportfile.ExportFileWFImpl;
@@ -43,7 +44,7 @@ class ExportFileWFClientTest {
     // Given
     Long exportFileId = 1L;
     ExportFileTypeEnum exportFileType = ExportFileTypeEnum.PAID;
-    String taskQueue = ExportFileWFImpl.TASK_QUEUE_EXPORT_FILE_WF;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_EXPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ExportFileWF-" + exportFileType + "-" + exportFileId, "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -57,5 +58,7 @@ class ExportFileWFClientTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
     Mockito.verify(wfMock).exportFile(exportFileId, exportFileType);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, ExportFileWFImpl.class);
   }
 }

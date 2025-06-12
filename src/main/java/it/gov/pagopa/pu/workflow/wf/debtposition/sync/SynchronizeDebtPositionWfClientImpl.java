@@ -7,18 +7,13 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_async_gpd.SynchronizeAsyncGpdWFImpl;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_nopagopa.SynchronizeNoPagoPAWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_nopagopa.SynchronizeNoPagoPAWFImpl;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync.SynchronizeSyncWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync.SynchronizeSyncWFImpl;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca.SynchronizeSyncAcaWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca.SynchronizeSyncAcaWFImpl;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca_gpdpreload.SynchronizeSyncAcaGpdPreLoadWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca_gpdpreload.SynchronizeSyncAcaGpdPreLoadWFImpl;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_gpdpreload.SynchronizeSyncGpdPreLoadWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_gpdpreload.SynchronizeSyncGpdPreLoadWFImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +39,6 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
       debtPositionDTO,
       paymentEventRequest,
       wfExecutionConfig,
-      SynchronizeNoPagoPAWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_NO_PAGOPA_WF,
       wf -> wf::synchronizeDPNoPagoPA,
       SynchronizeNoPagoPAWF.class);
   }
@@ -56,7 +50,6 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
       debtPositionDTO,
       paymentEventRequest,
       wfExecutionConfig,
-      SynchronizeSyncWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_WF,
       wf -> wf::synchronizeDPSync,
       SynchronizeSyncWF.class);
   }
@@ -68,7 +61,6 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
       debtPositionDTO,
       paymentEventRequest,
       wfExecutionConfig,
-      SynchronizeSyncAcaWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_WF,
       wf -> wf::synchronizeDPSyncAca,
       SynchronizeSyncAcaWF.class);
   }
@@ -80,7 +72,6 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
       debtPositionDTO,
       paymentEventRequest,
       wfExecutionConfig,
-      SynchronizeSyncGpdPreLoadWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_GPDPRELOAD_WF,
       wf -> wf::synchronizeDPSyncGpdPreLoad,
       SynchronizeSyncGpdPreLoadWF.class);
   }
@@ -92,7 +83,6 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
       debtPositionDTO,
       paymentEventRequest,
       wfExecutionConfig,
-      SynchronizeSyncAcaGpdPreLoadWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_SYNC_ACA_GPDPRELOAD_WF,
       wf -> wf::synchronizeDPSyncAcaGpdPreLoad,
       SynchronizeSyncAcaGpdPreLoadWF.class);
   }
@@ -104,7 +94,6 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
       debtPositionDTO,
       paymentEventRequest,
       wfExecutionConfig,
-      SynchronizeAsyncGpdWFImpl.TASK_QUEUE_SYNCHRONIZE_DP_ASYNC_GPD_WF,
       wf -> wf::synchronizeDPAsyncGpd,
       SynchronizeAsyncGpdWF.class);
   }
@@ -113,14 +102,13 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
     DebtPositionDTO debtPositionDTO,
     PaymentEventRequestDTO paymentEventRequest,
     GenericWfExecutionConfig wfExecutionConfig,
-    String taskQueue,
     Function<T, Functions.Proc3<DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig>> wfMethodCall,
     Class<T> wfInterfaceClass)
   {
     String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), wfInterfaceClass);
     T workflow = workflowService.buildWorkflowStub(
       wfInterfaceClass,
-      taskQueue,
+      TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC,
       workflowId);
     return workflowClientService.start(wfMethodCall.apply(workflow), debtPositionDTO, paymentEventRequest, wfExecutionConfig);
   }
