@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config;
 
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivity;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity.NotifyTreasuryToIufClassificationActivityImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.activity.NotifyTreasuryToIufClassificationActivity;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.activity.NotifyTreasuryToIufClassificationActivityImpl;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
