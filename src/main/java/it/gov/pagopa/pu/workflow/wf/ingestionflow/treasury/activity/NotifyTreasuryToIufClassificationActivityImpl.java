@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;

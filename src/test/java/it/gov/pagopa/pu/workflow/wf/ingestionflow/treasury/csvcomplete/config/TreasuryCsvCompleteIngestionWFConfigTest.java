@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.config;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.config;
 
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.activity.NotifyTreasuryToIufClassificationActivity;
@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-class TreasuryOpiIngestionWfConfigTest {
+class TreasuryCsvCompleteIngestionWFConfigTest {
 
-  private final TreasuryOpiIngestionWfConfig config = new TreasuryOpiIngestionWfConfig();
+  private final TreasuryCsvCompleteIngestionWFConfig config = new TreasuryCsvCompleteIngestionWFConfig();
 
   private final Map<Class<?>, Class<?>> localActivityInterface2Impl = Map.of(
     NotifyTreasuryToIufClassificationActivity.class, NotifyTreasuryToIufClassificationActivityImpl.class
