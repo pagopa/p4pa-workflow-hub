@@ -29,7 +29,7 @@ public class IudClassificationWFClient {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIud());
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IudClassificationWF.class, taskQueue, workflowId);
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_RECEIPT,
@@ -42,7 +42,7 @@ public class IudClassificationWFClient {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIud());
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IudClassificationWF.class, taskQueue, workflowId);
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENT_NOTIFICATION,

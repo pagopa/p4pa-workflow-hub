@@ -35,6 +35,7 @@ class IufClassificationWFClientTest {
   private WorkflowStub workflowStubMock;
 
   private IufClassificationWFClient client;
+  private final Class<IufClassificationWF> wfInterface = IufClassificationWF.class;
 
   @BeforeEach
   void setUp() {
@@ -48,7 +49,7 @@ class IufClassificationWFClientTest {
 
   @Test
   void testSignalMethodsExist() {
-    TemporalTestUtils.assertSignalMethodExists(IufClassificationWF.class,
+    TemporalTestUtils.assertSignalMethodExists(wfInterface,
       IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY, IufClassificationNotifyTreasurySignalDTO.class);
 
     TemporalTestUtils.assertSignalMethodExists(IufClassificationWF.class,
@@ -67,7 +68,7 @@ class IufClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IufClassificationWF-1-iuf123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
         same(workflowStubMock),
@@ -103,7 +104,7 @@ class IufClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IufClassificationWF-1-iuf123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
         same(workflowStubMock),

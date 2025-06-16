@@ -29,7 +29,7 @@ public class TransferClassificationWFClient {
 
     String workflowId = generateWorkflowId(signalDTO.getOrgId(), signalDTO.getIuv(), signalDTO.getIur(), signalDTO.getTransferIndex());
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(TransferClassificationWF.class, taskQueue, workflowId);
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       TransferClassificationWF.SIGNAL_METHOD_NAME_START_TRANSFER_CLASSIFICATION,
