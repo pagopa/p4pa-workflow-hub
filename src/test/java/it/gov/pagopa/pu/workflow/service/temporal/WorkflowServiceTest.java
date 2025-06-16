@@ -160,14 +160,15 @@ class WorkflowServiceTest {
     String taskQueue = "test-task-queue";
     String workflowId = "test-workflow-id";
     WorkflowStub expectedStub = Mockito.mock(WorkflowStub.class);
+    Class<?> workflowClass = Object.class;
 
     when(workflowClientMock.newUntypedWorkflowStub(
-      eq(taskQueue),
+      eq(workflowClass.getSimpleName()),
       argThat(options -> taskQueue.equals(options.getTaskQueue()) && workflowId.equals(options.getWorkflowId()))
     )).thenReturn(expectedStub);
 
     // When
-    WorkflowStub result = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
+    WorkflowStub result = workflowService.buildUntypedWorkflowStub(workflowClass, taskQueue, workflowId);
 
     // Then
     assertEquals(expectedStub, result);

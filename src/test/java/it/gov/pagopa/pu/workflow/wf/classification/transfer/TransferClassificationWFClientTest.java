@@ -37,6 +37,7 @@ class TransferClassificationWFClientTest {
   private WorkflowStub workflowStubMock;
 
   private TransferClassificationWFClient client;
+  private final Class<TransferClassificationWF> wfInterface = TransferClassificationWF.class;
 
   @BeforeEach
   void setUp() {
@@ -50,7 +51,7 @@ class TransferClassificationWFClientTest {
 
   @Test
   void testSignalMethodsExist() {
-    TemporalTestUtils.assertSignalMethodExists(TransferClassificationWF.class,
+    TemporalTestUtils.assertSignalMethodExists(wfInterface,
         TransferClassificationWF.SIGNAL_METHOD_NAME_START_TRANSFER_CLASSIFICATION, TransferClassificationStartSignalDTO.class);
   }
 
@@ -61,7 +62,7 @@ class TransferClassificationWFClientTest {
     TransferClassificationStartSignalDTO signalDTO = new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, INDEX);
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
         same(workflowStubMock),

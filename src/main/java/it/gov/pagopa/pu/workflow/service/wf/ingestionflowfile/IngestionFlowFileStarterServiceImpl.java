@@ -5,6 +5,7 @@ import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.DebtPositionTypeIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.OrganizationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
@@ -24,6 +25,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
   public IngestionFlowFileStarterServiceImpl(
     PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClient,
     TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient,
+    TreasuryCsvCompleteIngestionWFClient treasuryCsvCompleteIngestionWFClient,
     DebtPositionIngestionWFClient debtPositionIngestionWFClient,
     ReceiptIngestionWFClient receiptIngestionWFClient,
     ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient,
@@ -33,6 +35,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     ingestionFlowFileType2WfStarter = Map.of(
       IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest,
+      IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE, treasuryCsvCompleteIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClient::ingest,
       IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest,

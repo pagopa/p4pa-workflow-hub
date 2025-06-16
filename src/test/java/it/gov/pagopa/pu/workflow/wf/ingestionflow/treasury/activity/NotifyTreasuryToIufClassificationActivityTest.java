@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.activity;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.activity;
 
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;

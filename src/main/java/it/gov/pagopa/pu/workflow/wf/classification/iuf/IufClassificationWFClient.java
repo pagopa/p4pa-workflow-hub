@@ -29,7 +29,7 @@ public class IufClassificationWFClient {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIuf());
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWF.class, taskQueue, workflowId);
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_TREASURY,
@@ -42,7 +42,7 @@ public class IufClassificationWFClient {
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIuf());
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(taskQueue, workflowId);
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(IufClassificationWF.class, taskQueue, workflowId);
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       IufClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENTS_REPORTING,

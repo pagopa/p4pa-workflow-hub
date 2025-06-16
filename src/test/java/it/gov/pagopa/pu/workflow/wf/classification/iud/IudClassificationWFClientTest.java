@@ -40,6 +40,7 @@ class IudClassificationWFClientTest {
   private WorkflowStub workflowStubMock;
 
   private IudClassificationWFClient client;
+  private final Class<IudClassificationWF> workflowClass = IudClassificationWF.class;
 
   @BeforeEach
   void setUp() {
@@ -53,10 +54,10 @@ class IudClassificationWFClientTest {
 
   @Test
   void testSignalMethodsExist() {
-    TemporalTestUtils.assertSignalMethodExists(IudClassificationWF.class,
+    TemporalTestUtils.assertSignalMethodExists(workflowClass,
       IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_RECEIPT, IudClassificationNotifyReceiptSignalDTO.class);
 
-    TemporalTestUtils.assertSignalMethodExists(IudClassificationWF.class,
+    TemporalTestUtils.assertSignalMethodExists(workflowClass,
       IudClassificationWF.SIGNAL_METHOD_NAME_NOTIFY_PAYMENT_NOTIFICATION, IudClassificationNotifyPaymentNotificationSignalDTO.class);
   }
 
@@ -74,7 +75,7 @@ class IudClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(workflowClass, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
         same(workflowStubMock),
@@ -103,7 +104,7 @@ class IudClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(workflowClass, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
         same(workflowStubMock),
