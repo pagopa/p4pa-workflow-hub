@@ -46,7 +46,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
     if(PaymentEventTypeUtils.CREATE_OR_UPDATE_STATUSES.contains(paymentEventDTO.getEventType())
        && paymentEventDTO.getPayload() instanceof DebtPositionDTO debtPosition) {
         List<String> iudList = Utilities.extractIudsFromDescription(paymentEventDTO.getEventDescription()).stream().toList();
-        createAssessmentsRegistryWFClient.createAssessmentsRegistry(debtPosition, iudList);
+        createAssessmentsRegistryWFClient.createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPosition, iudList);
     }
 
     if (PaymentEventType.RT_RECEIVED.equals(paymentEventDTO.getEventType())) {

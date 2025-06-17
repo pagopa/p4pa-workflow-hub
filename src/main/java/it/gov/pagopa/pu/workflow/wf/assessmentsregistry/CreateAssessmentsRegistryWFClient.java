@@ -23,15 +23,14 @@ public class CreateAssessmentsRegistryWFClient {
     this.workflowClientService = workflowClientService;
   }
 
-  public void createAssessmentsRegistry(DebtPositionDTO debtPositionDTO, List<String> iudList) {
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_REGISTRY_RESERVED_CREATION;
-    String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(),
-      CreateAssessmentsRegistryWF.class); // cambiare id
+  public void createAssessmentsRegistry(String eventId, DebtPositionDTO debtPositionDTO, List<String> iudList) {
+      String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_REGISTRY_RESERVED_CREATION;
+      String workflowId = generateWorkflowId(eventId, CreateAssessmentsRegistryWF.class);
 
-    CreateAssessmentsRegistryWF workflow = workflowService.buildWorkflowStub(
-      CreateAssessmentsRegistryWF.class,
-      taskQueue,
-      workflowId);
-    workflowClientService.start(workflow::createAssessmentsRegistry,debtPositionDTO, iudList);
+      CreateAssessmentsRegistryWF workflow = workflowService.buildWorkflowStub(
+        CreateAssessmentsRegistryWF.class,
+        taskQueue,
+        workflowId);
+      workflowClientService.start(workflow::createAssessmentsRegistry,debtPositionDTO, iudList);
     }
   }
