@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
+import it.gov.pagopa.pu.workflow.wf.assessmentsregistry.CreateAssessmentsRegistryWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -28,17 +29,23 @@ class PaymentsConsumerTest {
   private IudClassificationWFClient wfClientMock;
   @Mock
   private CreateAssessmentsWFClient createAssessmentsWFClientMock;
+  @Mock
+  private CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClientMock;
 
   private PaymentsConsumer paymentsConsumer;
 
   @BeforeEach
   void init() {
-    this.paymentsConsumer = new PaymentsConsumer(wfClientMock, createAssessmentsWFClientMock);
+    this.paymentsConsumer = new PaymentsConsumer(wfClientMock,
+      createAssessmentsWFClientMock,
+      createAssessmentsRegistryWFClientMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(wfClientMock, createAssessmentsWFClientMock);
+    Mockito.verifyNoMoreInteractions(wfClientMock,
+      createAssessmentsWFClientMock,
+      createAssessmentsRegistryWFClientMock);
   }
 
   @Test

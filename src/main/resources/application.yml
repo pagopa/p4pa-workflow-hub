@@ -86,7 +86,10 @@ spring:
       - task-queue: AssessmentCreationWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_POLLER_SIZE:5}"
-
+      # assessments registry
+      - task-queue: AssessmentsRegistryCreationWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_REGISTRY_RESERVED_CREATION_POLLER_SIZE:5}"
   cloud:
     function:
       definition: paymentsConsumer;paymentsProducer
