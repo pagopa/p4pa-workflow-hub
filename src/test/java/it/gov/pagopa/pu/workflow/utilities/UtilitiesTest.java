@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -193,5 +194,34 @@ public class UtilitiesTest {
 
     // Then
     Assertions.assertEquals(expectedResult, result);
+  }
+
+  @Test
+  void whenExtractIudsThenVerifyPresents() {
+    String str1 = "IUD: id1, id2, id3; CODE: code1, code2;";
+    String str2 = "Hello world. IUD: id4, id5 ; CODE: c1;";
+    String str3 = "Hello. CODE: c2; IUD: id6, id7, id8  ;";
+    String str4 = "IUD: id1, id2, id3 ";
+
+    Set<String> expected1 = Set.of("id1", "id2", "id3");
+    Set<String> expected2 = Set.of("id4", "id5");
+    Set<String> expected3 = Set.of("id6", "id7", "id8");
+    Set<String> expected4 = Set.of("id1", "id2", "id3");
+
+    assertEquals(expected1, Utilities.extractIudsFromDescription(str1));
+    assertEquals(expected2, Utilities.extractIudsFromDescription(str2));
+    assertEquals(expected3, Utilities.extractIudsFromDescription(str3));
+    assertEquals(expected4, Utilities.extractIudsFromDescription(str4));
+  }
+
+  @Test
+  void whenExtractIudsThenVerifyAbsent() {
+    String str1 = "Hello there. IUD code1, code2";
+    String str2 = "Completely unrelated text.";
+    String str3 = "";
+
+    assertTrue(Utilities.extractIudsFromDescription(str1).isEmpty());
+    assertTrue(Utilities.extractIudsFromDescription(str2).isEmpty());
+    assertTrue(Utilities.extractIudsFromDescription(str3).isEmpty());
   }
 }

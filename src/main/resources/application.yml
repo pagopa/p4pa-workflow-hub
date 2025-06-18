@@ -86,7 +86,9 @@ spring:
       - task-queue: AssessmentCreationWF
         capacity:
           max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_POLLER_SIZE:5}"
-
+      - task-queue: AssessmentsWF
+        capacity:
+          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_POLLER_SIZE:5}"
   cloud:
     function:
       definition: paymentsConsumer;paymentsProducer
@@ -355,6 +357,13 @@ workflow:
 
   # create assessments
   create-assessments:
+    start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${CREATE_ASSESSMENTS_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${CREATE_ASSESSMENTS_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${CREATE_ASSESSMENTS_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # create assessments registry
+  create-assessments-registry:
     start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${CREATE_ASSESSMENTS_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${CREATE_ASSESSMENTS_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
