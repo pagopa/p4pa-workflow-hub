@@ -4,6 +4,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker;
@@ -125,6 +126,28 @@ class PaymentsConsumerTest {
 
     Mockito.verifyNoInteractions(wfClientMock);
   }
+
+  @Test
+  void givenCreateOrUpdateStatusesWhenAcceptThenInvokeClient() {
+    // Given
+    DebtPositionDTO debtPositionDTO = buildPaidDebtPosition();
+    String eventDescription = "IUD: id1, id2, id3;";
+    DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(debtPositionDTO)
+      .eventType(PaymentEventType.DP_UPDATED)
+      .eventDescription(eventDescription)
+      .build();
+
+    // When
+    paymentsConsumer.accept(paymentEventDTO);
+
+    // Then
+    Mockito.verify(createAssessmentsRegistryWFClientMock)
+      .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO,
+        Utilities.extractIudsFromDescription(eventDescription).stream().toList() );
+  }
+
 
   private DebtPositionDTO buildPaidDebtPosition() {
     DebtPositionDTO out = DebtPositionFaker.buildDebtPositionDTO();
