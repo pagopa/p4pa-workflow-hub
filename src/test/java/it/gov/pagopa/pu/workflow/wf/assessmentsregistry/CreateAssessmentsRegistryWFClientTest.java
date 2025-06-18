@@ -44,7 +44,7 @@ class CreateAssessmentsRegistryWFClientTest {
   @Test
   void whenCreateAssessmentsRegistryThenVerify() {
     String eventId = "123";
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_REGISTRY_RESERVED_CREATION;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("CreateAssessmentsRegistryWF-123", "RUNID");
     DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
     debtPositionDTO.setDebtPositionId(1L);

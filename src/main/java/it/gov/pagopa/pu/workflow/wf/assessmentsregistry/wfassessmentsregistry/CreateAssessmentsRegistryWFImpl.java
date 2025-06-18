@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_REGISTRY_RESERVED_CREATION)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS)
 public class CreateAssessmentsRegistryWFImpl implements CreateAssessmentsRegistryWF, ApplicationContextAware {
 
   private AssessmentsRegistryCreationActivity assessmentsRegistryCreationActivity;

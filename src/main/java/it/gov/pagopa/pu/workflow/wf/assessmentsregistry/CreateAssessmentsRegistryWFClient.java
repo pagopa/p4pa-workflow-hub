@@ -24,7 +24,7 @@ public class CreateAssessmentsRegistryWFClient {
   }
 
   public void createAssessmentsRegistry(String eventId, DebtPositionDTO debtPositionDTO, List<String> iudList) {
-      String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_REGISTRY_RESERVED_CREATION;
+      String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS;
       String workflowId = generateWorkflowId(eventId, CreateAssessmentsRegistryWF.class);
 
       CreateAssessmentsRegistryWF workflow = workflowService.buildWorkflowStub(
