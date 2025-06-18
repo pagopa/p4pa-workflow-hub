@@ -6,9 +6,6 @@ import java.util.Set;
 
 public class PaymentEventTypeUtils {
 
-  public PaymentEventTypeUtils() {
-  }
-
   public static final Set<PaymentEventType> CREATE_OR_UPDATE_STATUSES = EnumSet.of(
     PaymentEventType.DPI_ADDED,
     PaymentEventType.DP_CREATED,
