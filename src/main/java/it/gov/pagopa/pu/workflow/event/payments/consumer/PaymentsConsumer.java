@@ -11,7 +11,7 @@ import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.utilities.PaymentEventTypeUtils;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
-import it.gov.pagopa.pu.workflow.wf.assessmentsregistry.CreateAssessmentsRegistryWFClient;
+import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import java.util.List;

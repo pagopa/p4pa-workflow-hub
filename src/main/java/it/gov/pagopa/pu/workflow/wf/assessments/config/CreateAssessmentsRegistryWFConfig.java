@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.assessmentsregistry.config;
+package it.gov.pagopa.pu.workflow.wf.assessments.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsRegistryCreationActivity;

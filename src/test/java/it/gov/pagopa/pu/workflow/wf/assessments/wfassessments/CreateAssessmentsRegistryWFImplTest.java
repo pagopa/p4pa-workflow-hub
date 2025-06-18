@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.assessmentsregistry.wfassessmentsregistry;
+package it.gov.pagopa.pu.workflow.wf.assessments.wfassessments;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 
@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsRegistryCreationActivity;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.workflow.wf.assessmentsregistry.config.CreateAssessmentsRegistryWFConfig;
+import it.gov.pagopa.pu.workflow.wf.assessments.config.CreateAssessmentsRegistryWFConfig;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -9,7 +9,7 @@ import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
-import it.gov.pagopa.pu.workflow.wf.assessmentsregistry.CreateAssessmentsRegistryWFClient;
+import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import org.junit.jupiter.api.AfterEach;

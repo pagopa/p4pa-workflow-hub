@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.assessmentsregistry;
+package it.gov.pagopa.pu.workflow.wf.assessments;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.assessmentsregistry.wfassessmentsregistry.CreateAssessmentsRegistryWF;
+import it.gov.pagopa.pu.workflow.wf.assessments.wfassessments.CreateAssessmentsRegistryWF;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

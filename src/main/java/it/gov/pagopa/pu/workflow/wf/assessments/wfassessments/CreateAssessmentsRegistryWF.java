@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.assessmentsregistry.wfassessmentsregistry;
+package it.gov.pagopa.pu.workflow.wf.assessments.wfassessments;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
