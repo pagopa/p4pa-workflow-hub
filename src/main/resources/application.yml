@@ -308,7 +308,6 @@ workflow:
     retry-backoff-coefficient: "\${ORGANIZATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${ORGANIZATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-
   # classification
   iud-classification:
     start-to-close-timeout-in-seconds: "\${IUD_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
@@ -355,26 +354,18 @@ workflow:
     retry-backoff-coefficient: "\${SEND_NOTIFICATION_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${SEND_NOTIFICATION_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  # create assessments
+  # assessments
   create-assessments:
     start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${CREATE_ASSESSMENTS_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${CREATE_ASSESSMENTS_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${CREATE_ASSESSMENTS_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  # create assessments registry
   create-assessments-registry:
     start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${CREATE_ASSESSMENTS_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${CREATE_ASSESSMENTS_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${CREATE_ASSESSMENTS_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
-
-  # export file expiration handler
-  export-file-expiration-handler:
-    start-to-close-timeout-in-seconds: "\${EXPORT_FILE_EXPIRATION_HANDLER_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
-    retry-initial-interval-in-millis: "\${EXPORT_FILE_EXPIRATION_HANDLER_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${EXPORT_FILE_EXPIRATION_HANDLER_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${EXPORT_FILE_EXPIRATION_HANDLER_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   # export file
   export-file:
@@ -382,6 +373,12 @@ workflow:
     retry-initial-interval-in-millis: "\${EXPORT_FILE_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${EXPORT_FILE_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${EXPORT_FILE_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  export-file-expiration-handler:
+    start-to-close-timeout-in-seconds: "\${EXPORT_FILE_EXPIRATION_HANDLER_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${EXPORT_FILE_EXPIRATION_HANDLER_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${EXPORT_FILE_EXPIRATION_HANDLER_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${EXPORT_FILE_EXPIRATION_HANDLER_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
 schedule:
   payments-reporting-pagopa-brokers-fetch:

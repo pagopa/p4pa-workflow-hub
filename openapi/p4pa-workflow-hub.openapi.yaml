@@ -566,7 +566,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflow/pagopa-fetch/payments-reporting/{organizationId}:
-    get:
+    post:
       tags:
         - PagoPaFetch
       operationId: fetchOrganizationPaymentsReporting
@@ -599,7 +599,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflow/taxonomy/synchronize:
-    get:
+    post:
       tags:
         - Taxonomy
       operationId: synchronizeTaxonomy
