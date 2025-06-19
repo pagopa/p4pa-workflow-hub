@@ -30,7 +30,7 @@ public class PaymentsReportingIngestionWFImpl extends BaseIngestionFlowFileWFImp
 
   @Override
   protected void afterProcessing(Long ingestionFlowFileId, PaymentsReportingIngestionFlowFileActivityResult result) {
-    notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(
+    notifyPaymentsReportingToIufClassificationActivity.signalPaymentsReportingIufClassificationWithStart(
       result.getOrganizationId(),
       result.getIuf(),
       result.getTransfers());

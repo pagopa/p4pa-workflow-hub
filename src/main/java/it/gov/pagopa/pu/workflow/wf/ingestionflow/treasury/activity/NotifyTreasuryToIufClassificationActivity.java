@@ -7,6 +7,6 @@ import io.temporal.activity.ActivityMethod;
 public interface NotifyTreasuryToIufClassificationActivity {
 
   @ActivityMethod
-  void signalIufClassificationWithStart(Long organizationId, String iuf, String treasuryId);
+  void signalTreasuryIufClassificationWithStart(Long organizationId, String iuf, String treasuryId);
 
 }

@@ -29,7 +29,7 @@ public class TreasuryCsvCompleteIngestionWFImpl extends BaseIngestionFlowFileWFI
     @Override
     protected void afterProcessing(Long ingestionFlowFileId, TreasuryIufIngestionFlowFileResult result) {
         result.getIuf2TreasuryIdMap().forEach((iuf, treasuryId) ->
-                notifyTreasuryToIufClassificationActivity.signalIufClassificationWithStart(
+                notifyTreasuryToIufClassificationActivity.signalTreasuryIufClassificationWithStart(
                         result.getOrganizationId(),
                         iuf,
                         treasuryId

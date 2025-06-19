@@ -128,7 +128,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     Mockito.verify(publishPaymentEventActivityMock)
       .publishDebtPositionEvent(Mockito.same(debtPositionFinalized), Mockito.same(paymentEventRequest));
     Mockito.verify(cancelCheckDpExpirationScheduleActivityMock)
-        .cancelExpirationSchedule(Mockito.same(debtPositionFinalized.getDebtPositionId()));
+        .cancelDpExpirationSchedule(Mockito.same(debtPositionFinalized.getDebtPositionId()));
     Mockito.verify(scheduleCheckDpExpirationActivityMock)
       .scheduleNextCheckDpExpiration(Mockito.same(debtPositionFinalized.getDebtPositionId()), Mockito.eq(ancientDueDate.plusDays(1)));
 
@@ -176,7 +176,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     }
 
     Mockito.verify(cancelCheckDpExpirationScheduleActivityMock)
-      .cancelExpirationSchedule(Mockito.same(debtPosition.getDebtPositionId()));
+      .cancelDpExpirationSchedule(Mockito.same(debtPosition.getDebtPositionId()));
   }
 
   protected DebtPositionDTO buildDebtPositionToSync() {

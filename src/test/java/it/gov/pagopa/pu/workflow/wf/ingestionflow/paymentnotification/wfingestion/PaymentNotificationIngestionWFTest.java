@@ -59,6 +59,6 @@ class PaymentNotificationIngestionWFTest extends BaseIngestionFlowFileWFTest<Pay
   @Override
   protected void verifyExtraMocks(long ingestionFlowFileId, PaymentNotificationIngestionFlowFileResult expectedResult) {
     Mockito.verify(notifyPaymentNotificationToIudClassificationActivityMock)
-      .signalIudClassificationWithStart(expectedResult.getOrganizationId(), "iud1");
+      .signalPaymentNotificationIudClassificationWithStart(expectedResult.getOrganizationId(), "iud1");
   }
 }

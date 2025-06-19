@@ -18,7 +18,7 @@ public class NotifyPaymentNotificationToIudClassificationActivityImpl implements
   }
 
   @Override
-  public void signalIudClassificationWithStart(Long organizationId, String iud) {
+  public void signalPaymentNotificationIudClassificationWithStart(Long organizationId, String iud) {
     IudClassificationNotifyPaymentNotificationSignalDTO signalDTO =
       IudClassificationNotifyPaymentNotificationSignalDTO.builder()
         .organizationId(organizationId)

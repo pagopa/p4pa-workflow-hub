@@ -19,7 +19,7 @@ public class NotifyTreasuryToIufClassificationActivityImpl implements NotifyTrea
   }
 
   @Override
-  public void signalIufClassificationWithStart(Long organizationId, String iuf, String treasuryId) {
+  public void signalTreasuryIufClassificationWithStart(Long organizationId, String iuf, String treasuryId) {
 
     IufClassificationNotifyTreasurySignalDTO treasurySignalDTO =
       IufClassificationNotifyTreasurySignalDTO.builder()
