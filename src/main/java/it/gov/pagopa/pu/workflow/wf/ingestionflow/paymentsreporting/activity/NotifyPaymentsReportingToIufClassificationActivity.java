@@ -10,6 +10,6 @@ import java.util.List;
 public interface NotifyPaymentsReportingToIufClassificationActivity {
 
   @ActivityMethod
-  void signalIufClassificationWithStart(Long organizationId, String iuf, List<PaymentsReportingTransferDTO> transfers);
+  void signalPaymentsReportingIufClassificationWithStart(Long organizationId, String iuf, List<PaymentsReportingTransferDTO> transfers);
 
 }

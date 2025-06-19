@@ -66,6 +66,6 @@ class PaymentsReportingIngestionWFTest extends BaseIngestionFlowFileWFTest<Payme
   @Override
   protected void verifyExtraMocks(long ingestionFlowFileId, PaymentsReportingIngestionFlowFileActivityResult expectedResult) {
     Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock)
-      .signalIufClassificationWithStart(expectedResult.getOrganizationId(), expectedResult.getIuf(), expectedResult.getTransfers());
+      .signalPaymentsReportingIufClassificationWithStart(expectedResult.getOrganizationId(), expectedResult.getIuf(), expectedResult.getTransfers());
   }
 }

@@ -153,7 +153,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
   }
 
   protected void scheduleExpirationWF(DebtPositionDTO finalizedDebtPositionDTO, Long debtPositionId) {
-    cancelCheckDpExpirationScheduleActivity.cancelExpirationSchedule(debtPositionId);
+    cancelCheckDpExpirationScheduleActivity.cancelDpExpirationSchedule(debtPositionId);
     LocalDate nextDueDate = DebtPositionUtilities.calcDebtPositionNextDueDate(finalizedDebtPositionDTO);
     if (nextDueDate != null) {
       scheduleCheckDpExpirationActivity.scheduleNextCheckDpExpiration(debtPositionId, nextDueDate.plusDays(1));

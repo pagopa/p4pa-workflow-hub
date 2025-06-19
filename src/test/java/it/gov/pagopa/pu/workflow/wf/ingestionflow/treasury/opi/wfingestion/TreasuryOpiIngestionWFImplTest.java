@@ -59,7 +59,7 @@ class TreasuryOpiIngestionWFImplTest extends BaseIngestionFlowFileWFTest<Treasur
   protected void verifyExtraMocks(long ingestionFlowFileId, TreasuryIufIngestionFlowFileResult expectedResult) {
     expectedResult.getIuf2TreasuryIdMap().forEach((iuf, treasuryId) ->
       verify(notifyTreasuryToIufClassificationActivityMock)
-        .signalIufClassificationWithStart(expectedResult.getOrganizationId(), iuf, treasuryId)
+        .signalTreasuryIufClassificationWithStart(expectedResult.getOrganizationId(), iuf, treasuryId)
     );
   }
 }

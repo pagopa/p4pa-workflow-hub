@@ -27,7 +27,7 @@ class NotifyPaymentsReportingToIufClassificationActivityTest {
   }
 
   @Test
-  void testSignalIufClassificationWithStart() {
+  void testSignalPaymentsReportingIufClassificationWithStart() {
     // Given
     String iuf = "iuf-123";
     PaymentsReportingTransferDTO paymentsReportingTransferDTO = PaymentsReportingTransferDTO.builder()
@@ -43,7 +43,7 @@ class NotifyPaymentsReportingToIufClassificationActivityTest {
       .transfers(List.of(paymentsReportingTransferDTO))
       .build();
     // When
-    notifyPaymentsReportingToIufClassificationActivity.signalIufClassificationWithStart(1L, iuf, List.of(paymentsReportingTransferDTO));
+    notifyPaymentsReportingToIufClassificationActivity.signalPaymentsReportingIufClassificationWithStart(1L, iuf, List.of(paymentsReportingTransferDTO));
 
     // Then
     verify(iufClassificationWFClientMock).notifyPaymentsReporting(expectedSignalDTO);

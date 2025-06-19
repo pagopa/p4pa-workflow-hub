@@ -24,7 +24,7 @@ class NotifyTreasuryToIufClassificationActivityTest {
     }
 
     @Test
-    void testSignalIufClassificationWithStart() {
+    void testSignalTreasuryIufClassificationWithStart() {
         // Given
         Long organizationId = 1L;
         String iuf = "iuf-123";
@@ -37,7 +37,7 @@ class NotifyTreasuryToIufClassificationActivityTest {
                 .build();
 
         // When
-        notifyTreasuryToIufClassificationActivity.signalIufClassificationWithStart(organizationId, iuf, treasuryId);
+        notifyTreasuryToIufClassificationActivity.signalTreasuryIufClassificationWithStart(organizationId, iuf, treasuryId);
 
         // Then
         verify(iufClassificationWFClientMock).notifyTreasury(expectedSignalDTO);

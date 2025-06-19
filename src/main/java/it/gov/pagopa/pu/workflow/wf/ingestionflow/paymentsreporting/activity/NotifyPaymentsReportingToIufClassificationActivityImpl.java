@@ -22,7 +22,7 @@ public class NotifyPaymentsReportingToIufClassificationActivityImpl implements N
   }
 
   @Override
-  public void signalIufClassificationWithStart(Long organizationId, String iuf, List<PaymentsReportingTransferDTO> transfers) {
+  public void signalPaymentsReportingIufClassificationWithStart(Long organizationId, String iuf, List<PaymentsReportingTransferDTO> transfers) {
     IufClassificationNotifyPaymentsReportingSignalDTO paymentsReportingSignalDTO =
       IufClassificationNotifyPaymentsReportingSignalDTO.builder()
         .iuf(iuf)
