@@ -28,12 +28,12 @@ class CancelCheckDpExpirationScheduleActivityTest {
   }
 
   @Test
-  void whenCancelExpirationScheduleThenInvokeClient(){
+  void whenCancelDpExpirationScheduleThenInvokeClient(){
     // Given
     long debtPositionId = 1L;
 
     // When
-    activity.cancelExpirationSchedule(debtPositionId);
+    activity.cancelDpExpirationSchedule(debtPositionId);
 
     // Then
     Mockito.verify(clientMock)

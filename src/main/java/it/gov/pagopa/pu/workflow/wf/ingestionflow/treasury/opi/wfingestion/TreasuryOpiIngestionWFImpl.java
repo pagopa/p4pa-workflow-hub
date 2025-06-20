@@ -32,7 +32,7 @@ public class TreasuryOpiIngestionWFImpl extends BaseIngestionFlowFileWFImpl<Trea
   @Override
   protected void afterProcessing(Long ingestionFlowFileId, TreasuryIufIngestionFlowFileResult result) {
     result.getIuf2TreasuryIdMap().forEach((iuf, treasuryId) ->
-      notifyTreasuryToIufClassificationActivity.signalIufClassificationWithStart(
+      notifyTreasuryToIufClassificationActivity.signalTreasuryIufClassificationWithStart(
         result.getOrganizationId(),
         iuf,
         treasuryId

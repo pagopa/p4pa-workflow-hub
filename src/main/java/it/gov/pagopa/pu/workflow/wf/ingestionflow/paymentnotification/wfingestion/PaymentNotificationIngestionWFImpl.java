@@ -38,7 +38,7 @@ public class PaymentNotificationIngestionWFImpl extends BaseIngestionFlowFileWFI
   @Override
   protected void afterProcessing(Long ingestionFlowFileId, PaymentNotificationIngestionFlowFileResult ingestionResult) {
     ingestionResult.getIudList().forEach(
-      iud -> notifyPaymentNotificationToIudClassificationActivity.signalIudClassificationWithStart(
+      iud -> notifyPaymentNotificationToIudClassificationActivity.signalPaymentNotificationIudClassificationWithStart(
         ingestionResult.getOrganizationId(),
         iud));
   }

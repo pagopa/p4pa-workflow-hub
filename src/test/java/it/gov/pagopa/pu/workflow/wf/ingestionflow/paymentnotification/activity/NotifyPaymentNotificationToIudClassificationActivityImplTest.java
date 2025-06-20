@@ -24,7 +24,7 @@ class NotifyPaymentNotificationToIudClassificationActivityImplTest {
   }
 
   @Test
-  void testSignalIudClassificationWithStart() {
+  void testSignalPaymentNotificationIudClassificationWithStart() {
     // Given
     Long organizationId = 1L;
     String iud = "iud-123";
@@ -34,7 +34,7 @@ class NotifyPaymentNotificationToIudClassificationActivityImplTest {
       .build();
 
     // When
-    activity.signalIudClassificationWithStart(organizationId, iud);
+    activity.signalPaymentNotificationIudClassificationWithStart(organizationId, iud);
 
     // Then
     verify(iudClassificationWFClientMock).notifyPaymentNotification(expectedSignalDTO);

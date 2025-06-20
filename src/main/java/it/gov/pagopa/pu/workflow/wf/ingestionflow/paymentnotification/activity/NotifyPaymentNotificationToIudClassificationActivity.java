@@ -7,6 +7,6 @@ import io.temporal.activity.ActivityMethod;
 public interface NotifyPaymentNotificationToIudClassificationActivity {
 
   @ActivityMethod
-  void signalIudClassificationWithStart(Long organizationId, String iud);
+  void signalPaymentNotificationIudClassificationWithStart(Long organizationId, String iud);
 
 }

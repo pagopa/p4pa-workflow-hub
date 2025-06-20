@@ -8,9 +8,13 @@ import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
+import it.gov.pagopa.pu.workflow.utilities.PaymentEventTypeUtils;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
+import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +31,24 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
 
   private final IudClassificationWFClient iudClassificationWFClient;
   private final CreateAssessmentsWFClient createAssessmentsWFClient;
+  private final CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient;
 
-  public PaymentsConsumer(IudClassificationWFClient iudClassificationWFClient, CreateAssessmentsWFClient createAssessmentsWFClient) {
+  public PaymentsConsumer(IudClassificationWFClient iudClassificationWFClient, CreateAssessmentsWFClient createAssessmentsWFClient,
+    CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient) {
     this.iudClassificationWFClient = iudClassificationWFClient;
     this.createAssessmentsWFClient = createAssessmentsWFClient;
+    this.createAssessmentsRegistryWFClient = createAssessmentsRegistryWFClient;
   }
 
   @Override
   public void accept(PaymentEventDTO paymentEventDTO) {
+
+    if(PaymentEventTypeUtils.CREATE_OR_UPDATE_STATUSES.contains(paymentEventDTO.getEventType())
+       && paymentEventDTO.getPayload() instanceof DebtPositionDTO debtPosition) {
+        List<String> iudList = Utilities.extractIudsFromDescription(paymentEventDTO.getEventDescription()).stream().toList();
+        createAssessmentsRegistryWFClient.createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPosition, iudList);
+    }
+
     if (PaymentEventType.RT_RECEIVED.equals(paymentEventDTO.getEventType())) {
       if (paymentEventDTO.getPayload() instanceof DebtPositionDTO debtPosition) {
         log.info("Event RT_RECEIVED occurred on DebtPosition {}", debtPosition.getDebtPositionId());

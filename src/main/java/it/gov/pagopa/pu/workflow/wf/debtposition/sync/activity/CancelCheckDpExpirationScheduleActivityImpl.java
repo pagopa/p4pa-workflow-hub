@@ -18,7 +18,7 @@ public class CancelCheckDpExpirationScheduleActivityImpl implements CancelCheckD
   }
 
   @Override
-  public void cancelExpirationSchedule(Long debtPositionId) {
+  public void cancelDpExpirationSchedule(Long debtPositionId) {
     checkDebtPositionExpirationWfClient.cancelScheduling(debtPositionId);
   }
 }
