@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,7 +25,7 @@ class TaxonomyControllerTest {
   private TaxonomyWFClient taxonomyWFClientMock;
 
   @Test
-  void whenGetWorkflowStatusThenOk() throws Exception {
+  void whenSynchronizeTaxonomyThenOk() throws Exception {
     String workflowId = "workflow-1";
     String runId = "runId";
 
@@ -33,7 +33,7 @@ class TaxonomyControllerTest {
       .thenReturn(new WorkflowCreatedDTO(workflowId, runId));
 
     mockMvc.perform(
-        get("/workflowhub/workflow/taxonomy/synchronize")
+        post("/workflowhub/workflow/taxonomy/synchronize")
           .contentType(MediaType.APPLICATION_JSON_VALUE)
           .accept(MediaType.APPLICATION_JSON_VALUE))
       .andExpect(status().is2xxSuccessful())
