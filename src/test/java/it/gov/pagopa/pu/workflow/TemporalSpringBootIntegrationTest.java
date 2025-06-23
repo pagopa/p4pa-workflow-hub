@@ -24,7 +24,6 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFet
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,14 +31,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
-@ExtendWith({SpringExtension.class})
 @SpringBootTest(classes = {WorkflowApplication.class,
   // loading real implementation to test NotRetryable extension
   UpdateIngestionFlowStatusActivityImpl.class})
@@ -81,7 +78,6 @@ class TemporalSpringBootIntegrationTest {
   // disabling scheduling due to temporal test server not support
   @MockitoBean
   private PaymentsReportingPagoPaBrokersFetchScheduler paymentsReportingPagoPaBrokersFetchSchedulerMock;
-
   @MockitoBean
   private SynchronizeTaxonomyPagoPaFetchScheduler synchronizeTaxonomyPagoPaFetchSchedulerMock;
 
