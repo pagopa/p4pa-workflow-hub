@@ -521,17 +521,6 @@
           "\"TO_SYNC\""
         ]
       },
-      "EntityTypeEnum": {
-        "title": "EntityTypeEnum",
-        "type": "string",
-        "enum": [
-          "F",
-          "G"
-        ],
-        "examples": [
-          "\"F\""
-        ]
-      },
       "HeadersNotDocumented": {
         "title": "HeadersNotDocumented",
         "type": "object",
@@ -656,7 +645,7 @@
               "address": "string",
               "civic": "string",
               "email": "string",
-              "entityType": "\"F\"",
+              "entityType": "F",
               "fiscalCode": "string",
               "fullName": "string",
               "location": "string",
@@ -916,7 +905,7 @@
                   "address": "string",
                   "civic": "string",
                   "email": "string",
-                  "entityType": "\"F\"",
+                  "entityType": "F",
                   "fiscalCode": "string",
                   "fullName": "string",
                   "location": "string",
@@ -1032,7 +1021,7 @@
             "type": "string"
           },
           "entityType": {
-            "$ref": "#/components/schemas/EntityTypeEnum"
+            "$ref": "#/components/schemas/PersonEntityType"
           },
           "fiscalCode": {
             "type": "string"
@@ -1058,7 +1047,7 @@
             "address": "string",
             "civic": "string",
             "email": "string",
-            "entityType": "\"F\"",
+            "entityType": "F",
             "fiscalCode": "string",
             "fullName": "string",
             "location": "string",
@@ -1066,6 +1055,17 @@
             "postalCode": "string",
             "province": "string"
           }
+        ]
+      },
+      "PersonEntityType": {
+        "title": "PersonEntityType",
+        "type": "string",
+        "enum": [
+          "F",
+          "G"
+        ],
+        "examples": [
+          "\"F\""
         ]
       },
       "TransferDTO": {
