@@ -1,13 +1,13 @@
 package it.gov.pagopa.pu.workflow.utils.faker;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.EntityTypeEnum;
 import it.gov.pagopa.pu.debtposition.dto.generated.PersonDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.PersonEntityType;
 
 public class PersonFaker {
 
   public static PersonDTO buildPersonDTO() {
     return PersonDTO.builder()
-      .entityType(EntityTypeEnum.F)
+      .entityType(PersonEntityType.F)
       .fiscalCode("fiscalCode")
       .fullName("fullName")
       .address("address")
