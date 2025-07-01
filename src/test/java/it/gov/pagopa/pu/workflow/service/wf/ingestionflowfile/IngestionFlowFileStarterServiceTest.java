@@ -74,6 +74,7 @@ class IngestionFlowFileStarterServiceTest {
 
     flowFileType2ClientInvoker = Map.ofEntries(
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClientMock::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, paymentsReportingIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE, treasuryCsvCompleteIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest),
