@@ -60,7 +60,7 @@ val guavaVersion = "33.4.8-jre"
 val postgresJdbcVersion = "42.7.7"
 val podamVersion = "8.0.2.RELEASE"
 
-val p4paActivitiesVersion = "1.128.4"
+val p4paActivitiesVersion = "1.129.3"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -243,6 +243,7 @@ tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
       "generateSupportingFiles" to "true",
       "generateConstructorWithAllArgs" to "true",
       "generatedConstructorWithRequiredArgs" to "true",
+      "enumPropertyNaming" to "original",
       "additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
     )
   )
