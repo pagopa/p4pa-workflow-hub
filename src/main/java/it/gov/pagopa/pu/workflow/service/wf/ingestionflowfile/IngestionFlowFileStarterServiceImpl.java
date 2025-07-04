@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.wf.ingestionflowfile;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.assessments.AssessmentsIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.assessmentsregistry.AssessmentsRegistryIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.DebtPositionTypeIngestionWFClient;
@@ -35,6 +36,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     OrganizationIngestionWFClient organizationIngestionWFClient,
     DebtPositionTypeIngestionWFClient debtPositionTypeIngestionWFClient,
     DebtPositionTypeOrgIngestionWFClient debtPositionTypeOrgIngestionWFClient,
+    AssessmentsIngestionWFClient assessmentsIngestionWFClient,
     AssessmentsRegistryIngestionWFClient assessmentsRegistryIngestionWFClient
     ){
     ingestionFlowFileType2WfStarter = Map.ofEntries(
@@ -49,6 +51,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ORGANIZATIONS, organizationIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE, debtPositionTypeIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE_ORG, debtPositionTypeOrgIngestionWFClient::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS, assessmentsIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS_REGISTRY, assessmentsRegistryIngestionWFClient::ingest)
 
     );
