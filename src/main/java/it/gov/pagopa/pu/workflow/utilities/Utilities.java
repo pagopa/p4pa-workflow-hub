@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.mapstruct.Named;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -78,6 +79,10 @@ public class Utilities {
   }
 
   public static Set<String> extractIudsFromDescription(String description) {
+    if(!StringUtils.hasText(description)){
+      return Set.of();
+    }
+
     Set<String> iuds = new HashSet<>();
     Matcher matcher = IUD_MATCH_PATTERN.matcher(description);
 

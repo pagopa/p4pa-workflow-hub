@@ -219,9 +219,11 @@ public class UtilitiesTest {
     String str1 = "Hello there. IUD code1, code2";
     String str2 = "Completely unrelated text.";
     String str3 = "";
+    String str4 = null;
 
     assertTrue(Utilities.extractIudsFromDescription(str1).isEmpty());
     assertTrue(Utilities.extractIudsFromDescription(str2).isEmpty());
     assertTrue(Utilities.extractIudsFromDescription(str3).isEmpty());
+    assertTrue(Utilities.extractIudsFromDescription(str4).isEmpty());
   }
 }
