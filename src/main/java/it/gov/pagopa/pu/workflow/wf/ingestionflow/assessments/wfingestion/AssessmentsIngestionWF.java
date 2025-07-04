@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWF;
 
 /**
  * Workflow to ingest Assessments file
- * * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1847689218/Import+Accertamenti>Confluence page</a>
+ * * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1847689218/Import+Accertamenti+e+dettaglio>Confluence page</a>
  */
 @WorkflowInterface
 public interface AssessmentsIngestionWF extends BaseIngestionFlowFileWF {
