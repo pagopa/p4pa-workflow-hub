@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -18,7 +17,6 @@ public class DebtPositionSendNotificationDTO {
   private Long debtPositionId;
   private Long organizationId;
   private String iun;
-  private OffsetDateTime notificationDate;
   private NotificationStatus status;
   private List<String> noticeCodes;
 }

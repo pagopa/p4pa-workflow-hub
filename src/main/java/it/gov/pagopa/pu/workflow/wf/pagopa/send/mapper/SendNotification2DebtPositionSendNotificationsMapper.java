@@ -16,7 +16,6 @@ public class SendNotification2DebtPositionSendNotificationsMapper {
         .debtPositionId(p.getDebtPositionId())
         .iun(sendNotificationDTO.getIun())
         .status(sendNotificationDTO.getStatus())
-        .notificationDate(sendNotificationDTO.getNotificationDate())
         .noticeCodes(p.getNavList())
         .build()
       ).toList();

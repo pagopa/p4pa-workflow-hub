@@ -51,7 +51,7 @@ public class SendNotificationDateRetrieveWFImpl implements SendNotificationDateR
     }
 
     publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
-    log.info("Notification date retrieved correctly for sendNotificationId {}: {}", sendNotificationId, sendNotification.getNotificationDate());
+    log.info("Notification date retrieved correctly for sendNotificationId {}", sendNotificationId);
     return sendNotification;
   }
 
