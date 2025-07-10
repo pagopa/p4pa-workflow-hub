@@ -2023,7 +2023,8 @@
               "$ref" : "#/components/schemas/PaymentOptionDTO"
             }
           }
-        }
+        },
+        "required" : [ "debtPositionOrigin", "debtPositionTypeOrgId", "flagPuPagoPaPayment", "organizationId", "paymentOptions" ]
       },
       "DebtPositionOrigin" : {
         "type" : "string",
@@ -2137,7 +2138,8 @@
           "updateTraceId" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "amountCents", "debtor", "remittanceInformation" ]
       },
       "InstallmentStatus" : {
         "type" : "string",
@@ -2155,7 +2157,8 @@
           "syncError" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "syncStatusFrom", "syncStatusTo" ]
       },
       "PaymentOptionDTO" : {
         "type" : "object",
@@ -2205,7 +2208,8 @@
               "$ref" : "#/components/schemas/InstallmentDTO"
             }
           }
-        }
+        },
+        "required" : [ "installments", "paymentOptionType", "totalAmountCents" ]
       },
       "PaymentOptionStatus" : {
         "type" : "string",
@@ -2248,7 +2252,8 @@
           "email" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "entityType", "fiscalCode", "fullName" ]
       },
       "PersonEntityType" : {
         "type" : "string",
@@ -2328,7 +2333,8 @@
           "updateTraceId" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "amountCents", "category", "orgFiscalCode", "orgName", "remittanceInformation", "transferIndex" ]
       },
       "PaymentEventType" : {
         "type" : "string",
@@ -2511,28 +2517,6 @@
           }
         }
       },
-      "PagedModelWorkflowTypeOrg" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "workflowTypeOrgs" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
       "WorkflowType" : {
         "type" : "object",
         "properties" : {
@@ -2578,6 +2562,28 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/WorkflowType"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "PagedModelWorkflowTypeOrg" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypeOrgs" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
                 }
               }
             }

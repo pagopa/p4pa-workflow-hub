@@ -203,6 +203,13 @@
             "updateTraceId": "string",
             "validityDate": "2015-07-20"
           }
+        ],
+        "required": [
+          "debtPositionOrigin",
+          "debtPositionTypeOrgId",
+          "flagPuPagoPaPayment",
+          "organizationId",
+          "paymentOptions"
         ]
       },
       "DebtPositionEventDTO": {
@@ -703,6 +710,11 @@
             "updateOperatorExternalId": "string",
             "updateTraceId": "string"
           }
+        ],
+        "required": [
+          "amountCents",
+          "debtor",
+          "remittanceInformation"
         ]
       },
       "InstallmentStatus": {
@@ -743,6 +755,10 @@
             "syncStatusFrom": "\"TO_SYNC\"",
             "syncStatusTo": "\"TO_SYNC\""
           }
+        ],
+        "required": [
+          "syncStatusFrom",
+          "syncStatusTo"
         ]
       },
       "IoMessage": {
@@ -973,6 +989,11 @@
             "updateOperatorExternalId": "string",
             "updateTraceId": "string"
           }
+        ],
+        "required": [
+          "installments",
+          "paymentOptionType",
+          "totalAmountCents"
         ]
       },
       "PaymentOptionStatus": {
@@ -1055,6 +1076,11 @@
             "postalCode": "string",
             "province": "string"
           }
+        ],
+        "required": [
+          "entityType",
+          "fiscalCode",
+          "fullName"
         ]
       },
       "PersonEntityType": {
@@ -1150,6 +1176,14 @@
             "updateOperatorExternalId": "string",
             "updateTraceId": "string"
           }
+        ],
+        "required": [
+          "amountCents",
+          "category",
+          "orgFiscalCode",
+          "orgName",
+          "remittanceInformation",
+          "transferIndex"
         ]
       }
     },
