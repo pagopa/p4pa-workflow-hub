@@ -443,7 +443,6 @@
               "noticeCodes": [
                 "string"
               ],
-              "notificationDate": "2015-07-20T15:49:04-07:00",
               "organizationId": 0,
               "sendNotificationId": "string",
               "status": "WAITING_FILE"
@@ -482,10 +481,6 @@
               "type": "string"
             }
           },
-          "notificationDate": {
-            "type": "string",
-            "format": "date-time"
-          },
           "organizationId": {
             "type": "integer",
             "format": "int64"
@@ -504,7 +499,6 @@
             "noticeCodes": [
               "string"
             ],
-            "notificationDate": "2015-07-20T15:49:04-07:00",
             "organizationId": 0,
             "sendNotificationId": "string",
             "status": "WAITING_FILE"
