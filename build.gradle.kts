@@ -59,7 +59,7 @@ val guavaVersion = "33.4.8-jre"
 val postgresJdbcVersion = "42.7.7"
 val podamVersion = "8.0.2.RELEASE"
 
-val p4paActivitiesVersion = "1.133.4"
+val p4paActivitiesVersion = "1.134.1"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
