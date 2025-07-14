@@ -6,10 +6,8 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWF;
 
 /**
  * Workflow to ingest Organization file
- * * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1584595096/Specifica+di+integrazione+lato+EC+Intermediario#Tracciato---definizione-tracciato-ente-sil-service>Confluence page</a>
+ * * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1861026265/Import+Servizi+esposti+dai+SIL>Confluence page</a>
  */
-
-
 @WorkflowInterface
 public interface OrgSilServiceIngestionWF extends BaseIngestionFlowFileWF {
   @Override
