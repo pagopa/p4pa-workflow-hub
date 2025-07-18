@@ -168,6 +168,7 @@
                         "creationDate": "2015-07-20T15:49:04-07:00",
                         "iban": "string",
                         "installmentId": 0,
+                        "mbdAttachment": "string",
                         "orgFiscalCode": "string",
                         "orgName": "string",
                         "postalIban": "string",
@@ -203,6 +204,13 @@
             "updateTraceId": "string",
             "validityDate": "2015-07-20"
           }
+        ],
+        "required": [
+          "debtPositionOrigin",
+          "debtPositionTypeOrgId",
+          "flagPuPagoPaPayment",
+          "organizationId",
+          "paymentOptions"
         ]
       },
       "DebtPositionEventDTO": {
@@ -278,6 +286,7 @@
                           "creationDate": "2015-07-20T15:49:04-07:00",
                           "iban": "string",
                           "installmentId": 0,
+                          "mbdAttachment": "string",
                           "orgFiscalCode": "string",
                           "orgName": "string",
                           "postalIban": "string",
@@ -436,7 +445,6 @@
               "noticeCodes": [
                 "string"
               ],
-              "notificationDate": "2015-07-20T15:49:04-07:00",
               "organizationId": 0,
               "sendNotificationId": "string",
               "status": "WAITING_FILE"
@@ -475,10 +483,6 @@
               "type": "string"
             }
           },
-          "notificationDate": {
-            "type": "string",
-            "format": "date-time"
-          },
           "organizationId": {
             "type": "integer",
             "format": "int64"
@@ -497,7 +501,6 @@
             "noticeCodes": [
               "string"
             ],
-            "notificationDate": "2015-07-20T15:49:04-07:00",
             "organizationId": 0,
             "sendNotificationId": "string",
             "status": "WAITING_FILE"
@@ -685,6 +688,7 @@
                 "creationDate": "2015-07-20T15:49:04-07:00",
                 "iban": "string",
                 "installmentId": 0,
+                "mbdAttachment": "string",
                 "orgFiscalCode": "string",
                 "orgName": "string",
                 "postalIban": "string",
@@ -703,6 +707,11 @@
             "updateOperatorExternalId": "string",
             "updateTraceId": "string"
           }
+        ],
+        "required": [
+          "amountCents",
+          "debtor",
+          "remittanceInformation"
         ]
       },
       "InstallmentStatus": {
@@ -743,6 +752,10 @@
             "syncStatusFrom": "\"TO_SYNC\"",
             "syncStatusTo": "\"TO_SYNC\""
           }
+        ],
+        "required": [
+          "syncStatusFrom",
+          "syncStatusTo"
         ]
       },
       "IoMessage": {
@@ -945,6 +958,7 @@
                     "creationDate": "2015-07-20T15:49:04-07:00",
                     "iban": "string",
                     "installmentId": 0,
+                    "mbdAttachment": "string",
                     "orgFiscalCode": "string",
                     "orgName": "string",
                     "postalIban": "string",
@@ -973,6 +987,11 @@
             "updateOperatorExternalId": "string",
             "updateTraceId": "string"
           }
+        ],
+        "required": [
+          "installments",
+          "paymentOptionType",
+          "totalAmountCents"
         ]
       },
       "PaymentOptionStatus": {
@@ -1055,6 +1074,11 @@
             "postalCode": "string",
             "province": "string"
           }
+        ],
+        "required": [
+          "entityType",
+          "fiscalCode",
+          "fullName"
         ]
       },
       "PersonEntityType": {
@@ -1089,6 +1113,9 @@
           "installmentId": {
             "type": "integer",
             "format": "int64"
+          },
+          "mbdAttachment": {
+            "type": "string"
           },
           "orgFiscalCode": {
             "type": "string"
@@ -1137,6 +1164,7 @@
             "creationDate": "2015-07-20T15:49:04-07:00",
             "iban": "string",
             "installmentId": 0,
+            "mbdAttachment": "string",
             "orgFiscalCode": "string",
             "orgName": "string",
             "postalIban": "string",
@@ -1150,6 +1178,14 @@
             "updateOperatorExternalId": "string",
             "updateTraceId": "string"
           }
+        ],
+        "required": [
+          "amountCents",
+          "category",
+          "orgFiscalCode",
+          "orgName",
+          "remittanceInformation",
+          "transferIndex"
         ]
       }
     },

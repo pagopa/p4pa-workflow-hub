@@ -1,4 +1,3 @@
-import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import java.util.*
 
 plugins {
@@ -60,7 +59,7 @@ val guavaVersion = "33.4.8-jre"
 val postgresJdbcVersion = "42.7.7"
 val podamVersion = "8.0.2.RELEASE"
 
-val p4paActivitiesVersion = "1.131.1"
+val p4paActivitiesVersion = "1.136.0"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
@@ -171,7 +170,6 @@ tasks.register("dependenciesBuild") {
 
   dependsOn(
     "openApiGenerate",
-    "openApiGenerateORGANIZATION"
   )
 }
 
@@ -219,35 +217,6 @@ var targetEnv = when (Objects.requireNonNullElse(System.getProperty("targetBranc
   "uat" -> "uat"
   "main" -> "main"
   else -> "develop"
-}
-
-tasks.register<GenerateTask>("openApiGenerateORGANIZATION") {
-  group = "AutomaticallyGeneratedCode"
-  description = "openapi"
-
-  generatorName.set("java")
-  remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-organization/refs/heads/$targetEnv/openapi/generated.openapi.json")
-  outputDir.set("$projectDir/build/generated")
-  invokerPackage.set("it.gov.pagopa.pu.organization.generated")
-  apiPackage.set("it.gov.pagopa.pu.organization.client.generated")
-  modelPackage.set("it.gov.pagopa.pu.organization.dto.generated")
-  configOptions.set(
-    mapOf(
-      "swaggerAnnotations" to "false",
-      "openApiNullable" to "false",
-      "dateLibrary" to "java8",
-      "serializableModel" to "true",
-      "useSpringBoot3" to "true",
-      "useJakartaEe" to "true",
-      "serializationLibrary" to "jackson",
-      "generateSupportingFiles" to "true",
-      "generateConstructorWithAllArgs" to "true",
-      "generatedConstructorWithRequiredArgs" to "true",
-      "enumPropertyNaming" to "original",
-      "additionalModelTypeAnnotations" to "@lombok.experimental.SuperBuilder(toBuilder = true)"
-    )
-  )
-  library.set("resttemplate")
 }
 
 tasks.withType<Copy> {

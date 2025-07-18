@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.DebtPositionInges
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontype.DebtPositionTypeIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtpositiontypeorg.DebtPositionTypeOrgIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.organization.OrganizationIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.orgsilservice.OrgSilServiceIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.ReceiptIngestionWFClient;
@@ -34,6 +35,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient,
     PaymentNotificationIngestionWFClient paymentNotificationIngestionWFClient,
     OrganizationIngestionWFClient organizationIngestionWFClient,
+    OrgSilServiceIngestionWFClient orgSilServiceIngestionWFClient,
     DebtPositionTypeIngestionWFClient debtPositionTypeIngestionWFClient,
     DebtPositionTypeOrgIngestionWFClient debtPositionTypeOrgIngestionWFClient,
     AssessmentsIngestionWFClient assessmentsIngestionWFClient,
@@ -49,6 +51,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENT_NOTIFICATION, paymentNotificationIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ORGANIZATIONS, organizationIngestionWFClient::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ORGANIZATIONS_SIL_SERVICE, orgSilServiceIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE, debtPositionTypeIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE_ORG, debtPositionTypeOrgIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS, assessmentsIngestionWFClient::ingest),
