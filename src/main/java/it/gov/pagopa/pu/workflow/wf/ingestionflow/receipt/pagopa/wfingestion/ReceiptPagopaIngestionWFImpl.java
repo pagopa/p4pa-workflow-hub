@@ -5,6 +5,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPag
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaNotifySilActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPagopaSendEmailActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
@@ -33,12 +34,13 @@ public class ReceiptPagopaIngestionWFImpl extends BaseIngestionFlowFileWFImpl<Re
 
   @Override
   protected void afterProcessing(Long ingestionFlowFileId, ReceiptPagopaIngestionFlowFileResult result) {
+    InstallmentDTO installmentDTO = null;
     try {
-      receiptPagopaNotifySilActivity.notifyReceiptToSil(result.getReceiptDTO(), result.getInstallmentDTO());
+      installmentDTO = receiptPagopaNotifySilActivity.notifyReceiptToSil(result.getReceiptDTO());
     } catch (Exception e) {
       log.error("Error in notify SIL for receipt id[{}]", ingestionFlowFileId, e);
     }
-    receiptPagopaSendEmailActivity.sendReceiptHandledEmail(result.getReceiptDTO(), result.getInstallmentDTO());
+    receiptPagopaSendEmailActivity.sendReceiptHandledEmail(result.getReceiptDTO(), installmentDTO);
   }
 
   @Override
