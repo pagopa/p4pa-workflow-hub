@@ -1,16 +1,16 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
-import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
-import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.workflow.connector.organization.service.OrganizationService;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import it.gov.pagopa.pu.workflow.utilities.PaymentEventTypeUtils;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
@@ -70,7 +70,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
               .transferIndexes(i.getTransfers().stream()
                 .filter(t ->{
                   Organization organization = organizationService.getOrganizationByFiscalCode(t.getOrgFiscalCode())
-                    .orElseThrow(() -> new OrganizationNotFoundException("Organization not found with fiscalCode " + t.getOrgFiscalCode()));
+                    .orElseThrow(() -> new WorkflowNotFoundException("Organization not found with fiscalCode " + t.getOrgFiscalCode()));
                   return debtPosition.getOrganizationId().equals(organization.getOrganizationId());
                 })
                 .map(TransferDTO::getTransferIndex)

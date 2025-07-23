@@ -58,6 +58,7 @@ val protobufJavaVersion = "4.31.1"
 val guavaVersion = "33.4.8-jre"
 val postgresJdbcVersion = "42.7.7"
 val podamVersion = "8.0.2.RELEASE"
+val caffeineVersion = "3.2.1"
 
 val p4paActivitiesVersion = "1.139.0"
 
@@ -69,6 +70,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
     exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
   }
+  implementation("org.springframework.boot:spring-boot-starter-cache")
+  implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
   implementation("org.springframework.boot:spring-boot-starter-data-rest")
   implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
