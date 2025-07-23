@@ -435,3 +435,8 @@ jwt:
 
 data-cipher:
   encrypt-psw: "\${CIPHER_DP_SYNC_WF_CONFIG_ENCRYPT_PSW:dpSyncWfConfigEncryptPsw}"
+
+cache:
+  organization:
+    size: "\${CACHE_ORGANIZATION_SIZE:100}"
+    expire-in: "\${CACHE_ORGANIZATION_MINUTES:60}"
