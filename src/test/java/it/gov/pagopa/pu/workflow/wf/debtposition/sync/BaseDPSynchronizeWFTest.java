@@ -206,6 +206,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     InstallmentDTO firstFinalizedInstallment = debtPositionFinalized.getPaymentOptions().getFirst().getInstallments().getFirst();
     firstFinalizedInstallment.setStatus(installmentStatus);
     firstFinalizedInstallment.setDueDate(ancientDueDate);
+    firstFinalizedInstallment.setSwitchToExpired(Boolean.TRUE);
     return debtPositionFinalized;
   }
 
