@@ -1,10 +1,13 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
+import it.gov.pagopa.payhub.activities.exception.organization.OrganizationNotFoundException;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
@@ -32,12 +35,15 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
   private final IudClassificationWFClient iudClassificationWFClient;
   private final CreateAssessmentsWFClient createAssessmentsWFClient;
   private final CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient;
+  private final OrganizationService organizationService;
 
   public PaymentsConsumer(IudClassificationWFClient iudClassificationWFClient, CreateAssessmentsWFClient createAssessmentsWFClient,
-    CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient) {
+    CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient,
+    OrganizationService organizationService) {
     this.iudClassificationWFClient = iudClassificationWFClient;
     this.createAssessmentsWFClient = createAssessmentsWFClient;
     this.createAssessmentsRegistryWFClient = createAssessmentsRegistryWFClient;
+    this.organizationService = organizationService;
   }
 
   @Override
@@ -62,6 +68,11 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
               .iuv(i.getIuv())
               .iur(i.getIur())
               .transferIndexes(i.getTransfers().stream()
+                .filter(t ->{
+                  Organization organization = organizationService.getOrganizationByFiscalCode(t.getOrgFiscalCode())
+                    .orElseThrow(() -> new OrganizationNotFoundException("Organization not found with fiscalCode " + t.getOrgFiscalCode()));
+                  return debtPosition.getOrganizationId().equals(organization.getOrganizationId());
+                })
                 .map(TransferDTO::getTransferIndex)
                 .toList())
               .build()

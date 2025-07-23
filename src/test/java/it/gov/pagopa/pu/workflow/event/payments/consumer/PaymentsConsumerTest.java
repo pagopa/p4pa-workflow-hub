@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
+import it.gov.pagopa.payhub.activities.connector.organization.OrganizationService;
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
@@ -32,6 +33,8 @@ class PaymentsConsumerTest {
   private CreateAssessmentsWFClient createAssessmentsWFClientMock;
   @Mock
   private CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClientMock;
+  @Mock
+  private OrganizationService organizationServiceMock;
 
   private PaymentsConsumer paymentsConsumer;
 
@@ -39,14 +42,16 @@ class PaymentsConsumerTest {
   void init() {
     this.paymentsConsumer = new PaymentsConsumer(wfClientMock,
       createAssessmentsWFClientMock,
-      createAssessmentsRegistryWFClientMock);
+      createAssessmentsRegistryWFClientMock,
+      organizationServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(wfClientMock,
       createAssessmentsWFClientMock,
-      createAssessmentsRegistryWFClientMock);
+      createAssessmentsRegistryWFClientMock,
+      organizationServiceMock);
   }
 
   @Test
