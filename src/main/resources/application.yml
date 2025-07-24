@@ -43,7 +43,7 @@ spring:
           max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_POLLER_SIZE:10}"
       - task-queue: DebtPositionSyncWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE:5}"
+          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE:10}"
       # debt position custom WF sync
       - task-queue: DebtPositionCustomSyncWF
         capacity:
