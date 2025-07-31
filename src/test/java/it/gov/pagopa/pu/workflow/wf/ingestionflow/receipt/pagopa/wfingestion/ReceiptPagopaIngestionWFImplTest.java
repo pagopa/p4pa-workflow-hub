@@ -71,10 +71,10 @@ class ReceiptPagopaIngestionWFImplTest {
     ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
     InstallmentDTO installmentDTO = new InstallmentDTO();
 
-    ReceiptPagopaIngestionFlowFileResult result = new ReceiptPagopaIngestionFlowFileResult(receiptDTO, installmentDTO);
+    ReceiptPagopaIngestionFlowFileResult result = new ReceiptPagopaIngestionFlowFileResult(receiptDTO);
 
     Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId)).thenReturn(result);
-
+    Mockito.when(receiptPagopaNotifySilActivityMock.notifyReceiptToSil(receiptDTO)).thenReturn(installmentDTO);
     // When
     Assertions.assertDoesNotThrow(() -> wf.ingest(ingestionFlowFileId));
 
@@ -86,7 +86,7 @@ class ReceiptPagopaIngestionWFImplTest {
     Mockito.verify(receiptPagopaSendEmailActivityMock, Mockito.times(1))
       .sendReceiptHandledEmail(receiptDTO, installmentDTO);
     Mockito.verify(receiptPagopaNotifySilActivityMock, Mockito.times(1))
-      .notifyReceiptToSil(receiptDTO, installmentDTO);
+      .notifyReceiptToSil(receiptDTO);
   }
 
   @Test
@@ -117,14 +117,13 @@ class ReceiptPagopaIngestionWFImplTest {
     // Given
     long ingestionFlowFileId = 1L;
     ReceiptWithAdditionalNodeDataDTO receiptDTO = new ReceiptWithAdditionalNodeDataDTO();
-    InstallmentDTO installmentDTO = new InstallmentDTO();
 
-    ReceiptPagopaIngestionFlowFileResult result = new ReceiptPagopaIngestionFlowFileResult(receiptDTO, installmentDTO);
+    ReceiptPagopaIngestionFlowFileResult result = new ReceiptPagopaIngestionFlowFileResult(receiptDTO);
 
     Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId)).thenReturn(result);
 
     Mockito.doThrow(new NotRetryableActivityException("DUMMY")).when(receiptPagopaNotifySilActivityMock)
-      .notifyReceiptToSil(receiptDTO, installmentDTO);
+      .notifyReceiptToSil(receiptDTO);
 
     // When
     Assertions.assertDoesNotThrow(() -> wf.ingest(ingestionFlowFileId));
@@ -135,8 +134,8 @@ class ReceiptPagopaIngestionWFImplTest {
     Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
       .updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, result);
     Mockito.verify(receiptPagopaSendEmailActivityMock, Mockito.times(1))
-      .sendReceiptHandledEmail(receiptDTO, installmentDTO);
+      .sendReceiptHandledEmail(receiptDTO, null);
     Mockito.verify(receiptPagopaNotifySilActivityMock, Mockito.times(1))
-      .notifyReceiptToSil(receiptDTO, installmentDTO);
+      .notifyReceiptToSil(receiptDTO);
   }
 }

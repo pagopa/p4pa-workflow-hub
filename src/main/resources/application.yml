@@ -43,7 +43,7 @@ spring:
           max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_POLLER_SIZE:10}"
       - task-queue: DebtPositionSyncWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE:5}"
+          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE:10}"
       # debt position custom WF sync
       - task-queue: DebtPositionCustomSyncWF
         capacity:
@@ -435,3 +435,8 @@ jwt:
 
 data-cipher:
   encrypt-psw: "\${CIPHER_DP_SYNC_WF_CONFIG_ENCRYPT_PSW:dpSyncWfConfigEncryptPsw}"
+
+cache:
+  organization:
+    size: "\${CACHE_ORGANIZATION_SIZE:100}"
+    expire-in: "\${CACHE_ORGANIZATION_MINUTES:60}"

@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.workflow.connector.organization.service.OrganizationService;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
@@ -12,6 +14,7 @@ import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +35,8 @@ class PaymentsConsumerTest {
   private CreateAssessmentsWFClient createAssessmentsWFClientMock;
   @Mock
   private CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClientMock;
+  @Mock
+  private OrganizationService organizationServiceMock;
 
   private PaymentsConsumer paymentsConsumer;
 
@@ -39,25 +44,34 @@ class PaymentsConsumerTest {
   void init() {
     this.paymentsConsumer = new PaymentsConsumer(wfClientMock,
       createAssessmentsWFClientMock,
-      createAssessmentsRegistryWFClientMock);
+      createAssessmentsRegistryWFClientMock,
+      organizationServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(wfClientMock,
       createAssessmentsWFClientMock,
-      createAssessmentsRegistryWFClientMock);
+      createAssessmentsRegistryWFClientMock,
+      organizationServiceMock);
   }
 
   @Test
   void givenExpectedEventWhenAcceptThenInvokeClient() {
     // Given
+    Organization organization = new Organization();
+    organization.setOrgFiscalCode("FC_ORG1");
+    organization.setOrganizationId(1L);
+
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
       .eventId("EVENTID")
       .payload(buildPaidDebtPosition())
       .eventType(PaymentEventType.RT_RECEIVED)
       .eventDescription("receiptId:2")
       .build();
+
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
+      Optional.of(organization));
 
     // When
     paymentsConsumer.accept(paymentEventDTO);
@@ -75,6 +89,10 @@ class PaymentsConsumerTest {
 
   @Test
   void givenExpectedEventWithUncorrectReceiptIdWhenAcceptThenInvokeClient() {
+    Organization organization = new Organization();
+    organization.setOrgFiscalCode("FC_ORG1");
+    organization.setOrganizationId(1L);
+
     // Given
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
       .eventId("EVENTID")
@@ -82,6 +100,9 @@ class PaymentsConsumerTest {
       .eventType(PaymentEventType.RT_RECEIVED)
       .eventDescription("receiptId:undefined")
       .build();
+
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
+      Optional.of(organization));
 
     // When
     paymentsConsumer.accept(paymentEventDTO);
