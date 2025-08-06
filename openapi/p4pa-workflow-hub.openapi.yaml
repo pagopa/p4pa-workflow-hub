@@ -124,7 +124,7 @@ paths:
           content:
             application/json:
               schema:
-                type: 'WorkflowExecutionStatus'
+                $ref: '#/components/schemas/WorkflowStatusDTO'
         '408':
           description: "Request Timeout"
           content:

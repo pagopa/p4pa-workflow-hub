@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
-import it.gov.pagopa.pu.workflow.service.WorkflowCompletionService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -62,8 +62,9 @@ class WorkflowControllerTest {
   void whenWaitWorkflowCompletionThenOk() throws Exception {
     String workflowId = "workflow-1";
 
+    WorkflowStatusDTO expectedResult = WorkflowStatusDTO.builder().status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED).build();
     Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(workflowId, 2, 1))
-      .thenReturn(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+      .thenReturn(expectedResult);
 
     MvcResult result = mockMvc.perform(
         post("/workflowhub/workflows/workflow-1/wait-completion")
@@ -74,7 +75,7 @@ class WorkflowControllerTest {
       .andExpect(status().is2xxSuccessful())
       .andReturn();
 
-    WorkflowExecutionStatus resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowExecutionStatus.class);
-    assertEquals(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED, resultResponse);
+    WorkflowStatusDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowStatusDTO.class);
+    assertEquals(expectedResult, resultResponse);
   }
 }

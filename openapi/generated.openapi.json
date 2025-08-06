@@ -750,7 +750,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowExecutionStatus"
+                  "$ref" : "#/components/schemas/WorkflowStatusDTO"
                 }
               }
             }
@@ -1741,6 +1741,27 @@
           }
         }
       },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
       "DebtPositionSyncWfName" : {
         "type" : "string",
         "enum" : [ "fineWf" ]
@@ -1795,27 +1816,6 @@
         "properties" : {
           "workflowTypeName" : {
             "$ref" : "#/components/schemas/DebtPositionSyncWfName"
-          }
-        }
-      },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
           }
         }
       },
@@ -1922,6 +1922,42 @@
       "WorkflowExecutionStatus" : {
         "type" : "string",
         "enum" : [ "WORKFLOW_EXECUTION_STATUS_UNSPECIFIED", "WORKFLOW_EXECUTION_STATUS_RUNNING", "WORKFLOW_EXECUTION_STATUS_COMPLETED", "WORKFLOW_EXECUTION_STATUS_FAILED", "WORKFLOW_EXECUTION_STATUS_CANCELED", "WORKFLOW_EXECUTION_STATUS_TERMINATED", "WORKFLOW_EXECUTION_STATUS_CONTINUED_AS_NEW", "WORKFLOW_EXECUTION_STATUS_TIMED_OUT", "UNRECOGNIZED" ]
+      },
+      "WorkflowStatusDTO" : {
+        "type" : "object",
+        "properties" : {
+          "workflowId" : {
+            "type" : "string"
+          },
+          "workflowType" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/WorkflowExecutionStatus"
+          },
+          "runId" : {
+            "type" : "string"
+          },
+          "taskQueue" : {
+            "type" : "string"
+          },
+          "startDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "executionDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "endDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "duration" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "runId", "status", "taskQueue", "workflowId", "workflowType" ]
       },
       "CodeEnum" : {
         "type" : "string",
@@ -2346,42 +2382,6 @@
         "type" : "string",
         "enum" : [ "DP_CREATED", "DP_UPDATED", "DP_CANCELLED", "DPI_ADDED", "DPI_UPDATED", "DPI_CANCELLED", "DPI_EXPIRED", "DPI_REPORTED", "RT_RECEIVED", "SYNC_ERROR", "IO_NOTIFIED", "SEND_NOTIFICATION_CREATED", "SEND_NOTIFICATION_ERROR", "SEND_NOTIFICATION_DATE" ]
       },
-      "WorkflowStatusDTO" : {
-        "type" : "object",
-        "properties" : {
-          "workflowId" : {
-            "type" : "string"
-          },
-          "workflowType" : {
-            "type" : "string"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/WorkflowExecutionStatus"
-          },
-          "runId" : {
-            "type" : "string"
-          },
-          "taskQueue" : {
-            "type" : "string"
-          },
-          "startDateTime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "executionDateTime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "endDateTime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "duration" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "runId", "status", "taskQueue", "workflowId", "workflowType" ]
-      },
       "RecentScheduleExecutionInfoDTO" : {
         "type" : "object",
         "properties" : {
@@ -2466,6 +2466,63 @@
         },
         "required" : [ "createdAt", "lastUpdatedAt", "nextActionTimes", "numActions", "numActionsMissedCatchupWindow", "numActionsSkippedOverlap", "recentActions", "runningActions", "scheduleId" ]
       },
+      "DebtPositionWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
+            "type" : "string"
+          },
+          "debtPositionId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "workflowTypeOrgId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "executionConfig" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        },
+        "required" : [ "debtPositionId", "executionConfig" ]
+      },
+      "PagedModelDebtPositionWorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "debtPositionWorkflowTypes" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/DebtPositionWorkflowType"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
       "WorkflowType" : {
         "type" : "object",
         "properties" : {
@@ -2533,63 +2590,6 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/WorkflowTypeOrg"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "DebtPositionWorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateOperatorExternalId" : {
-            "type" : "string"
-          },
-          "updateTraceId" : {
-            "type" : "string"
-          },
-          "debtPositionId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "workflowTypeOrgId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "executionConfig" : {
-            "type" : "string",
-            "format" : "byte"
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        },
-        "required" : [ "debtPositionId", "executionConfig" ]
-      },
-      "PagedModelDebtPositionWorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "debtPositionWorkflowTypes" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/DebtPositionWorkflowType"
                 }
               }
             }
