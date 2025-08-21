@@ -19,7 +19,7 @@ public class TaskQueueConstants {
 //endregion
 
 //region ImportData domain
-  public static final String TASK_QUEUE_IMPORT_MEDIUM_PRIORITY = "IngestionFlowFileWF";
+  public static final String  TASK_QUEUE_IMPORT_MEDIUM_PRIORITY = "IngestionFlowFileWF";
   public static final String TASK_QUEUE_IMPORT_MEDIUM_PRIORITY_LOCAL = "IngestionFlowFileWF_LOCAL";
 //endregion
 
