@@ -14,6 +14,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNot
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.ReceiptIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.send.SendNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,8 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     DebtPositionTypeIngestionWFClient debtPositionTypeIngestionWFClient,
     DebtPositionTypeOrgIngestionWFClient debtPositionTypeOrgIngestionWFClient,
     AssessmentsIngestionWFClient assessmentsIngestionWFClient,
-    AssessmentsRegistryIngestionWFClient assessmentsRegistryIngestionWFClient
+    AssessmentsRegistryIngestionWFClient assessmentsRegistryIngestionWFClient,
+    SendNotificationIngestionWFClient sendNotificationIngestionWFClient
     ){
     ingestionFlowFileType2WfStarter = Map.ofEntries(
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClient::ingest),
@@ -55,8 +57,8 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE, debtPositionTypeIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE_ORG, debtPositionTypeOrgIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS, assessmentsIngestionWFClient::ingest),
-      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS_REGISTRY, assessmentsRegistryIngestionWFClient::ingest)
-
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS_REGISTRY, assessmentsRegistryIngestionWFClient::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.SEND_NOTIFICATION, sendNotificationIngestionWFClient::ingest)
     );
   }
 
