@@ -31,5 +31,4 @@ public class SendNotificationIngestionWFClient {
       workflowId);
     return workflowClientService.start(workflow::ingest, ingestionFlowFileId);
   }
-
 }

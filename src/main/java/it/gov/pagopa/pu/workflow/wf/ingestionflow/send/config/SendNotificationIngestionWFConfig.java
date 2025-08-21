@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "workflow.send-notification-ingestion")
 public class SendNotificationIngestionWFConfig extends BaseWfConfig {
 
-  public SendNotificationIngestionActivity buildAssessmentsIngestionActivityStub() {
+  public SendNotificationIngestionActivity buildSendNotificationIngestionActivityStub() {
     return Workflow.newActivityStub(SendNotificationIngestionActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 }

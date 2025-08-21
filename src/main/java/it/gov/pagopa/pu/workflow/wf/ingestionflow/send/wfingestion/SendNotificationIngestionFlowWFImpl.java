@@ -18,7 +18,7 @@ public class SendNotificationIngestionFlowWFImpl extends BaseIngestionFlowFileWF
   protected Function<Long, SendNotificationIngestionFlowFileResult> buildActivityStubs(
     ApplicationContext applicationContext) {
     SendNotificationIngestionWFConfig wfConfig = applicationContext.getBean(SendNotificationIngestionWFConfig.class);
-    return wfConfig.buildAssessmentsIngestionActivityStub()::processFile;
+    return wfConfig.buildSendNotificationIngestionActivityStub()::processFile;
   }
 
 }

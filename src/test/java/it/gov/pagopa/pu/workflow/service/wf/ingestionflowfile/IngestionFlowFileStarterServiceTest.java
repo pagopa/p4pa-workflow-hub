@@ -14,6 +14,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentnotification.PaymentNot
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.ReceiptIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.send.SendNotificationIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.junit.jupiter.api.AfterEach;
@@ -55,9 +56,11 @@ class IngestionFlowFileStarterServiceTest {
   @Mock
   private AssessmentsIngestionWFClient assessmentsIngestionWFClientWFClientMock;
   @Mock
-  private AssessmentsRegistryIngestionWFClient assessmentsRegistryIngestionWFClient;
+  private AssessmentsRegistryIngestionWFClient assessmentsRegistryIngestionWFClientMock;
   @Mock
   private DebtPositionTypeOrgIngestionWFClient debtPositionTypeOrgIngestionWFClientMock;
+  @Mock
+  private SendNotificationIngestionWFClient sendNotificationIngestionWFClientMock;
 
   private IngestionFlowFileStarterService service;
 
@@ -78,7 +81,8 @@ class IngestionFlowFileStarterServiceTest {
       debtPositionTypeIngestionWFClientMock,
       debtPositionTypeOrgIngestionWFClientMock,
       assessmentsIngestionWFClientWFClientMock,
-      assessmentsRegistryIngestionWFClient);
+      assessmentsRegistryIngestionWFClientMock,
+      sendNotificationIngestionWFClientMock);
 
     flowFileType2ClientInvoker = Map.ofEntries(
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClientMock::ingest),
@@ -93,8 +97,9 @@ class IngestionFlowFileStarterServiceTest {
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ORGANIZATIONS_SIL_SERVICE, orgSilServiceIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE, debtPositionTypeIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS, assessmentsIngestionWFClientWFClientMock::ingest),
-      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS_REGISTRY, assessmentsRegistryIngestionWFClient::ingest),
-      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE_ORG, debtPositionTypeOrgIngestionWFClientMock::ingest)
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.ASSESSMENTS_REGISTRY, assessmentsRegistryIngestionWFClientMock::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DEBT_POSITIONS_TYPE_ORG, debtPositionTypeOrgIngestionWFClientMock::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.SEND_NOTIFICATION, sendNotificationIngestionWFClientMock::ingest)
     );
   }
 
@@ -112,7 +117,8 @@ class IngestionFlowFileStarterServiceTest {
       orgSilServiceIngestionWFClientMock,
       debtPositionTypeOrgIngestionWFClientMock,
       assessmentsIngestionWFClientWFClientMock,
-      assessmentsRegistryIngestionWFClient
+      assessmentsRegistryIngestionWFClientMock,
+      sendNotificationIngestionWFClientMock
     );
   }
 
