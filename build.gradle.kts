@@ -2,7 +2,7 @@ import java.util.*
 
 plugins {
   java
-  id("org.springframework.boot") version "3.5.3"
+  id("org.springframework.boot") version "3.5.5"
   id("io.spring.dependency-management") version "1.1.7"
   jacoco
   id("org.sonarqube") version "6.2.0.5505"
@@ -60,7 +60,7 @@ val postgresJdbcVersion = "42.7.7"
 val podamVersion = "8.0.2.RELEASE"
 val caffeineVersion = "3.2.1"
 
-val p4paActivitiesVersion = "1.141.0"
+val p4paActivitiesVersion = "1.141.2"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
