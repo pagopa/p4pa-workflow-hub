@@ -60,7 +60,7 @@ val postgresJdbcVersion = "42.7.7"
 val podamVersion = "8.0.2.RELEASE"
 val caffeineVersion = "3.2.1"
 
-val p4paActivitiesVersion = "1.141.9"
+val p4paActivitiesVersion = "1.142.0"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
