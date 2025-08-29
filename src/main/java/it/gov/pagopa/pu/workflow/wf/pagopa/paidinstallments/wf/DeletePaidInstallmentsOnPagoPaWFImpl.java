@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY)
 public class DeletePaidInstallmentsOnPagoPaWFImpl implements DeletePaidInstallmentsOnPagoPaWF, ApplicationContextAware {
 
   private DeletePaidInstallmentsOnPagoPaActivity deletePaidInstallmentsOnPagoPaActivity;
@@ -31,6 +31,7 @@ public class DeletePaidInstallmentsOnPagoPaWFImpl implements DeletePaidInstallme
 
   @Override
   public void deletePaidInstallments(DebtPositionDTO debtPositionDTO, Long receiptId) {
+    log.info("running deletion for debtPositionId={} and receiptId={}", debtPositionDTO.getDebtPositionId(), receiptId);
     deletePaidInstallmentsOnPagoPaActivity.deletePaidInstallmentsOnPagoPa(debtPositionDTO, receiptId);
   }
 }
