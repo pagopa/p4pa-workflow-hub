@@ -1,10 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.TransferDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.workflow.connector.organization.service.OrganizationService;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -13,14 +9,15 @@ import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import it.gov.pagopa.pu.workflow.utilities.PaymentEventTypeUtils;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClient;
+import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
-import java.util.List;
+import it.gov.pagopa.pu.workflow.wf.pagopa.paidinstallments.DeletePaidInstallmentsOnPagoPaWFClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -36,14 +33,20 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
   private final CreateAssessmentsWFClient createAssessmentsWFClient;
   private final CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient;
   private final OrganizationService organizationService;
+  private final DeletePaidInstallmentsOnPagoPaWFClient deletePaidInstallmentsOnPagoPaWFClient;
 
-  public PaymentsConsumer(IudClassificationWFClient iudClassificationWFClient, CreateAssessmentsWFClient createAssessmentsWFClient,
+  public PaymentsConsumer(
+    IudClassificationWFClient iudClassificationWFClient,
+    CreateAssessmentsWFClient createAssessmentsWFClient,
     CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient,
-    OrganizationService organizationService) {
+    OrganizationService organizationService,
+    DeletePaidInstallmentsOnPagoPaWFClient deletePaidInstallmentsOnPagoPaWFClient
+  ) {
     this.iudClassificationWFClient = iudClassificationWFClient;
     this.createAssessmentsWFClient = createAssessmentsWFClient;
     this.createAssessmentsRegistryWFClient = createAssessmentsRegistryWFClient;
     this.organizationService = organizationService;
+    this.deletePaidInstallmentsOnPagoPaWFClient = deletePaidInstallmentsOnPagoPaWFClient;
   }
 
   @Override
@@ -79,6 +82,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
           ));
 
         handleCreateAssessments((DebtPositionEventDTO)paymentEventDTO, debtPosition);
+        handleDeletionOfPaidInstallmentsOnPagoPa((DebtPositionEventDTO) paymentEventDTO, debtPosition);
       } else {
         log.error("Unexpected payload related to RT_RECEIVED event: provided {} having payload type {}"
           , paymentEventDTO.getClass().getName(),
@@ -88,6 +92,21 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
   }
 
   private void handleCreateAssessments(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
+    Set<Long> receiptIds = extractReceiptIdsFromEventDescription(event, debtPosition);
+    if (!receiptIds.isEmpty()) {
+      receiptIds.forEach(createAssessmentsWFClient::createAssessments);
+    }
+  }
+
+  private void handleDeletionOfPaidInstallmentsOnPagoPa(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
+    Set<Long> receiptIds =  extractReceiptIdsFromEventDescription(event, debtPosition);
+
+    if (!receiptIds.isEmpty()) {
+      receiptIds.forEach(receiptId -> deletePaidInstallmentsOnPagoPaWFClient.deletePaidInstallments(debtPosition, receiptId));
+    }
+  }
+
+  private Set<Long> extractReceiptIdsFromEventDescription(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
     Set<Long> receiptIds;
     try {
       receiptIds = Set.of(Long.valueOf(event.getEventDescription().replace("receiptId:", "")));
@@ -99,11 +118,12 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
         .map(InstallmentDTO::getReceiptId)
         .collect(Collectors.toSet());
     }
+
     if (receiptIds.isEmpty()) {
       log.error("Cannot retrieve a receiptId related to the input event: " + event.getEventId());
-    } else {
-      receiptIds.forEach(createAssessmentsWFClient::createAssessments);
     }
+
+    return receiptIds;
   }
 
 }
