@@ -801,7 +801,8 @@
           "REGISTERED",
           "UPLOADED",
           "COMPLETE",
-          "ACCEPTED"
+          "ACCEPTED",
+          "ERROR"
         ],
         "examples": [
           "\"WAITING_FILE\""
