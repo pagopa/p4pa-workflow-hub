@@ -58,8 +58,7 @@ class PaymentsConsumerTest {
     Mockito.verifyNoMoreInteractions(wfClientMock,
       createAssessmentsWFClientMock,
       createAssessmentsRegistryWFClientMock,
-      organizationServiceMock,
-      deletePaidInstallmentsOnPagoPaWFClientMock);
+      organizationServiceMock);
   }
 
   @Test
