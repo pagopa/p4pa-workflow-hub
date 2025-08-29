@@ -139,5 +139,39 @@ class SendNotificationProcessWFImplTest {
     );
   }
 
+  @Test
+  void givenStatusErrorWhenSendNotificationProcessThenThrowException() {
+    String sendNotificationId = "testId";
+    SendNotificationDTO expectedResponse = SendNotificationDTOFaker.buildSendNotificationDTO();
+    expectedResponse.status(NotificationStatus.ERROR);
+
+    Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
+      .thenReturn(expectedResponse);
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      Exception exception = assertThrows(
+        WorkflowInternalErrorException.class,
+        () -> wf.sendNotificationProcess(sendNotificationId)
+      );
+
+      assertEquals(
+        "Workflow terminated during getSendNotificationStatus for sendNotificationId " + sendNotificationId + " with ERROR: " + expectedResponse.getErrors(),
+        exception.getMessage()
+      );
+    }
+
+    Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+    Mockito.verify(notificationStatusActivityMock).getSendNotificationStatus(sendNotificationId);
+    SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
+      Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
+    );
+    Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock).scheduleSendNotificationDateRetrieveWF(sendNotificationId, Duration.ofMinutes(30));
+  }
+
 }
 
