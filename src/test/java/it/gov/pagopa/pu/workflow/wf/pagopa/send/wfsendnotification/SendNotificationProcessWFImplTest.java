@@ -68,7 +68,7 @@ class SendNotificationProcessWFImplTest {
   }
 
   @AfterEach
-  void verifyNoMoreInteractions(){
+  void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
       preloadSendFileActivityMock,
       uploadSendFileActivityMock,
@@ -186,5 +186,77 @@ class SendNotificationProcessWFImplTest {
         .scheduleSendNotificationDateRetrieveWF(Mockito.anyString(), Mockito.any());
     }
   }
+
+  @Test
+  void givenStatusNotAcceptedAndNotificationNullWhenSendNotificationProcessThenLogAndThrow() {
+    String sendNotificationId = "testId";
+
+    SendNotificationDTO statusResponse = new SendNotificationDTO();
+    statusResponse.setStatus(NotificationStatus.COMPLETE);
+
+    Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
+      .thenReturn(statusResponse);
+    Mockito.when(getSendNotificationActivityMock.getSendNotification(sendNotificationId))
+      .thenReturn(null);
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      WorkflowInternalErrorException exception = assertThrows(
+        WorkflowInternalErrorException.class,
+        () -> wf.sendNotificationProcess(sendNotificationId)
+      );
+
+      assertEquals(
+        "Exceeded max retry attempts to wait for ACCEPTED status (attempts:10) on sendNotificationId testId. Last status was: COMPLETE",
+        exception.getMessage()
+      );
+    }
+
+    Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+    Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).getSendNotificationStatus(sendNotificationId);
+    Mockito.verify(getSendNotificationActivityMock).getSendNotification(sendNotificationId);
+    Mockito.verifyNoInteractions(publishSendNotificationPaymentEventActivityMock);
+    Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock, Mockito.never())
+      .scheduleSendNotificationDateRetrieveWF(Mockito.anyString(), Mockito.any());
+  }
+
+  @Test
+  void givenNullNotificationStatusWhenSendNotificationProcessThenThrowWithNullStatusMessage() {
+    String sendNotificationId = "testId";
+
+    Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
+      .thenReturn(null);
+    Mockito.when(getSendNotificationActivityMock.getSendNotification(sendNotificationId))
+      .thenReturn(null);
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      WorkflowInternalErrorException exception = assertThrows(
+        WorkflowInternalErrorException.class,
+        () -> wf.sendNotificationProcess(sendNotificationId)
+      );
+
+      assertEquals(
+        "Exceeded max retry attempts to wait for ACCEPTED status (attempts:10) on sendNotificationId testId. Last status was: null",
+        exception.getMessage()
+      );
+    }
+
+    Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+    Mockito.verify(notificationStatusActivityMock, Mockito.times(10)).getSendNotificationStatus(sendNotificationId);
+    Mockito.verify(getSendNotificationActivityMock).getSendNotification(sendNotificationId);
+    Mockito.verifyNoInteractions(publishSendNotificationPaymentEventActivityMock);
+    Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock, Mockito.never())
+      .scheduleSendNotificationDateRetrieveWF(Mockito.anyString(), Mockito.any());
+  }
+
 }
 
