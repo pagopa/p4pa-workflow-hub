@@ -102,9 +102,16 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
       notification = notificationStatusActivity.getSendNotificationStatus(sendNotificationId);
 
-      if (notification != null && NotificationStatus.ACCEPTED.equals(notification.getStatus())) {
-        log.info("Notification status is ACCEPTED for sendNotificationId {}", sendNotificationId);
-        return notification;
+      if (notification != null) {
+        if (NotificationStatus.ERROR.equals(notification.getStatus())) {
+          log.error("Notification status is ERROR for sendNotificationId {}", sendNotificationId);
+          throw new WorkflowInternalErrorException("Workflow terminated during getSendNotificationStatus for sendNotificationId " + sendNotificationId + " with ERROR: " + notification.getErrors());
+        }
+
+        if (NotificationStatus.ACCEPTED.equals(notification.getStatus())) {
+          log.info("Notification status is ACCEPTED for sendNotificationId {}", sendNotificationId);
+          return notification;
+        }
       }
 
       retryInterval = retryInterval.multipliedBy(2);
