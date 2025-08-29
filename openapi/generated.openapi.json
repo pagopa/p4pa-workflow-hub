@@ -750,7 +750,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/WorkflowExecutionStatus"
+                  "$ref" : "#/components/schemas/WorkflowStatusDTO"
                 }
               }
             }
@@ -1923,6 +1923,42 @@
         "type" : "string",
         "enum" : [ "WORKFLOW_EXECUTION_STATUS_UNSPECIFIED", "WORKFLOW_EXECUTION_STATUS_RUNNING", "WORKFLOW_EXECUTION_STATUS_COMPLETED", "WORKFLOW_EXECUTION_STATUS_FAILED", "WORKFLOW_EXECUTION_STATUS_CANCELED", "WORKFLOW_EXECUTION_STATUS_TERMINATED", "WORKFLOW_EXECUTION_STATUS_CONTINUED_AS_NEW", "WORKFLOW_EXECUTION_STATUS_TIMED_OUT", "UNRECOGNIZED" ]
       },
+      "WorkflowStatusDTO" : {
+        "type" : "object",
+        "properties" : {
+          "workflowId" : {
+            "type" : "string"
+          },
+          "workflowType" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/WorkflowExecutionStatus"
+          },
+          "runId" : {
+            "type" : "string"
+          },
+          "taskQueue" : {
+            "type" : "string"
+          },
+          "startDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "executionDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "endDateTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "duration" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "runId", "status", "taskQueue", "workflowId", "workflowType" ]
+      },
       "CodeEnum" : {
         "type" : "string",
         "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_CONFLICT", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR", "WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG", "WORKFLOW_REQUEST_TIMEOUT" ]
@@ -1953,7 +1989,7 @@
       },
       "IngestionFlowFileTypeEnum" : {
         "type" : "string",
-        "enum" : [ "RECEIPT", "RECEIPT_PAGOPA", "PAYMENTS_REPORTING", "PAYMENTS_REPORTING_PAGOPA", "TREASURY_OPI", "TREASURY_CSV", "TREASURY_XLS", "TREASURY_POSTE", "TREASURY_CSV_COMPLETE", "DP_INSTALLMENTS", "PAYMENT_NOTIFICATION", "ORGANIZATIONS", "ORGANIZATIONS_SIL_SERVICE", "DEBT_POSITIONS_TYPE", "DEBT_POSITIONS_TYPE_ORG", "DEBT_POSITIONS_TYPE_ORG_OPERATORS", "ASSESSMENTS", "ASSESSMENTS_REGISTRY" ]
+        "enum" : [ "RECEIPT", "RECEIPT_PAGOPA", "PAYMENTS_REPORTING", "PAYMENTS_REPORTING_PAGOPA", "TREASURY_OPI", "TREASURY_CSV", "TREASURY_XLS", "TREASURY_POSTE", "TREASURY_CSV_COMPLETE", "DP_INSTALLMENTS", "PAYMENT_NOTIFICATION", "ORGANIZATIONS", "ORGANIZATIONS_SIL_SERVICE", "DEBT_POSITIONS_TYPE", "DEBT_POSITIONS_TYPE_ORG", "DEBT_POSITIONS_TYPE_ORG_OPERATORS", "ASSESSMENTS", "ASSESSMENTS_REGISTRY", "SEND_NOTIFICATION" ]
       },
       "ExportFileTypeEnum" : {
         "type" : "string",
@@ -2053,6 +2089,9 @@
           },
           "iupdPagopa" : {
             "type" : "string"
+          },
+          "generateNotice" : {
+            "type" : "boolean"
           },
           "iud" : {
             "type" : "string"
@@ -2345,42 +2384,6 @@
       "PaymentEventType" : {
         "type" : "string",
         "enum" : [ "DP_CREATED", "DP_UPDATED", "DP_CANCELLED", "DPI_ADDED", "DPI_UPDATED", "DPI_CANCELLED", "DPI_EXPIRED", "DPI_REPORTED", "RT_RECEIVED", "SYNC_ERROR", "IO_NOTIFIED", "SEND_NOTIFICATION_CREATED", "SEND_NOTIFICATION_ERROR", "SEND_NOTIFICATION_DATE" ]
-      },
-      "WorkflowStatusDTO" : {
-        "type" : "object",
-        "properties" : {
-          "workflowId" : {
-            "type" : "string"
-          },
-          "workflowType" : {
-            "type" : "string"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/WorkflowExecutionStatus"
-          },
-          "runId" : {
-            "type" : "string"
-          },
-          "taskQueue" : {
-            "type" : "string"
-          },
-          "startDateTime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "executionDateTime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "endDateTime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "duration" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "runId", "status", "taskQueue", "workflowId", "workflowType" ]
       },
       "RecentScheduleExecutionInfoDTO" : {
         "type" : "object",

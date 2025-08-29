@@ -1,8 +1,8 @@
-package it.gov.pagopa.pu.workflow.service;
+package it.gov.pagopa.pu.workflow.service.temporal;
 
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.TooManyAttemptsException;
-import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -40,19 +40,19 @@ public class WorkflowCompletionService {
      * @param workflowId   The ID of the workflow to monitor.
      * @param maxAttempts  The maximum number of retry attempts.
      * @param retryDelayMs The delay in milliseconds between retries.
-     * @return The final {@link WorkflowExecutionStatus}.
+     * @return The final {@link WorkflowStatusDTO}.
      * @throws TooManyAttemptsException If the retry limit is exceeded.
      */
-    public WorkflowExecutionStatus waitTerminationStatus(String workflowId, int maxAttempts, int retryDelayMs) {
+    public WorkflowStatusDTO waitTerminationStatus(String workflowId, int maxAttempts, int retryDelayMs) {
 
         maxAttempts = Math.max(maxAttempts, 1);
         int attempts = 0;
 
         do {
-          WorkflowExecutionStatus workflowStatus = workflowService.getWorkflowStatus(workflowId).getStatus();
+          WorkflowStatusDTO workflowStatus = workflowService.getWorkflowStatus(workflowId);
           log.debug("Retrieved workflow status: {}", workflowStatus);
 
-            if (workflowStatus != null && wfTerminationStatuses.contains(workflowStatus)) {
+            if (workflowStatus.getStatus() != null && wfTerminationStatuses.contains(workflowStatus.getStatus())) {
                 return workflowStatus;
             }
 

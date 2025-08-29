@@ -384,6 +384,12 @@ workflow:
     retry-backoff-coefficient: "\${SEND_NOTIFICATION_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${SEND_NOTIFICATION_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
+  send-notification-ingestion:
+    start-to-close-timeout-in-seconds: "\${SEND_NOTIFICATION_INGESTION_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
   # assessments
   create-assessments:
     start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"

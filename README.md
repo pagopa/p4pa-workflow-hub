@@ -158,28 +158,28 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | KAFKA_PAYMENTS_PRODUCER_BATCH_SIZE               | Producer batch size                                                | 16384                    |
 
 ###### 📥 KAFKA CONSUMERS
-| ENV                                                | DESCRIPTION                                                                                    | DEFAULT                                            |
-|----------------------------------------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| KAFKA_CONSUMER_CONFIG_AUTO_COMMIT                  | True if the acknowledgement of the message is implicit if there are not errors                 | true                                               |
-| KAFKA_CONSUMER_CONFIG_CONNECTIONS_MAX_IDLE_MS      | Maximum lifetime for idle connections (milliseconds)                                           | 180000                                             |
-| KAFKA_CONFIG_MAX_POLL_INTERVAL_TIMEOUT_MS          | Maximum interval between polls declared toward the broker (milliseconds)                       | 300000                                             |
-| KAFKA_CONSUMER_CONFIG_MAX_POLL_SIZE                | Maximum number of messages fetch for each poll                                                 | 500                                                |
-| KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MS        | Initial timeout configured for the connection process (milliseconds)                           | 100000                                             |
-| KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MAX_MS    | Maximum timeout configured when connection attempts repeatedly fail (milliseconds)             | 200000                                             |
-| KAFKA_CONSUMER_CONFIG_STANDARD_HEADERS             | If ask for contextual metadata headers when reading messages                                   | both                                               |
-| KAFKA_CONSUMER_CONFIG_START_OFFSET                 | Where the consumer should begins consuming messages from a topic's partition (earliest/latest) | earliest                                           |
-| KAFKA_TOPIC_PAYMENTS                               | Topic where to publish payment event                                                           | p4pa-payhub-payments-evh                           |
-| KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG           | JAAS Config string used to perform authentication                                              |                                                    |
-| KAFKA_PAYMENTS_REGISTRIES_GROUP_ID                 | Consumer group id                                                                              | p4pa-registries-consumer-group                     |
-| KAFKA_PAYMENTS_CONSUMER_ENABLED                    | If the consumer should read messages                                                           | false                                              |
-| KAFKA_PAYMENTS_AUTO_COMMIT                         | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_AUTO_COMMIT}               |
-| KAFKA_PAYMENTS_REQUEST_CONNECTIONS_MAX_IDLE_MS     | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_CONNECTIONS_MAX_IDLE_MS}   |
-| KAFKA_PAYMENTS_INTERVAL_TIMEOUT_MS                 | See default config description                                                                 | ${KAFKA_CONFIG_MAX_POLL_INTERVAL_TIMEOUT_MS}       |
-| KAFKA_PAYMENTS_MAX_POLL_SIZE                       | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_MAX_POLL_SIZE}             |
-| KAFKA_PAYMENTS_REQUEST_CONNECTION_TIMEOUT_MAX_MS   | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MAX_MS} |
-| KAFKA_PAYMENTS_REQUEST_CONNECTION_TIMEOUT_MS       | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MS}     |
-| KAFKA_PAYMENTS_STANDARD_HEADERS                    | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_STANDARD_HEADERS}          |
-| KAFKA_PAYMENTS_REQUEST_START_OFFSET                | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_START_OFFSET}              |
+| ENV                                              | DESCRIPTION                                                                                    | DEFAULT                                            |
+|--------------------------------------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------|
+| KAFKA_CONSUMER_CONFIG_AUTO_COMMIT                | True if the acknowledgement of the message is implicit if there are not errors                 | true                                               |
+| KAFKA_CONSUMER_CONFIG_CONNECTIONS_MAX_IDLE_MS    | Maximum lifetime for idle connections (milliseconds)                                           | 180000                                             |
+| KAFKA_CONFIG_MAX_POLL_INTERVAL_TIMEOUT_MS        | Maximum interval between polls declared toward the broker (milliseconds)                       | 300000                                             |
+| KAFKA_CONSUMER_CONFIG_MAX_POLL_SIZE              | Maximum number of messages fetch for each poll                                                 | 500                                                |
+| KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MS      | Initial timeout configured for the connection process (milliseconds)                           | 100000                                             |
+| KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MAX_MS  | Maximum timeout configured when connection attempts repeatedly fail (milliseconds)             | 200000                                             |
+| KAFKA_CONSUMER_CONFIG_STANDARD_HEADERS           | If ask for contextual metadata headers when reading messages                                   | both                                               |
+| KAFKA_CONSUMER_CONFIG_START_OFFSET               | Where the consumer should begins consuming messages from a topic's partition (earliest/latest) | earliest                                           |
+| KAFKA_TOPIC_PAYMENTS                             | Topic where to read payment event                                                              | p4pa-payhub-payments-evh                           |
+| KAFKA_PAYMENTS_SASL_JAAS_CONFIG                  | JAAS Config string used to perform authentication                                              |                                                    |
+| KAFKA_PAYMENTS_GROUP_ID                          | Consumer group id                                                                              | p4pa-workflow-hub-consumer-group                   |
+| KAFKA_PAYMENTS_CONSUMER_ENABLED                  | If the consumer should read messages                                                           | true                                               |
+| KAFKA_PAYMENTS_AUTO_COMMIT                       | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_AUTO_COMMIT}               |
+| KAFKA_PAYMENTS_REQUEST_CONNECTIONS_MAX_IDLE_MS   | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_CONNECTIONS_MAX_IDLE_MS}   |
+| KAFKA_PAYMENTS_INTERVAL_TIMEOUT_MS               | See default config description                                                                 | ${KAFKA_CONFIG_MAX_POLL_INTERVAL_TIMEOUT_MS}       |
+| KAFKA_PAYMENTS_MAX_POLL_SIZE                     | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_MAX_POLL_SIZE}             |
+| KAFKA_PAYMENTS_REQUEST_CONNECTION_TIMEOUT_MAX_MS | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MAX_MS} |
+| KAFKA_PAYMENTS_REQUEST_CONNECTION_TIMEOUT_MS     | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MS}     |
+| KAFKA_PAYMENTS_STANDARD_HEADERS                  | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_STANDARD_HEADERS}          |
+| KAFKA_PAYMENTS_REQUEST_START_OFFSET              | See default config description                                                                 | ${KAFKA_CONSUMER_CONFIG_START_OFFSET}              |
 
 ##### 🕒 Temporal.io
 | ENV                                                       | DESCRIPTION                                                            | DEFAULT   |

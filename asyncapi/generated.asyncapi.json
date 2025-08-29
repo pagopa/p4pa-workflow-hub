@@ -137,6 +137,7 @@
                       "province": "string"
                     },
                     "dueDate": "2015-07-20",
+                    "generateNotice": true,
                     "ingestionFlowFileAction": "\"I\"",
                     "ingestionFlowFileId": 0,
                     "ingestionFlowFileLineNumber": 0,
@@ -256,6 +257,7 @@
                         "province": "string"
                       },
                       "dueDate": "2015-07-20",
+                      "generateNotice": true,
                       "ingestionFlowFileAction": "\"I\"",
                       "ingestionFlowFileId": 0,
                       "ingestionFlowFileLineNumber": 0,
@@ -557,6 +559,9 @@
             "type": "string",
             "format": "date"
           },
+          "generateNotice": {
+            "type": "boolean"
+          },
           "ingestionFlowFileAction": {
             "$ref": "#/components/schemas/Action"
           },
@@ -662,6 +667,7 @@
               "province": "string"
             },
             "dueDate": "2015-07-20",
+            "generateNotice": true,
             "ingestionFlowFileAction": "\"I\"",
             "ingestionFlowFileId": 0,
             "ingestionFlowFileLineNumber": 0,
@@ -933,6 +939,7 @@
                   "province": "string"
                 },
                 "dueDate": "2015-07-20",
+                "generateNotice": true,
                 "ingestionFlowFileAction": "\"I\"",
                 "ingestionFlowFileId": 0,
                 "ingestionFlowFileLineNumber": 0,

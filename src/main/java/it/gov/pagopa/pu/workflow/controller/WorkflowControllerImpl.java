@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.controller;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.pu.workflow.controller.generated.WorkflowApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
-import it.gov.pagopa.pu.workflow.service.WorkflowCompletionService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,9 +30,9 @@ public class WorkflowControllerImpl implements WorkflowApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowExecutionStatus> waitWorkflowCompletion(String workflowId, Integer maxAttempts, Integer retryDelayMs) {
+  public ResponseEntity<WorkflowStatusDTO> waitWorkflowCompletion(String workflowId, Integer maxAttempts, Integer retryDelayMs) {
     log.info("Waiting for workflow with id: {} to complete", workflowId);
-    WorkflowExecutionStatus workflowExecutionStatus = workflowCompletionService.waitTerminationStatus(workflowId, maxAttempts, retryDelayMs);
-    return new ResponseEntity<>(workflowExecutionStatus, HttpStatus.OK);
+    WorkflowStatusDTO workflowStatusDTO = workflowCompletionService.waitTerminationStatus(workflowId, maxAttempts, retryDelayMs);
+    return new ResponseEntity<>(workflowStatusDTO, HttpStatus.OK);
   }
 }
