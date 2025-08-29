@@ -22,7 +22,7 @@ public class DeletePaidInstallmentsOnPagoPaWFClient {
 
   public WorkflowCreatedDTO deletePaidInstallments(DebtPositionDTO  debtPositionDTO, Long receiptId) {
     log.info("Starting deletion of paid installments on PagoPA for debtPositionId={} and receiptId={}", debtPositionDTO.getDebtPositionId(), receiptId);
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     String workflowId = generateWorkflowId(receiptId, DeletePaidInstallmentsOnPagoPaWF.class);
 
     DeletePaidInstallmentsOnPagoPaWF workflow = workflowService.buildWorkflowStub(
