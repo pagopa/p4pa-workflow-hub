@@ -74,11 +74,12 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
 
       scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieveWF(sendNotificationId, NOTIFICATION_DATE_RETRIEVE_DELAY);
-    } catch (RuntimeException e) {
-      if (e instanceof ActivityFailure af && af.getCause() instanceof HttpClientErrorException.Conflict) {
+    } catch (ActivityFailure af) {
+      if (af.getCause() instanceof HttpClientErrorException.Conflict) {
         log.error("Conflict on delivery for sendNotificationId {}", sendNotificationId);
         throw new WorkflowInternalErrorException("Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId);
       }
+    } catch (RuntimeException e) {
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
       if (notification != null) {
         for (DebtPositionSendNotificationDTO p : SendNotification2DebtPositionSendNotificationsMapper.map(notification)) {
