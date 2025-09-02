@@ -75,7 +75,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
       scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieveWF(sendNotificationId, NOTIFICATION_DATE_RETRIEVE_DELAY);
     } catch (RuntimeException e) {
-      if (e.getCause() instanceof HttpClientErrorException.Conflict) {
+      if (e instanceof ActivityFailure af && af.getCause() instanceof HttpClientErrorException.Conflict) {
         log.error("Conflict on delivery for sendNotificationId {}", sendNotificationId);
         throw new WorkflowInternalErrorException("Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId);
       }
