@@ -21,6 +21,8 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Duration;
 import java.util.List;
@@ -256,6 +258,48 @@ class SendNotificationProcessWFImplTest {
     Mockito.verifyNoInteractions(publishSendNotificationPaymentEventActivityMock);
     Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock, Mockito.never())
       .scheduleSendNotificationDateRetrieveWF(Mockito.anyString(), Mockito.any());
+  }
+
+  @Test
+  void givenConflictWhenSendNotificationProcessThenThrowWorkflowInternalErrorException() {
+    String sendNotificationId = "testId";
+
+    Mockito.doNothing().when(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.doNothing().when(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+
+    Mockito.doThrow(HttpClientErrorException.Conflict.create(
+        "409 Conflict",
+        HttpStatus.CONFLICT,
+        "Conflict",
+        null,
+        null,
+        null
+      ))
+      .when(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      WorkflowInternalErrorException exception = assertThrows(
+        WorkflowInternalErrorException.class,
+        () -> wf.sendNotificationProcess(sendNotificationId)
+      );
+
+      assertEquals(
+        "Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId,
+        exception.getMessage()
+      );
+    }
+
+    Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+
+    Mockito.verifyNoInteractions(notificationStatusActivityMock);
+    Mockito.verifyNoInteractions(getSendNotificationActivityMock);
+    Mockito.verifyNoInteractions(publishSendNotificationPaymentEventActivityMock);
+    Mockito.verifyNoInteractions(scheduleSendNotificationDateRetrieveActivityMock);
   }
 
 }
