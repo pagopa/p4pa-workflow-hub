@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationConflictException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
@@ -21,8 +22,6 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Duration;
 import java.util.List;
@@ -267,14 +266,7 @@ class SendNotificationProcessWFImplTest {
     Mockito.doNothing().when(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
     Mockito.doNothing().when(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
 
-    Mockito.doThrow(HttpClientErrorException.Conflict.create(
-        "409 Conflict",
-        HttpStatus.CONFLICT,
-        "Conflict",
-        null,
-        null,
-        null
-      ))
+    Mockito.doThrow(SendNotificationConflictException.class)
       .when(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
