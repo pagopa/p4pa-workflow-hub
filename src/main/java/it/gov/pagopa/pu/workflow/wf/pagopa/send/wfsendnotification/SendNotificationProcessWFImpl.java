@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationConflictException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Duration;
 
@@ -73,8 +73,9 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       publishSendEvent(sendNotificationDTO, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
 
       scheduleSendNotificationDateRetrieveActivity.scheduleSendNotificationDateRetrieveWF(sendNotificationId, NOTIFICATION_DATE_RETRIEVE_DELAY);
-    } catch (HttpClientErrorException.Conflict ex) {
-      log.error("Delivery notification conflict for sendNotificationId {}", sendNotificationId);
+
+    } catch (SendNotificationConflictException e) {
+      log.error("Conflict on delivery for sendNotificationId {}", sendNotificationId);
       throw new WorkflowInternalErrorException("Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId);
     } catch (RuntimeException e) {
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
