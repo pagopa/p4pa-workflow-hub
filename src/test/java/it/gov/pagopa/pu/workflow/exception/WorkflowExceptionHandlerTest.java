@@ -1,17 +1,27 @@
 package it.gov.pagopa.pu.workflow.exception;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
-import it.gov.pagopa.pu.workflow.exception.custom.*;
+import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
+import it.gov.pagopa.pu.workflow.exception.custom.TooManyAttemptsException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowTypeNotFoundException;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +34,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -40,13 +51,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 
 @ExtendWith({SpringExtension.class})
 @WebMvcTest(value = {WorkflowExceptionHandlerTest.TestController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -131,6 +135,16 @@ class WorkflowExceptionHandlerTest {
   @Test
   void handleWorkflowTypeNotFoundException() throws Exception {
     doThrow(new WorkflowTypeNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"));
+  }
+
+  @Test
+  void handleResourceNotFoundException() throws Exception {
+    doThrow(new ResourceNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isNotFound())
