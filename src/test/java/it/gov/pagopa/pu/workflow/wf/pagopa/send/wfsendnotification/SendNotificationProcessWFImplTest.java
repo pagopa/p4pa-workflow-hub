@@ -2,8 +2,10 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendNotificationConflictException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
@@ -16,6 +18,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -23,7 +29,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -80,11 +89,15 @@ class SendNotificationProcessWFImplTest {
     );
   }
 
-  @Test
-  void givenStatusAcceptedWhenSendNotificationProcessThenOk() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void givenStatusAcceptedWhenSendNotificationProcessThenOk(boolean isPaymentEmpty) {
     String sendNotificationId = "testId";
     SendNotificationDTO expectedResponse = SendNotificationDTOFaker.buildSendNotificationDTO();
     expectedResponse.status(NotificationStatus.ACCEPTED);
+    if (isPaymentEmpty) {
+      expectedResponse.setPayments(new ArrayList<>());
+    }
 
     Mockito.when(notificationStatusActivityMock.getSendNotificationStatus(sendNotificationId))
       .thenReturn(expectedResponse);
@@ -100,10 +113,12 @@ class SendNotificationProcessWFImplTest {
     Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
     Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
     Mockito.verify(notificationStatusActivityMock).getSendNotificationStatus(sendNotificationId);
-    SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
-      Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
-    );
-    Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock).scheduleSendNotificationDateRetrieveWF(sendNotificationId, Duration.ofMinutes(30));
+    if (!isPaymentEmpty) {
+      SendNotificationDTOFaker.buildListDebtPositionSendNotificationDTO(expectedResponse).forEach(p ->
+        Mockito.verify(publishSendNotificationPaymentEventActivityMock).publishSendNotificationEvent(p, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
+      );
+      Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock).scheduleSendNotificationDateRetrieveWF(sendNotificationId, Duration.ofMinutes(30));
+    }
   }
 
   @Test
@@ -187,6 +202,52 @@ class SendNotificationProcessWFImplTest {
     }
   }
 
+  @ParameterizedTest
+  @MethodSource("notificationScenarios")
+  void givenRuntimeExceptionWhenSendNotificationProcessThenHandleCorrectly(SendNotificationDTO notification, boolean shouldPublishEvents) {
+    String sendNotificationId = "testId";
+
+    Mockito.when(getSendNotificationActivityMock.getSendNotification(sendNotificationId))
+      .thenReturn(notification);
+
+    Mockito.doThrow(new RuntimeException("Simulated failure"))
+      .when(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+
+    assertThrows(RuntimeException.class, () -> wf.sendNotificationProcess(sendNotificationId));
+
+    Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+    Mockito.verify(getSendNotificationActivityMock).getSendNotification(sendNotificationId);
+    if (shouldPublishEvents) {
+      SendNotification2DebtPositionSendNotificationsMapper.map(notification).forEach(p ->
+        Mockito.verify(publishSendNotificationPaymentEventActivityMock)
+          .publishSendNotificationErrorEvent(
+            Mockito.eq(p),
+            Mockito.argThat(event -> event.getPaymentEventType() == PaymentEventType.SEND_NOTIFICATION_ERROR &&
+              event.getEventDescription().contains("Simulated failure"))
+          )
+      );
+    } else {
+      Mockito.verify(publishSendNotificationPaymentEventActivityMock, Mockito.never())
+        .publishSendNotificationErrorEvent(Mockito.any(), Mockito.any());
+    }
+  }
+
+  private static Stream<Arguments> notificationScenarios() {
+    SendNotificationDTO withPayments = SendNotificationDTOFaker.buildSendNotificationDTO();
+    withPayments.setPayments(List.of(new SendNotificationPaymentsDTO()));
+
+    SendNotificationDTO withoutPayments = SendNotificationDTOFaker.buildSendNotificationDTO();
+    withoutPayments.setPayments(Collections.emptyList());
+
+    return Stream.of(
+      Arguments.of(null, false),
+      Arguments.of(withoutPayments, false),
+      Arguments.of(withPayments, true)
+    );
+  }
+
   @Test
   void givenStatusNotAcceptedAndNotificationNullWhenSendNotificationProcessThenLogAndThrow() {
     String sendNotificationId = "testId";
@@ -256,6 +317,41 @@ class SendNotificationProcessWFImplTest {
     Mockito.verifyNoInteractions(publishSendNotificationPaymentEventActivityMock);
     Mockito.verify(scheduleSendNotificationDateRetrieveActivityMock, Mockito.never())
       .scheduleSendNotificationDateRetrieveWF(Mockito.anyString(), Mockito.any());
+  }
+
+  @Test
+  void givenConflictWhenSendNotificationProcessThenThrowWorkflowInternalErrorException() {
+    String sendNotificationId = "testId";
+
+    Mockito.doNothing().when(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.doNothing().when(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+
+    Mockito.doThrow(SendNotificationConflictException.class)
+      .when(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      WorkflowInternalErrorException exception = assertThrows(
+        WorkflowInternalErrorException.class,
+        () -> wf.sendNotificationProcess(sendNotificationId)
+      );
+
+      assertEquals(
+        "Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId,
+        exception.getMessage()
+      );
+    }
+
+    Mockito.verify(preloadSendFileActivityMock).preloadSendFile(sendNotificationId);
+    Mockito.verify(uploadSendFileActivityMock).uploadSendFile(sendNotificationId);
+    Mockito.verify(deliveryNotificationActivityMock).deliverySendNotification(sendNotificationId);
+
+    Mockito.verifyNoInteractions(notificationStatusActivityMock);
+    Mockito.verifyNoInteractions(getSendNotificationActivityMock);
+    Mockito.verifyNoInteractions(publishSendNotificationPaymentEventActivityMock);
+    Mockito.verifyNoInteractions(scheduleSendNotificationDateRetrieveActivityMock);
   }
 
 }
