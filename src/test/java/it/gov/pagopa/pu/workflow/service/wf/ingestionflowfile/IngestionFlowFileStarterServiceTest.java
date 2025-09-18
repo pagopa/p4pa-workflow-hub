@@ -15,6 +15,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsRepo
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.ReceiptIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.send.SendNotificationIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csv.TreasuryCsvIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.junit.jupiter.api.AfterEach;
@@ -37,6 +38,8 @@ class IngestionFlowFileStarterServiceTest {
   private PaymentsReportingIngestionWFClient paymentsReportingIngestionWFClientMock;
   @Mock
   private TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClientMock;
+  @Mock
+  private TreasuryCsvIngestionWFClient treasuryCsvIngestionWFClientMock;
   @Mock
   private TreasuryCsvCompleteIngestionWFClient treasuryCsvCompleteIngestionWFClientMock;
   @Mock
@@ -71,6 +74,7 @@ class IngestionFlowFileStarterServiceTest {
     this.service = new IngestionFlowFileStarterServiceImpl(
       paymentsReportingIngestionWFClientMock,
       treasuryOpiIngestionWFClientMock,
+      treasuryCsvIngestionWFClientMock,
       treasuryCsvCompleteIngestionWFClientMock,
       debtPositionIngestionWFClientMock,
       receiptIngestionWFClientMock,
@@ -88,6 +92,7 @@ class IngestionFlowFileStarterServiceTest {
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, paymentsReportingIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClientMock::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV, treasuryCsvIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE, treasuryCsvCompleteIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClientMock::ingest),
@@ -108,6 +113,7 @@ class IngestionFlowFileStarterServiceTest {
     Mockito.verifyNoMoreInteractions(
       paymentsReportingIngestionWFClientMock,
       treasuryOpiIngestionWFClientMock,
+      treasuryCsvIngestionWFClientMock,
       treasuryCsvCompleteIngestionWFClientMock,
       debtPositionIngestionWFClientMock,
       receiptIngestionWFClientMock,
