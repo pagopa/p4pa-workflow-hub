@@ -106,7 +106,7 @@ class IufClassificationWFTest {
       IufClassificationNotifyTreasurySignalDTO.builder()
         .organizationId(1L).treasuryId(treasuryId).iuf(iuf).build();
 
-    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1L);
+    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1);
     Mockito.when(iufClassificationActivityMock.classifyIuf(1L, treasuryId, iuf)).thenReturn(
       IufClassificationActivityResult.builder()
         .organizationId(1L)
@@ -134,7 +134,7 @@ class IufClassificationWFTest {
         .build()))
       .build();
 
-    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1L);
+    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1);
 
     if (PAYMENT_OUTCOME_CODES_FOR_DUMMY_RECEIPT.contains(paymentOutcomeCode)) {
       Mockito.doNothing().when(paymentsReportingImplicitReceiptHandlerActivityMock).handleImplicitReceipt(signalDTO.getTransfers().getFirst());
