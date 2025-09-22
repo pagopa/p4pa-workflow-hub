@@ -85,7 +85,7 @@ public class IudClassificationWFImpl implements IudClassificationWF, Application
 
   private void deleteClassification(Long organizationId, String iud) {
     log.info("Handling payment notification in iud classification for organization ID {} and iud {}", organizationId, iud);
-    Long clearedResult = clearClassifyIudActivity.deleteClassificationByIud(
+    Integer clearedResult = clearClassifyIudActivity.deleteClassificationByIud(
       organizationId, iud);
     log.info("IUD payment notification classification cleared {} records for organization ID {} and iud {}", clearedResult, organizationId, iud);
   }
