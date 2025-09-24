@@ -18,6 +18,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.send.SendNotificationIngestion
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csv.TreasuryCsvIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.xls.TreasuryXlsIngestionWFClient;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -33,6 +34,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient,
     TreasuryCsvIngestionWFClient treasuryCsvIngestionWFClient,
     TreasuryCsvCompleteIngestionWFClient treasuryCsvCompleteIngestionWFClient,
+    TreasuryXlsIngestionWFClient treasuryXlsIngestionWFClient,
     DebtPositionIngestionWFClient debtPositionIngestionWFClient,
     ReceiptIngestionWFClient receiptIngestionWFClient,
     ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient,
@@ -51,6 +53,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV, treasuryCsvIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE, treasuryCsvCompleteIngestionWFClient::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_XLS, treasuryXlsIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest),
