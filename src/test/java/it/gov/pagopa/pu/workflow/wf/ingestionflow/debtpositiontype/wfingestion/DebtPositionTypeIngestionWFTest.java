@@ -41,7 +41,7 @@ class DebtPositionTypeIngestionWFTest extends BaseIngestionFlowFileWFTest<DebtPo
 
     @Override
     protected DebtPositionTypeIngestionFlowFileResult buildExpectedIngestionFlowFileResult() {
-        return new DebtPositionTypeIngestionFlowFileResult();
+        return DebtPositionTypeIngestionFlowFileResult.builder().organizationId(1L).build();
     }
 
 }

@@ -117,12 +117,15 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
       nextStatus,
       result);
 
-    dataEventsProducerService.notifyIngestionEvent(
-      IngestionDataDTO.builder().ingestionFlowFileId(ingestionFlowFileId)
-        .organizationId(result.getOrganizationId()).build(),
-      DataEventRequestDTO.builder().dataEventType(DataEventType.INGESTION)
-        .eventDescription(getClass().getSimpleName()+" ingestion "+nextStatus.name())
-        .build());
+    if(result.getOrganizationId()!=null) {
+      dataEventsProducerService.notifyIngestionEvent(
+        IngestionDataDTO.builder().ingestionFlowFileId(ingestionFlowFileId)
+          .organizationId(result.getOrganizationId()).build(),
+        DataEventRequestDTO.builder().dataEventType(DataEventType.INGESTION)
+          .eventDescription(getClass().getSimpleName()+" ingestion "+nextStatus.name())
+          .build());
+    }
+
     return success;
   }
 
