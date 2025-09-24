@@ -41,6 +41,8 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
 
     ingestionFlowFileProcessorActivity = buildActivityStubs(applicationContext);
+
+    dataEventsProducerService = applicationContext.getBean(DataEventsProducerService.class);
   }
 
   /** To be overridden by extended class in order to build further required activities */
