@@ -18,10 +18,10 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.send.SendNotificationIngestion
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csv.TreasuryCsvIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
-import org.springframework.stereotype.Service;
-
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.poste.TreasuryPosteIngestionWFClient;
 import java.util.Map;
 import java.util.function.Function;
+import org.springframework.stereotype.Service;
 
 @Service
 public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileStarterService {
@@ -33,6 +33,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient,
     TreasuryCsvIngestionWFClient treasuryCsvIngestionWFClient,
     TreasuryCsvCompleteIngestionWFClient treasuryCsvCompleteIngestionWFClient,
+    TreasuryPosteIngestionWFClient treasuryPosteIngestionWFClient,
     DebtPositionIngestionWFClient debtPositionIngestionWFClient,
     ReceiptIngestionWFClient receiptIngestionWFClient,
     ReceiptPagopaIngestionWFClient receiptPagopaIngestionWFClient,
@@ -51,6 +52,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV, treasuryCsvIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE, treasuryCsvCompleteIngestionWFClient::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_POSTE, treasuryPosteIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClient::ingest),
