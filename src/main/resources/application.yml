@@ -91,14 +91,14 @@ spring:
           max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_POLLER_SIZE:5}"
   cloud:
     function:
-      definition: paymentsConsumer;paymentsProducer
+      definition: paymentsConsumer;paymentsProducer;dataEventsProducer
     stream:
       binders:
         kafka-payments-producer:
           type: kafka
           environment:
             spring.cloud.stream.kafka.binder:
-              brokers: "\${KAFKA_BINDER_BROKER:}"
+              brokers: "\${KAFKA_PAYMENTS_BINDER_BROKER:\${KAFKA_BINDER_BROKER:}}"
               configuration:
                 sasl.jaas.config: "\${KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG:}"
                 key.serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -106,14 +106,14 @@ spring:
           type: kafka
           environment:
             spring.cloud.stream.kafka.binder:
-              brokers: "\${KAFKA_BINDER_BROKER:}"
+              brokers: "\${KAFKA_PAYMENTS_BINDER_BROKER:\${KAFKA_BINDER_BROKER:}}"
               configuration:
                 sasl.jaas.config: "\${KAFKA_PAYMENTS_SASL_JAAS_CONFIG:}"
         kafka-data-events-producer:
           type: kafka
           environment:
             spring.cloud.stream.kafka.binder:
-              brokers: "\${KAFKA_BINDER_BROKER:}"
+              brokers: "\${KAFKA_DATA_EVENTS_BINDER_BROKER:\${KAFKA_BINDER_BROKER:}}"
               configuration:
                 sasl.jaas.config: "\${KAFKA_DATA_EVENTS_PRODUCER_SASL_JAAS_CONFIG:}"
                 key.serializer: org.apache.kafka.common.serialization.StringSerializer

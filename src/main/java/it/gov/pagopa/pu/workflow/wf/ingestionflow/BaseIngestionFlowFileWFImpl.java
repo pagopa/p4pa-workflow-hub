@@ -117,15 +117,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
       nextStatus,
       result);
 
-    if(result.getOrganizationId()!=null) {
-      dataEventsProducerService.notifyIngestionEvent(
-        IngestionDataDTO.builder().ingestionFlowFileId(ingestionFlowFileId)
-          .organizationId(result.getOrganizationId()).build(),
-        DataEventRequestDTO.builder().dataEventType(DataEventType.INGESTION)
-          .eventDescription(getClass().getSimpleName()+" ingestion "+nextStatus.name())
-          .build());
-    }
-
+    publishDataEvent(ingestionFlowFileId, result, nextStatus);
     return success;
   }
 
@@ -133,4 +125,20 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
     sendEmailIngestionFlowActivity.sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, success);
   }
 
+  private void publishDataEvent(Long ingestionFlowFileId, IngestionFlowFileResult result, IngestionFlowFileStatus status) {
+    if(result.getOrganizationId()!=null) {
+      dataEventsProducerService.notifyIngestionEvent(
+        IngestionDataDTO.builder()
+          .ingestionFlowFileId(ingestionFlowFileId)
+          .organizationId(result.getOrganizationId())
+          .processedRows(result.getProcessedRows())
+          .totalRows(result.getTotalRows())
+          .status(status)
+          .build(),
+        DataEventRequestDTO.builder()
+          .dataEventType(DataEventType.INGESTION)
+          .eventDescription(getClass().getSimpleName()+" ingestion "+status.name())
+          .build());
+    }
+  }
 }
