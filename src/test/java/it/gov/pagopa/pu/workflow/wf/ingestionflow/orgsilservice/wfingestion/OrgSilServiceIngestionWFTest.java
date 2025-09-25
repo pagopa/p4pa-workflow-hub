@@ -41,7 +41,7 @@ class OrgSilServiceIngestionWFTest extends BaseIngestionFlowFileWFTest<OrgSilSer
 
     @Override
     protected OrgSilServiceIngestionFlowFileResult buildExpectedIngestionFlowFileResult() {
-        return new OrgSilServiceIngestionFlowFileResult();
+        return OrgSilServiceIngestionFlowFileResult.builder().organizationId(1L).build();
     }
 
 }

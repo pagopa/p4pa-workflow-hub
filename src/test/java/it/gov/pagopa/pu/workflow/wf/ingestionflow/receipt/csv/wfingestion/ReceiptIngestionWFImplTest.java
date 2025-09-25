@@ -41,6 +41,6 @@ class ReceiptIngestionWFImplTest extends BaseIngestionFlowFileWFTest<ReceiptInge
 
   @Override
   protected ReceiptIngestionFlowFileResult buildExpectedIngestionFlowFileResult() {
-    return new ReceiptIngestionFlowFileResult();
+    return ReceiptIngestionFlowFileResult.builder().organizationId(1L).build();
   }
 }

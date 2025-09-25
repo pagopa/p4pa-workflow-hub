@@ -16,6 +16,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsR
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
@@ -87,6 +88,8 @@ class TemporalSpringBootIntegrationTest {
   private SendEmailIngestionFlowActivityImpl emailActivityMock;
   @MockitoBean
   private IufClassificationWFClient iufClassificationWFClientMock;
+  @MockitoBean
+  private DataEventsProducerService dataEventsProducerServiceMock;
 
   @MockitoSpyBean
   private UpdateIngestionFlowStatusActivityImpl statusActivitySpy;

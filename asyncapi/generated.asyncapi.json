@@ -14,6 +14,17 @@
     }
   },
   "channels": {
+    "p4pa-payhub-data-events-evh": {
+      "address": "p4pa-payhub-data-events-evh",
+      "messages": {
+        "DataEventType": {
+          "$ref": "#/components/messages/DataEventType"
+        }
+      },
+      "bindings": {
+        "kafka": { }
+      }
+    },
     "p4pa-payhub-payments-evh": {
       "address": "p4pa-payhub-payments-evh",
       "messages": {
@@ -38,6 +49,16 @@
         ],
         "examples": [
           "\"I\""
+        ]
+      },
+      "DataEventType": {
+        "title": "DataEventType",
+        "type": "string",
+        "enum": [
+          "INGESTION"
+        ],
+        "examples": [
+          "\"INGESTION\""
         ]
       },
       "DebtPositionDTO": {
@@ -1206,6 +1227,22 @@
       }
     },
     "messages": {
+      "DataEventType": {
+        "headers": {
+          "$ref": "#/components/schemas/HeadersNotDocumented"
+        },
+        "payload": {
+          "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schema": {
+            "$ref": "#/components/schemas/DataEventType"
+          }
+        },
+        "name": "DataEventType",
+        "title": "DataEventType",
+        "bindings": {
+          "kafka": { }
+        }
+      },
       "PaymentEventDTOObject": {
         "headers": {
           "$ref": "#/components/schemas/HeadersNotDocumented"
@@ -1238,6 +1275,21 @@
     }
   },
   "operations": {
+    "p4pa-payhub-data-events-evh_send_dataEventsProducer": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/p4pa-payhub-data-events-evh"
+      },
+      "description": "Auto-generated description",
+      "bindings": {
+        "kafka": { }
+      },
+      "messages": [
+        {
+          "$ref": "#/channels/p4pa-payhub-data-events-evh/messages/DataEventType"
+        }
+      ]
+    },
     "p4pa-payhub-payments-evh_receive_PaymentsConsumer": {
       "action": "receive",
       "channel": {

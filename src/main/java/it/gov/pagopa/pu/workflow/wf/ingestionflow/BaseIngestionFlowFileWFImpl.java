@@ -5,6 +5,10 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIng
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.dto.IngestionDataDTO;
+import it.gov.pagopa.pu.workflow.enums.DataEventType;
+import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
+import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   private Function<Long, T> ingestionFlowFileProcessorActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
+  private DataEventsProducerService dataEventsProducerService;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -36,6 +41,8 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
 
     ingestionFlowFileProcessorActivity = buildActivityStubs(applicationContext);
+
+    dataEventsProducerService = applicationContext.getBean(DataEventsProducerService.class);
   }
 
   /** To be overridden by extended class in order to build further required activities */
@@ -104,12 +111,13 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
 
   protected boolean finalizeStatus(Long ingestionFlowFileId, IngestionFlowFileResult result) {
     boolean success = result.getErrorDescription() == null;
+    IngestionFlowFileStatus nextStatus =  success ? IngestionFlowFileStatus.COMPLETED : IngestionFlowFileStatus.ERROR;
     updateIngestionFlowStatusActivity.updateIngestionFlowFileStatus(ingestionFlowFileId,
       IngestionFlowFileStatus.PROCESSING,
-      success
-        ? IngestionFlowFileStatus.COMPLETED
-        : IngestionFlowFileStatus.ERROR,
+      nextStatus,
       result);
+
+    publishDataEvent(ingestionFlowFileId, result, nextStatus);
     return success;
   }
 
@@ -117,4 +125,20 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
     sendEmailIngestionFlowActivity.sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, success);
   }
 
+  private void publishDataEvent(Long ingestionFlowFileId, IngestionFlowFileResult result, IngestionFlowFileStatus status) {
+    if(result.getOrganizationId()!=null) {
+      dataEventsProducerService.notifyIngestionEvent(
+        IngestionDataDTO.builder()
+          .ingestionFlowFileId(ingestionFlowFileId)
+          .organizationId(result.getOrganizationId())
+          .processedRows(result.getProcessedRows())
+          .totalRows(result.getTotalRows())
+          .status(status)
+          .build(),
+        DataEventRequestDTO.builder()
+          .dataEventType(DataEventType.INGESTION)
+          .eventDescription(getClass().getSimpleName()+" ingestion "+status.name())
+          .build());
+    }
+  }
 }
