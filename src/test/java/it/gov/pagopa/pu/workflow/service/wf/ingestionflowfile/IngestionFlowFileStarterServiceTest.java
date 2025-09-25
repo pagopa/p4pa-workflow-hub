@@ -18,6 +18,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.send.SendNotificationIngestion
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csv.TreasuryCsvIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.xls.TreasuryXlsIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.poste.TreasuryPosteIngestionWFClient;
 import java.util.Map;
 import java.util.function.Function;
@@ -42,6 +43,8 @@ class IngestionFlowFileStarterServiceTest {
   private TreasuryCsvIngestionWFClient treasuryCsvIngestionWFClientMock;
   @Mock
   private TreasuryCsvCompleteIngestionWFClient treasuryCsvCompleteIngestionWFClientMock;
+  @Mock
+  private TreasuryXlsIngestionWFClient treasuryXlsIngestionWFClientMock;
   @Mock
   private TreasuryPosteIngestionWFClient treasuryPosteIngestionWFClientMock;
   @Mock
@@ -78,6 +81,7 @@ class IngestionFlowFileStarterServiceTest {
       treasuryOpiIngestionWFClientMock,
       treasuryCsvIngestionWFClientMock,
       treasuryCsvCompleteIngestionWFClientMock,
+      treasuryXlsIngestionWFClientMock,
       treasuryPosteIngestionWFClientMock,
       debtPositionIngestionWFClientMock,
       receiptIngestionWFClientMock,
@@ -97,6 +101,7 @@ class IngestionFlowFileStarterServiceTest {
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV, treasuryCsvIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE, treasuryCsvCompleteIngestionWFClientMock::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_XLS, treasuryXlsIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_POSTE, treasuryPosteIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClientMock::ingest),
@@ -119,6 +124,7 @@ class IngestionFlowFileStarterServiceTest {
       treasuryOpiIngestionWFClientMock,
       treasuryCsvIngestionWFClientMock,
       treasuryCsvCompleteIngestionWFClientMock,
+      treasuryXlsIngestionWFClientMock,
       treasuryPosteIngestionWFClientMock,
       debtPositionIngestionWFClientMock,
       receiptIngestionWFClientMock,

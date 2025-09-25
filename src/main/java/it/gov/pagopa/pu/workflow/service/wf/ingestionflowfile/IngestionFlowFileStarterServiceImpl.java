@@ -19,6 +19,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csv.TreasuryCsvIngest
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.poste.TreasuryPosteIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.xls.TreasuryXlsIngestionWFClient;
 import java.util.Map;
 import java.util.function.Function;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
     TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClient,
     TreasuryCsvIngestionWFClient treasuryCsvIngestionWFClient,
     TreasuryCsvCompleteIngestionWFClient treasuryCsvCompleteIngestionWFClient,
+    TreasuryXlsIngestionWFClient treasuryXlsIngestionWFClient,
     TreasuryPosteIngestionWFClient treasuryPosteIngestionWFClient,
     DebtPositionIngestionWFClient debtPositionIngestionWFClient,
     ReceiptIngestionWFClient receiptIngestionWFClient,
@@ -52,6 +54,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV, treasuryCsvIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE, treasuryCsvCompleteIngestionWFClient::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_XLS, treasuryXlsIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_POSTE, treasuryPosteIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClient::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClient::ingest),
