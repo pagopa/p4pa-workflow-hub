@@ -41,7 +41,7 @@ class AssessmentsRegistryIngestionWFTest extends BaseIngestionFlowFileWFTest<Ass
 
   @Override
   protected AssessmentsRegistryIngestionFlowFileResult buildExpectedIngestionFlowFileResult() {
-    return new AssessmentsRegistryIngestionFlowFileResult();
+    return AssessmentsRegistryIngestionFlowFileResult.builder().organizationId(1L).build();
   }
 
 }
