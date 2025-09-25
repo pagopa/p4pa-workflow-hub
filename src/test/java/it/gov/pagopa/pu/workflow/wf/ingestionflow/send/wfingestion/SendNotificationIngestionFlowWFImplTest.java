@@ -44,7 +44,7 @@ class SendNotificationIngestionFlowWFImplTest extends
 
   @Override
   protected SendNotificationIngestionFlowFileResult buildExpectedIngestionFlowFileResult() {
-    return new SendNotificationIngestionFlowFileResult();
+    return SendNotificationIngestionFlowFileResult.builder().organizationId(1L).build();
   }
 
 }
