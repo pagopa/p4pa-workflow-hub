@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.xls.wfIngestion;
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.xls.wfingestion;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;

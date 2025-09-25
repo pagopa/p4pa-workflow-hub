@@ -4,7 +4,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.xls.wfIngestion.TreasuryXlsIngestionWF;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.xls.wfingestion.TreasuryXlsIngestionWF;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
