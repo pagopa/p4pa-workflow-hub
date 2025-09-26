@@ -100,7 +100,7 @@ class IudClassificationWFTest {
       .build();
 
     when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))
-      .thenReturn(1L);
+      .thenReturn(1);
 
     // When
     wf.notifyReceipt(signalDTO);
@@ -121,7 +121,7 @@ class IudClassificationWFTest {
       .build();
 
     when(clearClassifyIudActivityMock.deleteClassificationByIud(orgId, iud))
-      .thenReturn(1L);
+      .thenReturn(1);
     when(iudClassificationActivityMock.classifyIud(orgId, iud))
       .thenReturn(activityResult);
 

@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.function.Function;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
 public abstract class BaseIngestionFlowFileWFTest<R extends IngestionFlowFileResult> {
@@ -23,6 +25,9 @@ public abstract class BaseIngestionFlowFileWFTest<R extends IngestionFlowFileRes
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivityMock;
   @Mock
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivityMock;
+  @Mock
+  private DataEventsProducerService dataEventsProducerServiceMock;
+
   private Object ingestionFlowFileProcessorActivityMock;
   private Function<Long, R> activityInvoker;
 
@@ -39,6 +44,7 @@ public abstract class BaseIngestionFlowFileWFTest<R extends IngestionFlowFileRes
 
     Mockito.when(configMock.buildUpdateIngestionFlowStatusActivityStub()).thenReturn(updateIngestionFlowStatusActivityMock);
     Mockito.when(configMock.buildSendEmailIngestionFlowActivityStub()).thenReturn(sendEmailIngestionFlowActivityMock);
+    Mockito.when(applicationContextMock.getBean(DataEventsProducerService.class)).thenReturn(dataEventsProducerServiceMock);
 
     Pair<Object, Function<Long, R>> mock2Invoker = configureIngestionFlowFileProcessorActivityMock(applicationContextMock);
     ingestionFlowFileProcessorActivityMock = mock2Invoker.getKey();
@@ -53,7 +59,8 @@ public abstract class BaseIngestionFlowFileWFTest<R extends IngestionFlowFileRes
     Mockito.verifyNoMoreInteractions(
       updateIngestionFlowStatusActivityMock,
       sendEmailIngestionFlowActivityMock,
-      ingestionFlowFileProcessorActivityMock
+      ingestionFlowFileProcessorActivityMock,
+      dataEventsProducerServiceMock
     );
   }
 
@@ -102,7 +109,7 @@ public abstract class BaseIngestionFlowFileWFTest<R extends IngestionFlowFileRes
       .updateIngestionFlowFileStatus(Mockito.eq(ingestionFlowFileId), Mockito.eq(IngestionFlowFileStatus.PROCESSING), Mockito.eq(IngestionFlowFileStatus.COMPLETED), Mockito.same(expectedResult));
     Mockito.verify(sendEmailIngestionFlowActivityMock)
       .sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true);
-
+    Mockito.verify(dataEventsProducerServiceMock).notifyIngestionEvent(any(), any());
     verifyExtraMocks(ingestionFlowFileId, expectedResult);
   }
 

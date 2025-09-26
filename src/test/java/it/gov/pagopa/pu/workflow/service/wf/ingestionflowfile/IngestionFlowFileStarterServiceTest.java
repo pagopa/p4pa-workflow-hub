@@ -15,8 +15,13 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsRepo
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.csv.ReceiptIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.ReceiptPagopaIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.send.SendNotificationIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csv.TreasuryCsvIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.csvcomplete.TreasuryCsvCompleteIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.xls.TreasuryXlsIngestionWFClient;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.poste.TreasuryPosteIngestionWFClient;
+import java.util.Map;
+import java.util.function.Function;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +32,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Map;
-import java.util.function.Function;
-
 @ExtendWith(MockitoExtension.class)
 class IngestionFlowFileStarterServiceTest {
 
@@ -38,7 +40,13 @@ class IngestionFlowFileStarterServiceTest {
   @Mock
   private TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClientMock;
   @Mock
+  private TreasuryCsvIngestionWFClient treasuryCsvIngestionWFClientMock;
+  @Mock
   private TreasuryCsvCompleteIngestionWFClient treasuryCsvCompleteIngestionWFClientMock;
+  @Mock
+  private TreasuryXlsIngestionWFClient treasuryXlsIngestionWFClientMock;
+  @Mock
+  private TreasuryPosteIngestionWFClient treasuryPosteIngestionWFClientMock;
   @Mock
   private DebtPositionIngestionWFClient debtPositionIngestionWFClientMock;
   @Mock
@@ -71,7 +79,10 @@ class IngestionFlowFileStarterServiceTest {
     this.service = new IngestionFlowFileStarterServiceImpl(
       paymentsReportingIngestionWFClientMock,
       treasuryOpiIngestionWFClientMock,
+      treasuryCsvIngestionWFClientMock,
       treasuryCsvCompleteIngestionWFClientMock,
+      treasuryXlsIngestionWFClientMock,
+      treasuryPosteIngestionWFClientMock,
       debtPositionIngestionWFClientMock,
       receiptIngestionWFClientMock,
       receiptPagopaIngestionWFClientMock,
@@ -88,7 +99,10 @@ class IngestionFlowFileStarterServiceTest {
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING, paymentsReportingIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.PAYMENTS_REPORTING_PAGOPA, paymentsReportingIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_OPI, treasuryOpiIngestionWFClientMock::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV, treasuryCsvIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_CSV_COMPLETE, treasuryCsvCompleteIngestionWFClientMock::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_XLS, treasuryXlsIngestionWFClientMock::ingest),
+      Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.TREASURY_POSTE, treasuryPosteIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.DP_INSTALLMENTS, debtPositionIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT, receiptIngestionWFClientMock::ingest),
       Map.entry(IngestionFlowFile.IngestionFlowFileTypeEnum.RECEIPT_PAGOPA, receiptPagopaIngestionWFClientMock::ingest),
@@ -108,7 +122,10 @@ class IngestionFlowFileStarterServiceTest {
     Mockito.verifyNoMoreInteractions(
       paymentsReportingIngestionWFClientMock,
       treasuryOpiIngestionWFClientMock,
+      treasuryCsvIngestionWFClientMock,
       treasuryCsvCompleteIngestionWFClientMock,
+      treasuryXlsIngestionWFClientMock,
+      treasuryPosteIngestionWFClientMock,
       debtPositionIngestionWFClientMock,
       receiptIngestionWFClientMock,
       receiptPagopaIngestionWFClientMock,

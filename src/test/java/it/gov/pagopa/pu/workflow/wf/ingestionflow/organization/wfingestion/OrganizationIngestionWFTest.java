@@ -41,7 +41,7 @@ class OrganizationIngestionWFTest extends BaseIngestionFlowFileWFTest<Organizati
 
     @Override
     protected OrganizationIngestionFlowFileResult buildExpectedIngestionFlowFileResult() {
-        return new OrganizationIngestionFlowFileResult();
+        return OrganizationIngestionFlowFileResult.builder().organizationId(1L).build();
     }
 
 }

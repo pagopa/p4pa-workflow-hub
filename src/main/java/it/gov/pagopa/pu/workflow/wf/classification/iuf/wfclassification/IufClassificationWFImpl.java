@@ -79,7 +79,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
   public void notifyTreasury(IufClassificationNotifyTreasurySignalDTO signalDTO) {
 
     log.info("Handling treasury notification in iuf classification: {}", signalDTO);
-    Long clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
+    Integer clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
       signalDTO.getOrganizationId(),
       signalDTO.getIuf());
 
@@ -92,7 +92,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
   @Override
   public void notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
     log.info("Handling payments reporting notification in iuf classification: {}", signalDTO);
-    Long clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
+    Integer clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
       signalDTO.getOrganizationId(),
       signalDTO.getIuf());
     log.info("IUF receipt classification cleared cleared {} records for {}", clearedResult, signalDTO);
