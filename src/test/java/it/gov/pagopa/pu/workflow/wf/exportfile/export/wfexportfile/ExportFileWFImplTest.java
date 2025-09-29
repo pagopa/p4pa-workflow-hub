@@ -8,6 +8,7 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
+import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 import static it.gov.pagopa.payhub.activities.util.Utilities.toOffsetDateTimeEndOfTheDay;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class ExportFileWFImplTest {
@@ -37,6 +39,8 @@ class ExportFileWFImplTest {
   private SendEmailExportFileActivity sendEmailExportFileActivityMock;
   @Mock
   private ScheduleExportFileExpirationActivity scheduleExportFileExpirationActivityMock;
+  @Mock
+  private DataEventsProducerService dataEventsProducerServiceMock;
 
   private ExportFileWFImpl wf;
   private final int expirationDays = 2;
@@ -58,6 +62,8 @@ class ExportFileWFImplTest {
 
     Mockito.when(applicationContextMock.getBean(ExportFileWFConfig.class))
       .thenReturn(exportFileWFConfigMock);
+    Mockito.when(applicationContextMock.getBean(DataEventsProducerService.class))
+      .thenReturn(dataEventsProducerServiceMock);
 
     wf = new ExportFileWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -85,7 +91,8 @@ class ExportFileWFImplTest {
       exportFileResult.getFilePath(), exportFileResult.getFileName(),12L,
       exportFileResult.getExportedRows(),null, toOffsetDateTimeEndOfTheDay(expectedDueDate));
 
-    Mockito.doNothing().when(updateExportFileStatusActivityMock).updateExportStatus(Mockito.any());
+    Mockito.doNothing().when(updateExportFileStatusActivityMock).updateExportStatus(
+      any());
     Mockito.doNothing().when(sendEmailExportFileActivityMock).sendExportCompletedEmail(exportFileId, true);
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenReturn(exportFileResult);
 
@@ -93,7 +100,7 @@ class ExportFileWFImplTest {
       expectedDueDate);
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
+      workflowMock.when(() -> Workflow.sleep(any(Duration.class))).then(invocation -> null);
 
       wf.exportFile(exportFileId,exportFileType);
 
@@ -128,6 +135,7 @@ class ExportFileWFImplTest {
       Mockito.verify(scheduleExportFileExpirationActivityMock).scheduleExportFileExpiration(exportFileId,
         expectedDueDate
       );
+      Mockito.verify(dataEventsProducerServiceMock).notifyExportEvent(any(), any());
     }
   }
 
@@ -145,13 +153,13 @@ class ExportFileWFImplTest {
       ExportFileStatus.PROCESSING, ExportFileStatus.ERROR, null, null,
       null, null,errorMessage, null);
 
-    Mockito.doNothing().when(updateExportFileStatusActivityMock).updateExportStatus(Mockito.any());
+    Mockito.doNothing().when(updateExportFileStatusActivityMock).updateExportStatus(any());
     Mockito.doNothing().when(sendEmailExportFileActivityMock).sendExportCompletedEmail(exportFileId, false);
     Mockito.when(exportFileActivityMock.executeExport(exportFileId,exportFileType)).thenThrow(new RuntimeException(
       errorMessage));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
+      workflowMock.when(() -> Workflow.sleep(any(Duration.class))).then(invocation -> null);
 
       wf.exportFile(exportFileId,exportFileType);
 
@@ -183,6 +191,7 @@ class ExportFileWFImplTest {
       ));
       Mockito.verify(sendEmailExportFileActivityMock).sendExportCompletedEmail(exportFileId, false);
       Mockito.verifyNoInteractions(scheduleExportFileExpirationActivityMock);
+      Mockito.verifyNoInteractions(dataEventsProducerServiceMock);
     }
   }
 }

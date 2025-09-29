@@ -55,7 +55,8 @@
         "title": "DataEventType",
         "type": "string",
         "enum": [
-          "INGESTION"
+          "INGESTION",
+          "EXPORT_FILE"
         ],
         "examples": [
           "\"INGESTION\""
