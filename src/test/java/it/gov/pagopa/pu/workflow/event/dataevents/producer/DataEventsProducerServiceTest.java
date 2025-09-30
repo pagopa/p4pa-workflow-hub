@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.event.dataevents.producer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import it.gov.pagopa.pu.workflow.dto.ExportDataDTO;
 import it.gov.pagopa.pu.workflow.dto.IngestionDataDTO;
 import it.gov.pagopa.pu.workflow.enums.DataEventType;
 import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventDTO;
@@ -39,7 +40,7 @@ class DataEventsProducerServiceTest {
   }
 
   @Test
-  void whenNotifyAssessmentsEventThenSendMessage() {
+  void whenNotifyIngestionEventThenSendMessage() {
     // Given
     IngestionDataDTO ingestionDataDTO = new IngestionDataDTO();
     ingestionDataDTO.setOrganizationId(1L);
@@ -64,6 +65,37 @@ class DataEventsProducerServiceTest {
         Assertions.assertSame(dataEventRequestDTO.getEventDescription(), payload.getEventDescription());
         Assertions.assertSame(dataEventRequestDTO.getDataEventType(), payload.getEventType());
         Assertions.assertEquals("ingestion"+ingestionDataDTO.getOrganizationId(), m.getHeaders().get(
+          KafkaHeaders.KEY));
+        return true;
+      }));
+  }
+
+  @Test
+  void whenNotifyExportEventThenSendMessage() {
+    // Given
+    ExportDataDTO exportDataDTO = new ExportDataDTO();
+    exportDataDTO.setOrganizationId(1L);
+    exportDataDTO.setExportFileId(99L);
+
+    DataEventRequestDTO dataEventRequestDTO = new DataEventRequestDTO(DataEventType.EXPORT_FILE, "EVENTDESCRIPTION");
+    String traceId = "TRACEID";
+    MDC.put("traceId", traceId);
+
+    // When
+    dataEventsProducerService.notifyExportEvent(exportDataDTO, dataEventRequestDTO);
+
+    // Then
+    verify(streamBridge, times(1)).send(
+      Mockito.eq("dataEventsProducer-out-0"),
+      Mockito.any(),
+      Mockito.<Message<?>>argThat(m -> {
+        DataEventDTO<?> payload = (DataEventDTO<?>)m.getPayload();
+        String eventIdPrefix = dataEventRequestDTO.getDataEventType().name() + exportDataDTO.getExportFileId();
+        Assertions.assertEquals(eventIdPrefix, payload.getEventId().substring(0, eventIdPrefix.length()));
+        Assertions.assertSame(exportDataDTO, payload.getPayload());
+        Assertions.assertSame(dataEventRequestDTO.getEventDescription(), payload.getEventDescription());
+        Assertions.assertSame(dataEventRequestDTO.getDataEventType(), payload.getEventType());
+        Assertions.assertEquals("export"+exportDataDTO.getOrganizationId(), m.getHeaders().get(
           KafkaHeaders.KEY));
         return true;
       }));
