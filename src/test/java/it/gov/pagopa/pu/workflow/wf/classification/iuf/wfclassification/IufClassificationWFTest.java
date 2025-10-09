@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
+import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyTreasuryActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsReportingImplicitReceiptHandlerActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
@@ -32,6 +33,8 @@ class IufClassificationWFTest {
   @Mock
   private ClearClassifyIufActivity clearClassifyIufActivityMock;
   @Mock
+  private ClearClassifyTreasuryActivity clearClassifyTreasuryActivityMock;
+  @Mock
   private IufClassificationActivity iufClassificationActivityMock;
   @Mock
   private StartTransferClassificationActivity startTransferClassificationActivityMock;
@@ -48,6 +51,9 @@ class IufClassificationWFTest {
 
     Mockito.when(iufClassificationWfConfigMock.buildClearClassifyIufActivityStub())
       .thenReturn(clearClassifyIufActivityMock);
+
+    Mockito.when(iufClassificationWfConfigMock.buildClearClassifyTreasuryActivityStub())
+      .thenReturn(clearClassifyTreasuryActivityMock);
 
     Mockito.when(iufClassificationWfConfigMock.buildIufClassificationActivityStub())
       .thenReturn(iufClassificationActivityMock);
@@ -70,6 +76,7 @@ class IufClassificationWFTest {
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
       clearClassifyIufActivityMock,
+      clearClassifyTreasuryActivityMock,
       iufClassificationActivityMock,
       startTransferClassificationActivityMock,
       paymentsReportingImplicitReceiptHandlerActivityMock
@@ -106,7 +113,7 @@ class IufClassificationWFTest {
       IufClassificationNotifyTreasurySignalDTO.builder()
         .organizationId(1L).treasuryId(treasuryId).iuf(iuf).build();
 
-    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1);
+    Mockito.when(clearClassifyTreasuryActivityMock.deleteClassificationByTreasuryId(1L, treasuryId)).thenReturn(1);
     Mockito.when(iufClassificationActivityMock.classifyIuf(1L, treasuryId, iuf)).thenReturn(
       IufClassificationActivityResult.builder()
         .organizationId(1L)
