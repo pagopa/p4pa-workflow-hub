@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.enums;
 
 public enum DataEventType {
-  INGESTION
+  INGESTION,
+  EXPORT_FILE
 }

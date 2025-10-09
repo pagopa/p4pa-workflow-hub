@@ -10,6 +10,10 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.dto.ExportDataDTO;
+import it.gov.pagopa.pu.workflow.enums.DataEventType;
+import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
+import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
@@ -35,6 +39,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
   private UpdateExportFileStatusActivity updateExportFileStatusActivity;
   private SendEmailExportFileActivity sendEmailExportFileActivity;
   private ScheduleExportFileExpirationActivity scheduleExportFileExpirationActivity;
+  private DataEventsProducerService dataEventsProducerService;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -49,6 +54,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
     updateExportFileStatusActivity = wfConfig.buildUpdateExportFileStatusActivityStub();
     sendEmailExportFileActivity = wfConfig.buildSendEmailExportFileActivityStub();
     scheduleExportFileExpirationActivity = wfConfig.buildScheduleExportFileExpirationActivityStub();
+    dataEventsProducerService = applicationContext.getBean(DataEventsProducerService.class);
   }
 
   @Override
@@ -73,6 +79,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
 
     if(StringUtils.isBlank(errorDescription) && exportFileResult!=null && exportFileResult.getExportDate()!=null){
       scheduleExportFileExpiration(exportFileId, exportFileResult.getExportDate().plusDays(expirationDays));
+      publishDataEvent(exportFileId, exportFileResult, exportFileType);
       sendEmailExportFileActivity.sendExportCompletedEmail(exportFileId, true);
     }else {
       sendEmailExportFileActivity.sendExportCompletedEmail(exportFileId, false);
@@ -115,5 +122,20 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
       exportFileId,
       expirationDate
     );
+  }
+
+  private void publishDataEvent(Long exportFileId, ExportFileResult result, ExportFileTypeEnum exportFileType) {
+    dataEventsProducerService.notifyExportEvent(
+      ExportDataDTO.builder()
+        .exportFileId(exportFileId)
+        .organizationId(result.getOrganizationId())
+        .exportedRows(result.getExportedRows())
+        .fileSize(result.getFileSize())
+        .exportFileType(exportFileType)
+        .build(),
+      DataEventRequestDTO.builder()
+        .dataEventType(DataEventType.EXPORT_FILE)
+        .eventDescription("Export file having type "+exportFileType.name())
+        .build());
   }
 }
