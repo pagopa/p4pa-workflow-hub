@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
+import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyTreasuryActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsReportingImplicitReceiptHandlerActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
@@ -18,6 +19,10 @@ public class IufClassificationWfConfig extends BaseWfConfig {
 
   public ClearClassifyIufActivity buildClearClassifyIufActivityStub() {
     return Workflow.newActivityStub(ClearClassifyIufActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public ClearClassifyTreasuryActivity buildClearClassifyTreasuryActivityStub() {
+    return Workflow.newActivityStub(ClearClassifyTreasuryActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
   public IufClassificationActivity buildIufClassificationActivityStub() {

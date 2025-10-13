@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
+import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyTreasuryActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsReportingImplicitReceiptHandlerActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
@@ -31,6 +32,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
   private static final List<String> PAYMENT_OUTCOME_CODES_FOR_IMPLICIT_RECEIPT = List.of("8", "9");
 
   private ClearClassifyIufActivity clearClassifyIufActivity;
+  private ClearClassifyTreasuryActivity clearClassifyTreasuryActivity;
   private IufClassificationActivity iufClassificationActivity;
   private PaymentsReportingImplicitReceiptHandlerActivity paymentsReportingImplicitReceiptHandlerActivity;
 
@@ -50,6 +52,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
     IufClassificationWfConfig wfConfig = applicationContext.getBean(IufClassificationWfConfig.class);
 
     clearClassifyIufActivity = wfConfig.buildClearClassifyIufActivityStub();
+    clearClassifyTreasuryActivity = wfConfig.buildClearClassifyTreasuryActivityStub();
     iufClassificationActivity = wfConfig.buildIufClassificationActivityStub();
     paymentsReportingImplicitReceiptHandlerActivity = wfConfig.buildPaymentsReportingImplicitReceiptHandlerActivityStub();
 
@@ -79,11 +82,11 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
   public void notifyTreasury(IufClassificationNotifyTreasurySignalDTO signalDTO) {
 
     log.info("Handling treasury notification in iuf classification: {}", signalDTO);
-    Integer clearedResult = clearClassifyIufActivity.deleteClassificationByIuf(
+    Integer clearedResult = clearClassifyTreasuryActivity.deleteClassificationByTreasuryId(
       signalDTO.getOrganizationId(),
-      signalDTO.getIuf());
+      signalDTO.getTreasuryId());
 
-    log.info("IUF receipt classification cleared {} records for {}", clearedResult, signalDTO);
+    log.info("TreasuryId classification cleared {} records for {}", clearedResult, signalDTO);
 
     IufClassificationActivityResult iufClassificationActivityResult = iufClassificationActivity.classifyIuf(signalDTO.getOrganizationId(), signalDTO.getTreasuryId(), signalDTO.getIuf());
     toNotify.add(iufClassificationActivityResult);
