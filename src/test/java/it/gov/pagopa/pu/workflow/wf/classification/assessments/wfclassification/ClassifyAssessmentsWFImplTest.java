@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.classification.assessments.wfclassification;
 
 import io.temporal.workflow.Workflow;
+import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsClassificationActivity;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.config.ClassifyAssessmentsWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -60,11 +62,11 @@ class ClassifyAssessmentsWFImplTest {
       workflowMock.verify(() -> Workflow.await(Mockito.argThat(Supplier::get)));
 
       Mockito.verify(assessmentsClassificationActivityMock)
-        .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(1L, "iuv1", "iur1", 1));
+        .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(1L, "iuv1", "iud1"));
       Mockito.verify(assessmentsClassificationActivityMock)
-        .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv1", "iur1", 1));
+        .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv1", "iud1"));
       Mockito.verify(assessmentsClassificationActivityMock)
-        .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv2", "iur2", 2));
+        .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv2", "iud2"));
     }
   }
 

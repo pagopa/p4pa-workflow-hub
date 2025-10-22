@@ -12,7 +12,7 @@ import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAsses
 
 @WorkflowInterface
 public interface ClassifyAssessmentsWF {
-    String SIGNAL_METHOD_NAME_START_ASSESSMENTS_CLASSIFICATION ="startAssessmentsClassification";
+    String SIGNAL_METHOD_NAME_START_ASSESSMENTS_CLASSIFICATION ="startAssessmentClassification";
 
     @WorkflowMethod
     void classify();
