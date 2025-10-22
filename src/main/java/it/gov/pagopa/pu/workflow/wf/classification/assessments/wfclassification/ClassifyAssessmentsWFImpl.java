@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.classification.assessments.wfassessmentsclassification;
+package it.gov.pagopa.pu.workflow.wf.classification.assessments.wfclassification;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsClassificationActivity;

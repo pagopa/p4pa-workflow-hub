@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.classification.assessments.wfassessmentsclassification;
+package it.gov.pagopa.pu.workflow.wf.classification.assessments.wfclassification;
 
 import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.WorkflowInterface;

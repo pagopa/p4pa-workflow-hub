@@ -8,18 +8,18 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.wfassessmentsclassification.ClassifyAssessmentsWF;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.wfclassification.ClassifyAssessmentsWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class ClassifyAssessmentWFClient {
+public class ClassifyAssessmentsWFClient {
 
   private final WorkflowService workflowService;
   private final WorkflowClientService workflowClientService;
 
-  public ClassifyAssessmentWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
+  public ClassifyAssessmentsWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
     this.workflowClientService = workflowClientService;
   }
@@ -29,7 +29,13 @@ public class ClassifyAssessmentWFClient {
 
     String workflowId = generateWorkflowId(signalDTO.getOrgId(), signalDTO.getIuv(), signalDTO.getIud());
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL;
-    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(ClassifyAssessmentsWF.class, taskQueue, workflowId);
+
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(
+      ClassifyAssessmentsWF.class,
+      taskQueue,
+      workflowId
+    );
+
     return workflowClientService.signalWithStart(
       untypedWorkflowStub,
       ClassifyAssessmentsWF.SIGNAL_METHOD_NAME_START_ASSESSMENTS_CLASSIFICATION,
