@@ -1,0 +1,47 @@
+package it.gov.pagopa.pu.workflow.wf.classification.assessments;
+
+import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.wfassessmentsclassification.ClassifyAssessmentsWF;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+public class ClassifyAssessmentWFClient {
+
+  private final WorkflowService workflowService;
+  private final WorkflowClientService workflowClientService;
+
+  public ClassifyAssessmentWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
+    this.workflowService = workflowService;
+    this.workflowClientService = workflowClientService;
+  }
+
+  public WorkflowCreatedDTO startAssessmentsClassification(ClassifyAssessmentStartSignalDTO signalDTO) {
+    log.info("Starting Assessments Classification for semantic key: {}", signalDTO);
+
+    String workflowId = generateWorkflowId(signalDTO.getOrgId(), signalDTO.getIuv(), signalDTO.getIud());
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL;
+    WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(ClassifyAssessmentsWF.class, taskQueue, workflowId);
+    return workflowClientService.signalWithStart(
+      untypedWorkflowStub,
+      ClassifyAssessmentsWF.SIGNAL_METHOD_NAME_START_ASSESSMENTS_CLASSIFICATION,
+      new Object[]{signalDTO},
+      new Object[]{}
+    );
+  }
+
+  private String generateWorkflowId(Long orgId, String iuv, String iud) {
+    if (orgId == null || iuv == null || iud == null) {
+      throw new WorkflowInternalErrorException("The ID or the workflow must not be null");
+    }
+    return Utilities.generateWorkflowId(String.format("%d-%s-%s", orgId, iuv, iud), ClassifyAssessmentsWF.class);
+  }
+}
