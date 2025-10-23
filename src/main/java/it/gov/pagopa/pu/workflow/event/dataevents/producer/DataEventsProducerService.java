@@ -53,7 +53,7 @@ public class DataEventsProducerService {
       String.valueOf(paymentAssessmentsDataDTO.getAssessmentId()),
       paymentAssessmentsDataDTO,
       dataEventRequest,
-      "assessments"+paymentAssessmentsDataDTO.getOrganizationId()
+      "assessments"
     );
   }
 
