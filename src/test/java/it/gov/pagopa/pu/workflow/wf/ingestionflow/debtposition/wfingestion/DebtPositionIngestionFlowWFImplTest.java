@@ -166,7 +166,7 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
-        IngestionFlowFileStatus.ERROR,
+        IngestionFlowFileStatus.WARNING,
         InstallmentIngestionFlowFileResult.builder()
           .processedRows(installmentIngestionFlowFileResult.getProcessedRows())
           .totalRows(installmentIngestionFlowFileResult.getTotalRows())
@@ -210,7 +210,7 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
-        IngestionFlowFileStatus.ERROR,
+        IngestionFlowFileStatus.WARNING,
         InstallmentIngestionFlowFileResult.builder()
           .processedRows(5L)
           .totalRows(10L)
@@ -390,7 +390,7 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         ingestionFlowFileId,
         IngestionFlowFileStatus.PROCESSING,
-        IngestionFlowFileStatus.ERROR,
+        IngestionFlowFileStatus.WARNING,
         InstallmentIngestionFlowFileResult.builder()
           .processedRows(installmentIngestionFlowFileResult.getProcessedRows())
           .totalRows(installmentIngestionFlowFileResult.getTotalRows())
