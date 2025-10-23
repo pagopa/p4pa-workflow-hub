@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.dataevents.producer;
 
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
 import it.gov.pagopa.pu.workflow.dto.ExportDataDTO;
 import it.gov.pagopa.pu.workflow.dto.IngestionDataDTO;
 import it.gov.pagopa.pu.workflow.enums.DataEventType;
@@ -44,6 +45,16 @@ public class DataEventsProducerService {
 
   public void notifyExportEvent(ExportDataDTO exportDataDTO, DataEventRequestDTO dataEventRequest) {
     notifyDataEvent(exportDataDTO.getOrganizationId(), String.valueOf(exportDataDTO.getExportFileId()), exportDataDTO, dataEventRequest, "export");
+  }
+
+  public void notifyPaymentAssessmentsEvent(AssessmentEventDTO paymentAssessmentsDataDTO, DataEventRequestDTO dataEventRequest) {
+    notifyDataEvent(
+      paymentAssessmentsDataDTO.getOrganizationId(),
+      String.valueOf(paymentAssessmentsDataDTO.getAssessmentId()),
+      paymentAssessmentsDataDTO,
+      dataEventRequest,
+      "assessments"+paymentAssessmentsDataDTO.getOrganizationId()
+    );
   }
 
   private void notifyDataEvent(Long organizationId, String entityId, Object payload, DataEventRequestDTO dataEventRequest, String partitionKey) {

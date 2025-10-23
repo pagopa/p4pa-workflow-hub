@@ -2,8 +2,12 @@ package it.gov.pagopa.pu.workflow.wf.classification.assessments.wfclassification
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsClassificationActivity;
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.enums.DataEventType;
+import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
+import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.config.ClassifyAssessmentsWfConfig;
@@ -21,6 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, ApplicationContextAware {
 
   private AssessmentsClassificationActivity assessmentsClassificationActivity;
+  private DataEventsProducerService dataEventsProducerService;
 
   private final Collection<AssessmentsClassificationSemanticKeyDTO> toClassify = new ConcurrentLinkedQueue<>();
 
@@ -34,6 +39,7 @@ public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, Applica
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     ClassifyAssessmentsWfConfig wfConfig = applicationContext.getBean(ClassifyAssessmentsWfConfig.class);
     assessmentsClassificationActivity = wfConfig.buildAssessmentsClassificationActivityStub();
+    dataEventsProducerService = applicationContext.getBean(DataEventsProducerService.class);
   }
 
   @Override
@@ -45,9 +51,24 @@ public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, Applica
     toClassify.stream().distinct()
       .forEach(item -> {
         log.info("Handling Assessment classification for semantic key {}", item);
-        assessmentsClassificationActivity.classifyAssessment(item);
-        log.info("Ingestion to classify Assessment with semantic key {} is completed", item);
+        AssessmentEventDTO assessmentEventDTO = assessmentsClassificationActivity.classifyAssessment(item);
+        if (assessmentEventDTO == null) {
+          log.info("Ingestion to classify Assessment with semantic key {} is completed with no event sent", item);
+        } else {
+          dataEventsProducerService.notifyPaymentAssessmentsEvent(
+            assessmentEventDTO,
+            DataEventRequestDTO.builder()
+            .dataEventType(DataEventType.PAYMENT_ASSESSMENTS)
+            .eventDescription(buildDataEventDescription(assessmentEventDTO))
+            .build()
+          );
+          log.info("Ingestion to classify Assessment with semantic key {} is completed", item);
+        }
       });
+  }
+
+  private String buildDataEventDescription(AssessmentEventDTO assessmentEventDTO) {
+    return "assessmentId:" + assessmentEventDTO.getAssessmentId();
   }
 
   @Override
