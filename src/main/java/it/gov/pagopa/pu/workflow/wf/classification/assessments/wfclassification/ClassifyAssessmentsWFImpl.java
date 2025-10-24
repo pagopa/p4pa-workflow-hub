@@ -58,7 +58,7 @@ public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, Applica
           dataEventsProducerService.notifyPaymentAssessmentsEvent(
             assessmentEventDTO,
             DataEventRequestDTO.builder()
-            .dataEventType(DataEventType.PAYMENT_ASSESSMENTS)
+            .dataEventType(DataEventType.ASSESSMENTS_CLASSIFICATION)
             .eventDescription(buildDataEventDescription(assessmentEventDTO))
             .build()
           );

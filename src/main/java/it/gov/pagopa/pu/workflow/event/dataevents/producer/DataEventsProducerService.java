@@ -47,11 +47,11 @@ public class DataEventsProducerService {
     notifyDataEvent(exportDataDTO.getOrganizationId(), String.valueOf(exportDataDTO.getExportFileId()), exportDataDTO, dataEventRequest, "export");
   }
 
-  public void notifyPaymentAssessmentsEvent(AssessmentEventDTO paymentAssessmentsDataDTO, DataEventRequestDTO dataEventRequest) {
+  public void notifyPaymentAssessmentsEvent(AssessmentEventDTO assessmentsEventDTO, DataEventRequestDTO dataEventRequest) {
     notifyDataEvent(
-      paymentAssessmentsDataDTO.getOrganizationId(),
-      String.valueOf(paymentAssessmentsDataDTO.getAssessmentId()),
-      paymentAssessmentsDataDTO,
+      assessmentsEventDTO.getOrganizationId(),
+      String.valueOf(assessmentsEventDTO.getAssessmentId()),
+      assessmentsEventDTO,
       dataEventRequest,
       "assessments"
     );

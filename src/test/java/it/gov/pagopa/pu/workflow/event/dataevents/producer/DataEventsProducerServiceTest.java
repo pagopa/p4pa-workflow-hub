@@ -109,7 +109,7 @@ class DataEventsProducerServiceTest {
     assessmentEventDTO.setAssessmentId(1L);
     assessmentEventDTO.setOrganizationId(3L);
 
-    DataEventRequestDTO dataEventRequestDTO = new DataEventRequestDTO(DataEventType.PAYMENT_ASSESSMENTS, "EVENTDESCRIPTION");
+    DataEventRequestDTO dataEventRequestDTO = new DataEventRequestDTO(DataEventType.ASSESSMENTS_CLASSIFICATION, "EVENTDESCRIPTION");
     String traceId = "TRACEID";
     MDC.put("traceId", traceId);
 
