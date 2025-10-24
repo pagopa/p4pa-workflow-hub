@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.event.dataevents.producer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
 import it.gov.pagopa.pu.workflow.dto.ExportDataDTO;
 import it.gov.pagopa.pu.workflow.dto.IngestionDataDTO;
 import it.gov.pagopa.pu.workflow.enums.DataEventType;
@@ -96,6 +97,37 @@ class DataEventsProducerServiceTest {
         Assertions.assertSame(dataEventRequestDTO.getEventDescription(), payload.getEventDescription());
         Assertions.assertSame(dataEventRequestDTO.getDataEventType(), payload.getEventType());
         Assertions.assertEquals("export"+exportDataDTO.getOrganizationId(), m.getHeaders().get(
+          KafkaHeaders.KEY));
+        return true;
+      }));
+  }
+
+  @Test
+  void whenNotifyPaymentAssessmentsEventThenSendMessage() {
+    // Given
+    AssessmentEventDTO assessmentEventDTO = new AssessmentEventDTO();
+    assessmentEventDTO.setAssessmentId(1L);
+    assessmentEventDTO.setOrganizationId(3L);
+
+    DataEventRequestDTO dataEventRequestDTO = new DataEventRequestDTO(DataEventType.ASSESSMENTS_CLASSIFICATION, "EVENTDESCRIPTION");
+    String traceId = "TRACEID";
+    MDC.put("traceId", traceId);
+
+    // When
+    dataEventsProducerService.notifyPaymentAssessmentsEvent(assessmentEventDTO, dataEventRequestDTO);
+
+    // Then
+    verify(streamBridge, times(1)).send(
+      Mockito.eq("dataEventsProducer-out-0"),
+      Mockito.any(),
+      Mockito.<Message<?>>argThat(m -> {
+        DataEventDTO<?> payload = (DataEventDTO<?>)m.getPayload();
+        String eventIdPrefix = dataEventRequestDTO.getDataEventType().name() + assessmentEventDTO.getAssessmentId();
+        Assertions.assertEquals(eventIdPrefix, payload.getEventId().substring(0, eventIdPrefix.length()));
+        Assertions.assertSame(assessmentEventDTO, payload.getPayload());
+        Assertions.assertSame(dataEventRequestDTO.getEventDescription(), payload.getEventDescription());
+        Assertions.assertSame(dataEventRequestDTO.getDataEventType(), payload.getEventType());
+        Assertions.assertEquals("assessments"+assessmentEventDTO.getOrganizationId(), m.getHeaders().get(
           KafkaHeaders.KEY));
         return true;
       }));
