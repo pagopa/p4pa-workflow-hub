@@ -3,12 +3,16 @@ package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.StartAssessmentClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -21,6 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class TransferClassificationWFImpl implements TransferClassificationWF, ApplicationContextAware {
 
   private TransferClassificationActivity transferClassificationActivity;
+  private StartAssessmentClassificationActivity startAssessmentClassificationActivity;
 
   private final Collection<TransferSemanticKeyDTO> toClassify = new ConcurrentLinkedQueue<>();
 
@@ -34,6 +39,7 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     TransferClassificationWfConfig wfConfig = applicationContext.getBean(TransferClassificationWfConfig.class);
     transferClassificationActivity = wfConfig.buildTransferClassificationActivityStub();
+    startAssessmentClassificationActivity = wfConfig.buildStartAssessmentClassificationActivityStub();
   }
 
   @Override
@@ -45,7 +51,11 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
     toClassify.stream().distinct()
       .forEach(item -> {
         log.info("Handling Transfer classification for semantic key {}", item);
-        transferClassificationActivity.classifyTransfer(item);
+        Pair<InstallmentNoPII, Transfer> classifiedResult = transferClassificationActivity.classifyTransfer(item);
+        if(classifiedResult!=null) {
+          log.info("Handling Assessment classification for semantic key {}", item);
+          startAssessmentClassificationActivity.signalAssessmentClassificationWithStart(item.getOrgId(), classifiedResult.getLeft().getIuv(), classifiedResult.getLeft().getIud());
+        }
         log.info("Ingestion to classify Transfers with semantic key {} is completed", item);
       });
   }
