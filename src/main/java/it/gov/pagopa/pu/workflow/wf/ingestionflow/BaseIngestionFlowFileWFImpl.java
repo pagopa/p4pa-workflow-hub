@@ -112,7 +112,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   protected boolean finalizeStatus(Long ingestionFlowFileId, IngestionFlowFileResult result) {
     boolean success = result.getErrorDescription() == null;
     IngestionFlowFileStatus nextStatus = IngestionFlowFileStatus.COMPLETED;
-    if (!success && result.getProcessedRows() != result.getTotalRows()) {
+    if (!success && result.getTotalRows() > 0) {
       nextStatus = IngestionFlowFileStatus.WARNING;
     } else if (!success) {
       nextStatus = IngestionFlowFileStatus.ERROR;
