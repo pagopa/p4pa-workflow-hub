@@ -22,8 +22,6 @@ import java.util.function.Function;
 @Slf4j
 public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileResult> implements BaseIngestionFlowFileWF, ApplicationContextAware {
 
-  private static final String PARTIAL_PROCESSING_ERROR_DESCRIPTION = "some rows have failed";
-
   private Function<Long, T> ingestionFlowFileProcessorActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
@@ -114,13 +112,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   protected boolean finalizeStatus(Long ingestionFlowFileId, IngestionFlowFileResult result) {
     boolean success = result.getErrorDescription() == null;
     IngestionFlowFileStatus nextStatus = IngestionFlowFileStatus.COMPLETED;
-    if (
-      !success
-      && (
-        PARTIAL_PROCESSING_ERROR_DESCRIPTION.equalsIgnoreCase(result.getErrorDescription())
-        || result.getProcessedRows() != result.getTotalRows()
-      )
-    ) {
+    if (!success && result.getProcessedRows() != result.getTotalRows()) {
       nextStatus = IngestionFlowFileStatus.WARNING;
     } else if (!success) {
       nextStatus = IngestionFlowFileStatus.ERROR;
