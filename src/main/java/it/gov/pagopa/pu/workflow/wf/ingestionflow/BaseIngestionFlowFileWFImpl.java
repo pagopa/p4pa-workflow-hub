@@ -22,7 +22,7 @@ import java.util.function.Function;
 @Slf4j
 public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileResult> implements BaseIngestionFlowFileWF, ApplicationContextAware {
 
-  private final static String PARTIAL_PROCESSING_ERROR_DESCRIPTION = "some rows have failed";
+  private static final String PARTIAL_PROCESSING_ERROR_DESCRIPTION = "some rows have failed";
 
   private Function<Long, T> ingestionFlowFileProcessorActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
