@@ -43,5 +43,6 @@ public class TaskQueueConstants {
 //region Assessments domain
   public static final String TASK_QUEUE_ASSESSMENTS_RESERVED_CREATION = "AssessmentCreationWF";
   public static final String TASK_QUEUE_ASSESSMENTS = "AssessmentsWF";
+  public static final String TASK_QUEUE_ASSESSMENTS_CLASSIFICATION = "AssessmentClassificationWF";
 //endregion
 }
