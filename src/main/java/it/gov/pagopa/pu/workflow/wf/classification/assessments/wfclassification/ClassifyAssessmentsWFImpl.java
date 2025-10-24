@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_CLASSIFICATION)
 public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, ApplicationContextAware {
 
   private AssessmentsClassificationActivity assessmentsClassificationActivity;
@@ -68,7 +68,7 @@ public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, Applica
   }
 
   private String buildDataEventDescription(AssessmentEventDTO assessmentEventDTO) {
-    return "assessmentId:" + assessmentEventDTO.getAssessmentId();
+    return "assessmentId:" + assessmentEventDTO.getAssessmentId() + ";IUD:"+assessmentEventDTO.getIud();
   }
 
   @Override

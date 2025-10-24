@@ -28,7 +28,7 @@ public class ClassifyAssessmentsWFClient {
     log.info("Starting Assessments Classification for semantic key: {}", signalDTO);
 
     String workflowId = generateWorkflowId(signalDTO.getOrgId(), signalDTO.getIuv(), signalDTO.getIud());
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_CLASSIFICATION;
 
     WorkflowStub untypedWorkflowStub = workflowService.buildUntypedWorkflowStub(
       ClassifyAssessmentsWF.class,

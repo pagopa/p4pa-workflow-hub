@@ -60,7 +60,7 @@ class ClassifyAssessmentsWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(String.format("%s-%d-%s-%s", "ClassifyAssessmentsWF", ORGANIZATION, IUV, IUD), "RUNID");
     ClassifyAssessmentStartSignalDTO signalDTO = new ClassifyAssessmentStartSignalDTO(ORGANIZATION, IUV, IUD);
 
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_CLASSIFICATION;
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
