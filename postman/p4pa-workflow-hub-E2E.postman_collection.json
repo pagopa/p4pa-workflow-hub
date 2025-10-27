@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "fab18b60-cdff-4153-b8cb-ca700e62ce28",
+		"_postman_id": "dc1c50b1-2e12-498a-bb0b-5f88dabf79cf",
 		"name": "Workflow-Hub-e2e",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29297333"
+		"_exporter_id": "15747968",
+		"_collection_link": "https://warped-astronaut-141685.postman.co/workspace/P4PA~9a8b7dd5-97b6-4dd0-b3f5-95f25fd0b455/collection/15747968-dc1c50b1-2e12-498a-bb0b-5f88dabf79cf?action=share&source=collection_link&creator=15747968"
 	},
 	"item": [
 		{
@@ -480,79 +481,6 @@
 										"workflows",
 										"{{workflowId}}",
 										"status"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "Classification",
-			"item": [
-				{
-					"name": "01_assessmentsClassification",
-					"item": [
-						{
-							"name": "01_assessments_classification",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Classification - 01_assessmentsClassification - Responses with 200\", function () {",
-											"    pm.response.to.have.status(201);",
-											"});",
-											"",
-											"pm.test(\"Classification - 01_assessmentsClassification - Verify response body\", function () {",
-											"    let jsonResponse = pm.response.json();",
-											"    ",
-											"    pm.expect(jsonResponse).to.have.property(\"runId\");",
-											"    pm.expect(jsonResponse).to.have.property(\"workflowId\");",
-											"});"
-										],
-										"type": "text/javascript",
-										"packages": {},
-										"requests": {}
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{accessToken}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [],
-								"url": {
-									"raw": "{{workflowHubBaseUrl}}/workflowhub/workflow/classification/assessments/{{organizationId}}?iuv=&iud=",
-									"host": [
-										"{{workflowHubBaseUrl}}"
-									],
-									"path": [
-										"workflowhub",
-										"workflow",
-										"classification",
-										"assessments",
-										"{{organizationId}}"
-									],
-									"query": [
-										{
-											"key": "iuv",
-											"value": ""
-										},
-										{
-											"key": "iud",
-											"value": ""
-										}
 									]
 								}
 							},
