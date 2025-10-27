@@ -2,9 +2,8 @@ package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -12,7 +11,6 @@ import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.StartAss
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -51,10 +49,12 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
     toClassify.stream().distinct()
       .forEach(item -> {
         log.info("Handling Transfer classification for semantic key {}", item);
-        Pair<InstallmentNoPII, Transfer> classifiedResult = transferClassificationActivity.classifyTransfer(item);
+        TransferClassifyDTO classifiedResult = transferClassificationActivity.classifyTransfer(item);
         if(classifiedResult!=null) {
           log.info("Handling Assessment classification for semantic key {}", item);
-          startAssessmentClassificationActivity.signalAssessmentClassificationWithStart(item.getOrgId(), classifiedResult.getLeft().getIuv(), classifiedResult.getLeft().getIud());
+          startAssessmentClassificationActivity.signalAssessmentClassificationWithStart(item.getOrgId(),
+            classifiedResult.getInstallmentNoPII().getIuv(),
+            classifiedResult.getInstallmentNoPII().getIud());
         }
         log.info("Ingestion to classify Transfers with semantic key {} is completed", item);
       });
