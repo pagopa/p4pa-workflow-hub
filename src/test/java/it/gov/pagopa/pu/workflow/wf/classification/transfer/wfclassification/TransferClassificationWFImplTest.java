@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
+import it.gov.pagopa.payhub.activities.dto.classifications.TransferClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
@@ -9,7 +10,6 @@ import it.gov.pagopa.pu.workflow.utils.TestUtils;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.StartAssessmentClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,7 +72,9 @@ class TransferClassificationWFImplTest {
     Transfer transfer = podamFactory.manufacturePojo(Transfer.class);
 
     TransferSemanticKeyDTO semanticKeyDTO = new TransferSemanticKeyDTO(1L, "iuv1", "iur1", 1);
-    Pair<InstallmentNoPII, Transfer> expectedResult = Pair.of(installment, transfer);
+    TransferClassifyDTO expectedResult = TransferClassifyDTO.builder()
+      .installmentNoPII(installment)
+      .transfer(transfer).build();
     try(MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(Workflow::isEveryHandlerFinished).thenReturn(true);
       Mockito.when(transferClassificationActivityMock.classifyTransfer(semanticKeyDTO)).thenReturn(expectedResult);
