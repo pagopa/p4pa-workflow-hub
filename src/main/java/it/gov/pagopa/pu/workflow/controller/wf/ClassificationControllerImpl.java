@@ -2,6 +2,8 @@ package it.gov.pagopa.pu.workflow.controller.wf;
 
 import it.gov.pagopa.pu.workflow.controller.generated.ClassificationApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.ClassifyAssessmentsWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
@@ -18,11 +20,14 @@ import java.util.List;
 public class ClassificationControllerImpl implements ClassificationApi {
   private final TransferClassificationWFClient transferClassificationWFClient;
   private final IudClassificationWFClient iudClassificationWFClient;
+  private final ClassifyAssessmentsWFClient classifyAssessmentsWFClient;
 
 	public ClassificationControllerImpl(TransferClassificationWFClient transferClassificationWFClient,
-                                      IudClassificationWFClient iudClassificationWFClient) {
+                                      IudClassificationWFClient iudClassificationWFClient,
+                                      ClassifyAssessmentsWFClient classifyAssessmentsWFClient) {
 		this.transferClassificationWFClient = transferClassificationWFClient;
     this.iudClassificationWFClient = iudClassificationWFClient;
+		this.classifyAssessmentsWFClient = classifyAssessmentsWFClient;
   }
 
 	@Override
@@ -47,6 +52,13 @@ public class ClassificationControllerImpl implements ClassificationApi {
     IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(orgId, iud, iuv, iur, transferIndexes);
     WorkflowCreatedDTO wfExec = iudClassificationWFClient.notifyReceipt(signalDTO);
 
+    return ResponseEntity.status(201).body(wfExec);
+  }
+
+  @Override
+  public ResponseEntity<WorkflowCreatedDTO> assessmentsClassification(Long orgId, String iuv, String iud) {
+    log.info("Creating assessments classification Workflow for organization id {} and iuv {} and iud {}", orgId, iuv, iud);
+    WorkflowCreatedDTO wfExec = classifyAssessmentsWFClient.startAssessmentsClassification(new ClassifyAssessmentStartSignalDTO(orgId, iuv, iud));
     return ResponseEntity.status(201).body(wfExec);
   }
 }

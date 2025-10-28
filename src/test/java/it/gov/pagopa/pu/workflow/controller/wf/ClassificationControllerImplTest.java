@@ -2,6 +2,8 @@ package it.gov.pagopa.pu.workflow.controller.wf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.ClassifyAssessmentsWFClient;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyPaymentNotificationSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
@@ -36,6 +38,9 @@ class ClassificationControllerImplTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @MockitoBean
+  private ClassifyAssessmentsWFClient classifyAssessmentsWFClientMock;
 
   @MockitoBean
   private TransferClassificationWFClient transferClassificationWFClientMock;
@@ -101,4 +106,24 @@ class ClassificationControllerImplTest {
     WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
     assertEquals(workflowCreatedDTO, resultResponse);
   }
+
+  @Test
+  void givenIdWhenClassifyThenCreateAssessmentsClassificationWFSuccessfully() throws Exception {
+    String expectedWorkflowId = String.format("%s-%d-%s-%s-%d", "ClassifyAssessmentsWF", ORGANIZATION, IUV, IUR, INDEX);
+    String runId = "runId";
+
+    WorkflowCreatedDTO workflowCreatedDTO = new WorkflowCreatedDTO(expectedWorkflowId, runId);
+
+    when(classifyAssessmentsWFClientMock.startAssessmentsClassification(new ClassifyAssessmentStartSignalDTO(ORGANIZATION, IUV, IUD)))
+      .thenReturn(workflowCreatedDTO);
+
+    MvcResult result = mockMvc.perform(post("/workflowhub/workflow/classification/assessments/{orgId}", ORGANIZATION)
+      .param("iuv", IUV)
+      .param("iud", IUD)
+    ).andExpect(status().isCreated()).andReturn();
+
+    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    assertEquals(workflowCreatedDTO, resultResponse);
+  }
+
 }

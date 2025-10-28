@@ -56,7 +56,8 @@
         "type": "string",
         "enum": [
           "INGESTION",
-          "EXPORT_FILE"
+          "EXPORT_FILE",
+          "ASSESSMENTS_CLASSIFICATION"
         ],
         "examples": [
           "\"INGESTION\""
