@@ -77,7 +77,7 @@ val podamVersion = "8.0.2.RELEASE"
 val caffeineVersion = "3.2.2"
 val commonsLang3Version = "3.19.0"
 
-val p4paActivitiesVersion = "1.159.15"
+val p4paActivitiesVersion = "1.159.16"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter")
