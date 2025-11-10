@@ -699,6 +699,8 @@ components:
             - WORKFLOW_REQUEST_TIMEOUT
         message:
           type: string
+        traceId:
+          type: string
     WorkflowStatusDTO:
       type: object
       required:
