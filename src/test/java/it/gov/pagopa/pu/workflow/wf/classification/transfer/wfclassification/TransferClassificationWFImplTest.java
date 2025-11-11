@@ -92,6 +92,31 @@ class TransferClassificationWFImplTest {
     }
   }
 
+  @Test
+  void givenTransferClassifyDTOWithNullInstallmentWhenClassifyThenOk() {
+    signalTransferClassification(1L, "iuv1", "iur1", 1);
+
+    Transfer transfer = podamFactory.manufacturePojo(Transfer.class);
+    TransferSemanticKeyDTO semanticKeyDTO = new TransferSemanticKeyDTO(1L, "iuv1", "iur1", 1);
+
+    TransferClassifyDTO expectedResult = TransferClassifyDTO.builder()
+      .installmentNoPII(null)
+      .transfer(transfer)
+      .build();
+
+    try(MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::isEveryHandlerFinished).thenReturn(true);
+      Mockito.when(transferClassificationActivityMock.classifyTransfer(semanticKeyDTO)).thenReturn(expectedResult);
+      wf.classify();
+
+      workflowMock.verify(() -> Workflow.await(Mockito.argThat(Supplier::get)));
+
+      Mockito.verify(transferClassificationActivityMock).classifyTransfer(semanticKeyDTO);
+      Mockito.verify(startAssessmentClassificationActivityMock, Mockito.never())
+        .signalAssessmentClassificationWithStart(Mockito.anyLong(), Mockito.anyString(), Mockito.anyString());
+    }
+  }
+
   private void signalTransferClassification(Long organizationId, String iuv, String iur, int transferIndex) {
     wf.startTransferClassification(new TransferClassificationStartSignalDTO(organizationId, iuv, iur, transferIndex));
   }
