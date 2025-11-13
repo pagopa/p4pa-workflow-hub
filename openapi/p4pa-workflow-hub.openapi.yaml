@@ -732,6 +732,8 @@ components:
         duration:
           type: string
           format: duration
+        result:
+          type: string
     PaymentEventType:
       type: string
       enum:
