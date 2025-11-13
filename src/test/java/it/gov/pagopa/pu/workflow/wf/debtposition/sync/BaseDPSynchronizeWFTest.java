@@ -13,6 +13,7 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEve
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.ScheduleCheckDpExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -116,7 +117,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     configureIUDSyncKo(debtPositionRequested, SYNC_IUD_ERROR, new RuntimeException("Error"));
 
     // When
-    invokeWF(wf, debtPositionRequested, paymentEventRequest, wfExecutionConfig);
+    SyncStatusUpdateRequestDTO result = invokeWF(wf, debtPositionRequested, paymentEventRequest, wfExecutionConfig);
 
     // Then
     if(isNotifyIoInvolved()) {
@@ -136,6 +137,8 @@ public abstract class BaseDPSynchronizeWFTest<W> {
       Mockito.verify(publishPaymentEventActivityMock)
         .publishDebtPositionErrorEvent(Mockito.same(debtPositionRequested), Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SYNC_ERROR, "Error occurred while synchronizing Installment with IUD: SYNCIUDERROR for DebtPosition ID: 1. Error: Error")));
     }
+
+    Assertions.assertEquals(syncStatusUpdateRequestDTO, result);
   }
 
   @Test
@@ -166,7 +169,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
     }
 
     // When, Then
-    invokeWF(wf, debtPosition, null, null);
+    SyncStatusUpdateRequestDTO result = invokeWF(wf, debtPosition, null, null);
 
     if(isSyncErrorPossible()){
       Mockito.verify(publishPaymentEventActivityMock)
@@ -177,6 +180,15 @@ public abstract class BaseDPSynchronizeWFTest<W> {
 
     Mockito.verify(cancelCheckDpExpirationScheduleActivityMock)
       .cancelDpExpirationSchedule(Mockito.same(debtPosition.getDebtPositionId()));
+
+    SyncStatusUpdateRequestDTO expectedResult = new SyncStatusUpdateRequestDTO();
+    if(isSyncErrorPossible()){
+      expectedResult.setIupdSyncError(Map.of(
+        SYNC_IUD, new SyncErrorDTO("Error occurred while synchronizing Installment with IUD: SYNCIUD for DebtPosition ID: 1. Error: Error"),
+        SYNC_IUD_ERROR, new SyncErrorDTO("Error occurred while synchronizing Installment with IUD: SYNCIUDERROR for DebtPosition ID: 1. Error: Error")
+      ));
+    }
+    Assertions.assertEquals(expectedResult, result);
   }
 
   protected DebtPositionDTO buildDebtPositionToSync() {
@@ -217,7 +229,7 @@ public abstract class BaseDPSynchronizeWFTest<W> {
   protected abstract void configureIUDSyncOk(DebtPositionDTO debtPosition, String iud);
   protected abstract void configureIUDSyncKo(DebtPositionDTO debtPosition, String iud, Throwable expectedException);
 
-  protected abstract void invokeWF(W wf, DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig);
+  protected abstract SyncStatusUpdateRequestDTO invokeWF(W wf, DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig);
 
   protected boolean isSyncErrorPossible(){
     return true;
