@@ -15,7 +15,7 @@ See [PU Microservice Architecture](https://pagopa.atlassian.net/wiki/spaces/SPAC
 See [OpenAPI](openapi/generated.openapi.json), exposed through the following path:
 * `/swagger-ui/index.html`
 
-See [Postman collection](/postman/p4pa-debt-positions-E2E.postman_collection.json) and [Postman Environment](https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1094615081/Environment+collection+postman).
+See [Postman collection](/postman/p4pa-workflow-hub-E2E.postman_collection.json) and [Postman Environment](https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1094615081/Environment+collection+postman).
 
 ### 📌 Relevant APIs
 * `POST /workflowhub/workflow-type-orgs`: To relate a debt position type org to a debt position custom synchronization workflow;
@@ -279,4 +279,9 @@ Ensure the following tools are installed on your machine:
 ```sh
 docker build -t <APP_NAME> .
 docker run --env-file <ENV_FILE> <APP_NAME>
+```
+
+### ⚖️ Generate dependencies licenses
+```sh
+./gradlew generateLicenseReport
 ```

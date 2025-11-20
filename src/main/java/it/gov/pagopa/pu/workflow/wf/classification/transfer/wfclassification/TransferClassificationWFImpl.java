@@ -4,6 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -51,10 +52,13 @@ public class TransferClassificationWFImpl implements TransferClassificationWF, A
         log.info("Handling Transfer classification for semantic key {}", item);
         TransferClassifyDTO classifiedResult = transferClassificationActivity.classifyTransfer(item);
         if(classifiedResult!=null) {
-          log.info("Handling Assessment classification for semantic key {}", item);
-          startAssessmentClassificationActivity.signalAssessmentClassificationWithStart(item.getOrgId(),
-            classifiedResult.getInstallmentNoPII().getIuv(),
-            classifiedResult.getInstallmentNoPII().getIud());
+          InstallmentNoPII installmentNoPII = classifiedResult.getInstallmentNoPII();
+          if(installmentNoPII != null) {
+            log.info("Handling Assessment classification for semantic key {}", item);
+            startAssessmentClassificationActivity.signalAssessmentClassificationWithStart(item.getOrgId(),
+              classifiedResult.getInstallmentNoPII().getIuv(),
+              classifiedResult.getInstallmentNoPII().getIud());
+          }
         }
         log.info("Ingestion to classify Transfers with semantic key {} is completed", item);
       });

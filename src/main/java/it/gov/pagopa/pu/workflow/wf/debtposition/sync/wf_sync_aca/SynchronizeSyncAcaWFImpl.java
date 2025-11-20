@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncStatusUpdateRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWf;
@@ -24,8 +25,8 @@ public class SynchronizeSyncAcaWFImpl extends BaseDPSynchronizeWf implements Syn
   }
 
   @Override
-  public void synchronizeDPSyncAca(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
-    synchronizeDebtPosition(debtPosition, paymentEventRequest, wfExecutionConfig);
+  public SyncStatusUpdateRequestDTO synchronizeDPSyncAca(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
+    return synchronizeDebtPosition(debtPosition, paymentEventRequest, wfExecutionConfig);
   }
 
   @Override

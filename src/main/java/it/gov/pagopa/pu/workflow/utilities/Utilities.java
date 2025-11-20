@@ -37,7 +37,7 @@ public class Utilities {
     return String.format("%s-%s", workflowInterface.getSimpleName(), id);
   }
 
-  public static String getWorkflowExceptionMessage(Exception e) {
+  public static String getWorkflowExceptionMessage(Throwable e) {
     if (e instanceof ActivityFailure activityFailure) {
       if (activityFailure.getCause() instanceof ApplicationFailure applicationFailure) {
         return applicationFailure.getOriginalMessage();
