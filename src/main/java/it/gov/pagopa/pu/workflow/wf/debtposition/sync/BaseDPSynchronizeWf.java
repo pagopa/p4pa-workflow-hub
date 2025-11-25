@@ -67,7 +67,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
    * For each TO_SYNC installment, it will call {@link #synchronizeInstallment(DebtPositionDTO, InstallmentDTO)} method, publishing an event in case of error.<BR />
    * Next it will call {@link #finalizeDebtPositionSyncStatusActivity}
    */
-  protected void synchronizeDebtPosition(DebtPositionDTO requestedDebtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
+  protected SyncStatusUpdateRequestDTO synchronizeDebtPosition(DebtPositionDTO requestedDebtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
     Long debtPositionId = requestedDebtPosition.getDebtPositionId();
     log.info("Synchronizing DebtPosition {} using Activity class {}", debtPositionId, getClass().getSimpleName());
 
@@ -78,6 +78,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     scheduleExpirationWF(finalizedDebtPositionDTO, debtPositionId);
 
     log.info("DebtPosition synchronized {}", debtPositionId);
+    return finalizeStatusRequest;
   }
 
   protected SyncStatusUpdateRequestDTO processToSyncInstallments(DebtPositionDTO debtPosition) {

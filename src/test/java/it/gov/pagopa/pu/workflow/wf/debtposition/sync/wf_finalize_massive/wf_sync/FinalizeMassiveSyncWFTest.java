@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_finalize_massive.wf_sy
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtposition.dto.generated.SyncStatusUpdateRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWFTest;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_finalize_massive.FinalizeMassiveSyncWF;
@@ -36,8 +37,8 @@ class FinalizeMassiveSyncWFTest extends BaseDPSynchronizeWFTest<FinalizeMassiveS
   }
 
   @Override
-  protected void invokeWF(FinalizeMassiveSyncWF wf, DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
-    wf.finalizeMassiveSync(debtPosition, paymentEventRequest, wfExecutionConfig);
+  protected SyncStatusUpdateRequestDTO invokeWF(FinalizeMassiveSyncWF wf, DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, GenericWfExecutionConfig wfExecutionConfig) {
+    return wf.finalizeMassiveSync(debtPosition, paymentEventRequest, wfExecutionConfig);
   }
 
 }
