@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.util.IoNotificationPlaceholderUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -33,7 +33,7 @@ class IoNotificationFinePlaceholderResolverTest {
     OffsetDateTime notificationOffset = notificationDateRidotto.atStartOfDay().atOffset(ZoneOffset.UTC);
 
     PaymentOptionDTO paymentOptionDTO1 = new PaymentOptionDTO();
-    paymentOptionDTO1.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+    paymentOptionDTO1.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
     InstallmentDTO installmentDTO1 = buildInstallmentDTO();
     installmentDTO1.setIuv("iuvRidotto");
     installmentDTO1.setNav("navRidotto");
@@ -43,7 +43,7 @@ class IoNotificationFinePlaceholderResolverTest {
     paymentOptionDTO1.setInstallments(List.of(installmentDTO1));
 
     PaymentOptionDTO paymentOptionDTO2 = new PaymentOptionDTO();
-    paymentOptionDTO2.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+    paymentOptionDTO2.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
     InstallmentDTO installmentDTO2 = buildInstallmentDTO2();
     installmentDTO2.setIuv("iuvIntero");
     installmentDTO2.setNav("navIntero");
@@ -84,7 +84,7 @@ class IoNotificationFinePlaceholderResolverTest {
     single.setDueDate(LocalDate.of(2024, 5, 31));
 
     PaymentOptionDTO poSingle = new PaymentOptionDTO();
-    poSingle.setPaymentOptionType(PaymentOptionTypeEnum.SINGLE_INSTALLMENT);
+    poSingle.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
     poSingle.setInstallments(List.of(single));
 
     DebtPositionDTO dto = new DebtPositionDTO();
@@ -119,7 +119,7 @@ class IoNotificationFinePlaceholderResolverTest {
     reduced.setDueDate(LocalDate.of(2024, 4, 6));
 
     PaymentOptionDTO poReduced = new PaymentOptionDTO();
-    poReduced.setPaymentOptionType(PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT);
+    poReduced.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);
     poReduced.setInstallments(List.of(reduced));
 
     DebtPositionDTO dto = new DebtPositionDTO();

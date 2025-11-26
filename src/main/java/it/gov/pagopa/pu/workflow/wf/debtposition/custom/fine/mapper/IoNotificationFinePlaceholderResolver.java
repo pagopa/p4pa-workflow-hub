@@ -3,7 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper;
 import it.gov.pagopa.payhub.activities.util.IoNotificationPlaceholderUtils;
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class IoNotificationFinePlaceholderResolver {
         Map<String, String> placeholders = new HashMap<>();
 
         InstallmentDTO reducedInstallment = debtPositionDTO.getPaymentOptions().stream()
-                .filter(po -> PaymentOptionTypeEnum.REDUCED_SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()))
+                .filter(po -> PaymentOptionType.REDUCED_SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()))
                 .map(po -> po.getInstallments().getFirst())
                 .findFirst()
                 .orElse(null);
@@ -35,7 +36,7 @@ public class IoNotificationFinePlaceholderResolver {
         }
 
         InstallmentDTO singleInstallment = debtPositionDTO.getPaymentOptions().stream()
-                .filter(po -> PaymentOptionTypeEnum.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()))
+                .filter(po -> PaymentOptionType.SINGLE_INSTALLMENT.equals(po.getPaymentOptionType()))
                 .map(po -> po.getInstallments().getFirst())
                 .findFirst()
                 .orElse(null);
