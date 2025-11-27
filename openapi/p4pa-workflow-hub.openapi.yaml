@@ -772,6 +772,7 @@ components:
         - nextActionTimes
         - createdAt
         - lastUpdatedAt
+        - lastExecution
       properties:
         scheduleId:
           type: 'ScheduleEnum'
@@ -801,6 +802,11 @@ components:
           type: string
           format: date-time
         lastUpdatedAt:
+          type: string
+          format: date-time
+        lastManualExecution:
+          $ref: '#/components/schemas/WorkflowStatusDTO'
+        lastExecution:
           type: string
           format: date-time
     ScheduleExecutionInfoDTO:
