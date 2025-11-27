@@ -2,7 +2,9 @@ package it.gov.pagopa.pu.workflow.service.temporal;
 
 import io.temporal.client.schedules.*;
 import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.workflow.dto.generated.RecentScheduleExecutionInfoDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.ScheduleInfoDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.mapper.ScheduleInfoDTOMapper;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -15,9 +17,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class WorkflowScheduleServiceImplTest {
@@ -25,17 +28,19 @@ class WorkflowScheduleServiceImplTest {
   private ScheduleClient scheduleClientMock;
   @Mock
   private ScheduleInfoDTOMapper mapperMock;
+  @Mock
+  private WorkflowService workflowServiceMock;
 
   private WorkflowScheduleService workflowScheduleService;
 
   @BeforeEach
   void setUp() {
-    workflowScheduleService = new WorkflowScheduleServiceImpl(scheduleClientMock, mapperMock);
+    workflowScheduleService = new WorkflowScheduleServiceImpl(scheduleClientMock, mapperMock, workflowServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(scheduleClientMock, mapperMock);
+    Mockito.verifyNoMoreInteractions(scheduleClientMock, mapperMock, workflowServiceMock);
   }
 
   @Test
@@ -115,21 +120,120 @@ class WorkflowScheduleServiceImplTest {
 
   @Test
   void whenGetScheduleInfoThenGetHandleAndCallMapper() {
-    // Given
     ScheduleEnum scheduleId = ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH;
+
+    WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+    Mockito.when(workflowServiceMock.getWorkflowStatus("SynchronizeTaxonomyPagoPaFetchWF-ON-DEMAND"))
+      .thenReturn(workflowStatusDTO);
+
     ScheduleHandle scheduleHandle = Mockito.mock(ScheduleHandle.class, Mockito.RETURNS_DEEP_STUBS);
-    ScheduleInfoDTO expectedResult = new ScheduleInfoDTO();
     ScheduleInfo scheduleInfo = scheduleHandle.describe().getInfo();
 
     Mockito.when(scheduleClientMock.getHandle(scheduleId.getValue()))
       .thenReturn(scheduleHandle);
-    Mockito.when(mapperMock.map(Mockito.eq(scheduleId), Mockito.same(scheduleInfo)))
-      .thenReturn(expectedResult);
 
-    // When
+    ScheduleInfoDTO mapped = new ScheduleInfoDTO();
+    mapped.setRecentActions(List.of());
+
+    Mockito.when(mapperMock.map(Mockito.eq(scheduleId), Mockito.same(scheduleInfo)))
+      .thenReturn(mapped);
+
     ScheduleInfoDTO result = workflowScheduleService.getScheduleInfo(scheduleId);
 
-    // Then
-    assertSame(expectedResult, result);
+    assertSame(mapped, result);
+    assertSame(workflowStatusDTO, result.getLastManualExecution());
+    assertNull(result.getLastExecution());
+  }
+
+  @Test
+  void whenRecentActionsPresentThenLastExecutionIsMaxOfThem() {
+    ScheduleEnum scheduleId = ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH;
+
+    WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+    Mockito.when(workflowServiceMock.getWorkflowStatus(Mockito.any()))
+      .thenReturn(workflowStatusDTO);
+
+    ScheduleHandle scheduleHandle = Mockito.mock(ScheduleHandle.class, Mockito.RETURNS_DEEP_STUBS);
+    ScheduleInfo scheduleInfo = scheduleHandle.describe().getInfo();
+
+    Mockito.when(scheduleClientMock.getHandle(scheduleId.getValue()))
+      .thenReturn(scheduleHandle);
+
+    OffsetDateTime t1 = OffsetDateTime.now().minusHours(2);
+    OffsetDateTime t2 = OffsetDateTime.now();
+
+    RecentScheduleExecutionInfoDTO r1 = new RecentScheduleExecutionInfoDTO();
+    r1.setStartedAt(t1);
+
+    RecentScheduleExecutionInfoDTO r2 = new RecentScheduleExecutionInfoDTO();
+    r2.setStartedAt(t2);
+
+    ScheduleInfoDTO mapped = new ScheduleInfoDTO();
+    mapped.setRecentActions(List.of(r1, r2));
+
+    Mockito.when(mapperMock.map(Mockito.eq(scheduleId), Mockito.same(scheduleInfo)))
+      .thenReturn(mapped);
+
+    ScheduleInfoDTO result = workflowScheduleService.getScheduleInfo(scheduleId);
+
+    assertEquals(t2, result.getLastExecution());
+  }
+
+  @Test
+  void whenExecutionDateTimeIsGreaterThanRecentActionsThenLastExecutionIsExecutionDateTime() {
+    ScheduleEnum scheduleId = ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH;
+
+    OffsetDateTime recent = OffsetDateTime.now().minusHours(1);
+    OffsetDateTime executionDate = OffsetDateTime.now();
+
+    WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+    workflowStatusDTO.setExecutionDateTime(executionDate);
+
+    Mockito.when(workflowServiceMock.getWorkflowStatus(Mockito.any()))
+      .thenReturn(workflowStatusDTO);
+
+    ScheduleHandle scheduleHandle = Mockito.mock(ScheduleHandle.class, Mockito.RETURNS_DEEP_STUBS);
+    ScheduleInfo scheduleInfo = scheduleHandle.describe().getInfo();
+
+    Mockito.when(scheduleClientMock.getHandle(scheduleId.getValue()))
+      .thenReturn(scheduleHandle);
+
+    RecentScheduleExecutionInfoDTO r = new RecentScheduleExecutionInfoDTO();
+    r.setStartedAt(recent);
+
+    ScheduleInfoDTO mapped = new ScheduleInfoDTO();
+    mapped.setRecentActions(List.of(r));
+
+    Mockito.when(mapperMock.map(Mockito.eq(scheduleId), Mockito.same(scheduleInfo)))
+      .thenReturn(mapped);
+
+    ScheduleInfoDTO result = workflowScheduleService.getScheduleInfo(scheduleId);
+
+    assertEquals(executionDate, result.getLastExecution());
+  }
+
+  @Test
+  void whenNoRecentActionsAndNoExecutionDateTimeThenLastExecutionIsNull() {
+    ScheduleEnum scheduleId = ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH;
+
+    WorkflowStatusDTO workflowStatusDTO = new WorkflowStatusDTO();
+    Mockito.when(workflowServiceMock.getWorkflowStatus(Mockito.any()))
+      .thenReturn(workflowStatusDTO);
+
+    ScheduleHandle scheduleHandle = Mockito.mock(ScheduleHandle.class, Mockito.RETURNS_DEEP_STUBS);
+    ScheduleInfo scheduleInfo = scheduleHandle.describe().getInfo();
+
+    Mockito.when(scheduleClientMock.getHandle(scheduleId.getValue()))
+      .thenReturn(scheduleHandle);
+
+    ScheduleInfoDTO mapped = new ScheduleInfoDTO();
+    mapped.setRecentActions(List.of());
+
+    Mockito.when(mapperMock.map(Mockito.eq(scheduleId), Mockito.same(scheduleInfo)))
+      .thenReturn(mapped);
+
+    ScheduleInfoDTO result = workflowScheduleService.getScheduleInfo(scheduleId);
+
+    assertNull(result.getLastExecution());
   }
 }
