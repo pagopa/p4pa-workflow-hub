@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.utils.faker;
 
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionTypeEnum;
+import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class PaymentOptionFaker {
       .totalAmountCents(1L)
       .status(PaymentOptionStatus.TO_SYNC)
       .description("description")
-      .paymentOptionType(PaymentOptionTypeEnum.DOWN_PAYMENT)
+      .paymentOptionType(PaymentOptionType.DOWN_PAYMENT)
       .installments(List.of(buildInstallmentDTO()))
       .build();
   }
