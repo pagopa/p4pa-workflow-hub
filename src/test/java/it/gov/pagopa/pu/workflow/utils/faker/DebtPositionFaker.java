@@ -22,7 +22,6 @@ public class DebtPositionFaker {
       .organizationId(1L)
       .debtPositionTypeOrgId(1L)
       .validityDate(DATE)
-      .flagIuvVolatile(false)
       .multiDebtor(false)
       .flagPuPagoPaPayment(false)
       .creationDate(OFFSET_DATE_TIME)

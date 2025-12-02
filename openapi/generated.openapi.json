@@ -1800,27 +1800,6 @@
           }
         }
       },
-      "PageMetadata" : {
-        "type" : "object",
-        "properties" : {
-          "size" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "number" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
       "DebtPositionSyncWfName" : {
         "type" : "string",
         "enum" : [ "fineWf" ]
@@ -1864,6 +1843,27 @@
           },
           "message" : {
             "type" : "string"
+          }
+        }
+      },
+      "PageMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "size" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "number" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -2289,7 +2289,7 @@
             "type" : "string"
           },
           "paymentOptionType" : {
-            "$ref" : "#/components/schemas/PaymentOptionTypeEnum"
+            "$ref" : "#/components/schemas/PaymentOptionType"
           },
           "paymentOptionIndex" : {
             "type" : "integer",
@@ -2322,9 +2322,9 @@
         "type" : "string",
         "enum" : [ "TO_SYNC", "REPORTED", "PAID", "PARTIALLY_PAID", "CANCELLED", "INVALID", "EXPIRED", "UNPAID", "UNPAYABLE", "DRAFT" ]
       },
-      "PaymentOptionTypeEnum" : {
+      "PaymentOptionType" : {
         "type" : "string",
-        "enum" : [ "SINGLE_INSTALLMENT", "REDUCED_SINGLE_INSTALLMENT", "INSTALLMENTS", "DOWN_PAYMENT" ]
+        "enum" : [ "SINGLE_INSTALLMENT", "INSTALLMENTS", "DOWN_PAYMENT", "REDUCED_SINGLE_INSTALLMENT" ]
       },
       "PersonDTO" : {
         "type" : "object",
@@ -2530,9 +2530,38 @@
           "lastUpdatedAt" : {
             "type" : "string",
             "format" : "date-time"
+          },
+          "lastManualExecution" : {
+            "$ref" : "#/components/schemas/WorkflowStatusDTO"
+          },
+          "lastExecution" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         },
-        "required" : [ "createdAt", "lastUpdatedAt", "nextActionTimes", "numActions", "numActionsMissedCatchupWindow", "numActionsSkippedOverlap", "recentActions", "runningActions", "scheduleId" ]
+        "required" : [ "createdAt", "lastExecution", "lastUpdatedAt", "nextActionTimes", "numActions", "numActionsMissedCatchupWindow", "numActionsSkippedOverlap", "recentActions", "runningActions", "scheduleId" ]
+      },
+      "PagedModelWorkflowTypeOrg" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypeOrgs" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
       },
       "DebtPositionWorkflowType" : {
         "type" : "object",
@@ -2636,28 +2665,6 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/WorkflowType"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "PagedModelWorkflowTypeOrg" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "workflowTypeOrgs" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
                 }
               }
             }

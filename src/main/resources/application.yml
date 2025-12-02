@@ -37,10 +37,10 @@ spring:
       # debt position
       - task-queue: DebtPositionWF
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_LOW_PRIORITY_POLLER_SIZE:3}"
+          max-concurrent-workflow-task-pollers: "\${WF_DP_LOW_PRIORITY_POLLER_SIZE:3}"
       - task-queue: DebtPositionSyncWF
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_POLLER_SIZE:10}"
+          max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_SYNC_POLLER_SIZE:10}"
       - task-queue: DebtPositionSyncWF_LOCAL
         capacity:
           max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE:10}"
@@ -50,7 +50,7 @@ spring:
           max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_POLLER_SIZE:5}"
       - task-queue: DebtPositionCustomSyncWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_POLLER_SIZE:5}"
+          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_POLLER_SIZE:5}"
       # ingestion flow
       - task-queue: IngestionFlowFileWF
         capacity:
@@ -61,10 +61,10 @@ spring:
       # export file
       - task-queue: ExportFileWF
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_POLLER_SIZE:3}"
       - task-queue: ExportFileWF_LOCAL
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
+          max-concurrent-activity-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
       # classification
       - task-queue: ClassificationWF
         capacity:
