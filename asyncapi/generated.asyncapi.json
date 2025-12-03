@@ -85,9 +85,6 @@
           "description": {
             "type": "string"
           },
-          "flagIuvVolatile": {
-            "type": "boolean"
-          },
           "flagPuPagoPaPayment": {
             "type": "boolean"
           },
@@ -132,7 +129,6 @@
             "debtPositionOrigin": "ORDINARY",
             "debtPositionTypeOrgId": 0,
             "description": "string",
-            "flagIuvVolatile": true,
             "flagPuPagoPaPayment": true,
             "iupdOrg": "string",
             "multiDebtor": true,
@@ -252,7 +248,6 @@
               "debtPositionOrigin": "ORDINARY",
               "debtPositionTypeOrgId": 0,
               "description": "string",
-              "flagIuvVolatile": true,
               "flagPuPagoPaPayment": true,
               "iupdOrg": "string",
               "multiDebtor": true,
