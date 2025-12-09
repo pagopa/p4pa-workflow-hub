@@ -36,6 +36,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       # debt position
@@ -44,6 +45,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_DP_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_DP_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: DebtPositionSyncWF
@@ -51,6 +53,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_MAX_POLLER_SIZE:10}"
       - task-queue: DebtPositionSyncWF_LOCAL
@@ -58,6 +61,7 @@ spring:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_MAX_POLLER_SIZE:10}"
       # debt position custom WF sync
@@ -66,6 +70,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_MAX_POLLER_SIZE:5}"
       - task-queue: DebtPositionCustomSyncWF_LOCAL
@@ -73,6 +78,7 @@ spring:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_MAX_POLLER_SIZE:5}"
       # ingestion flow
@@ -81,6 +87,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: IngestionFlowFileWF_LOCAL
@@ -88,6 +95,7 @@ spring:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # export file
@@ -96,6 +104,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: ExportFileWF_LOCAL
@@ -103,6 +112,7 @@ spring:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # classification
@@ -111,6 +121,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: ClassificationWF_LOCAL
@@ -118,6 +129,7 @@ spring:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # pagopa send
@@ -126,6 +138,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MAX_POLLER_SIZE:3}"
       - task-queue: SendNotificationProcessWF_LOCAL
@@ -133,6 +146,7 @@ spring:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MAX_POLLER_SIZE:2}"
       - task-queue: SendWF
@@ -140,6 +154,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       # assessments
@@ -148,6 +163,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_MAX_POLLER_SIZE:5}"
       - task-queue: AssessmentsWF
@@ -155,6 +171,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_ASSESSMENTS_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_ASSESSMENTS_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_ASSESSMENTS_MAX_POLLER_SIZE:5}"
       - task-queue: AssessmentClassificationWF
@@ -162,6 +179,7 @@ spring:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
+              initial-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MAX_POLLER_SIZE:5}"
   cloud:
