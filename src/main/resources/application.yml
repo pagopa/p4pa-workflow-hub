@@ -33,65 +33,137 @@ spring:
       # generic
       - task-queue: LowPriorityWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_LOW_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       # debt position
       - task-queue: DebtPositionWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_LOW_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_DP_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: DebtPositionSyncWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_SYNC_POLLER_SIZE:10}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_MAX_POLLER_SIZE:10}"
       - task-queue: DebtPositionSyncWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE:10}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_MAX_POLLER_SIZE:10}"
       # debt position custom WF sync
       - task-queue: DebtPositionCustomSyncWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_POLLER_SIZE:5}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_MAX_POLLER_SIZE:5}"
       - task-queue: DebtPositionCustomSyncWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_POLLER_SIZE:5}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_MAX_POLLER_SIZE:5}"
       # ingestion flow
       - task-queue: IngestionFlowFileWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: IngestionFlowFileWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # export file
       - task-queue: ExportFileWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: ExportFileWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # classification
       - task-queue: ClassificationWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: ClassificationWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # pagopa send
       - task-queue: SendNotificationProcessWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MAX_POLLER_SIZE:3}"
       - task-queue: SendNotificationProcessWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_POLLER_SIZE:2}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MAX_POLLER_SIZE:2}"
       - task-queue: SendWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_SEND_LOW_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       # assessments
       - task-queue: AssessmentCreationWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_POLLER_SIZE:5}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_MAX_POLLER_SIZE:5}"
       - task-queue: AssessmentsWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_POLLER_SIZE:5}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_ASSESSMENTS_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_ASSESSMENTS_MAX_POLLER_SIZE:5}"
       - task-queue: AssessmentClassificationWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_POLLER_SIZE:5}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              min-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MAX_POLLER_SIZE:5}"
   cloud:
     function:
       definition: paymentsConsumer;paymentsProducer;dataEventsProducer
