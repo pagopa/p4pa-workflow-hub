@@ -208,26 +208,9 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 See `workflow.*` properties on [application.yml](src/main/resources/application.yml) to check configuration for each workflow.
 
 ###### 📥 TaskQueue poller sizes
-| ENV                                                 | DESCRIPTION                                                                      | DEFAULT |
-|-----------------------------------------------------|----------------------------------------------------------------------------------|---------|
-| WF_LOW_PRIORITY_POLLER_SIZE                         | Poller size configured for Temporal task queue `LowPriorityWF`                   | 3       |
-| WF_DP_LOW_PRIORITY_POLLER_SIZE                      | Poller size configured for Temporal task queue `DebtPositionWF`                  | 3       |
-| WF_DP_RESERVED_SYNC_POLLER_SIZE                     | Poller size configured for Temporal task queue `DebtPositionSyncWF`              | 10      |
-| WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE               | Poller size configured for Temporal task queue `DebtPositionSyncWF_LOCAL`        | 5       |
-| WF_DP_RESERVED_CUSTOM_SYNC_POLLER_SIZE              | Poller size configured for Temporal task queue `DebtPositionCustomSyncWF`        | 5       |
-| WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_POLLER_SIZE        | Poller size configured for Temporal task queue `DebtPositionCustomSyncWF_LOCAL`  | 5       |
-| WF_IMPORT_MEDIUM_PRIORITY_POLLER_SIZE               | Poller size configured for Temporal task queue `IngestionFlowFileWF`             | 3       |
-| WF_IMPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE         | Poller size configured for Temporal task queue `IngestionFlowFileWF_LOCAL`       | 2       |
-| WF_EXPORT_MEDIUM_PRIORITY_POLLER_SIZE               | Poller size configured for Temporal task queue `ExportFileWF`                    | 3       |
-| WF_EXPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE         | Poller size configured for Temporal task queue `ExportFileWF_LOCAL`              | 2       |
-| WF_CLASSIFICATION_MEDIUM_PRIORITY_POLLER_SIZE       | Poller size configured for Temporal task queue `ClassificationWF`                | 3       |
-| WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE | Poller size configured for Temporal task queue `ClassificationWF_LOCAL`          | 2       |
-| WF_SEND_RESERVED_NOTIFICATION_POLLER_SIZE           | Poller size configured for Temporal task queue `SendNotificationProcessWF`       | 3       |
-| WF_SEND_RESERVED_NOTIFICATION_LOCAL_POLLER_SIZE     | Poller size configured for Temporal task queue `SendNotificationProcessWF_LOCAL` | 2       |
-| WF_SEND_LOW_PRIORITY_POLLER_SIZE                    | Poller size configured for Temporal task queue `SendWF`                          | 3       |
-| WF_ASSESSMENTS_RESERVED_CREATION_POLLER_SIZE        | Poller size configured for Temporal task queue `AssessmentCreationWF`            | 5       |
-| WF_ASSESSMENTS_POLLER_SIZE                          | Poller size configured for Temporal task queue `AssessmentsWF`                   | 5       |
-| WF_ASSESSMENTS_CLASSIFICATION_POLLER_SIZE           | Poller size configured for Temporal task queue `AssessmentClassificationWF`      | 5       |
+See the following properties for poller sizes:
+* `spring.temporal.workers[*].capacity.workflow-task-pollers-configuration.poller-behavior-autoscaling`
+* `spring.temporal.workers[*].capacity.activity-task-pollers-configuration.poller-behavior-autoscaling`
 
 #### 💼 Business logic
 | ENV                                                   | DESCRIPTION                                                    | DEFAULT      |
