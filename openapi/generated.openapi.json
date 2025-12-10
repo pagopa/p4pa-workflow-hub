@@ -1722,6 +1722,38 @@
           "BearerAuth" : [ ]
         } ]
       }
+    },
+    "/workflowhub/workflows/{workflowId}" : {
+      "delete" : {
+        "tags" : [ "Workflow" ],
+        "operationId" : "cancelWorkflow",
+        "parameters" : [ {
+          "name" : "workflowId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Workflow canceled successfully"
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
     }
   },
   "components" : {
