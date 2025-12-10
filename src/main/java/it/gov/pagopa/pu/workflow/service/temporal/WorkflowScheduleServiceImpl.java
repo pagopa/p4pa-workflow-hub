@@ -36,7 +36,7 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
 
   @Override
   public ScheduleHandle schedule(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression) {
-    log.info("Scheduling {}", taskQueue);
+    log.info("Scheduling {} on taskQueue {}", scheduleId, taskQueue);
 
     ScheduleHandle handle = getSchedule(scheduleId);
     log.debug("ScheduleHandle {}", handle);
