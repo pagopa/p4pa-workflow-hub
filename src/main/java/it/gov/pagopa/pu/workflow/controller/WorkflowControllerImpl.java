@@ -36,8 +36,8 @@ public class WorkflowControllerImpl implements WorkflowApi {
   }
 
   @Override
-  public ResponseEntity<Void> cancelWorkflow(String workflowId) {
-    log.info("Canceling workflow with workflowId: {}", workflowId);
+  public ResponseEntity<Void> deleteWorkflow(String workflowId) {
+    log.info("Deleting workflow with workflowId: {}", workflowId);
     service.cancelWorkflow(workflowId);
     return ResponseEntity.ok().build();
   }

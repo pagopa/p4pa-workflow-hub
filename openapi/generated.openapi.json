@@ -1726,7 +1726,7 @@
     "/workflowhub/workflows/{workflowId}" : {
       "delete" : {
         "tags" : [ "Workflow" ],
-        "operationId" : "cancelWorkflow",
+        "operationId" : "deleteWorkflow",
         "parameters" : [ {
           "name" : "workflowId",
           "in" : "path",
@@ -1737,7 +1737,7 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Workflow canceled successfully"
+            "description" : "Workflow deleted successfully"
           },
           "500" : {
             "description" : "Internal Server Error",
@@ -1878,17 +1878,6 @@
           }
         }
       },
-      "WfExecutionConfig" : {
-        "type" : "object",
-        "discriminator" : {
-          "propertyName" : "workflowTypeName"
-        },
-        "properties" : {
-          "workflowTypeName" : {
-            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
-          }
-        }
-      },
       "PageMetadata" : {
         "type" : "object",
         "properties" : {
@@ -1907,6 +1896,17 @@
           "number" : {
             "type" : "integer",
             "format" : "int64"
+          }
+        }
+      },
+      "WfExecutionConfig" : {
+        "type" : "object",
+        "discriminator" : {
+          "propertyName" : "workflowTypeName"
+        },
+        "properties" : {
+          "workflowTypeName" : {
+            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
           }
         }
       },
@@ -2570,51 +2570,16 @@
         },
         "required" : [ "createdAt", "lastExecution", "lastUpdatedAt", "nextActionTimes", "numActions", "numActionsMissedCatchupWindow", "numActionsSkippedOverlap", "recentActions", "runningActions", "scheduleId" ]
       },
-      "WorkflowType" : {
-        "type" : "object",
-        "properties" : {
-          "creationDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateDate" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "updateOperatorExternalId" : {
-            "type" : "string"
-          },
-          "updateTraceId" : {
-            "type" : "string"
-          },
-          "workflowTypeId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "defaultExecutionConfig" : {
-            "oneOf" : [ {
-              "$ref" : "#/components/schemas/FineWfExecutionConfig"
-            } ]
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          }
-        },
-        "required" : [ "defaultExecutionConfig", "description" ]
-      },
-      "PagedModelWorkflowType" : {
+      "PagedModelWorkflowTypeOrg" : {
         "type" : "object",
         "properties" : {
           "_embedded" : {
             "type" : "object",
             "properties" : {
-              "workflowTypes" : {
+              "workflowTypeOrgs" : {
                 "type" : "array",
                 "items" : {
-                  "$ref" : "#/components/schemas/WorkflowType"
+                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
                 }
               }
             }
@@ -2684,16 +2649,51 @@
           }
         }
       },
-      "PagedModelWorkflowTypeOrg" : {
+      "WorkflowType" : {
+        "type" : "object",
+        "properties" : {
+          "creationDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateDate" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "updateOperatorExternalId" : {
+            "type" : "string"
+          },
+          "updateTraceId" : {
+            "type" : "string"
+          },
+          "workflowTypeId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "defaultExecutionConfig" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/FineWfExecutionConfig"
+            } ]
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          }
+        },
+        "required" : [ "defaultExecutionConfig", "description" ]
+      },
+      "PagedModelWorkflowType" : {
         "type" : "object",
         "properties" : {
           "_embedded" : {
             "type" : "object",
             "properties" : {
-              "workflowTypeOrgs" : {
+              "workflowTypes" : {
                 "type" : "array",
                 "items" : {
-                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
+                  "$ref" : "#/components/schemas/WorkflowType"
                 }
               }
             }

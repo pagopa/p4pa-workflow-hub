@@ -79,7 +79,7 @@ class WorkflowControllerTest {
   }
 
   @Test
-  void whenCancelWorkflowThenOk() throws Exception {
+  void whenDeleteWorkflowThenOk() throws Exception {
     String workflowId = "workflow-1";
 
     MvcResult result = mockMvc.perform(
