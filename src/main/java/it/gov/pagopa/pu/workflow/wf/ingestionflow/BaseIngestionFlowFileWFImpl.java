@@ -139,6 +139,8 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
           .processedRows(result.getProcessedRows())
           .totalRows(result.getTotalRows())
           .status(status)
+          .fileSize(result.getFileSize()!=null ? result.getFileSize() : 0L)
+          .operatorExternalUserId(result.getOperatorExternalUserId())
           .build(),
         DataEventRequestDTO.builder()
           .dataEventType(DataEventType.INGESTION)

@@ -18,4 +18,5 @@ public class ExportDataDTO {
   private LocalDate exportDate;
   private Long fileSize;
   private ExportFileTypeEnum exportFileType;
+  private String operatorExternalUserId;
 }
