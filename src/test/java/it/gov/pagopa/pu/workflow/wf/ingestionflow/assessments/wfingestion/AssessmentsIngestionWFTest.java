@@ -41,6 +41,6 @@ class AssessmentsIngestionWFTest extends BaseIngestionFlowFileWFTest<Assessments
 
   @Override
   protected AssessmentsIngestionFlowFileResult buildExpectedIngestionFlowFileResult() {
-    return AssessmentsIngestionFlowFileResult.builder().organizationId(1L).build();
+    return AssessmentsIngestionFlowFileResult.builder().organizationId(1L).fileSize(100L).build();
   }
 }
