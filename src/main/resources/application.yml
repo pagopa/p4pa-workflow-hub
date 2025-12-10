@@ -33,65 +33,155 @@ spring:
       # generic
       - task-queue: LowPriorityWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_LOW_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       # debt position
       - task-queue: DebtPositionWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_LOW_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_DP_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: DebtPositionSyncWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_SYNC_POLLER_SIZE:10}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_MAX_POLLER_SIZE:10}"
       - task-queue: DebtPositionSyncWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_POLLER_SIZE:10}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_RESERVED_SYNC_LOCAL_MAX_POLLER_SIZE:10}"
       # debt position custom WF sync
       - task-queue: DebtPositionCustomSyncWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_POLLER_SIZE:5}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_MAX_POLLER_SIZE:5}"
       - task-queue: DebtPositionCustomSyncWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_POLLER_SIZE:5}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_DP_RESERVED_CUSTOM_SYNC_LOCAL_MAX_POLLER_SIZE:5}"
       # ingestion flow
       - task-queue: IngestionFlowFileWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: IngestionFlowFileWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_IMPORT_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # export file
       - task-queue: ExportFileWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: ExportFileWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_EXPORT_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # classification
       - task-queue: ClassificationWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: ClassificationWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_POLLER_SIZE:2}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:2}"
       # pagopa send
       - task-queue: SendNotificationProcessWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MAX_POLLER_SIZE:3}"
       - task-queue: SendNotificationProcessWF_LOCAL
         capacity:
-          max-concurrent-activity-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_POLLER_SIZE:2}"
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MAX_POLLER_SIZE:2}"
       - task-queue: SendWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_SEND_LOW_PRIORITY_POLLER_SIZE:3}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
       # assessments
       - task-queue: AssessmentCreationWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_POLLER_SIZE:5}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_ASSESSMENTS_RESERVED_CREATION_MAX_POLLER_SIZE:5}"
       - task-queue: AssessmentsWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_POLLER_SIZE:5}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_ASSESSMENTS_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_ASSESSMENTS_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_ASSESSMENTS_MAX_POLLER_SIZE:5}"
       - task-queue: AssessmentClassificationWF
         capacity:
-          max-concurrent-workflow-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_POLLER_SIZE:5}"
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MAX_POLLER_SIZE:5}"
   cloud:
     function:
       definition: paymentsConsumer;paymentsProducer;dataEventsProducer
@@ -256,6 +346,7 @@ temporal:
 
 workflow:
   default:
+    scheduleToStartTimeoutInSeconds: "\${DEFAULT_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:10}"
     startToCloseTimeoutInSeconds: "\${DEFAULT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:300}"
     retryInitialIntervalInMillis: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:1000}"
     retryBackoffCoefficient: "\${DEFAULT_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:1.5}"
@@ -263,6 +354,7 @@ workflow:
 
   # debt position
   debt-position-expiration:
+    schedule-to-start-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -270,6 +362,7 @@ workflow:
 
   # debt position sync
   debt-position-synchronize:
+    schedule-to-start-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -277,6 +370,7 @@ workflow:
 
   # debt position fine
   debt-position-fine:
+    schedule-to-start-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -284,102 +378,119 @@ workflow:
 
   # ingestion flow
   base-ingestion-flow:
+    schedule-to-start-timeout-in-seconds: "\${BASE_INGESTION_FLOW_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${BASE_INGESTION_FLOW_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${BASE_INGESTION_FLOW_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${BASE_INGESTION_FLOW_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${BASE_INGESTION_FLOW_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   assessments-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${ASSESSMENTS_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${ASSESSMENTS_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${ASSESSMENTS_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${ASSESSMENTS_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${ASSESSMENTS_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   assessments-registry-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${ASSESSMENTS_REGISTRY_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${ASSESSMENTS_REGISTRY_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${ASSESSMENTS_REGISTRY_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${ASSESSMENTS_REGISTRY_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${ASSESSMENTS_REGISTRY_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   payment-notification-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${PAYMENT_NOTIFICATION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${PAYMENT_NOTIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${PAYMENT_NOTIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${PAYMENT_NOTIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${PAYMENT_NOTIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   payments-reporting-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${PAYMENTS_REPORTING_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   treasury-opi-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${TREASURY_OPI_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${TREASURY_OPI_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TREASURY_OPI_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   treasury-csv-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${TREASURY_CSV_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${TREASURY_CSV_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${TREASURY_CSV_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${TREASURY_CSV_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TREASURY_CSV_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   treasury-csv-complete-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${TREASURY_CSV_COMPLETE_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${TREASURY_CSV_COMPLETE_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${TREASURY_CSV_COMPLETE_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${TREASURY_CSV_COMPLETE_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TREASURY_CSV_COMPLETE_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   treasury-xls-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${TREASURY_XLS_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${TREASURY_XLS_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${TREASURY_XLS_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${TREASURY_XLS_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TREASURY_XLS_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   treasury-poste-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${TREASURY_POSTE_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${TREASURY_POSTE_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${TREASURY_POSTE_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${TREASURY_POSTE_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TREASURY_POSTE_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   debt-position-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:3600}"
     retry-initial-interval-in-millis: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   debt-position-type-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_TYPE_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   debt-position-type-org-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${DEBT_POSITION_TYPE_ORG_INGESTION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${DEBT_POSITION_TYPE_ORG_INGESTION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${DEBT_POSITION_TYPE_ORG_INGESTION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DEBT_POSITION_TYPE_ORG_INGESTION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_TYPE_ORG_INGESTION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   receipt-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${RECEIPT_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${RECEIPT_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${RECEIPT_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${RECEIPT_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${RECEIPT_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   receipt-pagopa-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${RECEIPT_PAGOPA_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   organization-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${ORGANIZATION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${ORGANIZATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${ORGANIZATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${ORGANIZATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${ORGANIZATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   orgsilservice-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${ORG_SIL_SERVICE_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${ORG_SIL_SERVICE_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${ORG_SIL_SERVICE_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${ORG_SIL_SERVICE_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -387,24 +498,28 @@ workflow:
 
   # classification
   iud-classification:
+    schedule-to-start-timeout-in-seconds: "\${IUD_CLASSIFICATION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${IUD_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${IUD_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${IUD_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${IUD_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   iuf-classification:
+    schedule-to-start-timeout-in-seconds: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${IUF_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   transfer-classification:
+    schedule-to-start-timeout-in-seconds: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${TRANSFER_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   assessments-classification:
+    schedule-to-start-timeout-in-seconds: "\${ASSESSMENTS_CLASSIFICATION_ACTIVITY_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${ASSESSMENTS_CLASSIFICATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${ASSESSMENTS_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${ASSESSMENTS_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -412,12 +527,14 @@ workflow:
 
   # pagopa payments reporting
   payments-reporting-pagopa-brokers-fetch:
+    schedule-to-start-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   payments-reporting-pagopa-organization-fetch:
+    schedule-to-start-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -425,6 +542,7 @@ workflow:
 
   # pagopa taxonomy synchronization
   synchronize-taxonomy-pagopa-fetch:
+    schedule-to-start-timeout-in-seconds: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -432,12 +550,14 @@ workflow:
 
   # send notification
   send-notification:
+    schedule-to-start-timeout-in-seconds: "\${SEND_NOTIFICATION_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${SEND_NOTIFICATION_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${SEND_NOTIFICATION_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${SEND_NOTIFICATION_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${SEND_NOTIFICATION_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   send-notification-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${SEND_NOTIFICATION_INGESTION_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${SEND_NOTIFICATION_INGESTION_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -445,12 +565,14 @@ workflow:
 
   # assessments
   create-assessments:
+    schedule-to-start-timeout-in-seconds: "\${CREATE_ASSESSMENTS_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${CREATE_ASSESSMENTS_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${CREATE_ASSESSMENTS_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${CREATE_ASSESSMENTS_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   create-assessments-registry:
+    schedule-to-start-timeout-in-seconds: "\${CREATE_ASSESSMENTS_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${CREATE_ASSESSMENTS_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${CREATE_ASSESSMENTS_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -458,12 +580,14 @@ workflow:
 
   # export file
   export-file:
+    schedule-to-start-timeout-in-seconds: "\${EXPORT_FILE_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${EXPORT_FILE_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${EXPORT_FILE_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${EXPORT_FILE_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${EXPORT_FILE_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   export-file-expiration-handler:
+    schedule-to-start-timeout-in-seconds: "\${EXPORT_FILE_EXPIRATION_HANDLER_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${EXPORT_FILE_EXPIRATION_HANDLER_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${EXPORT_FILE_EXPIRATION_HANDLER_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${EXPORT_FILE_EXPIRATION_HANDLER_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
@@ -471,6 +595,7 @@ workflow:
 
   # delete paid installments
   delete-paid-installments-pagopa:
+    schedule-to-start-timeout-in-seconds: "\${DELETE_PAID_INSTALLMENTS_PAGOPA_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
     start-to-close-timeout-in-seconds: "\${DELETE_PAID_INSTALLMENTS_PAGOPA_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${DELETE_PAID_INSTALLMENTS_PAGOPA_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
     retry-backoff-coefficient: "\${DELETE_PAID_INSTALLMENTS_PAGOPA_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
