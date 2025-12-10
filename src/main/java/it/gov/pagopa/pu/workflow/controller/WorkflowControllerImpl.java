@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.workflow.controller;
 
-import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.pu.workflow.controller.generated.WorkflowApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
@@ -34,5 +33,12 @@ public class WorkflowControllerImpl implements WorkflowApi {
     log.info("Waiting for workflow with id: {} to complete", workflowId);
     WorkflowStatusDTO workflowStatusDTO = workflowCompletionService.waitTerminationStatus(workflowId, maxAttempts, retryDelayMs);
     return new ResponseEntity<>(workflowStatusDTO, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<Void> deleteWorkflow(String workflowId) {
+    log.info("Deleting workflow with workflowId: {}", workflowId);
+    service.cancelWorkflow(workflowId);
+    return ResponseEntity.ok().build();
   }
 }
