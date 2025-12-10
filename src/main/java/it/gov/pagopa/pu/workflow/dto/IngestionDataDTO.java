@@ -16,4 +16,6 @@ public class IngestionDataDTO {
   private long totalRows;
   private long processedRows;
   private IngestionFlowFileStatus status;
+  private long fileSize;
+  private String operatorExternalUserId;
 }

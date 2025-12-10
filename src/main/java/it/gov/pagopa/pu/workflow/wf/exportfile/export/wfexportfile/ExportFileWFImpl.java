@@ -132,6 +132,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
         .exportedRows(result.getExportedRows())
         .fileSize(result.getFileSize())
         .exportFileType(exportFileType)
+        .operatorExternalUserId(result.getOperatorExternalId())
         .build(),
       DataEventRequestDTO.builder()
         .dataEventType(DataEventType.EXPORT_FILE)
