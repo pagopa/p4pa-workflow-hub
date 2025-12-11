@@ -30,7 +30,7 @@ public class SendNotificationWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION;
     String workflowId = generateWorkflowId(sendNotificationId, SendNotificationProcessWF.class);
 
-    SendNotificationProcessWF workflow = workflowService.buildWorkflowStub(
+    SendNotificationProcessWF workflow = workflowService.buildWorkflowStubToStartNew(
       SendNotificationProcessWF.class,
       taskQueue,
       workflowId);
@@ -41,7 +41,7 @@ public class SendNotificationWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
     String workflowId = generateWorkflowId(sendNotificationId, SendNotificationDateRetrieveWF.class);
 
-    SendNotificationDateRetrieveWF workflow = workflowService.buildWorkflowStub(
+    SendNotificationDateRetrieveWF workflow = workflowService.buildWorkflowStubToStartNew(
       SendNotificationDateRetrieveWF.class,
       taskQueue,
       workflowId);

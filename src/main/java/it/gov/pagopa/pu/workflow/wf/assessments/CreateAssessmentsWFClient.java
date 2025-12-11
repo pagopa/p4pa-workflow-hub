@@ -28,7 +28,7 @@ public class CreateAssessmentsWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_RESERVED_CREATION;
     String workflowId  = generateWorkflowId(receiptId, CreateAssessmentsWF.class);
 
-    CreateAssessmentsWF workflow = workflowService.buildWorkflowStub(
+    CreateAssessmentsWF workflow = workflowService.buildWorkflowStubToStartNew(
       CreateAssessmentsWF.class,
       taskQueue,
       workflowId);

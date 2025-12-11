@@ -26,7 +26,7 @@ public class TreasuryPosteIngestionWFClient {
     String workflowId = generateWorkflowId(ingestionFlowFileId,
       TreasuryPosteIngestionWF.class);
 
-    TreasuryPosteIngestionWF workflow = workflowService.buildWorkflowStub(
+    TreasuryPosteIngestionWF workflow = workflowService.buildWorkflowStubToStartNew(
       TreasuryPosteIngestionWF.class,
       taskQueue,
       workflowId);

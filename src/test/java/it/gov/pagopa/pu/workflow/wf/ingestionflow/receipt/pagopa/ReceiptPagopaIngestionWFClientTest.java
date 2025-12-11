@@ -49,7 +49,7 @@ class ReceiptPagopaIngestionWFClientTest {
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     doReturn(wfMock).when(workflowServiceMock)
-      .buildWorkflowStub(ReceiptPagopaIngestionWF.class, taskQueue, expectedResult.getWorkflowId());
+      .buildWorkflowStubToStartNew(ReceiptPagopaIngestionWF.class, taskQueue, expectedResult.getWorkflowId());
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);
 

@@ -31,7 +31,7 @@ public class ReceiptIngestionWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, ReceiptIngestionWF.class);
 
-    ReceiptIngestionWF workflow = workflowService.buildWorkflowStub(
+    ReceiptIngestionWF workflow = workflowService.buildWorkflowStubToStartNew(
       ReceiptIngestionWF.class,
       taskQueue,
       workflowId);

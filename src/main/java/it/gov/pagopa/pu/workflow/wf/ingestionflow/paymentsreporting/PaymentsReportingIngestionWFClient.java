@@ -27,7 +27,7 @@ public class PaymentsReportingIngestionWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, PaymentsReportingIngestionWF.class);
 
-    PaymentsReportingIngestionWF workflow = workflowService.buildWorkflowStub(
+    PaymentsReportingIngestionWF workflow = workflowService.buildWorkflowStubToStartNew(
       PaymentsReportingIngestionWF.class,
       taskQueue,
       workflowId);

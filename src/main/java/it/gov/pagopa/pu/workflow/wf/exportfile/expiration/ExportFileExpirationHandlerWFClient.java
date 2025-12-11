@@ -30,7 +30,7 @@ public class ExportFileExpirationHandlerWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     String workflowId = generateWorkflowId(exportFileId, ExportFileExpirationHandlerWF.class);
 
-    ExportFileExpirationHandlerWF workflow = workflowService.buildWorkflowStub(
+    ExportFileExpirationHandlerWF workflow = workflowService.buildWorkflowStubToStartNew(
       ExportFileExpirationHandlerWF.class,
       taskQueue,
       workflowId);

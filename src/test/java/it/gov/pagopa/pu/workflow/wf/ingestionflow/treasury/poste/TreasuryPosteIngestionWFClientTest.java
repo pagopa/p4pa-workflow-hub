@@ -48,7 +48,7 @@ class TreasuryPosteIngestionWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(
       "TreasuryPosteIngestionWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
         TreasuryPosteIngestionWF.class, taskQueue,
         expectedResult.getWorkflowId()))
       .thenReturn(wfMock);

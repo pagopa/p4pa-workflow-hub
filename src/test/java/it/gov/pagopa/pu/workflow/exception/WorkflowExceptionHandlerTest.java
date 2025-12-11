@@ -170,6 +170,18 @@ class WorkflowExceptionHandlerTest {
   }
 
   @Test
+  void handleTemporalWorkflowNotFoundException() throws Exception {
+    WorkflowExecution workflowExecution = Mockito.mock(WorkflowExecution.class);
+    doThrow(new io.temporal.client.WorkflowNotFoundException(workflowExecution, null, null)).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("workflowId='null', runId='null"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
   void handleIngestionFlowTypeNotSupportedException() throws Exception {
     doThrow(new IngestionFlowTypeNotSupportedException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 

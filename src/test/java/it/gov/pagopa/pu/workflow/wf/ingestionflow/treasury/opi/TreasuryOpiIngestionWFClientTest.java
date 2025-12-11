@@ -49,7 +49,7 @@ class TreasuryOpiIngestionWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("TreasuryOpiIngestionWF-1", "RUNID");
 
     doReturn(wfMock).when(workflowServiceMock)
-      .buildWorkflowStub(TreasuryOpiIngestionWF.class, taskQueue, expectedResult.getWorkflowId());
+      .buildWorkflowStubToStartNew(TreasuryOpiIngestionWF.class, taskQueue, expectedResult.getWorkflowId());
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);
 

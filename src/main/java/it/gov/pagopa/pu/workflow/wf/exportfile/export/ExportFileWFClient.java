@@ -29,7 +29,7 @@ public class ExportFileWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_EXPORT_MEDIUM_PRIORITY;
     String workflowId  = generateWorkflowId(exportFileType+"-"+exportFileId, ExportFileWF.class);
 
-    ExportFileWF workflow = workflowService.buildWorkflowStub(
+    ExportFileWF workflow = workflowService.buildWorkflowStubToStartNew(
       ExportFileWF.class,
       taskQueue,
       workflowId);

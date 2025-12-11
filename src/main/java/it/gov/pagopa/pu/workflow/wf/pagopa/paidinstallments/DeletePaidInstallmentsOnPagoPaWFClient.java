@@ -25,7 +25,7 @@ public class DeletePaidInstallmentsOnPagoPaWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     String workflowId = generateWorkflowId(receiptId, DeletePaidInstallmentsOnPagoPaWF.class);
 
-    DeletePaidInstallmentsOnPagoPaWF workflow = workflowService.buildWorkflowStub(
+    DeletePaidInstallmentsOnPagoPaWF workflow = workflowService.buildWorkflowStubToStartNew(
       DeletePaidInstallmentsOnPagoPaWF.class,
       taskQueue,
       workflowId);

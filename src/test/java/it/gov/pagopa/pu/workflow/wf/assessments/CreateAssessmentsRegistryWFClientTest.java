@@ -49,7 +49,7 @@ class CreateAssessmentsRegistryWFClientTest {
     DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
     debtPositionDTO.setDebtPositionId(1L);
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(CreateAssessmentsRegistryWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(CreateAssessmentsRegistryWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, debtPositionDTO, null);

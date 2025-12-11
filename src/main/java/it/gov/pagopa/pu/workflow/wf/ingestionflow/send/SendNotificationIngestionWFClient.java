@@ -25,7 +25,7 @@ public class SendNotificationIngestionWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, SendNotificationIngestionFlowWF.class);
 
-    SendNotificationIngestionFlowWF workflow = workflowService.buildWorkflowStub(
+    SendNotificationIngestionFlowWF workflow = workflowService.buildWorkflowStubToStartNew(
       SendNotificationIngestionFlowWF.class,
       taskQueue,
       workflowId);

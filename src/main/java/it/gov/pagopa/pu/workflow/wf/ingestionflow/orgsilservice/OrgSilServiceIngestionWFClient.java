@@ -31,7 +31,7 @@ public class OrgSilServiceIngestionWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, OrgSilServiceIngestionWF.class);
 
-    OrgSilServiceIngestionWF workflow = workflowService.buildWorkflowStub(
+    OrgSilServiceIngestionWF workflow = workflowService.buildWorkflowStubToStartNew(
       OrgSilServiceIngestionWF.class,
       taskQueue,
       workflowId);

@@ -44,7 +44,7 @@ class TaxonomyWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SynchronizeTaxonomyPagoPaFetchWF-ON-DEMAND", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(SynchronizeTaxonomyPagoPaFetchWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(SynchronizeTaxonomyPagoPaFetchWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult);

@@ -106,7 +106,7 @@ public class SynchronizeDebtPositionWfClientImpl implements SynchronizeDebtPosit
     Class<T> wfInterfaceClass)
   {
     String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), wfInterfaceClass);
-    T workflow = workflowService.buildWorkflowStub(
+    T workflow = workflowService.buildWorkflowStubToStartNew(
       wfInterfaceClass,
       TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC,
       workflowId);

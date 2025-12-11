@@ -47,7 +47,7 @@ class CheckDebtPositionExpirationWfClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("CheckDebtPositionExpirationWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
         CheckDebtPositionExpirationWF.class,
         taskQueue,
         expectedResult.getWorkflowId()))
