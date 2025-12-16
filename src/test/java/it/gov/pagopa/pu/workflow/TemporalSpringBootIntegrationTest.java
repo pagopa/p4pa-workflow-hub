@@ -16,9 +16,10 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsR
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.dataevents.activity.PublishDataEventsActivity;
+import it.gov.pagopa.pu.workflow.wf.dataevents.activity.PublishDataEventsActivityImpl;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFetchScheduler;
@@ -40,7 +41,8 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = {WorkflowApplication.class,
   // loading real implementation to test NotRetryable extension
-  UpdateIngestionFlowStatusActivityImpl.class})
+  UpdateIngestionFlowStatusActivityImpl.class,
+  PublishDataEventsActivityImpl.class})
 @TestPropertySource(properties = {
   "spring.datasource.driver-class-name=org.h2.Driver",
   "spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1",
@@ -88,8 +90,9 @@ class TemporalSpringBootIntegrationTest {
   private SendEmailIngestionFlowActivityImpl emailActivityMock;
   @MockitoBean
   private IufClassificationWFClient iufClassificationWFClientMock;
-  @MockitoBean
-  private DataEventsProducerService dataEventsProducerServiceMock;
+
+  @MockitoSpyBean
+  private PublishDataEventsActivityImpl publishDataEventsActivitySpy;
 
   @MockitoSpyBean
   private UpdateIngestionFlowStatusActivityImpl statusActivitySpy;
@@ -131,6 +134,8 @@ class TemporalSpringBootIntegrationTest {
 
     when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenReturn(1);
+
+    doNothing().when(publishDataEventsActivitySpy).publishIngestionFlowFileEventActivity(any(), any());
 
     WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
 

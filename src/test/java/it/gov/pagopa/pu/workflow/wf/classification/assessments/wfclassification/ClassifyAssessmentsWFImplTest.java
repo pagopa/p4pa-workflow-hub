@@ -4,9 +4,10 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.config.ClassifyAssessmentsWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.dataevents.activity.PublishDataEventsActivity;
+import it.gov.pagopa.pu.workflow.wf.dataevents.config.DataEventsWFConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,21 +30,25 @@ class ClassifyAssessmentsWFImplTest {
   @Mock
   private AssessmentsClassificationActivity assessmentsClassificationActivityMock;
   @Mock
-  private DataEventsProducerService dataEventsProducerServiceMock;
+  private PublishDataEventsActivity publishDataEventsActivityMock;
 
   private ClassifyAssessmentsWFImpl wf;
 
   @BeforeEach
   void setUp() {
     ClassifyAssessmentsWfConfig classifyAssessmentsWfConfig = Mockito.mock(ClassifyAssessmentsWfConfig.class);
+    DataEventsWFConfig dataEventsWFConfig = Mockito.mock(DataEventsWFConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
     when(applicationContextMock.getBean(ClassifyAssessmentsWfConfig.class))
       .thenReturn(classifyAssessmentsWfConfig);
+    when(applicationContextMock.getBean(DataEventsWFConfig.class))
+      .thenReturn(dataEventsWFConfig);
     when(classifyAssessmentsWfConfig.buildAssessmentsClassificationActivityStub())
       .thenReturn(assessmentsClassificationActivityMock);
-    Mockito.when(applicationContextMock.getBean(DataEventsProducerService.class))
-      .thenReturn(dataEventsProducerServiceMock);
+    when(dataEventsWFConfig.buildPublishDataEventActivityStub())
+      .thenReturn(publishDataEventsActivityMock);
+
 
     wf = new ClassifyAssessmentsWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -53,7 +58,7 @@ class ClassifyAssessmentsWFImplTest {
   void verifyNoMoreInteractions(){
     Mockito.verifyNoMoreInteractions(
       assessmentsClassificationActivityMock,
-      dataEventsProducerServiceMock
+      publishDataEventsActivityMock
     );
   }
 
@@ -81,8 +86,8 @@ class ClassifyAssessmentsWFImplTest {
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv1", "iud1"));
       Mockito.verify(assessmentsClassificationActivityMock)
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv2", "iud2"));
-      Mockito.verify(dataEventsProducerServiceMock, times(3))
-        .notifyPaymentAssessmentsEvent(any(), any());
+      Mockito.verify(publishDataEventsActivityMock, times(3))
+        .publishPaymentAssessmentsEventActivity(any(), any());
     }
   }
 

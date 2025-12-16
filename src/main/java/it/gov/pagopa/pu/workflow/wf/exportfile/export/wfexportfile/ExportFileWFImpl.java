@@ -13,9 +13,10 @@ import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomi
 import it.gov.pagopa.pu.workflow.dto.ExportDataDTO;
 import it.gov.pagopa.pu.workflow.enums.DataEventType;
 import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.dataevents.activity.PublishDataEventsActivity;
+import it.gov.pagopa.pu.workflow.wf.dataevents.config.DataEventsWFConfig;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
   private UpdateExportFileStatusActivity updateExportFileStatusActivity;
   private SendEmailExportFileActivity sendEmailExportFileActivity;
   private ScheduleExportFileExpirationActivity scheduleExportFileExpirationActivity;
-  private DataEventsProducerService dataEventsProducerService;
+  private PublishDataEventsActivity publishDataEventsActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -50,11 +51,13 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     ExportFileWFConfig wfConfig = applicationContext.getBean(ExportFileWFConfig.class);
+    DataEventsWFConfig dataEventsWFConfig = applicationContext.getBean(DataEventsWFConfig.class);
+
     exportFileActivity = wfConfig.buildExportFileActivityStub();
     updateExportFileStatusActivity = wfConfig.buildUpdateExportFileStatusActivityStub();
     sendEmailExportFileActivity = wfConfig.buildSendEmailExportFileActivityStub();
     scheduleExportFileExpirationActivity = wfConfig.buildScheduleExportFileExpirationActivityStub();
-    dataEventsProducerService = applicationContext.getBean(DataEventsProducerService.class);
+    publishDataEventsActivity = dataEventsWFConfig.buildPublishDataEventActivityStub();
   }
 
   @Override
@@ -125,7 +128,7 @@ public class ExportFileWFImpl implements ExportFileWF, ApplicationContextAware {
   }
 
   private void publishDataEvent(Long exportFileId, ExportFileResult result, ExportFileTypeEnum exportFileType) {
-    dataEventsProducerService.notifyExportEvent(
+    publishDataEventsActivity.publishExportFileEventActivity(
       ExportDataDTO.builder()
         .exportFileId(exportFileId)
         .organizationId(result.getOrganizationId())

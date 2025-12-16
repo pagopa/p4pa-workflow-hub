@@ -8,7 +8,8 @@ import it.gov.pagopa.payhub.activities.dto.exportflow.ExportFileResult;
 import it.gov.pagopa.payhub.activities.dto.exportflow.UpdateStatusRequest;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFileStatus;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
+import it.gov.pagopa.pu.workflow.wf.dataevents.activity.PublishDataEventsActivity;
+import it.gov.pagopa.pu.workflow.wf.dataevents.config.DataEventsWFConfig;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.config.ExportFileWFConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ class ExportFileWFImplTest {
   @Mock
   private ScheduleExportFileExpirationActivity scheduleExportFileExpirationActivityMock;
   @Mock
-  private DataEventsProducerService dataEventsProducerServiceMock;
+  private PublishDataEventsActivity publishDataEventsActivityMock;
 
   private ExportFileWFImpl wf;
   private final int expirationDays = 2;
@@ -50,6 +51,7 @@ class ExportFileWFImplTest {
     ExportFileWFConfig exportFileWFConfigMock = Mockito.mock(
       ExportFileWFConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+    DataEventsWFConfig dataEventsWFConfigMock = Mockito.mock(DataEventsWFConfig.class);
 
     Mockito.when(exportFileWFConfigMock.buildExportFileActivityStub())
       .thenReturn(exportFileActivityMock);
@@ -59,11 +61,13 @@ class ExportFileWFImplTest {
         .thenReturn(sendEmailExportFileActivityMock);
     Mockito.when(exportFileWFConfigMock.buildScheduleExportFileExpirationActivityStub())
       .thenReturn(scheduleExportFileExpirationActivityMock);
+    Mockito.when(dataEventsWFConfigMock.buildPublishDataEventActivityStub())
+      .thenReturn(publishDataEventsActivityMock);
 
     Mockito.when(applicationContextMock.getBean(ExportFileWFConfig.class))
       .thenReturn(exportFileWFConfigMock);
-    Mockito.when(applicationContextMock.getBean(DataEventsProducerService.class))
-      .thenReturn(dataEventsProducerServiceMock);
+    Mockito.when(applicationContextMock.getBean(DataEventsWFConfig.class))
+      .thenReturn(dataEventsWFConfigMock);
 
     wf = new ExportFileWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -135,7 +139,7 @@ class ExportFileWFImplTest {
       Mockito.verify(scheduleExportFileExpirationActivityMock).scheduleExportFileExpiration(exportFileId,
         expectedDueDate
       );
-      Mockito.verify(dataEventsProducerServiceMock).notifyExportEvent(any(), any());
+      Mockito.verify(publishDataEventsActivityMock).publishExportFileEventActivity(any(), any());
     }
   }
 
@@ -191,7 +195,7 @@ class ExportFileWFImplTest {
       ));
       Mockito.verify(sendEmailExportFileActivityMock).sendExportCompletedEmail(exportFileId, false);
       Mockito.verifyNoInteractions(scheduleExportFileExpirationActivityMock);
-      Mockito.verifyNoInteractions(dataEventsProducerServiceMock);
+      Mockito.verifyNoInteractions(publishDataEventsActivityMock);
     }
   }
 }

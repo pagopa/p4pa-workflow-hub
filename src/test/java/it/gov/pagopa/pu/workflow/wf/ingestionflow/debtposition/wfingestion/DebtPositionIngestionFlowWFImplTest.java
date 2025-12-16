@@ -14,7 +14,8 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIng
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
 import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
+import it.gov.pagopa.pu.workflow.wf.dataevents.activity.PublishDataEventsActivity;
+import it.gov.pagopa.pu.workflow.wf.dataevents.config.DataEventsWFConfig;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -46,7 +47,7 @@ class DebtPositionIngestionFlowWFImplTest {
   @Mock
   private MassiveNoticeGenerationStatusRetrieverActivity massiveNoticeGenerationStatusRetrieverActivityMock;
   @Mock
-  private DataEventsProducerService dataEventsProducerServiceMock;
+  private PublishDataEventsActivity publishDataEventsActivityMock;
 
   private DebtPositionIngestionFlowWFImpl wf;
 
@@ -54,6 +55,7 @@ class DebtPositionIngestionFlowWFImplTest {
   void setUp() {
     BaseIngestionFlowFileWFConfig baseIngestionFlowFileWFConfigMock = Mockito.mock(BaseIngestionFlowFileWFConfig.class);
     DebtPositionIngestionFlowWfConfig debtPositionIngestionFlowWfConfigMock = Mockito.mock(DebtPositionIngestionFlowWfConfig.class);
+    DataEventsWFConfig dataEventsWFConfigMock = Mockito.mock(DataEventsWFConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
     Mockito.doReturn(debtPositionIngestionFlowWfConfigMock)
@@ -63,6 +65,10 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.doReturn(baseIngestionFlowFileWFConfigMock)
       .when(applicationContextMock)
       .getBean(BaseIngestionFlowFileWFConfig.class);
+
+    Mockito.doReturn(dataEventsWFConfigMock)
+      .when(applicationContextMock)
+      .getBean(DataEventsWFConfig.class);
 
     Mockito.when(baseIngestionFlowFileWFConfigMock.buildUpdateIngestionFlowStatusActivityStub())
       .thenReturn(updateIngestionFlowStatusActivityMock);
@@ -77,8 +83,8 @@ class DebtPositionIngestionFlowWFImplTest {
       .thenReturn(synchronizeIngestedDebtPositionActivityMock);
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildMassiveNoticeGenerationStatusRetrieverActivity())
       .thenReturn(massiveNoticeGenerationStatusRetrieverActivityMock);
-    Mockito.when(applicationContextMock.getBean(DataEventsProducerService.class))
-      .thenReturn(dataEventsProducerServiceMock);
+    Mockito.when(dataEventsWFConfigMock.buildPublishDataEventActivityStub())
+      .thenReturn(publishDataEventsActivityMock);
 
     wf = new DebtPositionIngestionFlowWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -93,7 +99,7 @@ class DebtPositionIngestionFlowWFImplTest {
       sendEmailIngestionFlowActivityMock,
       synchronizeIngestedDebtPositionActivityMock,
       massiveNoticeGenerationStatusRetrieverActivityMock,
-      dataEventsProducerServiceMock
+      publishDataEventsActivityMock
     );
   }
 
@@ -133,7 +139,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Mockito.same(installmentIngestionFlowFileResult)
       );
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true);
-      Mockito.verify(dataEventsProducerServiceMock).notifyIngestionEvent(any(), any());
+      Mockito.verify(publishDataEventsActivityMock).publishIngestionFlowFileEventActivity(any(), any());
     }
   }
 
@@ -298,7 +304,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Mockito.same(installmentIngestionFlowFileResult)
       );
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true);
-      Mockito.verify(dataEventsProducerServiceMock).notifyIngestionEvent(any(), any());
+      Mockito.verify(publishDataEventsActivityMock).publishIngestionFlowFileEventActivity(any(), any());
     }
   }
 
@@ -345,7 +351,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Mockito.same(installmentIngestionFlowFileResult)
       );
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, true);
-      Mockito.verify(dataEventsProducerServiceMock).notifyIngestionEvent(any(), any());
+      Mockito.verify(publishDataEventsActivityMock).publishIngestionFlowFileEventActivity(any(), any());
     }
   }
 
@@ -398,7 +404,7 @@ class DebtPositionIngestionFlowWFImplTest {
           .organizationId(123L)
           .build());
       Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, false);
-      Mockito.verify(dataEventsProducerServiceMock).notifyIngestionEvent(any(), any());
+      Mockito.verify(publishDataEventsActivityMock).publishIngestionFlowFileEventActivity(any(), any());
     }
   }
 

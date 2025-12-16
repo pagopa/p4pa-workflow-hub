@@ -10,6 +10,7 @@ import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
+import it.gov.pagopa.pu.workflow.wf.dataevents.config.DataEventsWFConfig;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
 import org.junit.jupiter.api.Assertions;
@@ -40,6 +41,7 @@ class ReceiptPagopaIngestionWFImplTest {
   void setUp() {
     BaseIngestionFlowFileWFConfig baseIngestionFlowFileWFConfigMock = mock(BaseIngestionFlowFileWFConfig.class);
     ReceiptPagopaIngestionWfConfig receiptPagopaIngestionWfConfigMock = mock(ReceiptPagopaIngestionWfConfig.class);
+    DataEventsWFConfig dataEventsWFConfigMock = mock(DataEventsWFConfig.class);
     ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
     Mockito.doReturn(baseIngestionFlowFileWFConfigMock)
@@ -49,6 +51,10 @@ class ReceiptPagopaIngestionWFImplTest {
     Mockito.doReturn(receiptPagopaIngestionWfConfigMock)
       .when(applicationContextMock)
       .getBean(ReceiptPagopaIngestionWfConfig.class);
+
+    Mockito.doReturn(dataEventsWFConfigMock)
+        .when(applicationContextMock)
+        .getBean(DataEventsWFConfig.class);
 
     Mockito.when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaIngestionActivityStub())
       .thenReturn(receiptPagopaIngestionActivityMock);

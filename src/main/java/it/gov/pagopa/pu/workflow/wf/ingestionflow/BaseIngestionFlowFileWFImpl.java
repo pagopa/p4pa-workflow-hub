@@ -8,8 +8,10 @@ import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomi
 import it.gov.pagopa.pu.workflow.dto.IngestionDataDTO;
 import it.gov.pagopa.pu.workflow.enums.DataEventType;
 import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
+
+import it.gov.pagopa.pu.workflow.wf.dataevents.activity.PublishDataEventsActivity;
+import it.gov.pagopa.pu.workflow.wf.dataevents.config.DataEventsWFConfig;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,8 +27,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   private Function<Long, T> ingestionFlowFileProcessorActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
-  private DataEventsProducerService dataEventsProducerService;
-
+  private PublishDataEventsActivity publishDataEventsActivity;
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
    * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
@@ -36,13 +37,13 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     BaseIngestionFlowFileWFConfig wfConfig = applicationContext.getBean(BaseIngestionFlowFileWFConfig.class);
+    DataEventsWFConfig dataEventsWFConfig = applicationContext.getBean(DataEventsWFConfig.class);
 
     sendEmailIngestionFlowActivity = wfConfig.buildSendEmailIngestionFlowActivityStub();
     updateIngestionFlowStatusActivity = wfConfig.buildUpdateIngestionFlowStatusActivityStub();
 
     ingestionFlowFileProcessorActivity = buildActivityStubs(applicationContext);
-
-    dataEventsProducerService = applicationContext.getBean(DataEventsProducerService.class);
+    publishDataEventsActivity = dataEventsWFConfig.buildPublishDataEventActivityStub();
   }
 
   /** To be overridden by extended class in order to build further required activities */
@@ -132,7 +133,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
 
   private void publishDataEvent(Long ingestionFlowFileId, IngestionFlowFileResult result, IngestionFlowFileStatus status) {
     if(result.getOrganizationId()!=null) {
-      dataEventsProducerService.notifyIngestionEvent(
+      publishDataEventsActivity.publishIngestionFlowFileEventActivity(
         IngestionDataDTO.builder()
           .ingestionFlowFileId(ingestionFlowFileId)
           .organizationId(result.getOrganizationId())
