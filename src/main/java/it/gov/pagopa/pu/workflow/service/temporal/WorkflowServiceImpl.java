@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -38,13 +39,21 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   @Override
-  public <T> T buildWorkflowStub(Class<T> workflowClass, String taskQueue, String workflowId) {
+  public <T> T buildWorkflowStubToStartNew(Class<T> workflowClass, String taskQueue, String workflowId) {
     return workflowClient.newWorkflowStub(
       workflowClass,
       WorkflowOptions.newBuilder()
         .setTaskQueue(taskQueue)
         .setWorkflowId(workflowId)
         .build());
+  }
+
+  @Override
+  public <T> T buildWorkflowStub(Class<T> workflowClass, String workflowId, Optional<String> runId) {
+    return workflowClient.newWorkflowStub(
+      workflowClass,
+      workflowId,
+      runId);
   }
 
   @Override

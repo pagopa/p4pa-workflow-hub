@@ -16,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "eventType", defaultImpl = DataEventDTO.class, visible = true)
 @JsonSubTypes({
   @JsonSubTypes.Type(value = IngestionDataEventDTO.class, name = "INGESTION"),
+  @JsonSubTypes.Type(value = ExportDataEventDTO.class, name = "EXPORT_FILE"),
 })
 public class DataEventDTO <T> {
   private String eventId;

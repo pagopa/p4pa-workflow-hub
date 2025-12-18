@@ -45,7 +45,7 @@ class PaymentsReportingIngestionWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("PaymentsReportingIngestionWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(PaymentsReportingIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(PaymentsReportingIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);

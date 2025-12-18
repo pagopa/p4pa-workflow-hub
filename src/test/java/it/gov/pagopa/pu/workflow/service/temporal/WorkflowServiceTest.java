@@ -24,6 +24,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.*;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -58,7 +59,7 @@ class WorkflowServiceTest {
   }
 
   @Test
-  void whenIngestThenOk() {
+  void whenBuildWorkflowStubToStartNewThenOk() {
     // Given
     long ingestionFlowFileId = 1L;
     String workflowId = String.valueOf(ingestionFlowFileId);
@@ -73,7 +74,28 @@ class WorkflowServiceTest {
       .thenReturn(wfMock);
 
     // When
-    PaymentsReportingIngestionWF result = workflowService.buildWorkflowStub(PaymentsReportingIngestionWF.class, taskQueue, workflowId);
+    PaymentsReportingIngestionWF result = workflowService.buildWorkflowStubToStartNew(PaymentsReportingIngestionWF.class, taskQueue, workflowId);
+
+    // Then
+    Assertions.assertSame(wfMock, result);
+  }
+
+  @Test
+  void whenBuildWorkflowStubThenOk() {
+    // Given
+    long ingestionFlowFileId = 1L;
+    String workflowId = String.valueOf(ingestionFlowFileId);
+    Optional<String> runId = Optional.empty();
+
+    when(workflowClientMock.newWorkflowStub(
+      Mockito.eq(PaymentsReportingIngestionWF.class),
+      Mockito.same(workflowId),
+      Mockito.same(runId)
+    ))
+      .thenReturn(wfMock);
+
+    // When
+    PaymentsReportingIngestionWF result = workflowService.buildWorkflowStub(PaymentsReportingIngestionWF.class, workflowId, runId);
 
     // Then
     Assertions.assertSame(wfMock, result);

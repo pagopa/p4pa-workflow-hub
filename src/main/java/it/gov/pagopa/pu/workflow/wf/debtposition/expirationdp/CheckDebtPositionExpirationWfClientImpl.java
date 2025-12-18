@@ -30,7 +30,7 @@ public class CheckDebtPositionExpirationWfClientImpl implements CheckDebtPositio
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     String workflowId = generateWorkflowId(debtPositionId, CheckDebtPositionExpirationWF.class);
 
-    CheckDebtPositionExpirationWF workflow = workflowService.buildWorkflowStub(
+    CheckDebtPositionExpirationWF workflow = workflowService.buildWorkflowStubToStartNew(
       CheckDebtPositionExpirationWF.class,
       taskQueue,
       workflowId);

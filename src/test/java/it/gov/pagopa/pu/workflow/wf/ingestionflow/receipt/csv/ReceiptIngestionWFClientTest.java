@@ -45,7 +45,7 @@ class ReceiptIngestionWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ReceiptIngestionWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(ReceiptIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(ReceiptIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);

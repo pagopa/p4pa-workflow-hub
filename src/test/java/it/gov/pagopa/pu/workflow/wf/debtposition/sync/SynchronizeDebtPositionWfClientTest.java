@@ -128,7 +128,7 @@ class SynchronizeDebtPositionWfClientTest {
     T wf = Mockito.mock(wfInterfaceClass);
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC;
-    Mockito.when(workflowServiceMock.buildWorkflowStub(
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
         wfInterfaceClass,
         taskQueue,
         expectedResult.getWorkflowId()))

@@ -7,10 +7,13 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 public interface WorkflowService {
 
-  <T> T buildWorkflowStub(Class<T> workflowClass, String taskQueue, String workflowId);
+  <T> T buildWorkflowStubToStartNew(Class<T> workflowClass, String taskQueue, String workflowId);
+
+  <T> T buildWorkflowStub(Class<T> workflowClass, String workflowId, Optional<String> runId);
 
   WorkflowStub buildUntypedWorkflowStub(Class<?> workflowClass, String taskQueue, String workflowId);
 

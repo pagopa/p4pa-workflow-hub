@@ -54,7 +54,7 @@ class SendNotificationWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationProcessWF-"+sendNotificationId, "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationProcessWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(SendNotificationProcessWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(sendNotificationProcessWFMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, sendNotificationId);
@@ -76,7 +76,7 @@ class SendNotificationWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationDateRetrieveWF-"+sendNotificationId, "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationDateRetrieveWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(SendNotificationDateRetrieveWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(sendNotificationDateRetrieveWFMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, sendNotificationId);

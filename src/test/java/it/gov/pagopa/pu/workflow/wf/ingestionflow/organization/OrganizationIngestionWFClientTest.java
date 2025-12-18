@@ -45,7 +45,7 @@ class OrganizationIngestionWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("OrganizationIngestionWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(OrganizationIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(OrganizationIngestionWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);

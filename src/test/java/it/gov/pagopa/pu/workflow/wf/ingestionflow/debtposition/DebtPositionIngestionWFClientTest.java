@@ -45,7 +45,7 @@ class DebtPositionIngestionWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("DebtPositionIngestionFlowWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(DebtPositionIngestionFlowWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(DebtPositionIngestionFlowWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);

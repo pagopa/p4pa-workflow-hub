@@ -55,7 +55,7 @@ public class WorkflowExceptionHandler {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG);
   }
 
-  @ExceptionHandler({WorkflowNotFoundException.class, WorkflowTypeNotFoundException.class, ResourceNotFoundException.class})
+  @ExceptionHandler({WorkflowNotFoundException.class, WorkflowTypeNotFoundException.class, ResourceNotFoundException.class, io.temporal.client.WorkflowNotFoundException.class})
   public ResponseEntity<WorkflowErrorDTO> handleNotFoundException(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CodeEnum.WORKFLOW_NOT_FOUND);
   }

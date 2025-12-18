@@ -45,7 +45,7 @@ class SendNotificationIngestionWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationIngestionFlowWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(SendNotificationIngestionFlowWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(SendNotificationIngestionFlowWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, ingestionFlowFileId);

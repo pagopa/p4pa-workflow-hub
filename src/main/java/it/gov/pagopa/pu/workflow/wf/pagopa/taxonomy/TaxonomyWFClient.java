@@ -28,7 +28,7 @@ public class TaxonomyWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     String workflowId = generateWorkflowId(ON_DEMAND, SynchronizeTaxonomyPagoPaFetchWF.class);
 
-    SynchronizeTaxonomyPagoPaFetchWF workflow = workflowService.buildWorkflowStub(
+    SynchronizeTaxonomyPagoPaFetchWF workflow = workflowService.buildWorkflowStubToStartNew(
       SynchronizeTaxonomyPagoPaFetchWF.class,
       taskQueue,
       workflowId);

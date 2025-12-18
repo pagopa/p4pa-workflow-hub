@@ -16,8 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(WorkflowControllerImpl.class)
@@ -77,5 +76,21 @@ class WorkflowControllerTest {
 
     WorkflowStatusDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowStatusDTO.class);
     assertEquals(expectedResult, resultResponse);
+  }
+
+  @Test
+  void whenDeleteWorkflowThenOk() throws Exception {
+    String workflowId = "workflow-1";
+
+    MvcResult result = mockMvc.perform(
+        delete("/workflowhub/workflows/{workflowId}", workflowId)
+          .contentType(MediaType.APPLICATION_JSON_VALUE)
+          .accept(MediaType.APPLICATION_JSON_VALUE))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    Mockito.verify(serviceMock, Mockito.times(1)).cancelWorkflow(workflowId);
+
+    assertEquals("", result.getResponse().getContentAsString());
   }
 }

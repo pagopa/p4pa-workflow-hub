@@ -23,7 +23,7 @@ public class TreasuryCsvIngestionWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, TreasuryCsvIngestionWF.class);
 
-    TreasuryCsvIngestionWF workflow = workflowService.buildWorkflowStub(
+    TreasuryCsvIngestionWF workflow = workflowService.buildWorkflowStubToStartNew(
       TreasuryCsvIngestionWF.class,
       taskQueue,
       workflowId);

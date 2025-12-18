@@ -31,7 +31,7 @@ public class OrganizationPaymentsReportingPagoPaFetchWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     String workflowId = generateWorkflowId(organizationId, PaymentsReportingPagoPaOrganizationFetchWF.class);
 
-    PaymentsReportingPagoPaOrganizationFetchWF workflow = workflowService.buildWorkflowStub(
+    PaymentsReportingPagoPaOrganizationFetchWF workflow = workflowService.buildWorkflowStubToStartNew(
       PaymentsReportingPagoPaOrganizationFetchWF.class,
       taskQueue,
       workflowId);

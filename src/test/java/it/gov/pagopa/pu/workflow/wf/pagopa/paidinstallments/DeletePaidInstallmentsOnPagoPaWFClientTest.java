@@ -50,7 +50,7 @@ class DeletePaidInstallmentsOnPagoPaWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("DeletePaidInstallmentsOnPagoPaWF-2", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(DeletePaidInstallmentsOnPagoPaWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(DeletePaidInstallmentsOnPagoPaWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, debtPositionDTO,  receiptId);

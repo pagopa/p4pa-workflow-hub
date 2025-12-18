@@ -27,7 +27,7 @@ public class TreasuryOpiIngestionWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, TreasuryOpiIngestionWF.class);
 
-    TreasuryOpiIngestionWF workflow = workflowService.buildWorkflowStub(
+    TreasuryOpiIngestionWF workflow = workflowService.buildWorkflowStubToStartNew(
       TreasuryOpiIngestionWF.class,
       taskQueue,
       workflowId);

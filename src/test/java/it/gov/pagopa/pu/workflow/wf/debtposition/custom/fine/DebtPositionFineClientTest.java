@@ -61,7 +61,7 @@ class DebtPositionFineClientTest {
     FineWfExecutionConfig wfExecutionConfig = new FineWfExecutionConfig();
     wfExecutionConfig.setIoMessages(fineWfMessages);
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
         FineReductionOptionExpirationWF.class,
         taskQueue,
         expectedResult.getWorkflowId()))
@@ -125,7 +125,7 @@ class DebtPositionFineClientTest {
     FineWfExecutionConfig wfExecutionConfig = new FineWfExecutionConfig();
     wfExecutionConfig.setIoMessages(fineWfMessages);
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
         SynchronizeFineWF.class,
         taskQueue,
         expectedResult.getWorkflowId()))

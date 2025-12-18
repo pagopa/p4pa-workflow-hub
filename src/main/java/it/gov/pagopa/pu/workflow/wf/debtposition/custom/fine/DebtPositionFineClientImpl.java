@@ -34,7 +34,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC;
     String workflowId = generateExpireFineReductionWorkflowId(debtPositionId);
 
-    FineReductionOptionExpirationWF workflow = workflowService.buildWorkflowStub(
+    FineReductionOptionExpirationWF workflow = workflowService.buildWorkflowStubToStartNew(
       FineReductionOptionExpirationWF.class,
       taskQueue,
       workflowId);
@@ -61,7 +61,7 @@ public class DebtPositionFineClientImpl implements DebtPositionFineClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC;
     String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), SynchronizeFineWF.class);
 
-    SynchronizeFineWF workflow = workflowService.buildWorkflowStub(
+    SynchronizeFineWF workflow = workflowService.buildWorkflowStubToStartNew(
       SynchronizeFineWF.class,
       taskQueue,
       workflowId);

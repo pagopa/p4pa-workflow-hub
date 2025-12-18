@@ -24,7 +24,7 @@ public class AssessmentsRegistryIngestionWFClient {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(ingestionFlowFileId, AssessmentsRegistryIngestionWF.class);
 
-    AssessmentsRegistryIngestionWF workflow = workflowService.buildWorkflowStub(
+    AssessmentsRegistryIngestionWF workflow = workflowService.buildWorkflowStubToStartNew(
       AssessmentsRegistryIngestionWF.class,
       taskQueue,
       workflowId);

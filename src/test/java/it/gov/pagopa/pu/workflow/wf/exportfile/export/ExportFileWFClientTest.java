@@ -47,7 +47,7 @@ class ExportFileWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_EXPORT_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("ExportFileWF-" + exportFileType + "-" + exportFileId, "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStub(ExportFileWF.class, taskQueue, expectedResult.getWorkflowId()))
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(ExportFileWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, exportFileId, exportFileType);

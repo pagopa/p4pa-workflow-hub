@@ -25,7 +25,7 @@ public class ReceiptPagopaIngestionWFClient {
   public WorkflowCreatedDTO ingest(Long ingestionFlowFileId) {
     log.info("Starting Receipt Pagopa ingestion flow file having id {}", ingestionFlowFileId);
     String workflowId = generateWorkflowId(ingestionFlowFileId, ReceiptPagopaIngestionWF.class);
-    ReceiptPagopaIngestionWF workflow = workflowService.buildWorkflowStub(
+    ReceiptPagopaIngestionWF workflow = workflowService.buildWorkflowStubToStartNew(
       ReceiptPagopaIngestionWF.class,
       TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY,
       workflowId);
