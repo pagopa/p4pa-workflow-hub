@@ -67,11 +67,11 @@ class DebtPositionGenericSyncServiceTest {
   }
   @Test
   void givenSYNC_ACA_GPDPRELOADWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.SYNC_ACA$GPDPRELOAD, false, wfClientMock::synchronizeDPSyncAcaGpdPreLoad);
+    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.SYNC_ACA_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncAcaGpdPreLoad);
   }
   @Test
   void givenSYNC_GPDPRELOADWhenInvokeWorkflowThenInvokeWfClient() {
-    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.SYNC$GPDPRELOAD, false, wfClientMock::synchronizeDPSyncGpdPreLoad);
+    testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel.SYNC_GPDPRELOAD, false, wfClientMock::synchronizeDPSyncGpdPreLoad);
   }
   @Test
   void givenASYNC_GPDWhenInvokeWorkflowThenInvokeWfClient() {

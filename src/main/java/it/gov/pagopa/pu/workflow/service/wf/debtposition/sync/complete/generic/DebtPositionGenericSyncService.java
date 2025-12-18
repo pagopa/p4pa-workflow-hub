@@ -34,9 +34,9 @@ public class DebtPositionGenericSyncService {
         wfClient.synchronizeDPSync(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
       case SYNC_ACA ->
         wfClient.synchronizeDPSyncAca(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
-      case SYNC$GPDPRELOAD ->
+      case SYNC_GPDPRELOAD ->
         wfClient.synchronizeDPSyncGpdPreLoad(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
-      case SYNC_ACA$GPDPRELOAD ->
+      case SYNC_ACA_GPDPRELOAD ->
         wfClient.synchronizeDPSyncAcaGpdPreLoad(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
       case ASYNC_GPD ->
         massive ? null : wfClient.synchronizeDPAsyncGpd(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
