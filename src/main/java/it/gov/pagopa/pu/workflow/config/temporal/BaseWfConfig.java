@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "workflow.default")
 @Data
 public class BaseWfConfig {
-  protected int scheduleToStartTimeoutInSeconds;
   protected int startToCloseTimeoutInSeconds;
   protected int retryInitialIntervalInMillis;
   protected double retryBackoffCoefficient;
