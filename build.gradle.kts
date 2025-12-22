@@ -74,7 +74,7 @@ val commonsLang3Version = "3.20.0"
 val lz4JavaVersion = "1.10.1"
 val springCloudDepsVersion = "2025.1.0"
 
-val p4paActivitiesVersion = "P4ADEV-4309-SNAPSHOT" // TODO replace with release version when available
+val p4paActivitiesVersion = "1.163.1"
 
 dependencyManagement {
   imports {
