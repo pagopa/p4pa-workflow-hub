@@ -27,6 +27,10 @@ public class TestUtils {
   }
 
   static {
+    clearDefaultTimezone();
+  }
+
+  public static void clearDefaultTimezone() {
     TimeZone.setDefault(Utilities.DEFAULT_TIMEZONE);
   }
 
