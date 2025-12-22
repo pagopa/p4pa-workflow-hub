@@ -1,18 +1,18 @@
 package it.gov.pagopa.pu.workflow.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.workflow.dto.generated.ScheduleInfoDTO;
 import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,7 +25,7 @@ class ScheduleControllerTest {
   private MockMvc mockMvc;
 
   @Autowired
-  private ObjectMapper objectMapper;
+  private JsonMapper jsonMapper;
 
   @MockitoBean
   private WorkflowScheduleService serviceMock;
@@ -47,7 +47,7 @@ class ScheduleControllerTest {
       .andExpect(status().is2xxSuccessful())
       .andReturn();
 
-    ScheduleInfoDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), ScheduleInfoDTO.class);
+    ScheduleInfoDTO resultResponse = jsonMapper.readValue(result.getResponse().getContentAsString(), ScheduleInfoDTO.class);
     assertEquals(expectedResult, resultResponse);
   }
 }

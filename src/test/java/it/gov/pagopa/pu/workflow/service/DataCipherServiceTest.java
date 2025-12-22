@@ -1,12 +1,12 @@
 package it.gov.pagopa.pu.workflow.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 class DataCipherServiceTest {
 
-  private final DataCipherService service = new DataCipherService("PSW", new ObjectMapper());
+  private final DataCipherService service = new DataCipherService("PSW", new JsonMapper());
 
   @Test
   void testEncrypt() {
