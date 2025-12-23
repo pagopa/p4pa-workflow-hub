@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.ClassifyAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
@@ -11,11 +10,12 @@ import it.gov.pagopa.pu.workflow.wf.classification.transfer.TransferClassificati
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Collections;
 
@@ -34,7 +34,7 @@ class ClassificationControllerImplTest {
   private static final int INDEX = 1;
 
   @Autowired
-  private ObjectMapper objectMapper;
+  private JsonMapper jsonMapper;
 
   @Autowired
   private MockMvc mockMvc;
@@ -64,7 +64,7 @@ class ClassificationControllerImplTest {
       .param("transferIndex", String.valueOf(INDEX))
     ).andExpect(status().isCreated()).andReturn();
 
-    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    WorkflowCreatedDTO resultResponse = jsonMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
     assertEquals(workflowCreatedDTO, resultResponse);
   }
 
@@ -82,7 +82,7 @@ class ClassificationControllerImplTest {
       .param("iud", IUD)
     ).andExpect(status().isCreated()).andReturn();
 
-    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    WorkflowCreatedDTO resultResponse = jsonMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
     assertEquals(workflowCreatedDTO, resultResponse);
   }
 
@@ -103,7 +103,7 @@ class ClassificationControllerImplTest {
       .param("transferIndexes", String.valueOf(INDEX))
     ).andExpect(status().isCreated()).andReturn();
 
-    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    WorkflowCreatedDTO resultResponse = jsonMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
     assertEquals(workflowCreatedDTO, resultResponse);
   }
 
@@ -122,7 +122,7 @@ class ClassificationControllerImplTest {
       .param("iud", IUD)
     ).andExpect(status().isCreated()).andReturn();
 
-    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    WorkflowCreatedDTO resultResponse = jsonMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
     assertEquals(workflowCreatedDTO, resultResponse);
   }
 

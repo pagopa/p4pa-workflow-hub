@@ -4,14 +4,14 @@ import com.github.jk1.license.filter.*
 
 plugins {
   java
-  id("org.springframework.boot") version "3.5.6"
+  id("org.springframework.boot") version "4.0.0"
   id("io.spring.dependency-management") version "1.1.7"
   jacoco
-  id("org.sonarqube") version "6.3.1.5724"
-  id("com.github.ben-manes.versions") version "0.52.0"
-  id("org.openapi.generator") version "7.15.0"
+  id("org.sonarqube") version "7.2.1.6560"
+  id("com.github.ben-manes.versions") version "0.53.0"
+  id("org.openapi.generator") version "7.17.0"
   id("org.ajoberstar.grgit") version "5.3.2"
-  id("com.gorylenko.gradle-git-properties") version "2.5.3"
+  id("com.gorylenko.gradle-git-properties") version "2.5.4"
   id("com.github.jk1.dependency-license-report") version "3.0.1"
 }
 
@@ -35,7 +35,8 @@ configurations {
 }
 
 licenseReport {
-  renderers = arrayOf(XmlReportRenderer("third-party-libs.xml", "Back-End Libraries"))
+  renderers =
+    arrayOf(XmlReportRenderer("third-party-libs.xml", "Back-End Libraries"))
   outputDir = "$projectDir/dependency-licenses"
   filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
@@ -55,53 +56,61 @@ repositories {
   }
 }
 
+val springDocOpenApiVersion = "3.0.0"
+val openApiToolsVersion = "0.2.8"
+val springWolfAsyncApiVersion = "1.20.0"
+val micrometerVersion = "1.6.1"
+val otelVersion = "1.57.0"
+val bouncycastleVersion = "1.83"
+val mapStructVersion = "1.6.3"
+val temporalVersion = "1.32.1"
+val protobufJavaVersion = "4.33.2"
+val grpcBomVersion = "1.77.0"
+val guavaVersion = "33.5.0-jre"
+val postgresJdbcVersion = "42.7.8"
+val podamVersion = "8.0.2.RELEASE"
+val caffeineVersion = "3.2.3"
+val commonsLang3Version = "3.20.0"
+val lz4JavaVersion = "1.10.1"
+val springCloudDepsVersion = "2025.1.0"
+
+val p4paActivitiesVersion = "1.163.2"
+
 dependencyManagement {
   imports {
-    mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.1")
+    mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudDepsVersion")
   }
 }
 
-val springDocOpenApiVersion = "2.8.13"
-val openApiToolsVersion = "0.2.7"
-val springWolfAsyncApiVersion = "1.16.0"
-val micrometerVersion = "1.5.4"
-val otelVersion = "1.49.0"
-val bouncycastleVersion = "1.82"
-val mapStructVersion = "1.6.3"
-val temporalVersion = "1.31.0"
-val protobufJavaVersion = "4.32.1"
-val grpcBomVersion = "1.75.0"
-val guavaVersion = "33.5.0-jre"
-val postgresJdbcVersion = "42.7.7"
-val podamVersion = "8.0.2.RELEASE"
-val caffeineVersion = "3.2.2"
-val commonsLang3Version = "3.19.0"
-
-val p4paActivitiesVersion = "1.163.0"
-
 dependencies {
-  implementation("org.springframework.boot:spring-boot-starter")
-  implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-webmvc")
+  implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
+  implementation("org.springframework.boot:spring-boot-starter-restclient")
   implementation("org.springframework.boot:spring-boot-starter-validation")
-  implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+  implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
     exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
   }
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
+  implementation("org.springframework.boot:spring-boot-starter-hateoas")
   implementation("org.springframework.boot:spring-boot-starter-data-rest")
-  implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
+  implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka") {
+    exclude(group = "org.lz4", module = "lz4-java")
+  }
+  implementation("at.yawk.lz4:lz4-java:$lz4JavaVersion")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
   implementation("io.micrometer:micrometer-registry-prometheus")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion") {
     exclude(group = "org.apache.commons", module = "commons-lang3")
   }
-  implementation ("org.apache.commons:commons-lang3:${commonsLang3Version}")
-  implementation("io.github.springwolf:springwolf-kafka:$springWolfAsyncApiVersion")
+  implementation("org.apache.commons:commons-lang3:${commonsLang3Version}")
+  implementation("io.github.springwolf:springwolf-kafka:$springWolfAsyncApiVersion") {
+    exclude(group = "org.lz4", module = "lz4-java")
+  }
   implementation("io.github.springwolf:springwolf-ui:$springWolfAsyncApiVersion")
   implementation("io.github.springwolf:springwolf-cloud-stream:$springWolfAsyncApiVersion")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("org.openapitools:jackson-databind-nullable:$openApiToolsVersion")
   implementation("org.mapstruct:mapstruct:$mapStructVersion")
   implementation("org.bouncycastle:bcprov-jdk18on:$bouncycastleVersion")
@@ -139,7 +148,8 @@ dependencies {
   testAnnotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
 
   //	Testing
-  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+  testImplementation("org.springframework.boot:spring-boot-starter-security-test")
   testImplementation("org.mockito:mockito-core")
   testImplementation("org.projectlombok:lombok")
   testImplementation("io.temporal:temporal-testing")
@@ -212,30 +222,37 @@ openApiGenerate {
   outputDir.set("$projectDir/build/generated")
   apiPackage.set("it.gov.pagopa.pu.workflow.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
-  typeMappings.set(mapOf(
-    "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
-    "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum",
-    "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
-    "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
-    "FineWfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig",
-    "WorkflowTypeOrg" to "it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg",
-    "ScheduleEnum" to "it.gov.pagopa.pu.workflow.enums.ScheduleEnum",
-    "WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus"
-  ))
-  configOptions.set(mapOf(
-    "dateLibrary" to "java8",
-    "requestMappingMode" to "api_interface",
-    "useSpringBoot3" to "true",
-    "interfaceOnly" to "true",
-    "useTags" to "true",
-    "useBeanValidation" to "true",
-    "generateConstructorWithAllArgs" to "true",
-    "generatedConstructorWithRequiredArgs" to "true",
-    "additionalModelTypeAnnotations" to "@lombok.Builder"
-  ))
+  typeMappings.set(
+    mapOf(
+      "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+      "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum",
+      "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
+      "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
+      "FineWfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig",
+      "WorkflowTypeOrg" to "it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg",
+      "ScheduleEnum" to "it.gov.pagopa.pu.workflow.enums.ScheduleEnum",
+      "WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus"
+    )
+  )
+  configOptions.set(
+    mapOf(
+      "dateLibrary" to "java8",
+      "requestMappingMode" to "api_interface",
+      "useSpringBoot3" to "true",
+      "interfaceOnly" to "true",
+      "useTags" to "true",
+      "useBeanValidation" to "true",
+      "generateConstructorWithAllArgs" to "true",
+      "generatedConstructorWithRequiredArgs" to "true",
+      "additionalModelTypeAnnotations" to "@lombok.Builder"
+    )
+  )
 }
 
-var targetEnv = when (Objects.requireNonNullElse(System.getProperty("targetBranch"), grgit.branch.current().name)) {
+var targetEnv = when (Objects.requireNonNullElse(
+  System.getProperty("targetBranch"),
+  grgit.branch.current().name
+)) {
   "uat" -> "uat"
   "main" -> "main"
   else -> "develop"
