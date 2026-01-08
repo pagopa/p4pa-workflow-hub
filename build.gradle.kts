@@ -1,8 +1,8 @@
-import java.util.*
-import com.github.jk1.license.render.*
 import com.github.jk1.license.filter.*
+import com.github.jk1.license.render.*
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import java.util.*
 
 plugins {
   java
@@ -76,7 +76,7 @@ val commonsLang3Version = "3.20.0"
 val lz4JavaVersion = "1.10.1"
 val springCloudDepsVersion = "2025.1.0"
 
-val p4paActivitiesVersion = "1.163.2"
+val p4paActivitiesVersion = "1.164.0"
 
 dependencyManagement {
   imports {
