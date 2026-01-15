@@ -14,6 +14,7 @@ import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowTypeNotFoundException;
 import it.gov.pagopa.pu.workflow.utilities.UtilitiesTest;
+import it.gov.pagopa.pu.workflow.utils.TestUtils;
 import jakarta.persistence.RollbackException;
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
@@ -84,6 +85,11 @@ class WorkflowExceptionHandlerTest {
     String testEndpoint(@RequestParam(DATA) String data, @Valid @RequestBody TestRequestBody body) {
       return "OK";
     }
+  }
+
+  @BeforeEach
+  void init() {
+    TestUtils.clearDefaultTimezone();
   }
 
   @Data
