@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.service.temporal;
 
+import io.temporal.client.WorkflowNotFoundException;
 import io.temporal.client.schedules.*;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.dto.generated.RecentScheduleExecutionInfoDTO;
@@ -235,5 +236,38 @@ class WorkflowScheduleServiceImplTest {
     ScheduleInfoDTO result = workflowScheduleService.getScheduleInfo(scheduleId);
 
     assertNull(result.getLastExecution());
+  }
+
+  @Test
+  void whenManualWorkflowNotFoundThenLastExecutionComesFromRecentActions() {
+    ScheduleEnum scheduleId = ScheduleEnum.PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH;
+
+    Mockito.when(workflowServiceMock.getWorkflowStatus(Mockito.any()))
+      .thenThrow(Mockito.mock(WorkflowNotFoundException.class));
+
+    ScheduleHandle scheduleHandle = Mockito.mock(ScheduleHandle.class, Mockito.RETURNS_DEEP_STUBS);
+    ScheduleInfo scheduleInfo = scheduleHandle.describe().getInfo();
+
+    Mockito.when(scheduleClientMock.getHandle(scheduleId.getValue()))
+      .thenReturn(scheduleHandle);
+
+    OffsetDateTime t1 = OffsetDateTime.now().minusHours(2);
+    OffsetDateTime t2 = OffsetDateTime.now();
+
+    RecentScheduleExecutionInfoDTO r1 = new RecentScheduleExecutionInfoDTO();
+    r1.setStartedAt(t1);
+    RecentScheduleExecutionInfoDTO r2 = new RecentScheduleExecutionInfoDTO();
+    r2.setStartedAt(t2);
+
+    ScheduleInfoDTO mapped = new ScheduleInfoDTO();
+    mapped.setRecentActions(List.of(r1, r2));
+
+    Mockito.when(mapperMock.map(Mockito.eq(scheduleId), Mockito.same(scheduleInfo)))
+      .thenReturn(mapped);
+
+    ScheduleInfoDTO result = workflowScheduleService.getScheduleInfo(scheduleId);
+
+    assertNull(result.getLastManualExecution());
+    assertEquals(t2, result.getLastExecution());
   }
 }
