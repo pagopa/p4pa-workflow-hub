@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.service.temporal;
 
+import io.temporal.client.WorkflowNotFoundException;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.schedules.*;
 import it.gov.pagopa.payhub.activities.util.Utilities;
@@ -86,30 +87,38 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
     return scheduleClient.getHandle(scheduleId.getValue());
   }
 
-  @Override
-  public ScheduleInfoDTO getScheduleInfo(ScheduleEnum scheduleId) {
-    WorkflowStatusDTO workflowStatusDTO = workflowService.getWorkflowStatus(MANUAL_WORKFLOW_ID);
-    ScheduleInfoDTO scheduleInfoDTO = scheduleInfoDTOMapper.map(scheduleId, getSchedule(scheduleId).describe().getInfo());
-    scheduleInfoDTO.setLastManualExecution(workflowStatusDTO);
+@Override
+public ScheduleInfoDTO getScheduleInfo(ScheduleEnum scheduleId) {
+  WorkflowStatusDTO workflowStatusDTO = getManualWorkflowStatusSafe();
 
-    Optional<OffsetDateTime> maxRecentActionOpt = scheduleInfoDTO.getRecentActions().stream()
-      .map(RecentScheduleExecutionInfoDTO::getStartedAt)
-      .filter(Objects::nonNull)
-      .max(Comparator.naturalOrder());
-    OffsetDateTime maxRecentAction = maxRecentActionOpt.orElse(null);
+  ScheduleInfoDTO scheduleInfoDTO =
+    scheduleInfoDTOMapper.map(scheduleId, getSchedule(scheduleId).describe().getInfo());
 
-    OffsetDateTime executionDateTime = null;
-    if(workflowStatusDTO != null && workflowStatusDTO.getExecutionDateTime() != null) {
-      executionDateTime = workflowStatusDTO.getExecutionDateTime();
+  scheduleInfoDTO.setLastManualExecution(workflowStatusDTO);
+
+  Optional<OffsetDateTime> maxRecentActionOpt = scheduleInfoDTO.getRecentActions().stream()
+    .map(RecentScheduleExecutionInfoDTO::getStartedAt)
+    .filter(Objects::nonNull)
+    .max(Comparator.naturalOrder());
+  OffsetDateTime maxRecentAction = maxRecentActionOpt.orElse(null);
+
+  OffsetDateTime manualExecutionDateTime =
+    workflowStatusDTO != null ? workflowStatusDTO.getExecutionDateTime() : null;
+
+  OffsetDateTime lastExecution = Stream.of(maxRecentAction, manualExecutionDateTime)
+    .filter(Objects::nonNull)
+    .max(Comparator.naturalOrder())
+    .orElse(null);
+
+  scheduleInfoDTO.setLastExecution(lastExecution);
+  return scheduleInfoDTO;
+}
+
+  private WorkflowStatusDTO getManualWorkflowStatusSafe() {
+    try {
+      return workflowService.getWorkflowStatus(WorkflowScheduleServiceImpl.MANUAL_WORKFLOW_ID);
+    } catch (WorkflowNotFoundException ex) {
+        return null;
     }
-
-    OffsetDateTime lastExecution = Stream.of(maxRecentAction, executionDateTime)
-      .filter(Objects::nonNull)
-      .max(Comparator.naturalOrder())
-      .orElse(null);
-
-    scheduleInfoDTO.setLastExecution(lastExecution);
-
-    return scheduleInfoDTO;
   }
 }
