@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.ScheduleInfoDTO;
 import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
@@ -29,6 +30,8 @@ class ScheduleControllerTest {
 
   @MockitoBean
   private WorkflowScheduleService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenGetScheduleInfoThenOk() throws Exception {

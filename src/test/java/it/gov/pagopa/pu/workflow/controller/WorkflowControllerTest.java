@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import io.micrometer.tracing.Tracer;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
@@ -30,6 +31,8 @@ class WorkflowControllerTest {
 
   @MockitoBean
   private WorkflowService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @MockitoBean
   private WorkflowCompletionService workflowCompletionServiceMock;

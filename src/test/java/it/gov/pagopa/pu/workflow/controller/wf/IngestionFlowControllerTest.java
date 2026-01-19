@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.wf.ingestionflowfile.IngestionFlowFileStarterService;
@@ -32,6 +33,8 @@ class IngestionFlowControllerTest {
 
   @MockitoBean
   private IngestionFlowFileStarterService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @MockitoBean
   private TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClientMock;

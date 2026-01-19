@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,8 @@ class PagoPaFetchControllerTest {
 
   @MockitoBean
   private OrganizationPaymentsReportingPagoPaFetchWFClient serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenFetchOrganizationPaymentsReportingThenOk() throws Exception {

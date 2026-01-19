@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.ClassifyAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
@@ -47,6 +48,8 @@ class ClassificationControllerImplTest {
 
   @MockitoBean
   private IudClassificationWFClient iudClassificationWFClientMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void givenIdWhenClassifyThenCreateTransferClassificationWFSuccessfully() throws Exception {

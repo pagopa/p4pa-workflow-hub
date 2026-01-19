@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -31,6 +32,8 @@ class ExportFileControllerImplTest {
   private JsonMapper jsonMapper;
   @MockitoBean
   private ExportFileService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void givenExportFileIdWhenExpireExportFileThenOk() throws Exception {
