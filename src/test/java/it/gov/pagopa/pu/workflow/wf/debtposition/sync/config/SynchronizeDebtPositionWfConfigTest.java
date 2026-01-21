@@ -14,7 +14,8 @@ class SynchronizeDebtPositionWfConfigTest {
   private final Map<Class<?>, Class<?>> localActivityInterface2Impl = Map.of(
     PublishPaymentEventActivity.class, PublishPaymentEventActivityImpl.class,
     CancelCheckDpExpirationScheduleActivity.class, CancelCheckDpExpirationScheduleActivityImpl.class,
-    ScheduleCheckDpExpirationActivity.class, ScheduleCheckDpExpirationActivityImpl.class
+    ScheduleCheckDpExpirationActivity.class, ScheduleCheckDpExpirationActivityImpl.class,
+    StartIONotificationWFActivity.class, StartIONotificationWFActivityImpl.class
   );
 
   @Test
