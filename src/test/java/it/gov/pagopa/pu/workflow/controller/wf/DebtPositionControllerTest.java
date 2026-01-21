@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
@@ -43,8 +42,6 @@ class DebtPositionControllerTest {
 
   @MockitoBean
   private DebtPositionService serviceMock;
-  @MockitoBean
-  private Tracer tracerMock;
 
   @Test
   void whenSyncDebtPositionThenOk() throws Exception {

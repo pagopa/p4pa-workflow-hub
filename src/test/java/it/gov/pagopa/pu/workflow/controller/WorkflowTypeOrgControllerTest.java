@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.workflow.controller;
 
-import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;
 import it.gov.pagopa.pu.workflow.service.WorkflowTypeOrgSaveService;
@@ -27,8 +26,6 @@ class WorkflowTypeOrgControllerTest {
   private MockMvc mockMvc;
   @Autowired
   private JsonMapper jsonMapper;
-  @MockitoBean
-  private Tracer tracerMock;
 
   @MockitoBean
   private WorkflowTypeOrgSaveService serviceMock;
