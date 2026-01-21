@@ -1,6 +1,5 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
-import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
@@ -29,8 +28,6 @@ class AssessmentsControllerTest {
 
   @Autowired
   private JsonMapper jsonMapper;
-  @MockitoBean
-  private Tracer tracerMock;
 
   @MockitoBean
   private CreateAssessmentsWFClient createAssessmentsWFClientMock;
