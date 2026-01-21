@@ -171,6 +171,7 @@
                     "nav": "string",
                     "notificationDate": "2015-07-20T15:49:04-07:00",
                     "notificationFeeCents": 0,
+                    "originalRemittanceInformation": "string",
                     "paymentOptionId": 0,
                     "receiptId": 0,
                     "remittanceInformation": "string",
@@ -290,6 +291,7 @@
                       "nav": "string",
                       "notificationDate": "2015-07-20T15:49:04-07:00",
                       "notificationFeeCents": 0,
+                      "originalRemittanceInformation": "string",
                       "paymentOptionId": 0,
                       "receiptId": 0,
                       "remittanceInformation": "string",
@@ -629,6 +631,9 @@
             "type": "integer",
             "format": "int64"
           },
+          "originalRemittanceInformation": {
+            "type": "string"
+          },
           "paymentOptionId": {
             "type": "integer",
             "format": "int64"
@@ -702,6 +707,7 @@
             "nav": "string",
             "notificationDate": "2015-07-20T15:49:04-07:00",
             "notificationFeeCents": 0,
+            "originalRemittanceInformation": "string",
             "paymentOptionId": 0,
             "receiptId": 0,
             "remittanceInformation": "string",
@@ -975,6 +981,7 @@
                 "nav": "string",
                 "notificationDate": "2015-07-20T15:49:04-07:00",
                 "notificationFeeCents": 0,
+                "originalRemittanceInformation": "string",
                 "paymentOptionId": 0,
                 "receiptId": 0,
                 "remittanceInformation": "string",
