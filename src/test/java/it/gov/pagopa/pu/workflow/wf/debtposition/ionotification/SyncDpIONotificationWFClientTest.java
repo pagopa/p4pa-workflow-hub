@@ -65,7 +65,7 @@ class SyncDpIONotificationWFClientTest {
     try (MockedStatic<LocalDateTime> mockedDateTime = Mockito.mockStatic(LocalDateTime.class)) {
       mockedDateTime.when(LocalDateTime::now).thenReturn(fixedNow);
 
-      String expectedWorkflowId = String.format("IoNotificationWF-%s-%s",
+      String expectedWorkflowId = String.format("SyncDpIONotificationWF-%s-%s",
         debtPositionDTO.getDebtPositionId(), fixedDateTime);
 
       WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(expectedWorkflowId, "runId");
