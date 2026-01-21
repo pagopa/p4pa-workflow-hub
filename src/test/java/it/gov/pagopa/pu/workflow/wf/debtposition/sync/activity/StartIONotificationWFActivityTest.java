@@ -20,16 +20,16 @@ import java.util.Map;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
-class InvokeIONotificationActivityTest {
+class StartIONotificationWFActivityTest {
 
   @Mock
   private IoNotificationWFClient clientMock;
 
-  private InvokeIONotificationActivity activity;
+  private StartIONotificationWFActivity activity;
 
   @BeforeEach
   void init(){
-    activity = new InvokeIONotificationActivityImpl(clientMock);
+    activity = new StartIONotificationWFActivityImpl(clientMock);
   }
 
   @AfterEach
@@ -38,7 +38,7 @@ class InvokeIONotificationActivityTest {
   }
 
   @Test
-  void whenInvokeIONotificationActivityThenInvokeClient(){
+  void whenInvokeIONotificationActivityThenStartClientWf(){
     // Given
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
     Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap = new HashMap<>();
@@ -47,7 +47,7 @@ class InvokeIONotificationActivityTest {
       new GenericWfExecutionConfig.IONotificationBaseOpsMessages(new IONotificationMessage("subject", "message"), null, null);
 
     // When
-    activity.invokeIONotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
+    activity.startIONotificationWF(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
 
     // Then
     Mockito.verify(clientMock)

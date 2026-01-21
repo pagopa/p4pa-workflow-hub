@@ -14,16 +14,17 @@ import java.util.Map;
 @Service
 @Slf4j
 @ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL)
-public class InvokeIONotificationActivityImpl implements InvokeIONotificationActivity {
+public class StartIONotificationWFActivityImpl implements StartIONotificationWFActivity {
 
   private final IoNotificationWFClient ioNotificationWFClient;
 
-  public InvokeIONotificationActivityImpl(IoNotificationWFClient ioNotificationWFClient) {
+  public StartIONotificationWFActivityImpl(IoNotificationWFClient ioNotificationWFClient) {
     this.ioNotificationWFClient = ioNotificationWFClient;
   }
 
   @Override
-  public void invokeIONotification(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
+  public void startIONotificationWF(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
+    log.info("Starting IO notification process on debtPosition: {}", debtPositionDTO.getDebtPositionId());
     ioNotificationWFClient.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessages);
   }
 }

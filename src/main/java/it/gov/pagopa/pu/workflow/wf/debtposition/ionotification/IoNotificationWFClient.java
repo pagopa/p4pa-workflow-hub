@@ -10,9 +10,11 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.wf_ionotificatio
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 @Slf4j
 @Service
@@ -27,9 +29,10 @@ public class IoNotificationWFClient {
   }
 
   public void sendIoNotification(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
-    log.info("Starting check debt position expiration WF: {}", debtPositionDTO.getDebtPositionId());
+    log.info("Starting IO notification WF: {}", debtPositionDTO.getDebtPositionId());
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
-    String workflowId = generateWorkflowId(debtPositionDTO.getDebtPositionId(), IoNotificationWF.class);
+    String dateTime = LocalDateTime.now().format(ISO_LOCAL_DATE_TIME);
+    String workflowId = generateWorkflowId(String.format("%s-%s", debtPositionDTO.getDebtPositionId(), dateTime), IoNotificationWF.class);
 
     IoNotificationWF workflow = workflowService.buildWorkflowStubToStartNew(
       IoNotificationWF.class,

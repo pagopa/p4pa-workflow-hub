@@ -17,9 +17,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +50,7 @@ class IoNotificationWFClientTest {
   }
 
   @Test
-  void whenSendSendIoNotificationThenSuccess(){
+  void whenSendSendIoNotificationThenSuccess() {
     // Given
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
     Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap = new HashMap<>();
@@ -57,26 +59,34 @@ class IoNotificationWFClientTest {
       new GenericWfExecutionConfig.IONotificationBaseOpsMessages(new IONotificationMessage("subject", "message"), null, null);
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
-    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IoNotificationWF-1", "runId");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
-        IoNotificationWF.class,
-        taskQueue,
-        expectedResult.getWorkflowId()))
-      .thenReturn(ioNotificationWFMock);
+    String fixedDateTime = "2026-01-21T16:30:00";
+    LocalDateTime fixedNow = LocalDateTime.parse(fixedDateTime);
+    try (MockedStatic<LocalDateTime> mockedDateTime = Mockito.mockStatic(LocalDateTime.class)) {
+      mockedDateTime.when(LocalDateTime::now).thenReturn(fixedNow);
 
-    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, debtPositionDTO,
-      iudSyncCompleteDTOMap, ioMessage);
+      String expectedWorkflowId = String.format("IoNotificationWF-%s-%s",
+        debtPositionDTO.getDebtPositionId(), fixedDateTime);
 
-    // when
-    client.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
+      WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(expectedWorkflowId, "runId");
 
-    // Then
-    Mockito.verify(ioNotificationWFMock).sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
+      Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
+          IoNotificationWF.class,
+          taskQueue,
+          expectedResult.getWorkflowId()))
+        .thenReturn(ioNotificationWFMock);
 
-    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, IoNotificationWFImpl.class);
+      TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, debtPositionDTO,
+        iudSyncCompleteDTOMap, ioMessage);
 
+      // when
+      client.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
+
+      // Then
+      Mockito.verify(ioNotificationWFMock).sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
+
+      TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, IoNotificationWFImpl.class);
+
+    }
   }
-
-
 }

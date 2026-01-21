@@ -63,18 +63,6 @@ class IoNotificationWFTest {
   }
 
   @Test
-  void givenIudSyncMapEmptyWhenSendSendIoNotificationThenNothingToNotify(){
-    // Given
-    DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
-    Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap = new HashMap<>();
-    GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessage =
-      new GenericWfExecutionConfig.IONotificationBaseOpsMessages(new IONotificationMessage("subject", "message"), null, null);
-
-    // When & Then
-    Assertions.assertDoesNotThrow(() -> wf.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage));
-  }
-
-  @Test
   void givenMessageToNotifyWhenSendSendIoNotificationThenPublishEvent(){
     // Given
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();

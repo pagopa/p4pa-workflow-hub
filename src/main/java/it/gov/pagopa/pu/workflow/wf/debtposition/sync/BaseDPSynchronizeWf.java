@@ -10,7 +10,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.CancelCheckDpExpirationScheduleActivity;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.InvokeIONotificationActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.StartIONotificationWFActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.ScheduleCheckDpExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
@@ -36,7 +36,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
   protected PublishPaymentEventActivity publishPaymentEventActivity;
   protected CancelCheckDpExpirationScheduleActivity cancelCheckDpExpirationScheduleActivity;
   protected ScheduleCheckDpExpirationActivity scheduleCheckDpExpirationActivity;
-  protected InvokeIONotificationActivity invokeIONotificationActivity;
+  protected StartIONotificationWFActivity startIONotificationWFActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -51,7 +51,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     publishPaymentEventActivity = wfConfig.buildPublishPaymentEventActivityStub();
     cancelCheckDpExpirationScheduleActivity = wfConfig.buildCancelCheckDpExpirationScheduleActivityStub();
     scheduleCheckDpExpirationActivity = wfConfig.buildScheduleCheckDpExpirationActivityStub();
-    invokeIONotificationActivity = wfConfig.buildInvokeIONotificationActivityStub();
+    startIONotificationWFActivity = wfConfig.buildInvokeIONotificationActivityStub();
 
     buildActivities(wfConfig);
   }
@@ -140,7 +140,11 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
   }
 
   protected void invokeIONotificationWF(DebtPositionDTO requestedDebtPosition, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
-    invokeIONotificationActivity.invokeIONotification(requestedDebtPosition, iudSyncCompleteDTOMap, ioMessages);
+    if (!CollectionUtils.isEmpty(iudSyncCompleteDTOMap)) {
+      startIONotificationWFActivity.startIONotificationWF(requestedDebtPosition, iudSyncCompleteDTOMap, ioMessages);
+    } else {
+      log.info("Nothing to notifyIO on debtPosition {}", requestedDebtPosition.getDebtPositionId());
+    }
   }
 
   protected void scheduleExpirationWF(DebtPositionDTO finalizedDebtPositionDTO, Long debtPositionId) {

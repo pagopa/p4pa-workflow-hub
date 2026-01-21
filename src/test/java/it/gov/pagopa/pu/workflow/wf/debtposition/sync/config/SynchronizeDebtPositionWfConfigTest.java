@@ -15,7 +15,7 @@ class SynchronizeDebtPositionWfConfigTest {
     PublishPaymentEventActivity.class, PublishPaymentEventActivityImpl.class,
     CancelCheckDpExpirationScheduleActivity.class, CancelCheckDpExpirationScheduleActivityImpl.class,
     ScheduleCheckDpExpirationActivity.class, ScheduleCheckDpExpirationActivityImpl.class,
-    InvokeIONotificationActivity.class, InvokeIONotificationActivityImpl.class
+    StartIONotificationWFActivity.class, StartIONotificationWFActivityImpl.class
   );
 
   @Test

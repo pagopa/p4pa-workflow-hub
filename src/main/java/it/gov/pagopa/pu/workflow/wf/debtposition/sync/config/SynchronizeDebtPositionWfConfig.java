@@ -9,7 +9,7 @@ import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.CancelCheckDpExpirationScheduleActivity;
-import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.InvokeIONotificationActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.StartIONotificationWFActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.ScheduleCheckDpExpirationActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -53,8 +53,8 @@ public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(SynchronizeInstallmentGpdPreLoadActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
-  public InvokeIONotificationActivity buildInvokeIONotificationActivityStub() {
-    return Workflow.newActivityStub(InvokeIONotificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+  public StartIONotificationWFActivity buildInvokeIONotificationActivityStub() {
+    return Workflow.newActivityStub(StartIONotificationWFActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
       TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL,
       this));
   }

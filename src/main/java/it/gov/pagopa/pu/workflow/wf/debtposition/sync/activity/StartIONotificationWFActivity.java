@@ -10,8 +10,8 @@ import java.util.Map;
 
 /** It will invoke IO notification */
 @ActivityInterface
-public interface InvokeIONotificationActivity {
+public interface StartIONotificationWFActivity {
 
   @ActivityMethod
-  void invokeIONotification(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages);
+  void startIONotificationWF(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages);
 }
