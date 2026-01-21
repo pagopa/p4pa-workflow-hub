@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
-import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.IoNotificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.SyncDpIONotificationWFClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtP
 class StartIONotificationWFActivityTest {
 
   @Mock
-  private IoNotificationWFClient clientMock;
+  private SyncDpIONotificationWFClient clientMock;
 
   private StartIONotificationWFActivity activity;
 

@@ -9,7 +9,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
-import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.config.IoNotificationWfConfig;
+import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.config.SyncDpIONotificationWFConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -28,18 +28,18 @@ import java.util.Map;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
-class IoNotificationWFTest {
+class SyncDpIONotificationWFTest {
 
   @Mock
   private IONotificationDebtPositionActivity ioNotificationDebtPositionActivityMock;
   @Mock
   private PublishPaymentEventActivity publishPaymentEventActivityMock;
 
-  private IoNotificationWFImpl wf;
+  private SyncDpIONotificationWFImpl wf;
 
   @BeforeEach
   void init() {
-    IoNotificationWfConfig configMock = Mockito.mock(IoNotificationWfConfig.class);
+    SyncDpIONotificationWFConfig configMock = Mockito.mock(SyncDpIONotificationWFConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
     Mockito.when(configMock.buildIoNotificationDebtPositionActivityStub())
@@ -47,10 +47,10 @@ class IoNotificationWFTest {
     Mockito.when(configMock.buildPublishPaymentEventActivityStub())
       .thenReturn(publishPaymentEventActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(IoNotificationWfConfig.class))
+    Mockito.when(applicationContextMock.getBean(SyncDpIONotificationWFConfig.class))
       .thenReturn(configMock);
 
-    wf = new IoNotificationWFImpl();
+    wf = new SyncDpIONotificationWFImpl();
     wf.setApplicationContext(applicationContextMock);
   }
 

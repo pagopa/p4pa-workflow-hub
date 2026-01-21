@@ -5,7 +5,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.IoNotificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.SyncDpIONotificationWFClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +16,15 @@ import java.util.Map;
 @ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL)
 public class StartIONotificationWFActivityImpl implements StartIONotificationWFActivity {
 
-  private final IoNotificationWFClient ioNotificationWFClient;
+  private final SyncDpIONotificationWFClient syncDpIONotificationWFClient;
 
-  public StartIONotificationWFActivityImpl(IoNotificationWFClient ioNotificationWFClient) {
-    this.ioNotificationWFClient = ioNotificationWFClient;
+  public StartIONotificationWFActivityImpl(SyncDpIONotificationWFClient syncDpIONotificationWFClient) {
+    this.syncDpIONotificationWFClient = syncDpIONotificationWFClient;
   }
 
   @Override
   public void startIONotificationWF(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
     log.info("Starting IO notification process on debtPosition: {}", debtPositionDTO.getDebtPositionId());
-    ioNotificationWFClient.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessages);
+    syncDpIONotificationWFClient.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessages);
   }
 }

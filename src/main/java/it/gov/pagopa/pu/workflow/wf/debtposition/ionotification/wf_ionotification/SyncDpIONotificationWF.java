@@ -14,7 +14,7 @@ import java.util.Map;
  * */
 
 @WorkflowInterface
-public interface IoNotificationWF {
+public interface SyncDpIONotificationWF {
 
   @WorkflowMethod
   void sendIoNotification(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages);

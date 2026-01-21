@@ -10,8 +10,8 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
-import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.wf_ionotification.IoNotificationWF;
-import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.wf_ionotification.IoNotificationWFImpl;
+import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.wf_ionotification.SyncDpIONotificationWF;
+import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.wf_ionotification.SyncDpIONotificationWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,20 +28,20 @@ import java.util.Map;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 
 @ExtendWith(MockitoExtension.class)
-class IoNotificationWFClientTest {
+class SyncDpIONotificationWFClientTest {
 
   @Mock
   private WorkflowService workflowServiceMock;
   @Mock
   private WorkflowClientService workflowClientServiceMock;
   @Mock
-  private IoNotificationWF ioNotificationWFMock;
+  private SyncDpIONotificationWF syncDpIONotificationWFMock;
 
-  private IoNotificationWFClient client;
+  private SyncDpIONotificationWFClient client;
 
   @BeforeEach
   void init() {
-    client = new IoNotificationWFClient(workflowServiceMock, workflowClientServiceMock);
+    client = new SyncDpIONotificationWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
@@ -71,10 +71,10 @@ class IoNotificationWFClientTest {
       WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(expectedWorkflowId, "runId");
 
       Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
-          IoNotificationWF.class,
+          SyncDpIONotificationWF.class,
           taskQueue,
           expectedResult.getWorkflowId()))
-        .thenReturn(ioNotificationWFMock);
+        .thenReturn(syncDpIONotificationWFMock);
 
       TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, debtPositionDTO,
         iudSyncCompleteDTOMap, ioMessage);
@@ -83,9 +83,9 @@ class IoNotificationWFClientTest {
       client.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
 
       // Then
-      Mockito.verify(ioNotificationWFMock).sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
+      Mockito.verify(syncDpIONotificationWFMock).sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
 
-      TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, IoNotificationWFImpl.class);
+      TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SyncDpIONotificationWFImpl.class);
 
     }
   }

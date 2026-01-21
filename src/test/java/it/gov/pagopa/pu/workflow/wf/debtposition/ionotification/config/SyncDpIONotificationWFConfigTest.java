@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-class IoNotificationWfConfigTest {
+class SyncDpIONotificationWFConfigTest {
 
-  private final IoNotificationWfConfig config = new IoNotificationWfConfig();
+  private final SyncDpIONotificationWFConfig config = new SyncDpIONotificationWFConfig();
 
   private final Map<Class<?>, Class<?>> localActivityInterface2Impl = Map.of(
     PublishPaymentEventActivity.class, PublishPaymentEventActivityImpl.class

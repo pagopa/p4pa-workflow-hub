@@ -9,7 +9,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.config.IoNotificationWfConfig;
+import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.config.SyncDpIONotificationWFConfig;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -20,14 +20,14 @@ import java.util.Map;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY)
-public class IoNotificationWFImpl implements IoNotificationWF, ApplicationContextAware {
+public class SyncDpIONotificationWFImpl implements SyncDpIONotificationWF, ApplicationContextAware {
 
     private IONotificationDebtPositionActivity ioNotificationDebtPositionActivity;
     private PublishPaymentEventActivity publishPaymentEventActivity;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        IoNotificationWfConfig wfConfig = applicationContext.getBean(IoNotificationWfConfig.class);
+        SyncDpIONotificationWFConfig wfConfig = applicationContext.getBean(SyncDpIONotificationWFConfig.class);
         ioNotificationDebtPositionActivity = wfConfig.buildIoNotificationDebtPositionActivityStub();
         publishPaymentEventActivity = wfConfig.buildPublishPaymentEventActivityStub();
     }

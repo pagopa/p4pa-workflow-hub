@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "workflow.debt-position-io-notification")
-public class IoNotificationWfConfig extends BaseWfConfig {
+public class SyncDpIONotificationWFConfig extends BaseWfConfig {
 
   public IONotificationDebtPositionActivity buildIoNotificationDebtPositionActivityStub() {
     return Workflow.newActivityStub(IONotificationDebtPositionActivity.class,
