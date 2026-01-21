@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
 
 import java.util.Map;
 
+/** It will invoke IO notification */
 @ActivityInterface
 public interface InvokeIONotificationActivity {
 
