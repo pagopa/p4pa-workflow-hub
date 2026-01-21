@@ -7,7 +7,7 @@ import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNoti
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 
 /**
- * Workflow to handle IUF receipt classification
+ * Workflow to handle IUD receipt classification
  * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/1339031693/Classificazione+incassi#3.5.1.-Classificazione-IUD>Confluence page</a>
  */
 @WorkflowInterface
