@@ -29,7 +29,7 @@ public class SynchronizeNoPagoPAWFImpl extends BaseDPSynchronizeWf implements Sy
   }
 
   @Override
-  protected void callIONotificationActivity(DebtPositionDTO requestedDebtPosition, Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
+  protected void invokeIONotificationWF(DebtPositionDTO requestedDebtPosition, Map<String, SyncCompleteDTO> iupdSyncStatusUpdateDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
     // Do Nothing
   }
 }
