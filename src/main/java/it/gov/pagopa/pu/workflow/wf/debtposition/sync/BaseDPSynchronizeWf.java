@@ -73,7 +73,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     SyncStatusUpdateRequestDTO finalizeStatusRequest = processToSyncInstallments(requestedDebtPosition);
     DebtPositionDTO finalizedDebtPositionDTO = finalizeSyncStatus(requestedDebtPosition, finalizeStatusRequest);
     publishEvent(paymentEventRequest, finalizedDebtPositionDTO);
-    invokeIONotificationWF(requestedDebtPosition, finalizeStatusRequest.getIupd2finalize(), wfExecutionConfig!=null? wfExecutionConfig.getIoMessages() : null);
+    startIONotificationWF(requestedDebtPosition, finalizeStatusRequest.getIupd2finalize(), wfExecutionConfig!=null? wfExecutionConfig.getIoMessages() : null);
     scheduleExpirationWF(finalizedDebtPositionDTO, debtPositionId);
 
     log.info("DebtPosition synchronized {}", debtPositionId);
@@ -139,7 +139,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
     }
   }
 
-  protected void invokeIONotificationWF(DebtPositionDTO requestedDebtPosition, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
+  protected void startIONotificationWF(DebtPositionDTO requestedDebtPosition, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
     if (!CollectionUtils.isEmpty(iudSyncCompleteDTOMap)) {
       startIONotificationWFActivity.startIONotificationWF(requestedDebtPosition, iudSyncCompleteDTOMap, ioMessages);
     } else {
