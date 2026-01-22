@@ -53,7 +53,7 @@ public class IudClassificationWFClient {
 
   private static String generateWorkflowId(Long organizationId, String iud) {
     if (organizationId == null || iud == null) {
-      throw new WorkflowInternalErrorException("The organizationId or iud must not be null");
+      throw new WorkflowInternalErrorException("[INVALID_ORGANIZATION_ID_OR_IUD] The organizationId or iud must not be null");
     }
     return Utilities.generateWorkflowId(String.format("%d-%s", organizationId, iud), IudClassificationWF.class);
   }

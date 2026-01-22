@@ -30,7 +30,7 @@ public class DebtPositionCustomWfSyncService {
     if (wfExecutionConfig instanceof FineWfExecutionConfig fineWfExecutionConfig) {
       return fineClient.synchronizeFineDP(debtPositionDTO, paymentEventRequest, wfExecutionParameters.isMassive(), fineWfExecutionConfig);
     } else {
-      throw new IllegalStateException("WfExecutionConfig not supported: " + wfExecutionConfig.getClass());
+      throw new IllegalStateException("[INVALID_CONFIG] WfExecutionConfig not supported: " + wfExecutionConfig.getClass());
     }
   }
 }

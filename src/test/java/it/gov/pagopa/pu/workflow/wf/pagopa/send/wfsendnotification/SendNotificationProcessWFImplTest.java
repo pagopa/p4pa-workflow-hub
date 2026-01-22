@@ -180,7 +180,7 @@ class SendNotificationProcessWFImplTest {
       );
 
       assertEquals(
-        "Workflow terminated during getSendNotificationStatus for sendNotificationId " + sendNotificationId +
+        "[SEND_STATUS_ERROR] Workflow terminated during getSendNotificationStatus for sendNotificationId " + sendNotificationId +
           " with ERROR: " + expectedResponse.getErrors(),
         exception.getMessage()
       );
@@ -339,7 +339,7 @@ class SendNotificationProcessWFImplTest {
       );
 
       assertEquals(
-        "Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId,
+        "[SEND_DELIVERY_CONFLICT] Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId,
         exception.getMessage()
       );
     }
