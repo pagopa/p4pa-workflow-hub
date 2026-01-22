@@ -71,10 +71,10 @@ public class WfExecutionConfigHandlerService {
 
   public <T extends WfExecutionConfig> T findStoredExecutionConfig(Long debtPositionId, Class<T> wfExecConfigClass) {
     WfExecutionConfig config = findWfExecutionConfigById(debtPositionId)
-      .orElseThrow(() -> new InvalidWfExecutionConfigException("Execution config not found for debtPositionId: " + debtPositionId));
+      .orElseThrow(() -> new InvalidWfExecutionConfigException("[INVALID_EXECUTION_CONFIG] Execution config not found for debtPositionId: " + debtPositionId));
 
     if (!wfExecConfigClass.isInstance(config)) {
-      throw new InvalidWfExecutionConfigException(String.format("Invalid execution config type for debtPositionId: %d. Expected: %s, Found: %s",
+      throw new InvalidWfExecutionConfigException(String.format("[INVALID_EXECUTION_CONFIG] Invalid execution config type for debtPositionId: %d. Expected: %s, Found: %s",
         debtPositionId,
         wfExecConfigClass.getSimpleName(),
         config.getClass().getSimpleName()

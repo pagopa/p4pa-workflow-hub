@@ -276,7 +276,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON, null)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Required request body is missing"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Required request body is missing"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -286,7 +286,7 @@ class WorkflowExceptionHandlerTest {
       "{\"notRequiredField\":\"notRequired\",\"lowerCaseAlphabeticField\":\"ABC\"}")
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -296,7 +296,7 @@ class WorkflowExceptionHandlerTest {
       "{\"notRequiredField\":\"notRequired\",\"dateTimeField\":\"2025-02-05\"}")
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -322,7 +322,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. fieldName: resolved message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. fieldName: resolved message"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -345,7 +345,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. fieldName: resolved message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. fieldName: resolved message"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 

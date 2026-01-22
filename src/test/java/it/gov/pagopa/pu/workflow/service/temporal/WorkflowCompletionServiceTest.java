@@ -114,7 +114,7 @@ class WorkflowCompletionServiceTest {
       service.waitTerminationStatus(WORKFLOW_ID, 1, 100)
     );
 
-    assertEquals("Maximum number of retries reached for workflow " + WORKFLOW_ID, exception.getMessage());
+    assertEquals("[TOO_MANY_ATTEMPTS] Maximum number of retries reached for workflow " + WORKFLOW_ID, exception.getMessage());
   }
 
   @Test
@@ -128,6 +128,6 @@ class WorkflowCompletionServiceTest {
       service.waitTerminationStatus(WORKFLOW_ID, 1, 100)
     );
 
-    assertEquals("Maximum number of retries reached for workflow " + WORKFLOW_ID, exception.getMessage());
+    assertEquals("[TOO_MANY_ATTEMPTS] Maximum number of retries reached for workflow " + WORKFLOW_ID, exception.getMessage());
   }
 }

@@ -41,7 +41,7 @@ public class UtilitiesTest {
       () -> Utilities.generateWorkflowId(id, workflow)
     );
 
-    assertEquals("The ID or the workflow must not be null", exception.getMessage());
+    assertEquals("[INVALID_WORKFLOW_ID] The ID or the workflow must not be null", exception.getMessage());
   }
 
   @Test

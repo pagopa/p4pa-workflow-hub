@@ -53,7 +53,7 @@ public class IufClassificationWFClient {
 
   private static String generateWorkflowId(Long organizationId, String iuf) {
     if (organizationId == null || iuf == null) {
-      throw new WorkflowInternalErrorException("The organizationId or iuf must not be null");
+      throw new WorkflowInternalErrorException("[INVALID_ORGANIZATION_ID_OR_IUF] The organizationId or iuf must not be null");
     }
     return Utilities.generateWorkflowId(String.format("%d-%s", organizationId, iuf), IufClassificationWF.class);
   }

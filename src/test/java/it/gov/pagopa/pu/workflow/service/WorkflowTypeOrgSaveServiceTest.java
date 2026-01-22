@@ -57,7 +57,7 @@ class WorkflowTypeOrgSaveServiceTest {
     WorkflowTypeNotFoundException result = Assertions.assertThrows(WorkflowTypeNotFoundException.class, () -> service.save(entity));
 
     // Then
-    Assertions.assertEquals("Cannot find WorkflowType having id 0",
+    Assertions.assertEquals("[WORKFLOW_TYPE NOT FOUND] Cannot find WorkflowType having id 0",
       result.getMessage());
   }
 
@@ -80,7 +80,7 @@ class WorkflowTypeOrgSaveServiceTest {
     InvalidWfExecutionConfigException result = Assertions.assertThrows(InvalidWfExecutionConfigException.class, () -> service.save(entity));
 
     // Then
-    Assertions.assertEquals("Invalid execution config type for workflowTypeId: 0. Expected: FineWfExecutionConfig, Found: GenericWfExecutionConfig",
+    Assertions.assertEquals("[INVALID_EXECUTION_CONFIG_TYPE] Invalid execution config type for workflowTypeId: 0. Expected: FineWfExecutionConfig, Found: GenericWfExecutionConfig",
       result.getMessage());
   }
 
