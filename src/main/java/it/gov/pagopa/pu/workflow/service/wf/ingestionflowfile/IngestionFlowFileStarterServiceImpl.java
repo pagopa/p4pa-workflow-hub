@@ -73,7 +73,7 @@ public class IngestionFlowFileStarterServiceImpl implements IngestionFlowFileSta
   @Override
   public WorkflowCreatedDTO ingest(long ingestionFlowFileId, IngestionFlowFile.IngestionFlowFileTypeEnum flowFileType) {
     return ingestionFlowFileType2WfStarter.getOrDefault(flowFileType, x -> {
-        throw new IngestionFlowTypeNotSupportedException("IngestionFlowFileType not supported: " + flowFileType);
+        throw new IngestionFlowTypeNotSupportedException("[INVALID_INGESTION_FLOW_FILE_TYPE] IngestionFlowFileType not supported: " + flowFileType);
       })
       .apply(ingestionFlowFileId);
   }

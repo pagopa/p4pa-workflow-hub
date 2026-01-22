@@ -41,7 +41,7 @@ public class WfExecutionConfigMergeService {
     try {
       return objectMapper.readValue(objectMapper.writeValueAsString(wfConfig), wfConfig.getClass());
     } catch (JsonProcessingException e) {
-      throw new IllegalStateException("Cannot clone WfExecutionConfig class " + wfConfig.getClass().getSimpleName(), e);
+      throw new IllegalStateException("[INVALID_EXECUTION_CONFIG] Cannot clone WfExecutionConfig class " + wfConfig.getClass().getSimpleName(), e);
     }
   }
 
@@ -58,7 +58,7 @@ public class WfExecutionConfigMergeService {
           .readValue(objectMapper.writeValueAsString(wfExecutionConfig)),
         defaultConfig.getClass());
     } catch (IOException e) {
-      throw new IllegalStateException("Cannot merge WfExecutionConfig from class " + wfExecutionConfig.getClass().getSimpleName() + " to class " + defaultConfig.getClass().getSimpleName(), e);
+      throw new IllegalStateException("[INVALID_EXECUTION_CONFIG] Cannot merge WfExecutionConfig from class " + wfExecutionConfig.getClass().getSimpleName() + " to class " + defaultConfig.getClass().getSimpleName(), e);
     }
   }
 }

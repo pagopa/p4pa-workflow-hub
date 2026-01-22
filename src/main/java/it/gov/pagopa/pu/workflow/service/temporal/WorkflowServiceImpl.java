@@ -81,16 +81,16 @@ public class WorkflowServiceImpl implements WorkflowService {
     } catch (StatusRuntimeException e) {
       if(Status.NOT_FOUND.getCode().equals(e.getStatus().getCode())) {
         log.error("Workflow with ID {} not found", workflowId);
-        throw new WorkflowNotFoundException(e.getMessage());
+        throw new WorkflowNotFoundException("[WORKFLOW_NOT_FOUND] "+e.getMessage());
       }
       log.error("An error occurred while retrieving the workflow status: {}", e.getMessage());
-      throw new WorkflowInternalErrorException(e.getMessage());
+      throw new WorkflowInternalErrorException("[WORKFLOW_INTERNAL_ERROR] "+e.getMessage());
     }  catch (io.temporal.client.WorkflowNotFoundException e) {
       log.error("Workflow with ID {} not found", workflowId);
-      throw new WorkflowNotFoundException(e.getMessage());
+      throw new WorkflowNotFoundException("[WORKFLOW_NOT_FOUND] "+e.getMessage());
     } catch (TemporalException e) {
       log.error("An error occurred while retrieving the workflow status: {}", e.getMessage());
-      throw new WorkflowInternalErrorException(e.getMessage());
+      throw new WorkflowInternalErrorException("[WORKFLOW_INTERNAL_ERROR] "+e.getMessage());
     }
   }
 

@@ -32,7 +32,7 @@ public class Utilities {
 
   public static String generateWorkflowId(String id, Class<?> workflowInterface) {
     if (id == null || workflowInterface == null) {
-      throw new WorkflowInternalErrorException("The ID or the workflow must not be null");
+      throw new WorkflowInternalErrorException("[INVALID_WORKFLOW_ID] The ID or the workflow must not be null");
     }
     return String.format("%s-%s", workflowInterface.getSimpleName(), id);
   }

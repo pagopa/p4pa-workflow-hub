@@ -49,18 +49,17 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 @ExtendWith({SpringExtension.class})
-@WebMvcTest(value = {WorkflowExceptionHandlerTest.TestController.class})
+@WebMvcTest(value = {WorkflowExceptionHandlerTest.TestController.class,
+  WorkflowExceptionHandlerTest.TestCrudController.class})
 @AutoConfigureMockMvc(addFilters = false)
 @ContextConfiguration(classes = {
   WorkflowExceptionHandlerTest.TestController.class,
+  WorkflowExceptionHandlerTest.TestCrudController.class,
   WorkflowExceptionHandler.class,
   JsonConfig.class})
 class WorkflowExceptionHandlerTest {
@@ -77,12 +76,23 @@ class WorkflowExceptionHandlerTest {
   private TestController testControllerSpy;
   @MockitoSpyBean
   private RequestMappingHandlerAdapter requestMappingHandlerAdapterSpy;
+  @MockitoSpyBean
+  private TestCrudController testCrudControllerSpy;
 
   @RestController
   @Slf4j
   static class TestController {
     @PostMapping(value = "/test", produces = MediaType.APPLICATION_JSON_VALUE)
     String testEndpoint(@RequestParam(DATA) String data, @Valid @RequestBody TestRequestBody body) {
+      return "OK";
+    }
+  }
+
+  @RestController
+  @Slf4j
+  static class TestCrudController {
+    @GetMapping(value = "/crud/workflowhub/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    String testCrudEndpoint(@PathVariable("id") Long id) {
       return "OK";
     }
   }
@@ -276,7 +286,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON, null)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Required request body is missing"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Required request body is missing"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -286,7 +296,7 @@ class WorkflowExceptionHandlerTest {
       "{\"notRequiredField\":\"notRequired\",\"lowerCaseAlphabeticField\":\"ABC\"}")
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -296,7 +306,7 @@ class WorkflowExceptionHandlerTest {
       "{\"notRequiredField\":\"notRequired\",\"dateTimeField\":\"2025-02-05\"}")
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -322,7 +332,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. fieldName: resolved message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. fieldName: resolved message"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -345,7 +355,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid request content. fieldName: resolved message"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. fieldName: resolved message"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -358,6 +368,18 @@ class WorkflowExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("TransactionError"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleCrudResourceNotFoundException() throws Exception {
+    Long id = -12L;
+    doThrow(new ResourceNotFoundException()).when(testCrudControllerSpy).testCrudEndpoint(id);
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/crud/workflowhub/-12"))
+      .andExpect(MockMvcResultMatchers.status().isNotFound())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOWHUB_NOT_FOUND] EntityRepresentationModel not found"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 }

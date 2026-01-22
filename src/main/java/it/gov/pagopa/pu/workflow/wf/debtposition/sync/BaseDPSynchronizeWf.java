@@ -92,7 +92,7 @@ public abstract class BaseDPSynchronizeWf implements ApplicationContextAware {
         try {
             return Pair.of(iud, synchronizeInstallment(debtPosition, installment));
           } catch (Exception e) {
-            String errorMessage = "Error occurred while synchronizing Installment with IUD: " + iud + " for DebtPosition ID: " + debtPosition.getDebtPositionId() + ". Error: " + Utilities.getWorkflowExceptionMessage(e);
+            String errorMessage = "[SYNC_ERROR] Error occurred while synchronizing Installment with IUD: " + iud + " for DebtPosition ID: " + debtPosition.getDebtPositionId() + ". Error: " + Utilities.getWorkflowExceptionMessage(e);
             log.error(errorMessage, e);
             publishPaymentEventActivity.publishDebtPositionErrorEvent(debtPosition, new PaymentEventRequestDTO(PaymentEventType.SYNC_ERROR, errorMessage));
             out.getIupdSyncError().put(iud, new SyncErrorDTO(errorMessage));
