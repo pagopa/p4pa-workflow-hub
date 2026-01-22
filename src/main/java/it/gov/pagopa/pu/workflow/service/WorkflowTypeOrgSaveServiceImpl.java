@@ -27,7 +27,7 @@ public class WorkflowTypeOrgSaveServiceImpl implements WorkflowTypeOrgSaveServic
   public WorkflowTypeOrg save(WorkflowTypeOrg entity) {
     Long workflowTypeId = entity.getWorkflowTypeId();
     WorkflowType workflowType = workflowTypeRepository.findById(workflowTypeId)
-      .orElseThrow(() -> new WorkflowTypeNotFoundException("[WORKFLOW_TYPE NOT FOUND] Cannot find WorkflowType having id " + workflowTypeId));
+      .orElseThrow(() -> new WorkflowTypeNotFoundException("[WORKFLOW_TYPE_NOT_FOUND] Cannot find WorkflowType having id " + workflowTypeId));
 
     validateWfExecutionConfigType(entity, workflowType, workflowTypeId);
 

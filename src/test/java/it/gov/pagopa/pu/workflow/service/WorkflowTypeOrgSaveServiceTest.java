@@ -57,7 +57,7 @@ class WorkflowTypeOrgSaveServiceTest {
     WorkflowTypeNotFoundException result = Assertions.assertThrows(WorkflowTypeNotFoundException.class, () -> service.save(entity));
 
     // Then
-    Assertions.assertEquals("[WORKFLOW_TYPE NOT FOUND] Cannot find WorkflowType having id 0",
+    Assertions.assertEquals("[WORKFLOW_TYPE_NOT_FOUND] Cannot find WorkflowType having id 0",
       result.getMessage());
   }
 
