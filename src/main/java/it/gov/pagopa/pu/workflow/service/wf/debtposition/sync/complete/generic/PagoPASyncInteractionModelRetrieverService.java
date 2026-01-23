@@ -17,6 +17,6 @@ public class PagoPASyncInteractionModelRetrieverService {
   public PagoPaInteractionModel retrieveInteractionModel(long organizationId, String accessToken){
     return brokerService.findByBrokeredOrganizationId(organizationId, accessToken)
       .map(Broker::getPagoPaInteractionModel)
-      .orElseThrow(() -> new IllegalStateException("Cannot find a broker for organization " + organizationId));
+      .orElseThrow(() -> new IllegalStateException("[BROKER_NOT_FOUND] Cannot find a broker for organization " + organizationId));
   }
 }

@@ -78,7 +78,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
 
     } catch (SendNotificationConflictException e) {
       log.error("Conflict on delivery for sendNotificationId {}", sendNotificationId);
-      throw new WorkflowInternalErrorException("Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId);
+      throw new WorkflowInternalErrorException("[SEND_DELIVERY_CONFLICT] Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId);
     } catch (RuntimeException e) {
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
       if (notification != null && !notification.getPayments().isEmpty()) {
@@ -112,7 +112,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       if (notification != null) {
         if (NotificationStatus.ERROR.equals(notification.getStatus())) {
           log.error("Notification status is ERROR for sendNotificationId {}", sendNotificationId);
-          throw new WorkflowInternalErrorException("Workflow terminated during getSendNotificationStatus for sendNotificationId " + sendNotificationId + " with ERROR: " + notification.getErrors());
+          throw new WorkflowInternalErrorException("[SEND_STATUS_ERROR] Workflow terminated during getSendNotificationStatus for sendNotificationId " + sendNotificationId + " with ERROR: " + notification.getErrors());
         }
 
         if (NotificationStatus.ACCEPTED.equals(notification.getStatus())) {

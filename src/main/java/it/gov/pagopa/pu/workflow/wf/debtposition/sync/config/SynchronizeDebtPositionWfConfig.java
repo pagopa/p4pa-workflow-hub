@@ -5,11 +5,11 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.Finaliz
 import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.aca.SynchronizeInstallmentAcaActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpd.SynchronizeInstallmentGpdActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
-import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONotificationDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.CancelCheckDpExpirationScheduleActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.StartIONotificationWFActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.PublishPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity.ScheduleCheckDpExpirationActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -27,10 +27,6 @@ public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(PublishPaymentEventActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
         TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL, this));
-  }
-
-  public IONotificationDebtPositionActivity buildIONotificationDebtPositionActivityStub() {
-    return Workflow.newActivityStub(IONotificationDebtPositionActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
   public CancelCheckDpExpirationScheduleActivity buildCancelCheckDpExpirationScheduleActivityStub() {
@@ -55,5 +51,11 @@ public class SynchronizeDebtPositionWfConfig extends BaseWfConfig {
 
   public SynchronizeInstallmentGpdPreLoadActivity buildSynchronizeInstallmentGpdPreLoadActivity() {
     return Workflow.newActivityStub(SynchronizeInstallmentGpdPreLoadActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public StartIONotificationWFActivity buildInvokeIONotificationActivityStub() {
+    return Workflow.newActivityStub(StartIONotificationWFActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+      TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC_LOCAL,
+      this));
   }
 }

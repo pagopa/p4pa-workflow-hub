@@ -68,6 +68,6 @@ public class WorkflowCompletionService {
         } while (attempts <= maxAttempts);
 
         log.info("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxAttempts);
-        throw new TooManyAttemptsException("Maximum number of retries reached for workflow " + workflowId);
+        throw new TooManyAttemptsException("[TOO_MANY_ATTEMPTS] Maximum number of retries reached for workflow " + workflowId);
     }
 }

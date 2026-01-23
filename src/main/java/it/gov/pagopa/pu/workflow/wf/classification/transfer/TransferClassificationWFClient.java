@@ -40,7 +40,7 @@ public class TransferClassificationWFClient {
 
   private String generateWorkflowId(Long orgId, String iuv, String iur, int transferIndex) {
     if (orgId == null || iuv == null || iur == null) {
-      throw new WorkflowInternalErrorException("The ID or the workflow must not be null");
+      throw new WorkflowInternalErrorException("[INVALID_WORKFLOW_ID] The ID or the workflow must not be null");
     }
     return Utilities.generateWorkflowId(String.format("%d-%s-%s-%d", orgId, iuv, iur, transferIndex), TransferClassificationWF.class);
   }

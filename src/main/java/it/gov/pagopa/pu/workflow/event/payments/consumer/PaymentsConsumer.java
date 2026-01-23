@@ -73,7 +73,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
               .transferIndexes(i.getTransfers().stream()
                 .filter(t ->{
                   Organization organization = organizationService.getOrganizationByFiscalCode(t.getOrgFiscalCode())
-                    .orElseThrow(() -> new WorkflowNotFoundException("Organization not found with fiscalCode " + t.getOrgFiscalCode()));
+                    .orElseThrow(() -> new WorkflowNotFoundException("[ORGANIZATION_NOT_FOUND] Organization not found with fiscalCode " + t.getOrgFiscalCode()));
                   return debtPosition.getOrganizationId().equals(organization.getOrganizationId());
                 })
                 .map(TransferDTO::getTransferIndex)
