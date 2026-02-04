@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationStreamConsumeWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -60,4 +61,17 @@ public class SendNotificationWFClient {
       nextSchedule);
     workflowClientService.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
   }
+
+  public WorkflowCreatedDTO startSendNotificationStreamConsume(Long organizationId, String sendStreamId) {
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
+    String workflowId = generateWorkflowId(sendStreamId, SendNotificationStreamConsumeWF.class);
+
+    SendNotificationStreamConsumeWF workflow = workflowService.buildWorkflowStubToStartNew(
+      SendNotificationStreamConsumeWF.class,
+      taskQueue,
+      workflowId
+    );
+    return workflowClientService.start(workflow::readSendStream, organizationId, sendStreamId);
+  }
+
 }

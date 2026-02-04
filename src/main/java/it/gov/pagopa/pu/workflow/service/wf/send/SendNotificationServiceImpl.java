@@ -25,4 +25,9 @@ public class SendNotificationServiceImpl implements SendNotificationService {
   public WorkflowCreatedDTO sendNotificationDateRetrieve(String sendNotificationId) {
     return sendNotificationWFClient.startSendNotificationDateRetrieve(sendNotificationId);
   }
+
+  @Override
+  public WorkflowCreatedDTO sendNotificationStreamConsume(Long organizationId, String sendStreamId) {
+    return sendNotificationWFClient.startSendNotificationStreamConsume(organizationId, sendStreamId);
+  }
 }
