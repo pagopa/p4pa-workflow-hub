@@ -94,23 +94,19 @@ class SendNotificationControllerTest {
   void givenSendNotificationIdWhenConsumeSendStreamThenOk() throws Exception {
     String workflowId = "workflow-1";
     String sendStreamId = "sendStreamId";
-    Long organizationId = 1L;
     String accessToken = "ACCESSTOKEN";
     WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(serviceMock.sendNotificationStreamConsume(organizationId, sendStreamId))
+    Mockito.when(serviceMock.sendNotificationStreamConsume(sendStreamId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
       securityUtilsMockedStatic.when(SecurityUtils::getAccessToken)
         .thenReturn(accessToken);
 
-      MvcResult result = mockMvc.perform(
-          get("/workflowhub/workflow/send-notification/streams/{sendStreamId}/consume", sendStreamId)
-            .queryParam("organizationId", String.valueOf(organizationId))
-        )
+      MvcResult result = mockMvc.perform(get("/workflowhub/workflow/send-notification/streams/{sendStreamId}/consume", sendStreamId))
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();

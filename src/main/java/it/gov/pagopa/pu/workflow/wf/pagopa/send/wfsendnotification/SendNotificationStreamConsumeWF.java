@@ -19,9 +19,8 @@ public interface SendNotificationStreamConsumeWF {
   /**
    * Workflow method to handle notification events from stream.
    *
-   * @param organizationId the unique identifier of the organization the stream belong to
    * @param sendStreamId the unique identifier of the stream to read from
    */
   @WorkflowMethod
-  void readSendStream(Long organizationId, String sendStreamId);
+  void readSendStream(String sendStreamId);
 }

@@ -32,11 +32,10 @@ class SendNotificationStreamConsumeWFImplTest {
   void readSendStream() {
     //TODO P4ADEV-3720 add test after activity pr on same ticket
     //GIVEN
-    Long organizationId = 1L;
     String sendStreamId = "sendStreamId";
 
     //WHEN
-    wf.readSendStream(organizationId, sendStreamId);
+    wf.readSendStream(sendStreamId);
 
     //THEN
     Assertions.assertNotNull(wf);

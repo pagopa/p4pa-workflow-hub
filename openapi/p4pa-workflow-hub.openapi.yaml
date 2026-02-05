@@ -585,13 +585,6 @@ paths:
           description: The id of send stream.
           schema:
             type: string
-        - name: organizationId
-          in: query
-          required: true
-          description: The id of the organization.
-          schema:
-            type: integer
-            format: int64
       responses:
         '200':
           description: "Consume of stream started"

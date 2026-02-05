@@ -62,7 +62,7 @@ public class SendNotificationWFClient {
     workflowClientService.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
   }
 
-  public WorkflowCreatedDTO startSendNotificationStreamConsume(Long organizationId, String sendStreamId) {
+  public WorkflowCreatedDTO startSendNotificationStreamConsume(String sendStreamId) {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
     String workflowId = generateWorkflowId(sendStreamId, SendNotificationStreamConsumeWF.class);
 
@@ -71,7 +71,7 @@ public class SendNotificationWFClient {
       taskQueue,
       workflowId
     );
-    return workflowClientService.start(workflow::readSendStream, organizationId, sendStreamId);
+    return workflowClientService.start(workflow::readSendStream, sendStreamId);
   }
 
 }
