@@ -10,6 +10,7 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDat
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWFImpl;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationStreamConsumeWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationStreamConsumeWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,7 +99,7 @@ class SendNotificationWFClientTest {
   void givenSendStreamIdWhenStartSendNotificationStreamConsumeThenOk() {
     // Given
     String sendStreamId = "sendStreamId";
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationStreamConsumeWF-"+sendStreamId, "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(SendNotificationStreamConsumeWF.class, taskQueue, expectedResult.getWorkflowId()))
@@ -113,7 +114,7 @@ class SendNotificationWFClientTest {
     assertEquals(expectedResult, result);
     verify(sendNotificationStreamConsumeWFMock).readSendStream(sendStreamId);
 
-    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationDateRetrieveWFImpl.class);
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationStreamConsumeWFImpl.class);
   }
 
   @Test

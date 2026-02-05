@@ -63,7 +63,7 @@ public class SendNotificationWFClient {
   }
 
   public WorkflowCreatedDTO startSendNotificationStreamConsume(String sendStreamId) {
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM;
     String workflowId = generateWorkflowId(sendStreamId, SendNotificationStreamConsumeWF.class);
 
     SendNotificationStreamConsumeWF workflow = workflowService.buildWorkflowStubToStartNew(
