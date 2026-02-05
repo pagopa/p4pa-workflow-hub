@@ -19,7 +19,9 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
    * Use this as an example to override based on the particular workflow.
    */
   @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {}
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    //TODO P4ADEV-3720 add implementation after activity pr on same ticket
+  }
 
   @Override
   public void readSendStream(Long organizationId, String sendStreamId) {
