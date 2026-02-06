@@ -572,6 +572,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/send-notification/streams/{streamId}/consume:
+    get:
+      tags:
+        - SendNotification
+      operationId: consumeSendStream
+      description: Start send stream events consume process.
+      parameters:
+        - name: streamId
+          in: path
+          required: true
+          description: The id of send stream.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Consume of stream started"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflow/assessments/receipt/{receiptId}:
     post:
       tags:

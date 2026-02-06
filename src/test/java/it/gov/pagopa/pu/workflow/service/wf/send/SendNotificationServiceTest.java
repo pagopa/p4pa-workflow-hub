@@ -68,4 +68,25 @@ class SendNotificationServiceTest {
     // Then
     Assertions.assertEquals(expectedResult, result);
   }
+
+  @Test
+  void givenSendNotificationIdWhenSendNotificationStreamConsumeThenOk() {
+    // Given
+    String sendStreamId = "sendStreamId";
+
+    WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
+      .workflowId("WFID")
+      .runId("RUNID")
+      .build();
+
+    Mockito.when(sendNotificationWFClientMock.startSendNotificationStreamConsume(Mockito.same(sendStreamId)))
+      .thenReturn(expectedResult);
+
+    // When
+    WorkflowCreatedDTO result = service.sendNotificationStreamConsume(sendStreamId);
+
+    // Then
+    Assertions.assertEquals(expectedResult, result);
+  }
+
 }

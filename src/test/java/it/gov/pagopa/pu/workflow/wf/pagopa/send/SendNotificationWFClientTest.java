@@ -9,6 +9,8 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDat
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWFImpl;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWFImpl;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationStreamConsumeWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationStreamConsumeWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,8 @@ class SendNotificationWFClientTest {
   private SendNotificationProcessWF sendNotificationProcessWFMock;
   @Mock
   private SendNotificationDateRetrieveWF sendNotificationDateRetrieveWFMock;
+  @Mock
+  private SendNotificationStreamConsumeWF sendNotificationStreamConsumeWFMock;
 
   private SendNotificationWFClient client;
 
@@ -89,6 +93,28 @@ class SendNotificationWFClientTest {
     verify(sendNotificationDateRetrieveWFMock).sendNotificationDateRetrieve(sendNotificationId);
 
     TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationDateRetrieveWFImpl.class);
+  }
+
+  @Test
+  void givenSendStreamIdWhenStartSendNotificationStreamConsumeThenOk() {
+    // Given
+    String sendStreamId = "sendStreamId";
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM;
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationStreamConsumeWF-"+sendStreamId, "RUNID");
+
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(SendNotificationStreamConsumeWF.class, taskQueue, expectedResult.getWorkflowId()))
+      .thenReturn(sendNotificationStreamConsumeWFMock);
+
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, sendStreamId);
+
+    // When
+    WorkflowCreatedDTO result = client.startSendNotificationStreamConsume(sendStreamId);
+
+    // Then
+    assertEquals(expectedResult, result);
+    verify(sendNotificationStreamConsumeWFMock).readSendStream(sendStreamId);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationStreamConsumeWFImpl.class);
   }
 
   @Test
