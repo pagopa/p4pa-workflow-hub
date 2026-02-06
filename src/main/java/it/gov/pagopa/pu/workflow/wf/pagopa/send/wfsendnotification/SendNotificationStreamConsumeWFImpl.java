@@ -25,7 +25,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
 
   @Override
   public void readSendStream(String sendStreamId) {
-    //TODO P4ADEV-3720 add implementation after activity pr on same ticket
+    // TODO P4ADEV-3720 add implementation after activity pr on same ticket
   }
 
 }
