@@ -47,4 +47,16 @@ public class SendNotificationWFClient {
     return workflowClientService.start(workflow::readSendStream, sendStreamId);
   }
 
+  public WorkflowCreatedDTO startSendNotificationStreamConsume(String sendStreamId) {
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM;
+    String workflowId = generateWorkflowId(sendStreamId, SendNotificationStreamConsumeWF.class);
+
+    SendNotificationStreamConsumeWF workflow = workflowService.buildWorkflowStubToStartNew(
+      SendNotificationStreamConsumeWF.class,
+      taskQueue,
+      workflowId
+    );
+    return workflowClientService.start(workflow::readSendStream, sendStreamId);
+  }
+
 }
