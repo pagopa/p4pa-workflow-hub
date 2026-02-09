@@ -4,10 +4,13 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfretrievedt.SendNotificationDateRetrieveWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationStreamConsumeWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
@@ -47,16 +50,17 @@ public class SendNotificationWFClient {
     return workflowClientService.start(workflow::readSendStream, sendStreamId);
   }
 
-  public WorkflowCreatedDTO startSendNotificationStreamConsume(String sendStreamId) {
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM;
-    String workflowId = generateWorkflowId(sendStreamId, SendNotificationStreamConsumeWF.class);
+  public void scheduleSendNotificationDateRetrieve(String sendNotificationId, Duration nextSchedule) {
+    log.debug("Starting scheduleSendNotificationDateRetrieve having id {}", sendNotificationId);
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LOW_PRIORITY;
+    String workflowId = generateWorkflowId(sendNotificationId, SendNotificationDateRetrieveWF.class);
 
-    SendNotificationStreamConsumeWF workflow = workflowService.buildWorkflowStubToStartNew(
-      SendNotificationStreamConsumeWF.class,
+    SendNotificationDateRetrieveWF workflow = workflowService.buildWorkflowStubDelayed(
+      SendNotificationDateRetrieveWF.class,
       taskQueue,
-      workflowId
-    );
-    return workflowClientService.start(workflow::readSendStream, sendStreamId);
+      workflowId,
+      nextSchedule);
+    workflowClientService.start(workflow::sendNotificationDateRetrieve, sendNotificationId);
   }
 
 }

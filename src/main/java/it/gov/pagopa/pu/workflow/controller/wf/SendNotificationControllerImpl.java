@@ -32,11 +32,4 @@ public class SendNotificationControllerImpl implements SendNotificationApi {
     return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);
   }
 
-  @Override
-  public ResponseEntity<WorkflowCreatedDTO> consumeSendStream(String sendStreamId) {
-    log.info("Starting stream consuming workflow for sendStreamId: {}", sendStreamId);
-    WorkflowCreatedDTO createWorkflowResponseDTO = service.sendNotificationStreamConsume(sendStreamId);
-    return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);
-  }
-
 }

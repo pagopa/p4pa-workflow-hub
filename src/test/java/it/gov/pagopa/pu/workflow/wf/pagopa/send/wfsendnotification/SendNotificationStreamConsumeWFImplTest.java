@@ -15,6 +15,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -24,11 +26,13 @@ import org.springframework.context.ApplicationContext;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationStreamConsumeWFImplTest {
 
   public static final long ORGANIZATION_ID = 1L;
+  public static final String NOTIFICATION_REQUEST_ID = "notificationRequestId";
   @Mock
   private ApplicationContext applicationContextMock;
   @Mock
@@ -91,12 +95,12 @@ class SendNotificationStreamConsumeWFImplTest {
     }
   }
 
-  @Test
-  void givenValidSendStreamIdWithAcceptedAndRefusedEventWhenReadSendStreamThenOK() {
+  @ParameterizedTest
+  @MethodSource("provideEventListScenarios")
+  void givenValidSendStreamIdWithAcceptedAndRefusedEventWhenReadSendStreamThenOK(List<ProgressResponseElementV25DTO> streamEvents) {
     //GIVEN
     String sendStreamId = "sendStreamId";
     String lastEventId = "lastEventId";
-    String notificationRequestId = "notificationRequestId";
 
     SendStreamDTO streamDTO = new SendStreamDTO();
     streamDTO.setStreamId(sendStreamId);
@@ -105,26 +109,21 @@ class SendNotificationStreamConsumeWFImplTest {
 
     DebtPositionSendNotificationDTO positionSendNotificationDTO = new DebtPositionSendNotificationDTO();
     positionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
+    positionSendNotificationDTO.setStatus(
+      NotificationStatus.ACCEPTED.equals(streamEvents.getFirst().getNewStatus()) ?
+      NotificationStatus.ACCEPTED : NotificationStatus.ERROR
+    );
     SendNotificationPaymentsDTO sendNotificationPaymentsDTO = new SendNotificationPaymentsDTO();
     SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
     sendNotificationDTO.setPayments(List.of(sendNotificationPaymentsDTO));
-
-    ProgressResponseElementV25DTO event1 = new ProgressResponseElementV25DTO();
-    event1.setNewStatus(NotificationStatusDTO.ACCEPTED);
-    event1.setIun("eventId1");
-    event1.setNotificationRequestId(notificationRequestId);
-    ProgressResponseElementV25DTO event2 = new ProgressResponseElementV25DTO();
-    event2.setNewStatus(NotificationStatusDTO.REFUSED);
-    event2.setIun("eventId2");
-    event2.setNotificationRequestId(notificationRequestId);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
-      event1,
-      event2
+    sendNotificationDTO.setStatus(
+      NotificationStatus.ACCEPTED.equals(streamEvents.getFirst().getNewStatus()) ?
+        NotificationStatus.ACCEPTED : NotificationStatus.ERROR
     );
 
     Mockito.when(getSendStreamActivityMock.fetchSendStream(sendStreamId))
       .thenReturn(streamDTO)
-      .thenReturn(null);
+      .thenReturn(null); //for breaking from do-while loop
     Mockito.when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, sendStreamId, lastEventId
@@ -132,14 +131,22 @@ class SendNotificationStreamConsumeWFImplTest {
     ).thenReturn(streamEvents);
     Mockito.when(
       updateSendNotificationStatusActivityMock.updateSendNotificationStatus(
-        notificationRequestId
+        NOTIFICATION_REQUEST_ID
       )
     ).thenReturn(sendNotificationDTO);
-    Mockito.doNothing().when(publishSendNotificationPaymentEventActivityMock)
-      .publishSendNotificationEvent(
-        positionSendNotificationDTO,
-        new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null)
-      );
+    if(NotificationStatus.ACCEPTED.equals(streamEvents.getFirst().getNewStatus())) {
+      Mockito.doNothing().when(publishSendNotificationPaymentEventActivityMock)
+        .publishSendNotificationEvent(
+          positionSendNotificationDTO,
+          new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null)
+        );
+    } else {
+      Mockito.doNothing().when(publishSendNotificationPaymentEventActivityMock)
+        .publishSendNotificationErrorEvent(
+          positionSendNotificationDTO,
+          new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null)
+        );
+    }
 
     //WHEN
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -147,9 +154,37 @@ class SendNotificationStreamConsumeWFImplTest {
         .then(invocation -> null);
 
       wf.readSendStream(sendStreamId);
-
-      //THEN
     }
+
+    //THEN
+    if(NotificationStatus.ACCEPTED.equals(streamEvents.getFirst().getNewStatus())) {
+      Mockito.verify(publishSendNotificationPaymentEventActivityMock)
+        .publishSendNotificationEvent(
+          positionSendNotificationDTO,
+          new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null)
+        );
+    } else {
+      Mockito.verify(publishSendNotificationPaymentEventActivityMock)
+        .publishSendNotificationErrorEvent(
+          positionSendNotificationDTO,
+          new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null)
+        );
+    }
+  }
+
+  private static Stream<List<ProgressResponseElementV25DTO>> provideEventListScenarios() {
+    ProgressResponseElementV25DTO event1 = new ProgressResponseElementV25DTO();
+    event1.setNewStatus(NotificationStatusDTO.ACCEPTED);
+    event1.setEventId("eventId1");
+    event1.setNotificationRequestId(NOTIFICATION_REQUEST_ID);
+    ProgressResponseElementV25DTO event2 = new ProgressResponseElementV25DTO();
+    event2.setNewStatus(NotificationStatusDTO.REFUSED);
+    event2.setEventId("eventId2");
+    event2.setNotificationRequestId(NOTIFICATION_REQUEST_ID);
+    return Stream.of(
+      List.of(event1),
+      List.of(event2)
+    );
   }
 
   @Test

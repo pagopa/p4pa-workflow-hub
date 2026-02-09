@@ -91,25 +91,4 @@ class SendNotificationWFClientTest {
     TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationStreamConsumeWFImpl.class);
   }
 
-  @Test
-  void givenSendStreamIdWhenStartSendNotificationStreamConsumeThenOk() {
-    // Given
-    String sendStreamId = "sendStreamId";
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM;
-    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendNotificationStreamConsumeWF-"+sendStreamId, "RUNID");
-
-    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(SendNotificationStreamConsumeWF.class, taskQueue, expectedResult.getWorkflowId()))
-      .thenReturn(sendNotificationStreamConsumeWFMock);
-
-    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, sendStreamId);
-
-    // When
-    WorkflowCreatedDTO result = client.startSendNotificationStreamConsume(sendStreamId);
-
-    // Then
-    assertEquals(expectedResult, result);
-    verify(sendNotificationStreamConsumeWFMock).readSendStream(sendStreamId);
-
-    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationStreamConsumeWFImpl.class);
-  }
 }

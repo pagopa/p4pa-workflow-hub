@@ -26,8 +26,4 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     return sendNotificationWFClient.startSendNotificationStreamConsume(sendStreamId);
   }
 
-  @Override
-  public WorkflowCreatedDTO sendNotificationStreamConsume(String sendStreamId) {
-    return sendNotificationWFClient.startSendNotificationStreamConsume(sendStreamId);
-  }
 }
