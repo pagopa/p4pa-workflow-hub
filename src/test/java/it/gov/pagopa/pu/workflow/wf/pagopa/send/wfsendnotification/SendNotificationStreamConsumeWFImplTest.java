@@ -12,7 +12,6 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotification
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,8 +33,6 @@ class SendNotificationStreamConsumeWFImplTest {
 
   public static final long ORGANIZATION_ID = 1L;
   public static final String NOTIFICATION_REQUEST_ID = "notificationRequestId";
-  @Mock
-  private ApplicationContext applicationContextMock;
   @Mock
   private GetSendStreamActivity getSendStreamActivityMock;
   @Mock
@@ -91,9 +88,10 @@ class SendNotificationStreamConsumeWFImplTest {
         .then(invocation -> null);
 
       wf.readSendStream(sendStreamId);
-
-      //THEN assert no other interaction wanted
     }
+
+    //THEN
+    Mockito.verify(getSendStreamActivityMock).fetchSendStream(sendStreamId);
   }
 
   @Test
@@ -121,9 +119,10 @@ class SendNotificationStreamConsumeWFImplTest {
         .then(invocation -> null);
 
       wf.readSendStream(sendStreamId);
-
-      //THEN assert no other interaction wanted
     }
+
+    //THEN
+    Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(sendStreamId);
   }
 
   @Test
@@ -170,9 +169,10 @@ class SendNotificationStreamConsumeWFImplTest {
         .then(invocation -> null);
 
       wf.readSendStream(sendStreamId);
-
-      //THEN
     }
+
+    //THEN
+    Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(sendStreamId);
   }
 
   @ParameterizedTest
@@ -313,9 +313,10 @@ class SendNotificationStreamConsumeWFImplTest {
         .then(invocation -> null);
 
       wf.readSendStream(sendStreamId);
-
-      //THEN
     }
+
+    //THEN
+    Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(sendStreamId);
   }
 
   @ParameterizedTest
@@ -352,9 +353,10 @@ class SendNotificationStreamConsumeWFImplTest {
         .then(invocation -> null);
 
       wf.readSendStream(sendStreamId);
-
-      //THEN
     }
+
+    //THEN
+    Mockito.verify(getSendStreamActivityMock, Mockito.times(3)).fetchSendStream(sendStreamId);
   }
 
   private static Stream<List<ProgressResponseElementV25DTO>> provideStreamEventWithInvalidNotificationStatusScenarios() {

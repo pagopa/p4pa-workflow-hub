@@ -37,7 +37,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private GetSendNotificationEventsFromStreamActivity getSendNotificationEventsFromStreamActivity;
   private UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity;
   private SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity;
-  private GetSendNotificationActivity getSendNotificationActivity;
+
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
    * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
