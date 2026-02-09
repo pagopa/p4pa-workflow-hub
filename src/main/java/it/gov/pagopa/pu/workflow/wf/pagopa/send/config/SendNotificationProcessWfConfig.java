@@ -6,7 +6,6 @@ import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.ScheduleSendNotificationDateRetrieveActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,10 +25,6 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(DeliveryNotificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
-  public NotificationStatusActivity buildNotificationStatusActivityStub() {
-    return Workflow.newActivityStub(NotificationStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
-  }
-
   public GetSendNotificationActivity buildGetSendNotificationActivityStub() {
     return Workflow.newActivityStub(GetSendNotificationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
@@ -38,15 +33,22 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(SendNotificationDateRetrieveActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
+  public UpdateSendNotificationStatusActivity buildUpdateSendNotificationStatusActivityStub() {
+    return Workflow.newActivityStub(UpdateSendNotificationStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public GetSendStreamActivity buildGetSendStreamActivityStub() {
+    return Workflow.newActivityStub(GetSendStreamActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public GetSendNotificationEventsFromStreamActivity buildGetSendNotificationEventsFromStreamActivityStub() {
+    return Workflow.newActivityStub(GetSendNotificationEventsFromStreamActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
   public PublishSendNotificationPaymentEventActivity buildPublishSendNotificationPaymentEventActivityStub() {
     return Workflow.newActivityStub(PublishSendNotificationPaymentEventActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
         TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION_LOCAL, this));
   }
 
-  public ScheduleSendNotificationDateRetrieveActivity buildScheduleSendNotificationDateRetrieveActivityStub() {
-    return Workflow.newActivityStub(ScheduleSendNotificationDateRetrieveActivity.class,
-      TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-        TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION_LOCAL, this));
-  }
 }
