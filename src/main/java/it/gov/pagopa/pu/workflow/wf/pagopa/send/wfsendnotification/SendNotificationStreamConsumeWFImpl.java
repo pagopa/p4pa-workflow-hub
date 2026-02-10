@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -71,7 +72,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
 
     do {
       streamEvents = tryFetchingStreamEventsOrWaitForNextStreamRead(sendStreamId, sendStreamDTO, lastProcessedEventId);
-      if (streamEvents == null) continue;
+      if (streamEvents.isEmpty()) continue;
       lastProcessedEventId = tryProcessingStreamEvents(sendStreamId, streamEvents, lastProcessedEventId, sendStreamDTO);
       waitForNextIteration(sendStreamId);
       activityExecutionCount += 1; //incrementing for activity in do-while condition
@@ -98,7 +99,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         calculateNextRetryDelay()
       );
       waitForNextIteration(sendStreamId);
-      return null;
+      return new ArrayList<>();
     }
     return streamEvents;
   }
