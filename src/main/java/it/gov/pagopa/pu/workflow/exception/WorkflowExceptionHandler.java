@@ -46,49 +46,49 @@ public class WorkflowExceptionHandler {
 
   @ExceptionHandler(WorkflowExecutionAlreadyStarted.class)
   public ResponseEntity<WorkflowErrorDTO> handleWorkflowExecutionAlreadyStarted(WorkflowExecutionAlreadyStarted ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CodeEnum.WORKFLOW_CONFLICT);
+    return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_CONFLICT);
   }
 
   @ExceptionHandler(value = IngestionFlowTypeNotSupportedException.class)
   public ResponseEntity<WorkflowErrorDTO> handleIngestionFlowTypeNotSupportedException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CategoryEnum.WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED);
   }
 
   @ExceptionHandler(value = InvalidWfExecutionConfigException.class)
   public ResponseEntity<WorkflowErrorDTO> handleInvalidWfExecutionConfigException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CategoryEnum.WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG);
   }
 
   @ExceptionHandler({WorkflowNotFoundException.class, WorkflowTypeNotFoundException.class, ResourceNotFoundException.class, io.temporal.client.WorkflowNotFoundException.class})
   public ResponseEntity<WorkflowErrorDTO> handleNotFoundException(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CodeEnum.WORKFLOW_NOT_FOUND);
+    return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CategoryEnum.WORKFLOW_NOT_FOUND);
   }
 
   @ExceptionHandler({WorkflowInternalErrorException.class})
   public ResponseEntity<WorkflowErrorDTO> handleInternalError(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.WORKFLOW_GENERIC_ERROR);
+    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CategoryEnum.WORKFLOW_GENERIC_ERROR);
   }
 
   @ExceptionHandler({ValidationException.class, HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
   public ResponseEntity<WorkflowErrorDTO> handleViolationException(Exception ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST);
+    return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CategoryEnum.WORKFLOW_BAD_REQUEST);
   }
 
   @ExceptionHandler({TooManyAttemptsException.class})
   public ResponseEntity<WorkflowErrorDTO> handleTooManyAttemptsException(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.REQUEST_TIMEOUT, WorkflowErrorDTO.CodeEnum.WORKFLOW_REQUEST_TIMEOUT);
+    return handleException(ex, request, HttpStatus.REQUEST_TIMEOUT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_REQUEST_TIMEOUT);
   }
 
   @ExceptionHandler({ServletException.class, ErrorResponseException.class})
   public ResponseEntity<WorkflowErrorDTO> handleServletException(Exception ex, HttpServletRequest request) {
     HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    WorkflowErrorDTO.CodeEnum errorCode = WorkflowErrorDTO.CodeEnum.WORKFLOW_GENERIC_ERROR;
+    WorkflowErrorDTO.CategoryEnum errorCode = WorkflowErrorDTO.CategoryEnum.WORKFLOW_GENERIC_ERROR;
     if (ex instanceof ErrorResponse errorResponse) {
       httpStatus = HttpStatus.valueOf((errorResponse.getStatusCode().value()));
       if (httpStatus.isSameCodeAs(HttpStatus.NOT_FOUND)) {
-        errorCode = WorkflowErrorDTO.CodeEnum.WORKFLOW_NOT_FOUND;
+        errorCode = WorkflowErrorDTO.CategoryEnum.WORKFLOW_NOT_FOUND;
       } else if (httpStatus.is4xxClientError()) {
-        errorCode = WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST;
+        errorCode = WorkflowErrorDTO.CategoryEnum.WORKFLOW_BAD_REQUEST;
       }
     }
     return handleException(ex, request, httpStatus, errorCode);
@@ -105,10 +105,10 @@ public class WorkflowExceptionHandler {
 
   @ExceptionHandler({RuntimeException.class})
   public ResponseEntity<WorkflowErrorDTO> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
-    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CodeEnum.WORKFLOW_GENERIC_ERROR);
+    return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CategoryEnum.WORKFLOW_GENERIC_ERROR);
   }
 
-  static ResponseEntity<WorkflowErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatus httpStatus, WorkflowErrorDTO.CodeEnum errorEnum) {
+  static ResponseEntity<WorkflowErrorDTO> handleException(Exception ex, HttpServletRequest request, HttpStatus httpStatus, WorkflowErrorDTO.CategoryEnum errorEnum) {
     logException(ex, request, httpStatus);
 
     String message = Optional.of(request.getRequestURI())
@@ -148,18 +148,18 @@ public class WorkflowExceptionHandler {
     switch (ex) {
       case HttpMessageNotReadableException httpMessageNotReadableException -> {
         if (httpMessageNotReadableException.getCause() instanceof DatabindException jsonMappingException) {
-          return String.format(ERROR_MESSAGE_FORMAT, WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST.name(),
+          return String.format(ERROR_MESSAGE_FORMAT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_BAD_REQUEST.name(),
             "Cannot parse body. " +
             jsonMappingException.getPath().stream()
               .map(JacksonException.Reference::getPropertyName)
               .collect(Collectors.joining(".")) +
             ": " + jsonMappingException.getOriginalMessage());
         }
-        return String.format(ERROR_MESSAGE_FORMAT, WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST.name(),
+        return String.format(ERROR_MESSAGE_FORMAT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_BAD_REQUEST.name(),
           "Required request body is missing");
       }
       case MethodArgumentNotValidException methodArgumentNotValidException -> {
-        return String.format(ERROR_MESSAGE_FORMAT, WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST.name(),
+        return String.format(ERROR_MESSAGE_FORMAT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_BAD_REQUEST.name(),
           "Invalid request content." +
           methodArgumentNotValidException.getBindingResult()
             .getAllErrors().stream()
@@ -170,7 +170,7 @@ public class WorkflowExceptionHandler {
             .collect(Collectors.joining(";")));
       }
       case ConstraintViolationException constraintViolationException -> {
-        return String.format(ERROR_MESSAGE_FORMAT, WorkflowErrorDTO.CodeEnum.WORKFLOW_BAD_REQUEST.name(),
+        return String.format(ERROR_MESSAGE_FORMAT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_BAD_REQUEST.name(),
           "Invalid request content." +
           constraintViolationException.getConstraintViolations()
             .stream()
