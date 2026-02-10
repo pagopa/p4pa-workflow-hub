@@ -8,10 +8,12 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.UpdateSendNotif
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,16 +84,22 @@ class SendNotificationStreamConsumeWFImplTest {
     Mockito.when(getSendStreamActivityMock.fetchSendStream(sendStreamId))
       .thenReturn(null); //for not entering do-while loop
 
+    WorkflowInternalErrorException workflowInternalErrorException;
     //WHEN
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
 
-      wf.readSendStream(sendStreamId);
+      workflowInternalErrorException =
+        Assertions.assertThrows(WorkflowInternalErrorException.class, () -> wf.readSendStream(sendStreamId));
     }
 
     //THEN
     Mockito.verify(getSendStreamActivityMock).fetchSendStream(sendStreamId);
+    Assertions.assertEquals(
+      "[SEND_STATUS_ERROR] Workflow terminated during starting of readSendStream for sendStreamId %s with ERROR: cannot found SEND stream.".formatted(sendStreamId),
+      workflowInternalErrorException.getMessage()
+    );
   }
 
   @Test
@@ -137,8 +145,8 @@ class SendNotificationStreamConsumeWFImplTest {
     streamDTO.setOrganizationId(ORGANIZATION_ID);
     streamDTO.setLastEventId(lastEventId);
 
-    DebtPositionSendNotificationDTO positionSendNotificationDTO = new DebtPositionSendNotificationDTO();
-    positionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
+    DebtPositionSendNotificationDTO debtPositionSendNotificationDTO = new DebtPositionSendNotificationDTO();
+    debtPositionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
     SendNotificationPaymentsDTO sendNotificationPaymentsDTO = new SendNotificationPaymentsDTO();
     SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
     sendNotificationDTO.setPayments(List.of(sendNotificationPaymentsDTO));
@@ -187,9 +195,9 @@ class SendNotificationStreamConsumeWFImplTest {
     streamDTO.setOrganizationId(ORGANIZATION_ID);
     streamDTO.setLastEventId(lastEventId);
 
-    DebtPositionSendNotificationDTO positionSendNotificationDTO = new DebtPositionSendNotificationDTO();
-    positionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
-    positionSendNotificationDTO.setStatus(
+    DebtPositionSendNotificationDTO debtPositionSendNotificationDTO = new DebtPositionSendNotificationDTO();
+    debtPositionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
+    debtPositionSendNotificationDTO.setStatus(
       NotificationStatusDTO.ACCEPTED.equals(streamEvents.getFirst().getNewStatus()) ?
       NotificationStatus.ACCEPTED : NotificationStatus.ERROR
     );
@@ -217,13 +225,13 @@ class SendNotificationStreamConsumeWFImplTest {
     if(NotificationStatusDTO.ACCEPTED.equals(streamEvents.getFirst().getNewStatus())) {
       Mockito.doNothing().when(publishSendNotificationPaymentEventActivityMock)
         .publishSendNotificationEvent(
-          positionSendNotificationDTO,
+          debtPositionSendNotificationDTO,
           new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null)
         );
     } else {
       Mockito.doNothing().when(publishSendNotificationPaymentEventActivityMock)
         .publishSendNotificationErrorEvent(
-          positionSendNotificationDTO,
+          debtPositionSendNotificationDTO,
           new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null)
         );
     }
@@ -240,13 +248,13 @@ class SendNotificationStreamConsumeWFImplTest {
     if(NotificationStatusDTO.ACCEPTED.equals(streamEvents.getFirst().getNewStatus())) {
       Mockito.verify(publishSendNotificationPaymentEventActivityMock)
         .publishSendNotificationEvent(
-          positionSendNotificationDTO,
+          debtPositionSendNotificationDTO,
           new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null)
         );
     } else {
       Mockito.verify(publishSendNotificationPaymentEventActivityMock)
         .publishSendNotificationErrorEvent(
-          positionSendNotificationDTO,
+          debtPositionSendNotificationDTO,
           new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null)
         );
     }
@@ -279,8 +287,8 @@ class SendNotificationStreamConsumeWFImplTest {
     streamDTO.setOrganizationId(ORGANIZATION_ID);
     streamDTO.setLastEventId(lastEventId);
 
-    DebtPositionSendNotificationDTO positionSendNotificationDTO = new DebtPositionSendNotificationDTO();
-    positionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
+    DebtPositionSendNotificationDTO debtPositionSendNotificationDTO = new DebtPositionSendNotificationDTO();
+    debtPositionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
     SendNotificationPaymentsDTO sendNotificationPaymentsDTO = new SendNotificationPaymentsDTO();
     SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
     sendNotificationDTO.setPayments(List.of(sendNotificationPaymentsDTO));
@@ -331,8 +339,8 @@ class SendNotificationStreamConsumeWFImplTest {
     streamDTO.setOrganizationId(ORGANIZATION_ID);
     streamDTO.setLastEventId(lastEventId);
 
-    DebtPositionSendNotificationDTO positionSendNotificationDTO = new DebtPositionSendNotificationDTO();
-    positionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
+    DebtPositionSendNotificationDTO debtPositionSendNotificationDTO = new DebtPositionSendNotificationDTO();
+    debtPositionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
     SendNotificationPaymentsDTO sendNotificationPaymentsDTO = new SendNotificationPaymentsDTO();
     SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
     sendNotificationDTO.setPayments(List.of(sendNotificationPaymentsDTO));
