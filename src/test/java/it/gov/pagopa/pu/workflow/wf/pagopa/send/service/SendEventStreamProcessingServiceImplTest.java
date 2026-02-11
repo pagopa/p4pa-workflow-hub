@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.service.wf.send;
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.service;
 
 import it.gov.pagopa.payhub.activities.activity.sendnotification.SendNotificationDateRetrieveActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.UpdateSendNotificationStatusActivity;
@@ -7,7 +7,6 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV2
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
-import it.gov.pagopa.pu.workflow.dto.SendEventStreamProcessResult;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
@@ -25,7 +24,6 @@ import java.util.List;
 @ExtendWith(MockitoExtension.class)
 class SendEventStreamProcessingServiceImplTest {
 
-  public static final long ORGANIZATION_ID = 1L;
   public static final String SEND_STREAM_ID = "sendStreamId";
   public static final String NOTIFICATION_REQUEST_ID = "notificationRequestId";
   public static final String EVENT_ID = "eventId";
@@ -65,7 +63,7 @@ class SendEventStreamProcessingServiceImplTest {
       );
 
     //WHEN
-    SendEventStreamProcessResult actualResult =
+    String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
         sendEvent
@@ -73,8 +71,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     //THEN
     Assertions.assertNotNull(actualResult);
-    Assertions.assertEquals(2L, actualResult.getActivityExecutionCount());
-    Assertions.assertEquals(sendEvent.getEventId(), actualResult.getLastProcessedEventId());
+    Assertions.assertEquals(sendEvent.getEventId(), actualResult);
   }
 
   @Test
@@ -102,7 +99,7 @@ class SendEventStreamProcessingServiceImplTest {
       );
 
     //WHEN
-    SendEventStreamProcessResult actualResult =
+    String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
         sendEvent
@@ -110,8 +107,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     //THEN
     Assertions.assertNotNull(actualResult);
-    Assertions.assertEquals(2L, actualResult.getActivityExecutionCount());
-    Assertions.assertEquals(sendEvent.getEventId(), actualResult.getLastProcessedEventId());
+    Assertions.assertEquals(sendEvent.getEventId(), actualResult);
   }
 
   @Test
@@ -134,7 +130,7 @@ class SendEventStreamProcessingServiceImplTest {
     )).thenReturn(sendNotificationDTO);
 
     //WHEN
-    SendEventStreamProcessResult actualResult =
+    String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
         sendEvent
@@ -142,8 +138,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     //THEN
     Assertions.assertNotNull(actualResult);
-    Assertions.assertEquals(ORGANIZATION_ID, actualResult.getActivityExecutionCount());
-    Assertions.assertEquals(sendEvent.getEventId(), actualResult.getLastProcessedEventId());
+    Assertions.assertEquals(sendEvent.getEventId(), actualResult);
   }
 
   @Test
@@ -162,7 +157,7 @@ class SendEventStreamProcessingServiceImplTest {
     debtPositionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
 
     //WHEN
-    SendEventStreamProcessResult actualResult =
+    String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
         sendEvent
@@ -188,7 +183,7 @@ class SendEventStreamProcessingServiceImplTest {
     debtPositionSendNotificationDTO.setNoticeCodes(new ArrayList<>());
 
     //WHEN
-    SendEventStreamProcessResult actualResult =
+    String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
         sendEvent
