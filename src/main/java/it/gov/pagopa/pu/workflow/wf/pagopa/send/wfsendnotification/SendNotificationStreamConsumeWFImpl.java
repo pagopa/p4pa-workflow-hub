@@ -27,7 +27,7 @@ import java.util.List;
 public class SendNotificationStreamConsumeWFImpl implements SendNotificationStreamConsumeWF, ApplicationContextAware {
 
   private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 5;
-  private static final int MAX_WAITING_SECONDS = 5 * 60;
+  private static final int WAITING_SECONDS_NEXT_POLL = 5 * 60;
 
   private int loopExecutionCount = 0;
 
@@ -105,7 +105,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private void waitForNextIteration(String sendStreamId) {
     Workflow.sleep(
       Duration.of(
-        MAX_WAITING_SECONDS,
+        WAITING_SECONDS_NEXT_POLL,
         ChronoUnit.SECONDS
       )
     );
