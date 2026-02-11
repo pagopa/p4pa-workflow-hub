@@ -111,7 +111,8 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         ChronoUnit.SECONDS
       )
     );
-    if((loopExecutionCount += 1) >= LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY) {
+    loopExecutionCount += 1;
+    if(loopExecutionCount >= LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY) {
       loopExecutionCount = 0;
       Workflow.continueAsNew(sendStreamId);
     }

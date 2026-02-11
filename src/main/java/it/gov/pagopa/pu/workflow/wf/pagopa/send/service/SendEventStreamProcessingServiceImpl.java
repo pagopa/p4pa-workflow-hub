@@ -56,16 +56,16 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
 
   private void publishSendEvent(SendNotificationDTO sendNotificationDTO, PaymentEventRequestDTO eventRequestDTO) {
     SendNotification2DebtPositionSendNotificationsMapper.map(sendNotificationDTO)
-      .forEach(p -> {
-        publishSendNotificationPaymentEventActivity.publishSendNotificationEvent(p, eventRequestDTO);
-      });
+      .forEach(p ->
+        publishSendNotificationPaymentEventActivity.publishSendNotificationEvent(p, eventRequestDTO)
+      );
   }
 
   private void publishSendErrorEvent(SendNotificationDTO sendNotificationDTO, PaymentEventRequestDTO eventRequestDTO) {
     SendNotification2DebtPositionSendNotificationsMapper.map(sendNotificationDTO)
-      .forEach(p -> {
-        publishSendNotificationPaymentEventActivity.publishSendNotificationErrorEvent(p, eventRequestDTO);
-      });
+      .forEach(p ->
+        publishSendNotificationPaymentEventActivity.publishSendNotificationErrorEvent(p, eventRequestDTO)
+      );
   }
 
 }
