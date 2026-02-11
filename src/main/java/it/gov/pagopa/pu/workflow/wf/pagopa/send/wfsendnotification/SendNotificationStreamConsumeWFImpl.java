@@ -26,7 +26,7 @@ import java.util.List;
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
 public class SendNotificationStreamConsumeWFImpl implements SendNotificationStreamConsumeWF, ApplicationContextAware {
 
-  private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 5;
+  private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
   private static final int WAITING_SECONDS_NEXT_POLL = 5 * 60;
 
   private int loopExecutionCount = 0;
