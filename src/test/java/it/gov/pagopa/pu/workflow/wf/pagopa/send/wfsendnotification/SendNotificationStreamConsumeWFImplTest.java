@@ -315,8 +315,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(getSendStreamActivityMock.fetchSendStream(sendStreamId))
       .thenReturn(streamDTO)
-      .thenThrow(new RuntimeException())
-      .thenReturn(null); //for breaking from do-while loop
+      .thenThrow(new RuntimeException("ERROR"));
     Mockito.when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, sendStreamId, lastEventId
@@ -332,11 +331,14 @@ class SendNotificationStreamConsumeWFImplTest {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
 
-      wf.readSendStream(sendStreamId);
+      WorkflowInternalErrorException actualException =
+        Assertions.assertThrows(WorkflowInternalErrorException.class, () -> wf.readSendStream(sendStreamId));
+
+      Assertions.assertEquals("[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: ERROR", actualException.getMessage());
     }
 
     //THEN
-    Mockito.verify(getSendStreamActivityMock, Mockito.times(3)).fetchSendStream(sendStreamId);
+    Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(sendStreamId);
   }
 
   @Test

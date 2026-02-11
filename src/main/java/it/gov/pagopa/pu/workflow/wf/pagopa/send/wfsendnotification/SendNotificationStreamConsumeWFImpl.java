@@ -100,8 +100,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       return getSendStreamActivity.fetchSendStream(sendStreamId) != null;
     } catch (Exception e) {
       log.warn("STREAMS_NOT_FOUND] Cannot fetch stream: SEND stream non found for sendStreamId {}", sendStreamId);
-      waitForNextIteration(sendStreamId);
-      return true;
+      throw new WorkflowInternalErrorException("[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: " + e.getMessage());
     }
   }
 
