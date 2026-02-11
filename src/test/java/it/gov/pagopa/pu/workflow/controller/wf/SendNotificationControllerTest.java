@@ -63,34 +63,6 @@ class SendNotificationControllerTest {
   }
 
   @Test
-  void givenSendNotificationIdWhenRetrieveNotificationDateThenOk() throws Exception {
-    String workflowId = "workflow-1";
-    String sendNotificationId = "sendNotificationId";
-    String accessToken = "ACCESSTOKEN";
-    WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
-      .workflowId(workflowId)
-      .build();
-
-    Mockito.when(serviceMock.sendNotificationDateRetrieve(sendNotificationId))
-      .thenReturn(expected);
-
-    try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
-      securityUtilsMockedStatic.when(SecurityUtils::getAccessToken)
-        .thenReturn(accessToken);
-
-      MvcResult result = mockMvc.perform(
-          get("/workflowhub/workflow/send-notification/{sendNotificationId}/retrieve-notification-date", sendNotificationId))
-        .andExpect(status().isOk())
-        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn();
-
-      WorkflowCreatedDTO resultResponse =
-        jsonMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
-      assertEquals(expected, resultResponse);
-    }
-  }
-
-  @Test
   void givenSendNotificationIdWhenConsumeSendStreamThenOk() throws Exception {
     String workflowId = "workflow-1";
     String sendStreamId = "sendStreamId";
