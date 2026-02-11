@@ -7,6 +7,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV2
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.service.SendEventStreamProcessingService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.service.SendEventStreamProcessingServiceImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -74,12 +75,9 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         if (!CollectionUtils.isEmpty(streamEvents)) {
           lastProcessedEventId = processingStreamEvents(sendStreamId, streamEvents, lastProcessedEventId);
         }
-      } catch(Exception e) {
-        log.error("Cannot read new stream event batch: for sendStreamId {} and organizationId {}, last read event has id {}",
-          sendStreamId,
-          sendStreamDTO.getOrganizationId(),
-          lastProcessedEventId
-        );
+      } catch(Throwable t) {
+        log.error("Something went wrong processing stream {}: {}",
+          sendStreamId, Utilities.getWorkflowExceptionMessage(t));
       }
       waitForNextIteration(sendStreamId);
     } while (isStreamStillOpened(sendStreamId));
