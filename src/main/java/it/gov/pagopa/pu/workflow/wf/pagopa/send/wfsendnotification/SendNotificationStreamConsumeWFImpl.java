@@ -26,7 +26,7 @@ import java.util.List;
 public class SendNotificationStreamConsumeWFImpl implements SendNotificationStreamConsumeWF, ApplicationContextAware {
 
   private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 5;
-  private static final int SEND_NOTIFICATION_STREAM_CONSUMER_READ_BASE_DELAY_IN_SECONDS = 5 * 60;
+  private static final int MAX_WAITING_SECONDS = 5 * 60;
 
   private int loopExecutionCount = 0;
 
@@ -99,7 +99,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     try {
       return getSendStreamActivity.fetchSendStream(sendStreamId) != null;
     } catch (Exception e) {
-      log.warn("STREAMS_NOT_FOUND] Cannot fetch stream: SEND stream non found for sendStreamId {}", sendStreamId);
+      log.error("STREAMS_NOT_FOUND] Cannot fetch stream: SEND stream non found for sendStreamId {}", sendStreamId);
       throw new WorkflowInternalErrorException("[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: " + e.getMessage());
     }
   }
@@ -107,7 +107,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private void waitForNextIteration(String sendStreamId) {
     Workflow.sleep(
       Duration.of(
-        SEND_NOTIFICATION_STREAM_CONSUMER_READ_BASE_DELAY_IN_SECONDS,
+        MAX_WAITING_SECONDS,
         ChronoUnit.SECONDS
       )
     );
