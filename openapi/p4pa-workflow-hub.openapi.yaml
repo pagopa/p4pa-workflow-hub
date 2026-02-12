@@ -730,10 +730,10 @@ components:
     WorkflowErrorDTO:
       type: object
       required:
-        - code
+        - category
         - message
       properties:
-        code:
+        category:
           type: string
           enum:
             - WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED

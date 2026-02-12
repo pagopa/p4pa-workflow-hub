@@ -1,18 +1,11 @@
 package it.gov.pagopa.pu.workflow.exception;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
-import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
-import it.gov.pagopa.pu.workflow.exception.custom.TooManyAttemptsException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowTypeNotFoundException;
+import it.gov.pagopa.pu.workflow.exception.custom.*;
 import it.gov.pagopa.pu.workflow.utilities.UtilitiesTest;
 import it.gov.pagopa.pu.workflow.utils.TestUtils;
 import jakarta.persistence.RollbackException;
@@ -21,9 +14,6 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,6 +42,13 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith({SpringExtension.class})
 @WebMvcTest(value = {WorkflowExceptionHandlerTest.TestController.class,
@@ -148,7 +145,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isConflict())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_CONFLICT"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_CONFLICT"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("workflowId='null', runId='null"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -159,7 +156,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -170,7 +167,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -181,7 +178,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -193,7 +190,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("workflowId='null', runId='null"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -204,7 +201,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -215,7 +212,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -226,7 +223,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -235,7 +232,7 @@ class WorkflowExceptionHandlerTest {
   void handleMissingServletRequestParameterException() throws Exception {
     performRequest(null, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Required request parameter 'data' for method parameter type String is not present"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -246,7 +243,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -258,7 +255,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -267,7 +264,7 @@ class WorkflowExceptionHandlerTest {
   void handle4xxHttpServletException() throws Exception {
     performRequest(DATA, MediaType.parseMediaType("application/hal+json"))
       .andExpect(MockMvcResultMatchers.status().isNotAcceptable())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No acceptable representation"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -276,7 +273,7 @@ class WorkflowExceptionHandlerTest {
   void handleUrlNotFound() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.post("/NOTEXISTENTURL"))
       .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("No static resource NOTEXISTENTURL for request '/NOTEXISTENTURL'."))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -285,7 +282,7 @@ class WorkflowExceptionHandlerTest {
   void handleNoBodyException() throws Exception {
     performRequest(DATA, MediaType.APPLICATION_JSON, null)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Required request body is missing"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -295,7 +292,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON,
       "{\"notRequiredField\":\"notRequired\",\"lowerCaseAlphabeticField\":\"ABC\"}")
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. lowerCaseAlphabeticField: must match \"[a-z]+\"; requiredField: must not be null"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -305,7 +302,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON,
       "{\"notRequiredField\":\"notRequired\",\"dateTimeField\":\"2025-02-05\"}")
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Cannot parse body. dateTimeField: Text '2025-02-05' could not be parsed at index 10"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -317,7 +314,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("500 INTERNAL_SERVER_ERROR \"Error\""))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -331,7 +328,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. fieldName: resolved message"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -342,7 +339,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isRequestTimeout())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_REQUEST_TIMEOUT"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_REQUEST_TIMEOUT"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -354,7 +351,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_BAD_REQUEST"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_BAD_REQUEST"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_BAD_REQUEST] Invalid request content. fieldName: resolved message"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -366,7 +363,7 @@ class WorkflowExceptionHandlerTest {
 
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isInternalServerError())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_GENERIC_ERROR"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("TransactionError"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
@@ -378,7 +375,7 @@ class WorkflowExceptionHandlerTest {
 
     mockMvc.perform(MockMvcRequestBuilders.get("/crud/workflowhub/-12"))
       .andExpect(MockMvcResultMatchers.status().isNotFound())
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_NOT_FOUND"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_NOT_FOUND"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOWHUB_NOT_FOUND] EntityRepresentationModel not found"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
