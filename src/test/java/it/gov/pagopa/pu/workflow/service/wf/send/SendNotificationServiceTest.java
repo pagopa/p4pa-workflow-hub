@@ -50,22 +50,23 @@ class SendNotificationServiceTest {
   }
 
   @Test
-  void givenSendNotificationIdWhenRetrieveNotificationDateThenOk() {
+  void givenSendNotificationIdWhenSendNotificationStreamConsumeThenOk() {
     // Given
-    String sendNotificationId = "sendNotificationId";
+    String sendStreamId = "sendStreamId";
 
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
       .runId("RUNID")
       .build();
 
-    Mockito.when(sendNotificationWFClientMock.startSendNotificationDateRetrieve(Mockito.same(sendNotificationId)))
+    Mockito.when(sendNotificationWFClientMock.startSendNotificationStreamConsume(Mockito.same(sendStreamId)))
       .thenReturn(expectedResult);
 
     // When
-    WorkflowCreatedDTO result = service.sendNotificationDateRetrieve(sendNotificationId);
+    WorkflowCreatedDTO result = service.sendNotificationStreamConsume(sendStreamId);
 
     // Then
     Assertions.assertEquals(expectedResult, result);
   }
+
 }

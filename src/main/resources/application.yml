@@ -149,6 +149,22 @@ spring:
               initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MAX_POLLER_SIZE:2}"
+      - task-queue: SendNotificationStreamConsumeWF
+        capacity:
+          workflow-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MAX_POLLER_SIZE:5}"
+      - task-queue: SendNotificationStreamConsumeWF_LOCAL
+        capacity:
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MAX_POLLER_SIZE:5}"
       - task-queue: SendWF
         capacity:
           workflow-task-pollers-configuration:

@@ -37,6 +37,9 @@ public class TaskQueueConstants {
   public static final String TASK_QUEUE_SEND_RESERVED_NOTIFICATION = "SendNotificationProcessWF";
   public static final String TASK_QUEUE_SEND_RESERVED_NOTIFICATION_LOCAL = "SendNotificationProcessWF_LOCAL";
 
+  public static final String TASK_QUEUE_SEND_RESERVED_STREAM = "SendNotificationStreamConsumeWF";
+  public static final String TASK_QUEUE_SEND_RESERVED_STREAM_LOCAL = "SendNotificationStreamConsumeWF_LOCAL";
+
   public static final String TASK_QUEUE_SEND_LOW_PRIORITY = "SendWF";
 //endregion
 
