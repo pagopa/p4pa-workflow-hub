@@ -25,7 +25,8 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   public SendEventStreamProcessingServiceImpl(
     UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity,
     SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity,
-    PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity, FetchSendLegalFactActivity fetchSendLegalFactActivity) {
+    PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity,
+    FetchSendLegalFactActivity fetchSendLegalFactActivity) {
     this.updateSendNotificationStatusActivity = updateSendNotificationStatusActivity;
     this.sendNotificationDateRetrieveActivity = sendNotificationDateRetrieveActivity;
     this.publishSendNotificationPaymentEventActivity = publishSendNotificationPaymentEventActivity;
