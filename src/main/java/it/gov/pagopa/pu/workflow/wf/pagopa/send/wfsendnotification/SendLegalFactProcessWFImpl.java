@@ -29,7 +29,7 @@ public class SendLegalFactProcessWFImpl implements SendLegalFactProcessWF, Appli
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     SendNotificationProcessWfConfig wfConfig = applicationContext.getBean(SendNotificationProcessWfConfig.class);
 
-    fetchSendLegalFactActivity = wfConfig.buildPFetchSendLegalFactActivityStub();
+    fetchSendLegalFactActivity = wfConfig.buildFetchSendLegalFactActivityStub();
   }
 
   @Override
