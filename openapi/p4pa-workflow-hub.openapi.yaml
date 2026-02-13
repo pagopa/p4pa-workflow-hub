@@ -598,6 +598,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
+  /workflow/send-notification/{sendNotificationId}/legal-facts/{legalFactId}:
+    get:
+      tags:
+        - SendNotification
+      operationId: fetchSendLegalFact
+      description: fetch SEND legal fact
+      parameters:
+        - name: sendNotificationId
+          in: path
+          required: true
+          description: The id of send notification.
+          schema:
+            type: string
+        - name: legalFactId
+          in: path
+          required: true
+          description: The id of send legal fact.
+          schema:
+            type: string
+        - name: legalFactCategory
+          in: query
+          required: false
+          description: the category of the legal file
+          schema:
+            type: "LegalFactCategoryDTO"
+      responses:
+        '200':
+          description: "fetch SEND legal fact"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowCreatedDTO'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowErrorDTO'
   /workflow/assessments/receipt/{receiptId}:
     post:
       tags:

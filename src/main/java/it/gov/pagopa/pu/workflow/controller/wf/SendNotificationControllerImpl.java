@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.workflow.controller.generated.SendNotificationApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.wf.send.SendNotificationService;
@@ -29,6 +30,13 @@ public class SendNotificationControllerImpl implements SendNotificationApi {
   public ResponseEntity<WorkflowCreatedDTO> consumeSendStream(String sendStreamId) {
     log.info("Starting stream consuming workflow for sendStreamId: {}", sendStreamId);
     WorkflowCreatedDTO createWorkflowResponseDTO = service.sendNotificationStreamConsume(sendStreamId);
+    return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<WorkflowCreatedDTO> fetchSendLegalFact(String sendNotificationId, String legalFactId, LegalFactCategoryDTO category) {
+    log.info("Starting download and cache SEND LegalFact workflow for sendNotificationId: {}, category {}, legalFactId {}", sendNotificationId, category, legalFactId);
+    WorkflowCreatedDTO createWorkflowResponseDTO = service.fetchSendLegalFact(sendNotificationId, legalFactId, category);
     return new ResponseEntity<>(createWorkflowResponseDTO, HttpStatus.OK);
   }
 

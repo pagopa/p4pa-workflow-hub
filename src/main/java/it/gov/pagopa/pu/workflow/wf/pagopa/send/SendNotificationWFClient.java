@@ -1,9 +1,11 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send;
 
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendLegalFactProcessWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationProcessWF;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationStreamConsumeWF;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,18 @@ public class SendNotificationWFClient {
       workflowId
     );
     return workflowClientService.start(workflow::readSendStream, sendStreamId);
+  }
+
+  public WorkflowCreatedDTO fetchSendLegalFact(String sendNotificationId, String legalFactId, LegalFactCategoryDTO category) {
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_LEGAL_FACTS;
+    String workflowId = generateWorkflowId(legalFactId, SendLegalFactProcessWF.class);
+
+    SendLegalFactProcessWF workflow = workflowService.buildWorkflowStubToStartNew(
+      SendLegalFactProcessWF.class,
+      taskQueue,
+      workflowId
+    );
+    return workflowClientService.start(workflow::fetchSendLegalFact, sendNotificationId, legalFactId, category);
   }
 
 }

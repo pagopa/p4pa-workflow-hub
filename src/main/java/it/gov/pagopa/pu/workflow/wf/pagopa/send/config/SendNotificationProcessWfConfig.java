@@ -13,6 +13,10 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "workflow.send-notification")
 public class SendNotificationProcessWfConfig extends BaseWfConfig {
 
+  public FetchSendLegalFactActivity buildPFetchSendLegalFactActivityStub() {
+    return Workflow.newActivityStub(FetchSendLegalFactActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
   public PreloadSendFileActivity buildPreloadSendFileActivityStub() {
     return Workflow.newActivityStub(PreloadSendFileActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }

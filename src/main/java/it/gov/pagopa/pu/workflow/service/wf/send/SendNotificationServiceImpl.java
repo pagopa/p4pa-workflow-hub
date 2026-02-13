@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.service.wf.send;
 
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.SendNotificationWFClient;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,11 @@ public class SendNotificationServiceImpl implements SendNotificationService {
   @Override
   public WorkflowCreatedDTO sendNotificationStreamConsume(String sendStreamId) {
     return sendNotificationWFClient.startSendNotificationStreamConsume(sendStreamId);
+  }
+
+  @Override
+  public WorkflowCreatedDTO fetchSendLegalFact(String sendNotificationId, String legalFactId, LegalFactCategoryDTO category) {
+    return sendNotificationWFClient.fetchSendLegalFact(sendNotificationId, legalFactId, category);
   }
 
 }
