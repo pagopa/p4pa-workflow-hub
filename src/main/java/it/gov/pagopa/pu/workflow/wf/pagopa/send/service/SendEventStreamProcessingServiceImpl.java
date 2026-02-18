@@ -12,8 +12,6 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotification
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.mapper.SendNotification2DebtPositionSendNotificationsMapper;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-
 @Slf4j
 public class SendEventStreamProcessingServiceImpl implements SendEventStreamProcessingService {
 
@@ -62,13 +60,12 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       }
     };
     if(streamEvent.getElement().getLegalFactsIds() != null && !streamEvent.getElement().getLegalFactsIds().isEmpty()) {
-      streamEvent.getElement().getLegalFactsIds().forEach(lf -> {
-        try {
-          fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(streamEvent.getNotificationRequestId(), LegalFactCategoryDTO.valueOf(lf.getCategory()), lf.getKey().replace(LEGAL_FACT_ID_PREFIX, ""));
-        } catch (IOException e) {
-          log.error("Cannot download and archive legal fact for notification with notificationRequestId %s, category %s, legalFactId %s: %s".formatted(streamEvent.getNotificationRequestId(), lf.getCategory(), lf.getKey(), e.getMessage()), e);
-        }
-      });
+      streamEvent.getElement().getLegalFactsIds().forEach(lf ->
+        fetchSendLegalFactActivity.downloadAndArchiveSendLegalFact(
+          streamEvent.getNotificationRequestId(),
+          LegalFactCategoryDTO.valueOf(lf.getCategory()),
+          lf.getKey().replace(LEGAL_FACT_ID_PREFIX, ""))
+      );
     }
     return eventiId;
   }
