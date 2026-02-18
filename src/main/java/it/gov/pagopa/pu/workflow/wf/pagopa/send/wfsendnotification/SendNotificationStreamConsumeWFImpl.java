@@ -35,6 +35,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private GetSendStreamActivity getSendStreamActivity;
   private GetSendNotificationEventsFromStreamActivity getSendNotificationEventsFromStreamActivity;
   private SendEventStreamProcessingService sendEventStreamProcessingService;
+  private UpdateLastProcessedStreamEventIdActivity updateLastProcessedStreamEventIdActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -54,6 +55,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       wfConfig.buildPublishSendNotificationPaymentEventActivityStub(),
       wfConfig.buildFetchSendLegalFactActivityStub()
     );
+    updateLastProcessedStreamEventIdActivity = wfConfig.buildUpdateLastProcessedStreamEventIdActivityStub();
   }
 
   @Override
@@ -71,8 +73,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       try {
         List<ProgressResponseElementV25DTO> streamEvents = this.getSendNotificationEventsFromStreamActivity.fetchSendNotificationEventsFromStream(
           sendStreamDTO.getOrganizationId(),
-          sendStreamId,
-          lastProcessedEventId
+          sendStreamId
         );
         if (!CollectionUtils.isEmpty(streamEvents)) {
           lastProcessedEventId = processingStreamEvents(sendStreamId, streamEvents, lastProcessedEventId);
@@ -81,16 +82,36 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         log.error("Something went wrong processing stream {}: {}",
           sendStreamId, Utilities.getWorkflowExceptionMessage(t));
       }
+      this.commitLastProcessedEventId(sendStreamDTO, lastProcessedEventId);
       waitForNextIteration(sendStreamId);
     } while (isStreamStillOpened(sendStreamId));
 
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
   }
 
-  private String processingStreamEvents(String sendStreamId, List<ProgressResponseElementV25DTO> streamEvents, String lastProcessedEventId) {
-    for (ProgressResponseElementV25DTO streamEvent : streamEvents) {
-      String lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
-      if(lastEventId != null) lastProcessedEventId = lastEventId;
+  private void commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
+    if(sendStreamDTO == null || sendStreamDTO.getLastEventId() == null || sendStreamDTO.getLastEventId().equals(lastProcessedEventId)) {
+      return;
+    }
+    try {
+      updateLastProcessedStreamEventIdActivity.updateLastProcessedStreamEventId(sendStreamDTO.getStreamId(), lastProcessedEventId);
+    } catch (Exception e) {
+      log.error("Error in updating last processed event id for stream with id %s".formatted(sendStreamDTO.getStreamId()));
+    }
+  }
+
+  private String processingStreamEvents(String sendStreamId, List<ProgressResponseElementV25DTO> streamEventBatch, String lastProcessedEventId) {
+    for (ProgressResponseElementV25DTO streamEvent : streamEventBatch) {
+      String lastEventId;
+      try {
+        lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
+        if(lastEventId != null) lastProcessedEventId = lastEventId;
+      } catch (HttpClientErrorException.NotFound e) {
+        lastProcessedEventId = streamEvent.getEventId(); //skip events of NOT FOUND notification
+      } catch (Exception e) {
+        log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()), e.getCause());
+        break;
+      }
     }
     return lastProcessedEventId;
   }
@@ -101,6 +122,8 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     } catch (HttpClientErrorException.NotFound e) {
       log.error("STREAMS_NOT_FOUND] Cannot fetch stream: SEND stream non found for sendStreamId {}", sendStreamId);
       throw new WorkflowInternalErrorException("[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: " + e.getMessage());
+    } catch (Exception e) {
+      return true;
     }
   }
 
