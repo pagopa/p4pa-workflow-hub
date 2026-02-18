@@ -313,9 +313,11 @@ class SendNotificationStreamConsumeWFImplTest {
     sendNotificationDTO.setPayments(List.of(sendNotificationPaymentsDTO));
     sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
 
+    HttpClientErrorException notFound = HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null);
+
     Mockito.when(getSendStreamActivityMock.fetchSendStream(sendStreamId))
       .thenReturn(streamDTO)
-      .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+      .thenThrow(notFound);
     Mockito.when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, sendStreamId, lastEventId
@@ -334,7 +336,7 @@ class SendNotificationStreamConsumeWFImplTest {
       WorkflowInternalErrorException actualException =
         Assertions.assertThrows(WorkflowInternalErrorException.class, () -> wf.readSendStream(sendStreamId));
 
-      Assertions.assertEquals("[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: ERROR", actualException.getMessage());
+      Assertions.assertEquals("[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: %s".formatted(notFound.getMessage()), actualException.getMessage());
     }
 
     //THEN
