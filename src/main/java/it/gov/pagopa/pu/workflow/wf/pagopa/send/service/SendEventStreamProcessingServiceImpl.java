@@ -66,7 +66,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         try {
           fetchSendLegalFactActivity.downloadAndCacheSendLegalFact(streamEvent.getNotificationRequestId(), LegalFactCategoryDTO.valueOf(lf.getCategory()), lf.getKey().replace(LEGAL_FACT_ID_PREFIX, ""));
         } catch (IOException e) {
-          log.error("Cannot download and cache legal fact for notification with notificationRequestId %s, category %s, legalFactId %s: %s".formatted(streamEvent.getNotificationRequestId(), lf.getCategory(), lf.getKey(), e.getMessage()), e);
+          log.error("Cannot download and archive legal fact for notification with notificationRequestId %s, category %s, legalFactId %s: %s".formatted(streamEvent.getNotificationRequestId(), lf.getCategory(), lf.getKey(), e.getMessage()), e);
         }
       });
     }

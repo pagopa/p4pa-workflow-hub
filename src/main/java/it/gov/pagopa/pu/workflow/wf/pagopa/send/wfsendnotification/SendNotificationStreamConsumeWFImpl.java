@@ -17,6 +17,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -97,7 +98,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private boolean isStreamStillOpened(String sendStreamId) {
     try {
       return getSendStreamActivity.fetchSendStream(sendStreamId) != null;
-    } catch (Exception e) {
+    } catch (HttpClientErrorException.NotFound e) {
       log.error("STREAMS_NOT_FOUND] Cannot fetch stream: SEND stream non found for sendStreamId {}", sendStreamId);
       throw new WorkflowInternalErrorException("[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: " + e.getMessage());
     }

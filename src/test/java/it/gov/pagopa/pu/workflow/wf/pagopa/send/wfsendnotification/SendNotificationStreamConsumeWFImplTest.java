@@ -18,10 +18,10 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -315,7 +315,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(getSendStreamActivityMock.fetchSendStream(sendStreamId))
       .thenReturn(streamDTO)
-      .thenThrow(new RuntimeException("ERROR"));
+      .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
     Mockito.when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, sendStreamId, lastEventId
