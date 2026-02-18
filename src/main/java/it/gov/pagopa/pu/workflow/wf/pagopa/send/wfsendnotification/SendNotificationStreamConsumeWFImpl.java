@@ -90,7 +90,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   }
 
   private void commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
-    if(lastProcessedEventId!=null) {
+    if(lastProcessedEventId==null) {
       return;
     }
     try {

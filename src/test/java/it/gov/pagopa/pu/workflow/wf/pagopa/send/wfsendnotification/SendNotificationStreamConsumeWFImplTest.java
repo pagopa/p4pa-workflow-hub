@@ -343,6 +343,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     //THEN
     Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(sendStreamId);
+    Mockito.verify(updateLastProcessedStreamEventIdActivityMock).updateLastProcessedStreamEventId(Mockito.isA(String.class), Mockito.isA(String.class));
   }
 
   @Test
