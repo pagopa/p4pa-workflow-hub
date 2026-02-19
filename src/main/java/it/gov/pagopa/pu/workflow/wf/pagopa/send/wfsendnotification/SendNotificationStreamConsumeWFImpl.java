@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
+import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
@@ -96,8 +97,8 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       try {
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
         if(lastEventId != null) lastProcessedEventId = lastEventId;
-      } catch (ApplicationFailure e) {
-        if(e.isNonRetryable()) {
+      } catch (ActivityFailure e) {
+        if(e.getCause() instanceof ApplicationFailure af && af.isNonRetryable()) {
           log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()), e);
           lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
         }
