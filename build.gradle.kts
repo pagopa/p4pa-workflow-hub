@@ -76,7 +76,7 @@ val commonsLang3Version = "3.20.0"
 val lz4JavaVersion = "1.10.1"
 val springCloudDepsVersion = "2025.1.0"
 
-val p4paActivitiesVersion = "1.179.0"
+val p4paActivitiesVersion = "1.179.1"
 
 dependencyManagement {
   imports {
@@ -235,7 +235,8 @@ openApiGenerate {
       "FineWfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig",
       "WorkflowTypeOrg" to "it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg",
       "ScheduleEnum" to "it.gov.pagopa.pu.workflow.enums.ScheduleEnum",
-      "WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus"
+      "WorkflowExecutionStatus" to "io.temporal.api.enums.v1.WorkflowExecutionStatus",
+      "LegalFactCategoryDTO" to "it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO"
     )
   )
   configOptions.set(
