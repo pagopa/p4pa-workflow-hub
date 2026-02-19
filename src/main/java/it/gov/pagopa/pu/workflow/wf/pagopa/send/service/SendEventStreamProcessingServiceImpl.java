@@ -12,10 +12,10 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotification
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.mapper.SendNotification2DebtPositionSendNotificationsMapper;
 import lombok.extern.slf4j.Slf4j;
 
+import static it.gov.pagopa.pu.workflow.utilities.Constants.LEGAL_FACT_ID_PREFIX;
+
 @Slf4j
 public class SendEventStreamProcessingServiceImpl implements SendEventStreamProcessingService {
-
-  public static final String LEGAL_FACT_ID_PREFIX = "safestorage://";
 
   private final UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity;
   private final SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity;
@@ -35,7 +35,13 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
 
   @Override
   public String processSendStreamEvent(String sendStreamId, ProgressResponseElementV25DTO streamEvent) {
-    String eventiId = switch (streamEvent.getNewStatus()) {
+    String eventiId = processNotificationEvent(sendStreamId, streamEvent);
+    downloadAndArchiveNotificationLegalFact(streamEvent);
+    return eventiId;
+  }
+
+  private String processNotificationEvent(String sendStreamId, ProgressResponseElementV25DTO streamEvent) {
+    return switch (streamEvent.getNewStatus()) {
       case ACCEPTED -> {
         SendNotificationDTO sendNotification = this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
@@ -59,15 +65,6 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         yield null;
       }
     };
-    if(streamEvent.getElement().getLegalFactsIds() != null && !streamEvent.getElement().getLegalFactsIds().isEmpty()) {
-      streamEvent.getElement().getLegalFactsIds().forEach(lf ->
-        fetchSendLegalFactActivity.downloadAndArchiveSendLegalFact(
-          streamEvent.getNotificationRequestId(),
-          LegalFactCategoryDTO.valueOf(lf.getCategory()),
-          lf.getKey().replace(LEGAL_FACT_ID_PREFIX, ""))
-      );
-    }
-    return eventiId;
   }
 
   private void publishSendEvent(SendNotificationDTO sendNotificationDTO, PaymentEventRequestDTO eventRequestDTO) {
@@ -81,6 +78,21 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
     SendNotification2DebtPositionSendNotificationsMapper.map(sendNotificationDTO)
       .forEach(p ->
         publishSendNotificationPaymentEventActivity.publishSendNotificationErrorEvent(p, eventRequestDTO)
+      );
+  }
+
+  private void downloadAndArchiveNotificationLegalFact(ProgressResponseElementV25DTO streamEvent) {
+    if(streamEvent.getElement().getLegalFactsIds() == null || streamEvent.getElement().getLegalFactsIds().isEmpty()) {
+      return;
+    }
+    streamEvent.getElement()
+      .getLegalFactsIds()
+      .forEach(lf ->
+        fetchSendLegalFactActivity.downloadAndArchiveSendLegalFact(
+          streamEvent.getNotificationRequestId(),
+          LegalFactCategoryDTO.valueOf(lf.getCategory()),
+          lf.getKey().replace(LEGAL_FACT_ID_PREFIX, "")
+        )
       );
   }
 

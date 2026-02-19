@@ -89,17 +89,6 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
   }
 
-  private void commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
-    if(lastProcessedEventId==null) {
-      return;
-    }
-    try {
-      updateLastProcessedStreamEventIdActivity.updateLastProcessedStreamEventId(sendStreamDTO.getStreamId(), lastProcessedEventId);
-    } catch (Exception e) {
-      log.error("Error in updating last processed event id for stream with id %s".formatted(sendStreamDTO.getStreamId()));
-    }
-  }
-
   private String processingStreamEvents(String sendStreamId, List<ProgressResponseElementV25DTO> streamEventBatch, String lastProcessedEventId) {
     for (ProgressResponseElementV25DTO streamEvent : streamEventBatch) {
       String lastEventId;
@@ -114,6 +103,18 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       }
     }
     return lastProcessedEventId;
+  }
+
+  private void commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
+    if(lastProcessedEventId==null || lastProcessedEventId.equals(sendStreamDTO.getLastEventId())) {
+      return;
+    }
+    try {
+      updateLastProcessedStreamEventIdActivity.updateLastProcessedStreamEventId(sendStreamDTO.getStreamId(), lastProcessedEventId);
+      sendStreamDTO.setLastEventId(lastProcessedEventId);
+    } catch (Exception e) {
+      log.error("Error in updating last processed event id for stream with id %s".formatted(sendStreamDTO.getStreamId()), e.getCause());
+    }
   }
 
   private boolean isStreamStillOpened(String sendStreamId) {
