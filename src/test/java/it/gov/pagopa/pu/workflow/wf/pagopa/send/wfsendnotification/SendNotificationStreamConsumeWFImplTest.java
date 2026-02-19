@@ -216,6 +216,108 @@ class SendNotificationStreamConsumeWFImplTest {
   }
 
   @Test
+  void givenRetryableActivityFailureInProcessSendStreamEventWhenReadSendStreamThenOK() {
+    //GIVEN
+    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    streamDTO.setLastEventId("lastSendEventId");
+
+    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
+    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
+    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+      sendEvent1,
+      sendEvent2
+    );
+
+    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+      .thenReturn(streamDTO)
+      .thenReturn(null); //for breaking from do-while loop
+
+    Mockito.when(
+      getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
+        ORGANIZATION_ID, SEND_STREAM_ID
+      )
+    ).thenReturn(streamEvents);
+
+    ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
+    Mockito.when(activityFailureMock.getCause())
+      .thenReturn(ApplicationFailure.newFailureWithCause("error", NotRetryableActivityException.class.getName(), null));
+
+    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isA(ProgressResponseElementV25DTO.class)
+      )).thenReturn(sendEvent1.getEventId())
+      .thenThrow(activityFailureMock);
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      //WHEN
+      wf.readSendStream(SEND_STREAM_ID);
+
+      //THEN
+      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
+      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+        .updateLastProcessedStreamEventId(
+          SEND_STREAM_ID,
+          sendEvent1.getEventId()
+        );
+    }
+
+  }
+
+  @Test
+  void givenDifferentFromActivityFailureExceptionInProcessSendStreamEventWhenReadSendStreamThenOK() {
+    //GIVEN
+    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    streamDTO.setLastEventId("lastSendEventId");
+
+    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
+    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
+    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+      sendEvent1,
+      sendEvent2
+    );
+
+    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+      .thenReturn(streamDTO)
+      .thenReturn(null); //for breaking from do-while loop
+
+    Mockito.when(
+      getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
+        ORGANIZATION_ID, SEND_STREAM_ID
+      )
+    ).thenReturn(streamEvents);
+
+    ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
+    Mockito.when(activityFailureMock.getCause())
+      .thenReturn(new RuntimeException());
+
+    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isA(ProgressResponseElementV25DTO.class)
+      )).thenReturn(sendEvent1.getEventId())
+      .thenThrow(activityFailureMock);
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      //WHEN
+      wf.readSendStream(SEND_STREAM_ID);
+
+      //THEN
+      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
+      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+        .updateLastProcessedStreamEventId(
+          SEND_STREAM_ID,
+          sendEvent1.getEventId()
+        );
+    }
+
+  }
+
+  @Test
   void givenValidSendStreamIdWithAcceptedEventWhenReadSendStreamThenOK() {
     //GIVEN
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
