@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION_LOCAL)
+@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL)
 public class PublishSendNotificationPaymentEventActivityImpl implements PublishSendNotificationPaymentEventActivity {
 
   private final PaymentsProducerService paymentsProducerService;

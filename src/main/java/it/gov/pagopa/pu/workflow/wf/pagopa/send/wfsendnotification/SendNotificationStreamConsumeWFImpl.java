@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV25DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
@@ -95,10 +96,11 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       try {
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
         if(lastEventId != null) lastProcessedEventId = lastEventId;
-      } catch (HttpClientErrorException.NotFound e) {
-        lastProcessedEventId = streamEvent.getEventId(); //skip events of NOT FOUND notification
+      } catch (NotRetryableActivityException e) {
+        log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()), e);
+        lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
       } catch (Exception e) {
-        log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()), e.getCause());
+        log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()), e);
         break;
       }
     }
@@ -113,7 +115,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       updateLastProcessedStreamEventIdActivity.updateLastProcessedStreamEventId(sendStreamDTO.getStreamId(), lastProcessedEventId);
       sendStreamDTO.setLastEventId(lastProcessedEventId);
     } catch (Exception e) {
-      log.error("Error in updating last processed event id for stream with id %s".formatted(sendStreamDTO.getStreamId()), e.getCause());
+      log.error("Error in updating last processed event id for stream with id %s".formatted(sendStreamDTO.getStreamId()), e);
     }
   }
 

@@ -56,7 +56,7 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
   public PublishSendNotificationPaymentEventActivity buildPublishSendNotificationPaymentEventActivityStub() {
     return Workflow.newActivityStub(PublishSendNotificationPaymentEventActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-        TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION_LOCAL, this));
+        TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL, this));
   }
 
 }

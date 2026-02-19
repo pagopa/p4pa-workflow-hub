@@ -4,6 +4,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.GetSendStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.UpdateLastProcessedStreamEventIdActivity;
+import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.service.SendEventStreamProcessingService;
@@ -162,7 +163,7 @@ class SendNotificationStreamConsumeWFImplTest {
   }
 
   @Test
-  void givenNotFoundInProcessSendStreamEventWhenReadSendStreamThenOK() {
+  void givenNotRetryableActivityExceptionInProcessSendStreamEventWhenReadSendStreamThenOK() {
     //GIVEN
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
@@ -188,7 +189,7 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV25DTO.class)
     )).thenReturn(sendEvent1.getEventId())
-      .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+      .thenThrow(new NotRetryableActivityException("error"));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
