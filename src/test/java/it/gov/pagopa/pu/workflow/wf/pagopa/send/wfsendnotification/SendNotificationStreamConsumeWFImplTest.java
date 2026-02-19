@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
+import io.temporal.failure.ApplicationFailure;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.GetSendStreamActivity;
@@ -189,7 +190,7 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV25DTO.class)
     )).thenReturn(sendEvent1.getEventId())
-      .thenThrow(new NotRetryableActivityException("error"));
+      .thenThrow(ApplicationFailure.newNonRetryableFailure("error", NotRetryableActivityException.class.getName()));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
