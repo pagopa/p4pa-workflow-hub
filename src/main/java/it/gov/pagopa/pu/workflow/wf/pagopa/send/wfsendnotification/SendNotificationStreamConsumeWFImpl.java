@@ -5,6 +5,7 @@ import io.temporal.failure.ApplicationFailure;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV25DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
@@ -98,12 +99,18 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
         if(lastEventId != null) lastProcessedEventId = lastEventId;
       } catch (ActivityFailure e) {
-        if(e.getCause() instanceof ApplicationFailure af && af.isNonRetryable()) {
-          log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()), e);
+        if(e.getCause() instanceof ApplicationFailure af &&
+          af.isNonRetryable() &&
+          SendStreamSkippedEventException.class.getName().equals(af.getType())
+        ) {
+          log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
+        } else {
+          log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()));
+          break;
         }
       } catch (Exception e) {
-        log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()), e);
+        log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()));
         break;
       }
     }
