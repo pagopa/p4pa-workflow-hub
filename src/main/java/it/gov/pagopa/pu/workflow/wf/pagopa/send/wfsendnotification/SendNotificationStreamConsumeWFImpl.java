@@ -98,8 +98,9 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       try {
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
         if(lastEventId != null) lastProcessedEventId = lastEventId;
-      } catch (ActivityFailure e) {
-        if(e.getCause() instanceof ApplicationFailure af &&
+      } catch (Exception e) {
+        if(e instanceof ActivityFailure &&
+          e.getCause() instanceof ApplicationFailure af &&
           af.isNonRetryable() &&
           SendStreamSkippedEventException.class.getName().equals(af.getType())
         ) {
@@ -109,9 +110,6 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
           log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()));
           break;
         }
-      } catch (Exception e) {
-        log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()));
-        break;
       }
     }
     return lastProcessedEventId;
