@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.connector.organization.client;
 
+import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControllerApi;
 import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.workflow.connector.organization.config.OrganizationApisHolder;
@@ -21,6 +22,8 @@ class OrganizationSearchClientTest {
   private OrganizationApisHolder organizationApisHolderMock;
   @Mock
   private OrganizationSearchControllerApi organizationSearchControllerApiMock;
+  @Mock
+  private OrganizationEntityControllerApi organizationEntityControllerApiMock;
 
   private OrganizationSearchClient organizationSearchClient;
 
@@ -33,7 +36,8 @@ class OrganizationSearchClientTest {
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
       organizationApisHolderMock,
-      organizationSearchControllerApiMock
+      organizationSearchControllerApiMock,
+      organizationEntityControllerApiMock
     );
   }
 
@@ -76,4 +80,41 @@ class OrganizationSearchClientTest {
     Assertions.assertNull(result);
   }
 //endregion
+
+  @Test
+  void whenFindByIdThenInvokeWithAccessToken() {
+    // Given
+    String accessToken = "ACCESSTOKEN";
+    Long organizationId = 1L;
+    Organization expectedResult = new Organization();
+
+    Mockito.when(organizationApisHolderMock.getOrganizationEntityControllerApi(accessToken))
+      .thenReturn(organizationEntityControllerApiMock);
+    Mockito.when(organizationEntityControllerApiMock.crudGetOrganization(String.valueOf(organizationId)))
+      .thenReturn(expectedResult);
+
+    // When
+    Organization result = organizationSearchClient.findById(organizationId, accessToken);
+
+    // Then
+    Assertions.assertSame(expectedResult, result);
+  }
+
+  @Test
+  void givenNotExistentOrganizationIdWhenFindByIdThenNull() {
+    // Given
+    String accessToken = "ACCESSTOKEN";
+    Long organizationId = 1L;
+
+    Mockito.when(organizationApisHolderMock.getOrganizationEntityControllerApi(accessToken))
+      .thenReturn(organizationEntityControllerApiMock);
+    Mockito.when(organizationEntityControllerApiMock.crudGetOrganization(String.valueOf(organizationId)))
+      .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+
+    // When
+    Organization result = organizationSearchClient.findById(organizationId, accessToken);
+
+    // Then
+    Assertions.assertNull(result);
+  }
 }
