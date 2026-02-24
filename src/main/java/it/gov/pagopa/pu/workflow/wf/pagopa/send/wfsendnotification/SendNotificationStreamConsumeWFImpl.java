@@ -30,10 +30,7 @@ import java.util.List;
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
 public class SendNotificationStreamConsumeWFImpl implements SendNotificationStreamConsumeWF, ApplicationContextAware {
 
-  private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
   private static final int WAITING_SECONDS_NEXT_POLL = 5 * 60;
-
-  private int loopExecutionCount = 0;
 
   private GetSendStreamActivity getSendStreamActivity;
   private GetSendNotificationEventsFromStreamActivity getSendNotificationEventsFromStreamActivity;
@@ -85,8 +82,11 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         log.error("Something went wrong processing stream {}: {}",
           sendStreamId, Utilities.getWorkflowExceptionMessage(t));
       }
-      this.commitLastProcessedEventId(sendStreamDTO, lastProcessedEventId);
-      waitForNextIteration(sendStreamId);
+      boolean hasCommitedAnEvent = this.commitLastProcessedEventId(sendStreamDTO, lastProcessedEventId);
+      if(hasCommitedAnEvent) {
+        Workflow.continueAsNew(sendStreamId);
+      }
+      waitForNextIteration();
     } while (isStreamStillOpened(sendStreamId));
 
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
@@ -99,17 +99,10 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
         if(lastEventId != null) lastProcessedEventId = lastEventId;
       } catch (Exception e) {
-        int i = 0;
-        log.info("Exception outer level: %s".formatted(e.getClass().getName()));
-        Throwable cause = e.getCause();
-        while (cause!=null) {
-          log.info("Exception level %d: %s".formatted(++i, cause.getClass().getName()));
-          cause = cause.getCause();
-        }
         if(e instanceof ActivityFailure &&
           e.getCause() instanceof ApplicationFailure af &&
           af.isNonRetryable() &&
-          checkIfSameException(af)
+          SendStreamSkippedEventException.class.getName().equals(af.getType())
         ) {
           log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
@@ -122,20 +115,17 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     return lastProcessedEventId;
   }
 
-  private static boolean checkIfSameException(ApplicationFailure af) {
-    log.info("Expected exception %s, actual exception %s".formatted(SendStreamSkippedEventException.class.getName(), af.getType()));
-    return SendStreamSkippedEventException.class.getName().equals(af.getType());
-  }
-
-  private void commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
+  private boolean commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
     if(lastProcessedEventId==null || lastProcessedEventId.equals(sendStreamDTO.getLastEventId())) {
-      return;
+      return false;
     }
     try {
       updateLastProcessedStreamEventIdActivity.updateLastProcessedStreamEventId(sendStreamDTO.getStreamId(), lastProcessedEventId);
       sendStreamDTO.setLastEventId(lastProcessedEventId);
+      return true;
     } catch (Exception e) {
       log.error("Error in updating last processed event id for stream with id %s".formatted(sendStreamDTO.getStreamId()), e);
+      return false;
     }
   }
 
@@ -150,18 +140,13 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     }
   }
 
-  private void waitForNextIteration(String sendStreamId) {
+  private void waitForNextIteration() {
     Workflow.sleep(
       Duration.of(
         WAITING_SECONDS_NEXT_POLL,
         ChronoUnit.SECONDS
       )
     );
-    loopExecutionCount += 1;
-    if(loopExecutionCount >= LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY) {
-      loopExecutionCount = 0;
-      Workflow.continueAsNew(sendStreamId);
-    }
   }
 
 }

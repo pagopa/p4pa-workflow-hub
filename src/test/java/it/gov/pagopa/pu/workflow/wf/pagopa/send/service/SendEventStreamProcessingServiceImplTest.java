@@ -178,7 +178,8 @@ class SendEventStreamProcessingServiceImplTest {
       );
 
     //THEN
-    Assertions.assertNull(actualResult);
+    Assertions.assertNotNull(actualResult);
+    Assertions.assertEquals(EVENT_ID, actualResult);
     Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
@@ -215,7 +216,8 @@ class SendEventStreamProcessingServiceImplTest {
       );
 
     //THEN
-    Assertions.assertNull(actualResult);
+    Assertions.assertNotNull(actualResult);
+    Assertions.assertEquals(EVENT_ID, actualResult);
     Mockito.verify(fetchSendLegalFactActivityMock)
       .downloadAndArchiveSendLegalFact(
         sendEvent.getNotificationRequestId(),
@@ -240,7 +242,8 @@ class SendEventStreamProcessingServiceImplTest {
       );
 
     //THEN
-    Assertions.assertNull(actualResult);
+    Assertions.assertNotNull(actualResult);
+    Assertions.assertEquals(EVENT_ID, actualResult);
     Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
@@ -265,7 +268,8 @@ class SendEventStreamProcessingServiceImplTest {
       );
 
     //THEN
-    Assertions.assertNull(actualResult);
+    Assertions.assertNotNull(actualResult);
+    Assertions.assertEquals(EVENT_ID, actualResult);
     Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
