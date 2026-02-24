@@ -44,6 +44,7 @@ public class PaymentsReportingPagoPaBrokersFetchWFImpl implements PaymentsReport
 
     List<Long> brokersId = brokersRetrieverActivity.fetchAllBrokers()
       .stream()
+      .filter(b -> Boolean.TRUE.equals(b.getFlagPaymentsReporting()))
       .map(Broker::getBrokerId)
       .toList();
     log.info("Fetched brokers ID: {}", brokersId);
@@ -51,6 +52,7 @@ public class PaymentsReportingPagoPaBrokersFetchWFImpl implements PaymentsReport
     for (Long brokerId : brokersId) {
       organizationBrokeredActiveRetrieverActivity.retrieveBrokeredOrganizations(brokerId)
         .stream()
+        .filter(o -> Boolean.TRUE.equals(o.getFlagPaymentsReporting()))
         .map(Organization::getOrganizationId)
         .forEach(organizationPaymentsReportingPagoPaFetchWFClient::retrieveAsyncStart);
     }
