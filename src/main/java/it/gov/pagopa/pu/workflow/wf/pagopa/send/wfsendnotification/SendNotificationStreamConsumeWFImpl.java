@@ -99,10 +99,17 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
         if(lastEventId != null) lastProcessedEventId = lastEventId;
       } catch (Exception e) {
+        int i = 0;
+        log.info("Exception outer level: %s".formatted(e.getClass().getName()));
+        Throwable cause = e.getCause();
+        while (cause!=null) {
+          log.info("Exception level %d: %s".formatted(++i, e.getClass().getName()));
+          cause = cause.getCause();
+        }
         if(e instanceof ActivityFailure &&
           e.getCause() instanceof ApplicationFailure af &&
           af.isNonRetryable() &&
-          SendStreamSkippedEventException.class.getName().equals(af.getType())
+          checkIfSameException(af)
         ) {
           log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
@@ -113,6 +120,11 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       }
     }
     return lastProcessedEventId;
+  }
+
+  private static boolean checkIfSameException(ApplicationFailure af) {
+    log.info("Expected exception %s, actual exception %s".formatted(SendStreamSkippedEventException.class.getName(), af.getType()));
+    return SendStreamSkippedEventException.class.getName().equals(af.getType());
   }
 
   private void commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
