@@ -28,4 +28,9 @@ public class OrganizationServiceImpl implements OrganizationService {
       organizationSearchClient.findByOrgFiscalCode(orgFiscalCode, authnService.getAccessToken())
     );
   }
+
+  @Override
+  public Organization getOrganizationById(Long organizationId, String accessToken) {
+    return organizationSearchClient.findById(organizationId, accessToken);
+  }
 }
