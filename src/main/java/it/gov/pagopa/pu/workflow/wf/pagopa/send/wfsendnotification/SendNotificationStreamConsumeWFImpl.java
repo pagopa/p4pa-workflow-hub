@@ -103,7 +103,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         log.info("Exception outer level: %s".formatted(e.getClass().getName()));
         Throwable cause = e.getCause();
         while (cause!=null) {
-          log.info("Exception level %d: %s".formatted(++i, e.getClass().getName()));
+          log.info("Exception level %d: %s".formatted(++i, cause.getClass().getName()));
           cause = cause.getCause();
         }
         if(e instanceof ActivityFailure &&
