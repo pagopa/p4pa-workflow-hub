@@ -30,7 +30,10 @@ import java.util.List;
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
 public class SendNotificationStreamConsumeWFImpl implements SendNotificationStreamConsumeWF, ApplicationContextAware {
 
+  private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
   private static final int WAITING_SECONDS_NEXT_POLL = 5 * 60;
+
+  private int loopExecutionCount = 0;
 
   private GetSendStreamActivity getSendStreamActivity;
   private GetSendNotificationEventsFromStreamActivity getSendNotificationEventsFromStreamActivity;
@@ -86,7 +89,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       if(hasCommitedAnEvent) {
         Workflow.continueAsNew(sendStreamId);
       }
-      waitForNextIteration();
+      waitForNextIteration(sendStreamId);
     } while (isStreamStillOpened(sendStreamId));
 
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
@@ -140,13 +143,18 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     }
   }
 
-  private void waitForNextIteration() {
+  private void waitForNextIteration(String sendStreamId) {
     Workflow.sleep(
       Duration.of(
         WAITING_SECONDS_NEXT_POLL,
         ChronoUnit.SECONDS
       )
     );
+    loopExecutionCount += 1;
+    if(loopExecutionCount >= LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY) {
+      loopExecutionCount = 0;
+      Workflow.continueAsNew(sendStreamId);
+    }
   }
 
 }
