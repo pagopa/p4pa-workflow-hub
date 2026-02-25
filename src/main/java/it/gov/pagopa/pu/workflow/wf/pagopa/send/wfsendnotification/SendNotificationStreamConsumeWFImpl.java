@@ -6,7 +6,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV25DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
@@ -74,7 +74,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     String lastProcessedEventId = sendStreamDTO.getLastEventId(); //start reading after latest processed event
     do {
       try {
-        List<ProgressResponseElementV25DTO> streamEvents = this.getSendNotificationEventsFromStreamActivity.fetchSendNotificationEventsFromStream(
+        List<ProgressResponseElementV28DTO> streamEvents = this.getSendNotificationEventsFromStreamActivity.fetchSendNotificationEventsFromStream(
           sendStreamDTO.getOrganizationId(),
           sendStreamId
         );
@@ -95,8 +95,8 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
   }
 
-  private String processingStreamEvents(String sendStreamId, List<ProgressResponseElementV25DTO> streamEventBatch, String lastProcessedEventId) {
-    for (ProgressResponseElementV25DTO streamEvent : streamEventBatch) {
+  private String processingStreamEvents(String sendStreamId, List<ProgressResponseElementV28DTO> streamEventBatch, String lastProcessedEventId) {
+    for (ProgressResponseElementV28DTO streamEvent : streamEventBatch) {
       String lastEventId;
       try {
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);

@@ -132,8 +132,8 @@ class SendNotificationStreamConsumeWFImplTest {
     //GIVEN
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.VIEWED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.VIEWED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
@@ -150,7 +150,7 @@ class SendNotificationStreamConsumeWFImplTest {
     Mockito.doThrow(new RuntimeException())
       .when(sendEventStreamProcessingServiceMock).processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
-        Mockito.isA(ProgressResponseElementV25DTO.class)
+        Mockito.isA(ProgressResponseElementV28DTO.class)
       );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -172,9 +172,9 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1,
       sendEvent2
     );
@@ -195,7 +195,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV25DTO.class)
+      Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
 
@@ -223,9 +223,9 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1,
       sendEvent2
     );
@@ -246,7 +246,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
-        Mockito.isA(ProgressResponseElementV25DTO.class)
+        Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
 
@@ -274,9 +274,9 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1,
       sendEvent2
     );
@@ -297,7 +297,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
-        Mockito.isA(ProgressResponseElementV25DTO.class)
+        Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
 
@@ -325,9 +325,9 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1,
       sendEvent2
     );
@@ -348,7 +348,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
-        Mockito.isA(ProgressResponseElementV25DTO.class)
+        Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
 
@@ -376,9 +376,9 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1,
       sendEvent2
     );
@@ -399,7 +399,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
-        Mockito.isA(ProgressResponseElementV25DTO.class)
+        Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
 
@@ -427,9 +427,9 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1,
       sendEvent2
     );
@@ -446,7 +446,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
-        Mockito.isA(ProgressResponseElementV25DTO.class)
+        Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenReturn(sendEvent2.getEventId());
 
@@ -475,9 +475,9 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    ProgressResponseElementV25DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1,
       sendEvent2
     );
@@ -494,7 +494,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV25DTO.class)
+      Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId())
       .thenReturn(sendEvent2.getEventId());
 
@@ -551,8 +551,8 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
@@ -569,7 +569,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV25DTO.class)
+      Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
 
@@ -595,8 +595,8 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
@@ -612,7 +612,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV25DTO.class)
+      Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -643,8 +643,8 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
@@ -663,7 +663,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV25DTO.class)
+      Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -689,8 +689,8 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
@@ -706,7 +706,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
-        Mockito.isA(ProgressResponseElementV25DTO.class)
+        Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId());
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -731,8 +731,8 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("lastSendEventId", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("lastSendEventId", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
@@ -748,7 +748,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV25DTO.class)
+      Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -773,8 +773,8 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent(null, NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent(null, NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
@@ -790,7 +790,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV25DTO.class)
+      Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -815,8 +815,8 @@ class SendNotificationStreamConsumeWFImplTest {
     SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
     streamDTO.setLastEventId("lastSendEventId");
 
-    ProgressResponseElementV25DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusDTO.ACCEPTED);
-    List<ProgressResponseElementV25DTO> streamEvents = List.of(
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
@@ -832,7 +832,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV25DTO.class)
+      Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
     Mockito.doThrow(new RuntimeException("Error"))
@@ -858,8 +858,8 @@ class SendNotificationStreamConsumeWFImplTest {
 
   }
 
-  private static ProgressResponseElementV25DTO buildSendEvent(String sendEventId, NotificationStatusDTO notificationStatus) {
-    ProgressResponseElementV25DTO sendEvent = new ProgressResponseElementV25DTO();
+  private static ProgressResponseElementV28DTO buildSendEvent(String sendEventId, NotificationStatusV26DTO notificationStatus) {
+    ProgressResponseElementV28DTO sendEvent = new ProgressResponseElementV28DTO();
     sendEvent.setNewStatus(notificationStatus);
     sendEvent.setEventId(sendEventId);
     sendEvent.setNotificationRequestId(SendNotificationStreamConsumeWFImplTest.NOTIFICATION_REQUEST_ID);
