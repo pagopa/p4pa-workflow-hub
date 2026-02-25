@@ -55,9 +55,9 @@ class SendEventStreamProcessingServiceImplTest {
   @Test
   void givenAcceptedEventWhenProcessSendStreamEventThenOk() {
     //GIVEN
-    ProgressResponseElementV25DTO sendEvent = buildSendEvent(
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       null,
-      NotificationStatusDTO.ACCEPTED
+      NotificationStatusV26DTO.ACCEPTED
     );
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
@@ -93,9 +93,9 @@ class SendEventStreamProcessingServiceImplTest {
   @Test
   void givenRefusedEventWhenProcessSendStreamEventThenOk() {
     //GIVEN
-    ProgressResponseElementV25DTO sendEvent = buildSendEvent(
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       null,
-      NotificationStatusDTO.REFUSED
+      NotificationStatusV26DTO.REFUSED
     );
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
@@ -131,9 +131,9 @@ class SendEventStreamProcessingServiceImplTest {
   @Test
   void givenViewedEventWhenProcessSendStreamEventThenOk() {
     //GIVEN
-    ProgressResponseElementV25DTO sendEvent = buildSendEvent(
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       null,
-      NotificationStatusDTO.VIEWED
+      NotificationStatusV26DTO.VIEWED
     );
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
@@ -163,9 +163,9 @@ class SendEventStreamProcessingServiceImplTest {
 
   @ParameterizedTest
   @MethodSource("nonMappedNotificationStatusScenarios")
-  void givenNonMappedEventWhenProcessSendStreamEventThenOk(NotificationStatusDTO notificationStatusDTO) {
+  void givenNonMappedEventWhenProcessSendStreamEventThenOk(NotificationStatusV26DTO notificationStatusDTO) {
     //GIVEN
-    ProgressResponseElementV25DTO sendEvent = buildSendEvent(
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       null,
       notificationStatusDTO
     );
@@ -188,9 +188,9 @@ class SendEventStreamProcessingServiceImplTest {
       );
   }
 
-  private static Stream<NotificationStatusDTO> nonMappedNotificationStatusScenarios() {
+  private static Stream<NotificationStatusV26DTO> nonMappedNotificationStatusScenarios() {
     return Stream.of(
-      NotificationStatusDTO.DELIVERING,
+      NotificationStatusV26DTO.DELIVERING,
       null
     );
   }
@@ -203,7 +203,7 @@ class SendEventStreamProcessingServiceImplTest {
       .category(LegalFactCategoryDTO.ANALOG_DELIVERY.getValue())
       .build();
 
-    ProgressResponseElementV25DTO sendEvent = buildSendEvent(
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       List.of(legalFactsId),
       null
     );
@@ -229,7 +229,7 @@ class SendEventStreamProcessingServiceImplTest {
   @Test
   void givenEmptyLegalFactsIdListEventWhenProcessSendStreamEventThenOk() {
     //GIVEN
-    ProgressResponseElementV25DTO sendEvent = buildSendEvent(
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       Collections.emptyList(),
       null
     );
@@ -255,7 +255,7 @@ class SendEventStreamProcessingServiceImplTest {
   @Test
   void givenNullLegalFactsIdListEventWhenProcessSendStreamEventThenOk() {
     //GIVEN
-    ProgressResponseElementV25DTO sendEvent = buildSendEvent(
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       null,
       null
     );
@@ -284,11 +284,11 @@ class SendEventStreamProcessingServiceImplTest {
     return sendNotificationDTO;
   }
 
-  private static ProgressResponseElementV25DTO buildSendEvent(List<LegalFactsIdV20DTO> legalFactsIdList, NotificationStatusDTO notificationStatusDTO) {
-    TimelineElementV25DTO streamElement = new TimelineElementV25DTO();
+  private static ProgressResponseElementV28DTO buildSendEvent(List<LegalFactsIdV20DTO> legalFactsIdList, NotificationStatusV26DTO notificationStatusDTO) {
+    TimelineElementV27DTO streamElement = new TimelineElementV27DTO();
     streamElement.setLegalFactsIds(legalFactsIdList);
 
-    ProgressResponseElementV25DTO sendEvent = new ProgressResponseElementV25DTO();
+    ProgressResponseElementV28DTO sendEvent = new ProgressResponseElementV28DTO();
     sendEvent.setNewStatus(notificationStatusDTO);
     sendEvent.setEventId(EVENT_ID);
     sendEvent.setNotificationRequestId(NOTIFICATION_REQUEST_ID);
