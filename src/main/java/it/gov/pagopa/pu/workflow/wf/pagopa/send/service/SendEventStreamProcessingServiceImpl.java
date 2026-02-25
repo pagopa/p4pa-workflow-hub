@@ -58,11 +58,11 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       }
       case null -> {
         log.info("Skipping event with status 'null' for SEND stream with id {}", sendStreamId);
-        yield null;
+        yield streamEvent.getEventId();
       }
       default -> {
         log.info("Skipping event with status {} for SEND stream with id {}", streamEvent.getNewStatus(), sendStreamId);
-        yield null;
+        yield streamEvent.getEventId();
       }
     };
   }

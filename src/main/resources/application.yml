@@ -147,14 +147,6 @@ spring:
               initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MAX_POLLER_SIZE:3}"
-      - task-queue: SendNotificationProcessWF_LOCAL
-        capacity:
-          activity-task-pollers-configuration:
-            poller-behavior-autoscaling:
-              enabled: true
-              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
-              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MIN_POLLER_SIZE:1}"
-              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_LOCAL_MAX_POLLER_SIZE:2}"
       - task-queue: SendNotificationStreamConsumeWF
         capacity:
           workflow-task-pollers-configuration:
@@ -163,22 +155,14 @@ spring:
               initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MAX_POLLER_SIZE:5}"
-      - task-queue: SendNotificationStreamConsumeWF_LOCAL
+      - task-queue: SendNotificationPublishPaymentEventSendWF_LOCAL
         capacity:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
-              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MIN_POLLER_SIZE:1}"
-              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MIN_POLLER_SIZE:1}"
-              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MAX_POLLER_SIZE:5}"
-      - task-queue: SendWF
-        capacity:
-          workflow-task-pollers-configuration:
-            poller-behavior-autoscaling:
-              enabled: true
-              initial-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
-              min-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MIN_POLLER_SIZE:1}"
-              max-concurrent-task-pollers: "\${WF_SEND_LOW_PRIORITY_MAX_POLLER_SIZE:3}"
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL_MAX_POLLER_SIZE:5}"
       # assessments
       - task-queue: AssessmentCreationWF
         capacity:
