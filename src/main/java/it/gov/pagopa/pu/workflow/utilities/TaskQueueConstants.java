@@ -35,12 +35,11 @@ public class TaskQueueConstants {
 
 //region SEND domain
   public static final String TASK_QUEUE_SEND_RESERVED_NOTIFICATION = "SendNotificationProcessWF";
-  public static final String TASK_QUEUE_SEND_RESERVED_NOTIFICATION_LOCAL = "SendNotificationProcessWF_LOCAL";
 
   public static final String TASK_QUEUE_SEND_RESERVED_STREAM = "SendNotificationStreamConsumeWF";
-  public static final String TASK_QUEUE_SEND_RESERVED_STREAM_LOCAL = "SendNotificationStreamConsumeWF_LOCAL";
 
-  public static final String TASK_QUEUE_SEND_LOW_PRIORITY = "SendWF";
+  public static final String TASK_QUEUE_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL = "SendNotificationPublishPaymentEventSendWF_LOCAL";
+
 //endregion
 
 //region Assessments domain

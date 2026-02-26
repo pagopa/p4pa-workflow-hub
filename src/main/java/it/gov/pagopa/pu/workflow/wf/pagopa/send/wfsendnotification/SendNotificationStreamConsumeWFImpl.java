@@ -1,9 +1,12 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification;
 
+import io.temporal.failure.ActivityFailure;
+import io.temporal.failure.ApplicationFailure;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.*;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV25DTO;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
+import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
@@ -71,7 +74,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     String lastProcessedEventId = sendStreamDTO.getLastEventId(); //start reading after latest processed event
     do {
       try {
-        List<ProgressResponseElementV25DTO> streamEvents = this.getSendNotificationEventsFromStreamActivity.fetchSendNotificationEventsFromStream(
+        List<ProgressResponseElementV28DTO> streamEvents = this.getSendNotificationEventsFromStreamActivity.fetchSendNotificationEventsFromStream(
           sendStreamDTO.getOrganizationId(),
           sendStreamId
         );
@@ -82,38 +85,50 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         log.error("Something went wrong processing stream {}: {}",
           sendStreamId, Utilities.getWorkflowExceptionMessage(t));
       }
-      this.commitLastProcessedEventId(sendStreamDTO, lastProcessedEventId);
+      boolean hasCommitedAnEvent = this.commitLastProcessedEventId(sendStreamDTO, lastProcessedEventId);
+      if(hasCommitedAnEvent) {
+        Workflow.continueAsNew(sendStreamId);
+      }
       waitForNextIteration(sendStreamId);
     } while (isStreamStillOpened(sendStreamId));
 
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
   }
 
-  private String processingStreamEvents(String sendStreamId, List<ProgressResponseElementV25DTO> streamEventBatch, String lastProcessedEventId) {
-    for (ProgressResponseElementV25DTO streamEvent : streamEventBatch) {
+  private String processingStreamEvents(String sendStreamId, List<ProgressResponseElementV28DTO> streamEventBatch, String lastProcessedEventId) {
+    for (ProgressResponseElementV28DTO streamEvent : streamEventBatch) {
       String lastEventId;
       try {
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
         if(lastEventId != null) lastProcessedEventId = lastEventId;
-      } catch (HttpClientErrorException.NotFound e) {
-        lastProcessedEventId = streamEvent.getEventId(); //skip events of NOT FOUND notification
       } catch (Exception e) {
-        log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()), e.getCause());
-        break;
+        if(e instanceof ActivityFailure &&
+          e.getCause() instanceof ApplicationFailure af &&
+          af.isNonRetryable() &&
+          SendStreamSkippedEventException.class.getName().equals(af.getType())
+        ) {
+          log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
+          lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
+        } else {
+          log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()));
+          break;
+        }
       }
     }
     return lastProcessedEventId;
   }
 
-  private void commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
+  private boolean commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
     if(lastProcessedEventId==null || lastProcessedEventId.equals(sendStreamDTO.getLastEventId())) {
-      return;
+      return false;
     }
     try {
       updateLastProcessedStreamEventIdActivity.updateLastProcessedStreamEventId(sendStreamDTO.getStreamId(), lastProcessedEventId);
       sendStreamDTO.setLastEventId(lastProcessedEventId);
+      return true;
     } catch (Exception e) {
-      log.error("Error in updating last processed event id for stream with id %s".formatted(sendStreamDTO.getStreamId()), e.getCause());
+      log.error("Error in updating last processed event id for stream with id %s".formatted(sendStreamDTO.getStreamId()), e);
+      return false;
     }
   }
 

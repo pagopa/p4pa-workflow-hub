@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.FetchSendLegalF
 import it.gov.pagopa.payhub.activities.activity.sendnotification.SendNotificationDateRetrieveActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.UpdateSendNotificationStatusActivity;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV25DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -34,13 +34,13 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   }
 
   @Override
-  public String processSendStreamEvent(String sendStreamId, ProgressResponseElementV25DTO streamEvent) {
+  public String processSendStreamEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
     String eventiId = processNotificationEvent(sendStreamId, streamEvent);
     downloadAndArchiveNotificationLegalFact(streamEvent);
     return eventiId;
   }
 
-  private String processNotificationEvent(String sendStreamId, ProgressResponseElementV25DTO streamEvent) {
+  private String processNotificationEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
     return switch (streamEvent.getNewStatus()) {
       case ACCEPTED -> {
         SendNotificationDTO sendNotification = this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId());
@@ -58,11 +58,11 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       }
       case null -> {
         log.info("Skipping event with status 'null' for SEND stream with id {}", sendStreamId);
-        yield null;
+        yield streamEvent.getEventId();
       }
       default -> {
         log.info("Skipping event with status {} for SEND stream with id {}", streamEvent.getNewStatus(), sendStreamId);
-        yield null;
+        yield streamEvent.getEventId();
       }
     };
   }
@@ -81,7 +81,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       );
   }
 
-  private void downloadAndArchiveNotificationLegalFact(ProgressResponseElementV25DTO streamEvent) {
+  private void downloadAndArchiveNotificationLegalFact(ProgressResponseElementV28DTO streamEvent) {
     if(streamEvent.getElement().getLegalFactsIds() == null || streamEvent.getElement().getLegalFactsIds().isEmpty()) {
       return;
     }

@@ -13,6 +13,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class OrganizationServiceTest {
 
@@ -74,4 +77,17 @@ class OrganizationServiceTest {
         Assertions.assertSame(expectedResult, result.get());
     }
 //endregion
+
+  @Test
+  void whenGetOrganizationByIdThenInvokeClient() {
+    Long organizationId = 1L;
+    Organization expectedResult = new Organization();
+
+    when(organizationSearchClientMock.findById(organizationId, accessToken))
+      .thenReturn(expectedResult);
+
+    Organization result = organizationService.getOrganizationById(organizationId, accessToken);
+
+    assertSame(expectedResult, result);
+  }
 }

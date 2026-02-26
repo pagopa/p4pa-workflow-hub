@@ -26,4 +26,13 @@ public class OrganizationSearchClient {
     }
   }
 
+  public Organization findById(Long organizationId, String accessToken) {
+    try{
+      return organizationApisHolder.getOrganizationEntityControllerApi(accessToken)
+        .crudGetOrganization(String.valueOf(organizationId));
+    } catch (HttpClientErrorException.NotFound e){
+      log.info("Cannot find organization having organizationId {}", organizationId);
+      return null;
+    }
+  }
 }
