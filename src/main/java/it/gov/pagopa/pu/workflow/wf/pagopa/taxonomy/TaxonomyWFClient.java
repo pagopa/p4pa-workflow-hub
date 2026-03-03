@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleServiceImpl;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.wftaxonomyfetch.SynchronizeTaxonomyPagoPaFetchWF;
@@ -16,7 +17,6 @@ public class TaxonomyWFClient {
 
   private final WorkflowService workflowService;
   private final WorkflowClientService workflowClientService;
-  private static final String ON_DEMAND = "ON-DEMAND";
 
   public TaxonomyWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
     this.workflowService = workflowService;
@@ -24,9 +24,9 @@ public class TaxonomyWFClient {
   }
 
   public WorkflowCreatedDTO synchronizeTaxonomy() {
-    log.info("Starting synchronizeTaxonomy {}", ON_DEMAND);
+    log.info("Starting on-demand execution of synchronizeTaxonomy");
     String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
-    String workflowId = generateWorkflowId(ON_DEMAND, SynchronizeTaxonomyPagoPaFetchWF.class);
+    String workflowId = generateWorkflowId(WorkflowScheduleServiceImpl.ON_DEMAND_SCHEDULE_SUFFIX, SynchronizeTaxonomyPagoPaFetchWF.class);
 
     SynchronizeTaxonomyPagoPaFetchWF workflow = workflowService.buildWorkflowStubToStartNew(
       SynchronizeTaxonomyPagoPaFetchWF.class,
