@@ -31,7 +31,7 @@ public class IufClassificationWFClient {
 
   public WorkflowCreatedDTO notifyTreasury(IufClassificationNotifyTreasurySignalDTO signalDTO) {
     Long organizationId = signalDTO.getOrganizationId();
-    if (organizationRetrieverService.isClassificationDisabled(organizationId)) {
+    if (organizationRetrieverService.isClassificationEnabled(organizationId)) {
       log.info("Skipping IUF Classification by treasury: organization {} has flag_classification_enabled = false", organizationId);
       throw new ValidationException("Classification disabled for organization " + organizationId);
     }
@@ -50,7 +50,7 @@ public class IufClassificationWFClient {
 
   public WorkflowCreatedDTO notifyPaymentsReporting(IufClassificationNotifyPaymentsReportingSignalDTO signalDTO) {
     Long organizationId = signalDTO.getOrganizationId();
-    if (organizationRetrieverService.isClassificationDisabled(organizationId)) {
+    if (organizationRetrieverService.isClassificationEnabled(organizationId)) {
       log.info("Skipping IUF Classification by payments: organization {} has flag_classification_enabled = false", organizationId);
       throw new ValidationException("Classification disabled for organization " + organizationId);
     }

@@ -33,7 +33,7 @@ public class TransferClassificationWFClient {
     log.info("Starting Transfer Classification for semantic key: {}", signalDTO);
 
     Long organizationId = signalDTO.getOrgId();
-    if (organizationRetrieverService.isClassificationDisabled(organizationId)) {
+    if (organizationRetrieverService.isClassificationEnabled(organizationId)) {
       log.info("Skipping transfer Classification: organization {} has flag_classification_enabled = false", organizationId);
       throw new ValidationException("Classification disabled for organization " + organizationId);
     }

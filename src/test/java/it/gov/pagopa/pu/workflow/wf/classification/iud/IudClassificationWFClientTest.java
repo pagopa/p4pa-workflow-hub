@@ -75,7 +75,7 @@ class IudClassificationWFClientTest {
       .iuv("iuv123")
       .transferIndexes(Collections.singletonList(1))
       .build();
-    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(false);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
@@ -105,7 +105,7 @@ class IudClassificationWFClientTest {
       .organizationId(1L)
       .build();
 
-    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(true);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(true);
 
     // When Then
     assertThrows(ValidationException.class,
@@ -124,7 +124,7 @@ class IudClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(false);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(workflowClass, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -150,7 +150,7 @@ class IudClassificationWFClientTest {
       .organizationId(1L)
       .build();
 
-    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(true);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(true);
 
     // When Then
     assertThrows(ValidationException.class,
@@ -165,7 +165,7 @@ class IudClassificationWFClientTest {
       .organizationId(1L)
       .build();
 
-    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(false);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
 
     assertThrows(WorkflowInternalErrorException.class,
         () -> client.notifyPaymentNotification(signalDTO),

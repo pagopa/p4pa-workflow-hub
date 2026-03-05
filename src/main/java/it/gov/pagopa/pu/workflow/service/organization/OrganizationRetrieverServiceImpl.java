@@ -17,7 +17,7 @@ public class OrganizationRetrieverServiceImpl implements OrganizationRetrieverSe
   }
 
   @Override
-  public boolean isClassificationDisabled(Long organizationId) {
+  public boolean isClassificationEnabled(Long organizationId) {
     Organization org = organizationService.getOrganizationById(organizationId, authnService.getAccessToken());
     return org.getFlagClassification();
   }
