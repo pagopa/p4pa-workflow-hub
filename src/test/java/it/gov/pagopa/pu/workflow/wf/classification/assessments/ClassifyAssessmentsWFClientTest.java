@@ -11,7 +11,6 @@ import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.wfclassification.ClassifyAssessmentsWF;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.wfclassification.ClassifyAssessmentsWFImpl;
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,17 +83,18 @@ class ClassifyAssessmentsWFClientTest {
   }
 
   @Test
-  void givenClassificationDisabledWhenClassifyThenError(){
+  void givenClassificationDisabledWhenClassifyThenReturnNull(){
     // Given
     ClassifyAssessmentStartSignalDTO signalDTO = new ClassifyAssessmentStartSignalDTO(ORGANIZATION, IUV, IUD);
 
     Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(ORGANIZATION))
       .thenReturn(false);
 
-    // When Then
-    assertThrows(ValidationException.class,
-      () -> client.startAssessmentsClassification(signalDTO),
-      "Classification disabled for organization " + ORGANIZATION);
+    // When
+    WorkflowCreatedDTO result = client.startAssessmentsClassification(signalDTO);
+
+    // Then
+    assertNull(result);
   }
 
   @Test

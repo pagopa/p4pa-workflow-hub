@@ -12,7 +12,6 @@ import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNoti
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWFImpl;
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,8 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -99,7 +97,7 @@ class IudClassificationWFClientTest {
   }
 
   @Test
-  void givenClassificationDisabledWhenNotifyReceiptThenError(){
+  void givenClassificationDisabledWhenNotifyReceiptThenReturnNull(){
     // Given
     IudClassificationNotifyReceiptSignalDTO signalDTO = IudClassificationNotifyReceiptSignalDTO.builder()
       .organizationId(1L)
@@ -107,10 +105,11 @@ class IudClassificationWFClientTest {
 
     Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
 
-    // When Then
-    assertThrows(ValidationException.class,
-      () -> client.notifyReceipt(signalDTO),
-      "Classification disabled for organization " + signalDTO.getOrganizationId());
+    // When
+    WorkflowCreatedDTO result = client.notifyReceipt(signalDTO);
+
+    // Then
+    assertNull(result);
   }
 
   @Test
@@ -144,7 +143,7 @@ class IudClassificationWFClientTest {
   }
 
   @Test
-  void givenClassificationDisabledWhenNotifyPaymentNotificationThenError(){
+  void givenClassificationDisabledWhenNotifyPaymentNotificationThenReturnNull(){
     // Given
     IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = IudClassificationNotifyPaymentNotificationSignalDTO.builder()
       .organizationId(1L)
@@ -152,10 +151,11 @@ class IudClassificationWFClientTest {
 
     Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
 
-    // When Then
-    assertThrows(ValidationException.class,
-      () -> client.notifyPaymentNotification(signalDTO),
-      "Classification disabled for organization " + signalDTO.getOrganizationId());
+    // When
+    WorkflowCreatedDTO result = client.notifyPaymentNotification(signalDTO);
+
+    // Then
+    assertNull(result);
   }
 
   @ParameterizedTest

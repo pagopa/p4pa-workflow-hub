@@ -33,7 +33,7 @@ public class IudClassificationWFClient {
     Long organizationId = signalDTO.getOrganizationId();
     if (!organizationRetrieverService.isClassificationEnabled(organizationId)) {
       log.info("Skipping IUD Classification by receipt: organization {} has flag_classification_enabled = false", organizationId);
-      throw new ValidationException("Classification disabled for organization " + organizationId);
+      return null;
     }
 
     String workflowId = generateWorkflowId(organizationId, signalDTO.getIud());
@@ -52,7 +52,7 @@ public class IudClassificationWFClient {
     Long organizationId = signalDTO.getOrganizationId();
     if (!organizationRetrieverService.isClassificationEnabled(organizationId)) {
       log.info("Skipping IUD Classification by payments: organization {} has flag_classification_enabled = false", organizationId);
-      throw new ValidationException("Classification disabled for organization " + organizationId);
+      return null;
     }
 
     String workflowId = generateWorkflowId(signalDTO.getOrganizationId(), signalDTO.getIud());

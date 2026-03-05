@@ -11,7 +11,6 @@ import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.dto.TransferClassificationStartSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.wfclassification.TransferClassificationWFImpl;
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -93,10 +91,11 @@ class TransferClassificationWFClientTest {
     Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(ORGANIZATION))
       .thenReturn(false);
 
-    // When Then
-    assertThrows(ValidationException.class,
-      () -> client.startTransferClassification(signalDTO),
-      "Classification disabled for organization " + ORGANIZATION);
+    // When
+    WorkflowCreatedDTO result = client.startTransferClassification(signalDTO);
+
+    // Then
+    assertNull(result);
   }
 
   @Test

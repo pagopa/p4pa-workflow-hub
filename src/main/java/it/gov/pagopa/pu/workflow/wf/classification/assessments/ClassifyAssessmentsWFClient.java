@@ -34,7 +34,7 @@ public class ClassifyAssessmentsWFClient {
     Long organizationId = signalDTO.getOrgId();
     if (!organizationRetrieverService.isClassificationEnabled(organizationId)) {
       log.info("Skipping Assessments Classification: organization {} has flag_classification_enabled = false", organizationId);
-      throw new ValidationException("Classification disabled for organization " + organizationId);
+      return null;
     }
 
     String workflowId = generateWorkflowId(organizationId, signalDTO.getIuv(), signalDTO.getIud());
