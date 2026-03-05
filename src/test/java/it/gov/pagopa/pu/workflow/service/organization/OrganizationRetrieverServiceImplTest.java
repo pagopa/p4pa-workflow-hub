@@ -25,7 +25,7 @@ class OrganizationRetrieverServiceImplTest {
   private OrganizationRetrieverServiceImpl organizationRetrieverService;
 
   @Test
-  void returnTrueWhenClassificationIsDisabled() {
+  void returnTrueWhenClassificationIsEnabled() {
     Long orgId = 123L;
     String accessToken = "accessToken";
 
