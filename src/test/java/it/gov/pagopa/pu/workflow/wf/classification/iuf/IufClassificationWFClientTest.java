@@ -73,7 +73,7 @@ class IufClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IufClassificationWF-1-iuf123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(true);
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -99,7 +99,7 @@ class IufClassificationWFClientTest {
       .organizationId(1L)
       .build();
 
-    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(true);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
 
     // When Then
     assertThrows(ValidationException.class,
@@ -126,7 +126,7 @@ class IufClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IufClassificationWF-1-iuf123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
-    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(true);
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -152,7 +152,7 @@ class IufClassificationWFClientTest {
       .organizationId(1L)
       .build();
 
-    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(true);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
 
     // When Then
     assertThrows(ValidationException.class,

@@ -32,7 +32,7 @@ public class ClassifyAssessmentsWFClient {
     log.info("Starting Assessments Classification for semantic key: {}", signalDTO);
 
     Long organizationId = signalDTO.getOrgId();
-    if (organizationRetrieverService.isClassificationEnabled(organizationId)) {
+    if (!organizationRetrieverService.isClassificationEnabled(organizationId)) {
       log.info("Skipping Assessments Classification: organization {} has flag_classification_enabled = false", organizationId);
       throw new ValidationException("Classification disabled for organization " + organizationId);
     }
