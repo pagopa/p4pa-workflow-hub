@@ -12,6 +12,7 @@ import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNoti
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyTreasurySignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification.IufClassificationWFImpl;
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,6 +93,22 @@ class IufClassificationWFClientTest {
   }
 
   @Test
+  void givenClassificationDisabledWhenClassifyForTreasuryThenError(){
+    // Given
+    IufClassificationNotifyTreasurySignalDTO signalDTO = IufClassificationNotifyTreasurySignalDTO.builder()
+      .organizationId(1L)
+      .build();
+
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(true);
+
+    // When Then
+    assertThrows(ValidationException.class,
+      () -> client.notifyTreasury(signalDTO),
+      "Classification disabled for organization " + signalDTO.getOrganizationId());
+  }
+
+
+  @Test
   void testNotifyPaymentsReporting() {
     // Given
     IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
@@ -125,5 +143,20 @@ class IufClassificationWFClientTest {
     assertSame(expectedResult, result);
 
     TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, IufClassificationWFImpl.class);
+  }
+
+  @Test
+  void givenClassificationDisabledWhenNotifyPaymentsReportingThenError(){
+    // Given
+    IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
+      .organizationId(1L)
+      .build();
+
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(true);
+
+    // When Then
+    assertThrows(ValidationException.class,
+      () -> client.notifyPaymentsReporting(signalDTO),
+      "Classification disabled for organization " + signalDTO.getOrganizationId());
   }
 }
