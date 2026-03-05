@@ -81,7 +81,7 @@ val jackson3CoreVersion = "3.1.0"
 
 val p4paActivitiesVersion = "1.180.0"
 
-val springCloudDepsVersion = "2025.1.0"
+val springCloudDepsVersion = "2025.1.1"
 
 dependencyManagement {
   imports {
