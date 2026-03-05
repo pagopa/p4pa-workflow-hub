@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iud;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.service.organization.OrganizationRetrieverService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -11,6 +12,7 @@ import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNoti
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWF;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.wfclassification.IudClassificationWFImpl;
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,18 +40,20 @@ class IudClassificationWFClientTest {
   private WorkflowClientService workflowClientServiceMock;
   @Mock
   private WorkflowStub workflowStubMock;
+  @Mock
+  private OrganizationRetrieverService organizationRetrieverServiceMock;
 
   private IudClassificationWFClient client;
   private final Class<IudClassificationWF> workflowClass = IudClassificationWF.class;
 
   @BeforeEach
   void setUp() {
-    client = new IudClassificationWFClient(workflowServiceMock, workflowClientServiceMock);
+    client = new IudClassificationWFClient(workflowServiceMock, workflowClientServiceMock, organizationRetrieverServiceMock);
   }
 
   @AfterEach
   void tearDown() {
-    verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock);
+    verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock, organizationRetrieverServiceMock);
   }
 
   @Test
@@ -71,10 +75,11 @@ class IudClassificationWFClientTest {
       .iuv("iuv123")
       .transferIndexes(Collections.singletonList(1))
       .build();
-
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(false);
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(workflowClass, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -94,6 +99,21 @@ class IudClassificationWFClientTest {
   }
 
   @Test
+  void givenClassificationDisabledWhenNotifyReceiptThenError(){
+    // Given
+    IudClassificationNotifyReceiptSignalDTO signalDTO = IudClassificationNotifyReceiptSignalDTO.builder()
+      .organizationId(1L)
+      .build();
+
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(true);
+
+    // When Then
+    assertThrows(ValidationException.class,
+      () -> client.notifyReceipt(signalDTO),
+      "Classification disabled for organization " + signalDTO.getOrganizationId());
+  }
+
+  @Test
   void notifyPaymentNotification() {
     // Given
     IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = IudClassificationNotifyPaymentNotificationSignalDTO.builder()
@@ -104,6 +124,7 @@ class IudClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IudClassificationWF-1-iud123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(false);
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(workflowClass, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -122,13 +143,29 @@ class IudClassificationWFClientTest {
     TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, IudClassificationWFImpl.class);
   }
 
+  @Test
+  void givenClassificationDisabledWhenNotifyPaymentNotificationThenError(){
+    // Given
+    IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = IudClassificationNotifyPaymentNotificationSignalDTO.builder()
+      .organizationId(1L)
+      .build();
+
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(true);
+
+    // When Then
+    assertThrows(ValidationException.class,
+      () -> client.notifyPaymentNotification(signalDTO),
+      "Classification disabled for organization " + signalDTO.getOrganizationId());
+  }
+
   @ParameterizedTest
   @MethodSource("provideNullValues")
   void whenGenerateWorkflowIdThenWorkflowInternalErrorException(Long organizationId, String iud) {
     IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = IudClassificationNotifyPaymentNotificationSignalDTO.builder()
-        .organizationId(organizationId)
-        .iud(iud)
-        .build();
+      .organizationId(1L)
+      .build();
+
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(signalDTO.getOrganizationId())).thenReturn(false);
 
     assertThrows(WorkflowInternalErrorException.class,
         () -> client.notifyPaymentNotification(signalDTO),

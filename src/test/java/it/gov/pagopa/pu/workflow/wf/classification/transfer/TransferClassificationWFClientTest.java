@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.transfer;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.service.organization.OrganizationRetrieverService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -35,18 +36,20 @@ class TransferClassificationWFClientTest {
   private WorkflowClientService workflowClientServiceMock;
   @Mock
   private WorkflowStub workflowStubMock;
+  @Mock
+  private OrganizationRetrieverService organizationRetrieverServiceMock;
 
   private TransferClassificationWFClient client;
   private final Class<TransferClassificationWF> wfInterface = TransferClassificationWF.class;
 
   @BeforeEach
   void setUp() {
-    client = new TransferClassificationWFClient(workflowServiceMock, workflowClientServiceMock);
+    client = new TransferClassificationWFClient(workflowServiceMock, workflowClientServiceMock, organizationRetrieverServiceMock);
   }
 
   @AfterEach
   void tearDown() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock, organizationRetrieverServiceMock);
   }
 
   @Test
@@ -62,6 +65,7 @@ class TransferClassificationWFClientTest {
     TransferClassificationStartSignalDTO signalDTO = new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, INDEX);
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(ORGANIZATION)).thenReturn(false);
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -97,6 +101,7 @@ class TransferClassificationWFClientTest {
 
   private void testGenerateWorkflowIdWhenNullErrors(Long orgId, String iuv, String iur, int transferIndex) {
     TransferClassificationStartSignalDTO transferClassificationStartSignalDTO = new TransferClassificationStartSignalDTO(orgId, iuv, iur, transferIndex);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationDisabled(orgId)).thenReturn(false);
     assertThrows(WorkflowInternalErrorException.class,
       () -> client.startTransferClassification(transferClassificationStartSignalDTO),
       "The ID or the workflow must not be null");
