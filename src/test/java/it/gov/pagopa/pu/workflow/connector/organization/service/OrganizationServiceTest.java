@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class OrganizationRetrieverServiceTest {
+class OrganizationServiceTest {
 
     @Mock
     private OrganizationSearchClient organizationSearchClientMock;
