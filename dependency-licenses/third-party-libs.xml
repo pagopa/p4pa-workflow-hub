@@ -171,6 +171,11 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
+<td><a href='https://www.eclipse.org'>com.sun.istack:istack-commons-runtime</a></td>
+<td>4.1.2</td>
+<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
+</tr>
+<tr>
 <td><a href='https://www.eclipse.org'>com.sun.xml.bind:jaxb-core</a></td>
 <td>4.0.6</td>
 <td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
@@ -771,7 +776,17 @@
 <td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
 </tr>
 <tr>
+<td><a href='https://www.eclipse.org'>org.glassfish.jaxb:jaxb-core</a></td>
+<td>4.0.6</td>
+<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
+</tr>
+<tr>
 <td><a href='https://www.eclipse.org'>org.glassfish.jaxb:jaxb-runtime</a></td>
+<td>4.0.6</td>
+<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
+</tr>
+<tr>
+<td><a href='https://eclipse-ee4j.github.io/jaxb-ri/'>org.glassfish.jaxb:txw2</a></td>
 <td>4.0.6</td>
 <td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
 </tr>
@@ -786,8 +801,8 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='https://hibernate.org/orm/releases/7.2'>org.hibernate.orm:hibernate-core</a></td>
-<td>7.2.4.Final</td>
+<td><a href='https://hibernate.org/orm/releases/7.1'>org.hibernate.orm:hibernate-core</a></td>
+<td>7.1.18.Final</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>

@@ -34,11 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
   "spring.datasource.username=sa",
   "spring.datasource.password=sa",
 
+  "spring.temporal.enabled=false",
+  "spring.temporal.connection.target=",
+
   "springwolf.enabled=true",
   "springwolf.use-fqn=false",
-  "spring.cloud.function.definition=",
-  "spring.temporal.enabled=false",
-  "spring.temporal.connection.target="
 })
 @Slf4j
 class AsyncApiGeneratorTest {
