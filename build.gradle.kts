@@ -105,7 +105,9 @@ dependencies {
   implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
   implementation("org.springframework.boot:spring-boot-starter-hateoas")
   implementation("org.springframework.boot:spring-boot-starter-data-rest")
-  implementation("org.hibernate.orm:hibernate-core:${hibernateCoreVersion}")
+  implementation("org.hibernate.orm:hibernate-core:${hibernateCoreVersion}") {
+    exclude(group = "org.glassfish.jaxb", module = "jaxb-core")
+  }
   implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka") {
     exclude(group = "org.lz4", module = "lz4-java")
   }
@@ -146,10 +148,10 @@ dependencies {
   implementation("io.opentelemetry:opentelemetry-opentracing-shim:${otelVersion}")
 
   // CVE fix
-    implementation("tools.jackson.core:jackson-core:$jackson3CoreVersion")
-    implementation("com.fasterxml.jackson.core:jackson-core:$jackson2CoreVersion")
+  implementation("tools.jackson.core:jackson-core:$jackson3CoreVersion")
+  implementation("com.fasterxml.jackson.core:jackson-core:$jackson2CoreVersion")
 
-    compileOnly("org.projectlombok:lombok")
+  compileOnly("org.projectlombok:lombok")
 
   /**
    * Mapstruct
