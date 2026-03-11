@@ -22,6 +22,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ClassificationControllerImpl.class)
@@ -69,6 +70,18 @@ class ClassificationControllerImplTest {
   }
 
   @Test
+  void givenIdWhenClassifyThenCreateTransferClassificationWFSkipped() throws Exception {
+    when(transferClassificationWFClientMock.startTransferClassification(new TransferClassificationStartSignalDTO(ORGANIZATION, IUV, IUR, INDEX)))
+      .thenReturn(null);
+
+    mockMvc.perform(post("/workflowhub/workflow/classification/transfer/{orgId}", ORGANIZATION)
+        .param("iuv", IUV)
+        .param("iur", IUR)
+        .param("transferIndex", "1"))
+      .andExpect(status().isNoContent());
+  }
+
+  @Test
   void givenIdWhenClassifyThenCreateIudClassificationByPaymentNotificationSignalSuccessfully() throws Exception {
     String expectedWorkflowId = String.format("%s-%d-%s", "IudClassificationWF", ORGANIZATION, IUD);
     String runId = "runId";
@@ -84,6 +97,16 @@ class ClassificationControllerImplTest {
 
     WorkflowCreatedDTO resultResponse = jsonMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
     assertEquals(workflowCreatedDTO, resultResponse);
+  }
+
+  @Test
+  void givenIdWhenClassifyThenCreateIudClassificationByPaymentNotificationSkipped() throws Exception {
+    when(iudClassificationWFClientMock.notifyPaymentNotification(new IudClassificationNotifyPaymentNotificationSignalDTO(IUD, ORGANIZATION)))
+      .thenReturn(null);
+
+    mockMvc.perform(post("/workflowhub/workflow/classification/iud/{orgId}/notify-payment-notification", ORGANIZATION)
+      .param("iud", IUD)
+    ).andExpect(status().isNoContent());
   }
 
   @Test
@@ -108,6 +131,20 @@ class ClassificationControllerImplTest {
   }
 
   @Test
+  void givenIdWhenClassifyThenCreateIudClassificationByReceiptSkipped() throws Exception {
+    IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(ORGANIZATION, IUD, IUV, IUR, Collections.singletonList(INDEX));
+    when(iudClassificationWFClientMock.notifyReceipt(signalDTO))
+      .thenReturn(null);
+
+    mockMvc.perform(post("/workflowhub/workflow/classification/iud/{orgId}/notify-receipt", ORGANIZATION)
+      .param("iuv", IUV)
+      .param("iud", IUD)
+      .param("iur", IUR)
+      .param("transferIndexes", String.valueOf(INDEX))
+    ).andExpect(status().isNoContent());
+  }
+
+  @Test
   void givenIdWhenClassifyThenCreateAssessmentsClassificationWFSuccessfully() throws Exception {
     String expectedWorkflowId = String.format("%s-%d-%s-%s-%d", "ClassifyAssessmentsWF", ORGANIZATION, IUV, IUR, INDEX);
     String runId = "runId";
@@ -124,6 +161,18 @@ class ClassificationControllerImplTest {
 
     WorkflowCreatedDTO resultResponse = jsonMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
     assertEquals(workflowCreatedDTO, resultResponse);
+  }
+
+  @Test
+  void givenIdWhenClassifyThenCreateAssessmentsClassificationWFSkipped() throws Exception {
+    when(classifyAssessmentsWFClientMock.startAssessmentsClassification(new ClassifyAssessmentStartSignalDTO(ORGANIZATION, IUV, IUD)))
+      .thenReturn(null);
+
+    mockMvc.perform(post("/workflowhub/workflow/classification/assessments/{orgId}", ORGANIZATION)
+        .param("iuv", IUV)
+        .param("iud", IUD))
+      .andExpect(status().isNoContent())
+      .andExpect(content().string(""));
   }
 
 }

@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.assessments;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.service.organization.OrganizationRetrieverService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -18,8 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,18 +34,20 @@ class ClassifyAssessmentsWFClientTest {
   private WorkflowClientService workflowClientServiceMock;
   @Mock
   private WorkflowStub workflowStubMock;
+  @Mock
+  private OrganizationRetrieverService organizationRetrieverServiceMock;
 
   private ClassifyAssessmentsWFClient client;
   private final Class<ClassifyAssessmentsWF> wfInterface = ClassifyAssessmentsWF.class;
 
   @BeforeEach
   void setUp() {
-    client = new ClassifyAssessmentsWFClient(workflowServiceMock, workflowClientServiceMock);
+    client = new ClassifyAssessmentsWFClient(workflowServiceMock, workflowClientServiceMock, organizationRetrieverServiceMock);
   }
 
   @AfterEach
   void tearDown() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock, organizationRetrieverServiceMock);
   }
 
   @Test
@@ -61,6 +63,7 @@ class ClassifyAssessmentsWFClientTest {
     ClassifyAssessmentStartSignalDTO signalDTO = new ClassifyAssessmentStartSignalDTO(ORGANIZATION, IUV, IUD);
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_ASSESSMENTS_CLASSIFICATION;
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(ORGANIZATION)).thenReturn(true);
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -80,6 +83,21 @@ class ClassifyAssessmentsWFClientTest {
   }
 
   @Test
+  void givenClassificationDisabledWhenClassifyThenReturnNull(){
+    // Given
+    ClassifyAssessmentStartSignalDTO signalDTO = new ClassifyAssessmentStartSignalDTO(ORGANIZATION, IUV, IUD);
+
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(ORGANIZATION))
+      .thenReturn(false);
+
+    // When
+    WorkflowCreatedDTO result = client.startAssessmentsClassification(signalDTO);
+
+    // Then
+    assertNull(result);
+  }
+
+  @Test
   void givenGenerateWorkflowIdWhenOrgIdNullThenThrowWorkflowInternalErrorException(){
     testGenerateWorkflowIdWhenNullErrors(null, IUV, IUD);
   }
@@ -96,6 +114,7 @@ class ClassifyAssessmentsWFClientTest {
 
   private void testGenerateWorkflowIdWhenNullErrors(Long orgId, String iuv, String iud) {
     ClassifyAssessmentStartSignalDTO classifyAssessmentStartSignalDTO = new ClassifyAssessmentStartSignalDTO(orgId, iuv, iud);
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(orgId)).thenReturn(true);
     assertThrows(WorkflowInternalErrorException.class,
       () -> client.startAssessmentsClassification(classifyAssessmentStartSignalDTO),
       "The ID or the workflow must not be null");

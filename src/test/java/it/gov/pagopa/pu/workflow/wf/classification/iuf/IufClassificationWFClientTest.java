@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.organization.OrganizationRetrieverService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -21,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,18 +34,20 @@ class IufClassificationWFClientTest {
   private WorkflowClientService workflowClientServiceMock;
   @Mock
   private WorkflowStub workflowStubMock;
+  @Mock
+  private OrganizationRetrieverService organizationRetrieverServiceMock;
 
   private IufClassificationWFClient client;
   private final Class<IufClassificationWF> wfInterface = IufClassificationWF.class;
 
   @BeforeEach
   void setUp() {
-    client = new IufClassificationWFClient(workflowServiceMock, workflowClientServiceMock);
+    client = new IufClassificationWFClient(workflowServiceMock, workflowClientServiceMock, organizationRetrieverServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, workflowStubMock, organizationRetrieverServiceMock);
   }
 
   @Test
@@ -68,6 +71,7 @@ class IufClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IufClassificationWF-1-iuf123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(true);
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -87,6 +91,23 @@ class IufClassificationWFClientTest {
   }
 
   @Test
+  void givenClassificationDisabledWhenClassifyForTreasuryThenReturnNull(){
+    // Given
+    IufClassificationNotifyTreasurySignalDTO signalDTO = IufClassificationNotifyTreasurySignalDTO.builder()
+      .organizationId(1L)
+      .build();
+
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
+
+    // When
+    WorkflowCreatedDTO result = client.notifyTreasury(signalDTO);
+
+    // Then
+    assertNull(result);
+  }
+
+
+  @Test
   void testNotifyPaymentsReporting() {
     // Given
     IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
@@ -104,6 +125,7 @@ class IufClassificationWFClientTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("IufClassificationWF-1-iuf123", "RUNID");
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY;
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(true);
     Mockito.when(workflowServiceMock.buildUntypedWorkflowStub(wfInterface, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(workflowStubMock);
     Mockito.when(workflowClientServiceMock.signalWithStart(
@@ -120,5 +142,21 @@ class IufClassificationWFClientTest {
     assertSame(expectedResult, result);
 
     TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, IufClassificationWFImpl.class);
+  }
+
+  @Test
+  void givenClassificationDisabledWhenNotifyPaymentsReportingThenReturnNull(){
+    // Given
+    IufClassificationNotifyPaymentsReportingSignalDTO signalDTO = IufClassificationNotifyPaymentsReportingSignalDTO.builder()
+      .organizationId(1L)
+      .build();
+
+    Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(signalDTO.getOrganizationId())).thenReturn(false);
+
+    // When
+    WorkflowCreatedDTO result = client.notifyPaymentsReporting(signalDTO);
+
+    // Then
+    assertNull(result);
   }
 }
