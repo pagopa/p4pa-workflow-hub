@@ -32,15 +32,7 @@ public class SendTimelineProducerService {
     }
   }
 
-  public void notifySendTimelineEvent(RegistryEventSendTimelineDTO sendTimelineEvent, String sendStreamId) {
-    notifySendTimelineEvent(sendTimelineEvent, sendStreamId, "ok");
-  }
-
-  public void notifySendTimelineErrorEvent(RegistryEventSendTimelineDTO sendTimelineEvent, String sendStreamId) {
-    notifySendTimelineEvent(sendTimelineEvent, sendStreamId, "ko");
-  }
-
-  public void notifySendTimelineEvent(RegistryEventSendTimelineDTO payload, String sendStreamId,  String error) {
+  public void notifySendTimelineEvent(RegistryEventSendTimelineDTO payload, String sendStreamId) {
     streamBridge.send("registryProducer-out-0", binder,
       MessageBuilder.withPayload(payload)
         .setHeader(KafkaHeaders.KEY, String.valueOf(sendStreamId))

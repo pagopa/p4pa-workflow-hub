@@ -28,7 +28,7 @@ class SendTimelineProducerServiceTest {
     String streamId = "streamId";
 
     // When
-    sendTimelineProducerService.notifySendTimelineErrorEvent(event, streamId);
+    sendTimelineProducerService.notifySendTimelineEvent(event, streamId);
 
     // Then
     Mockito.verify(streamBridge, Mockito.times(1)).send(
