@@ -75,7 +75,7 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertNotNull(registryEvent.getDateTime());
     Assertions.assertEquals(traceId, registryEvent.getTraceId());
     Assertions.assertEquals(RegistryEventSubType.RESP, registryEvent.getEventSubType());
-    Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
+    Assertions.assertEquals(REQUESTOR_ID, registryEvent.getRequestorId());
     Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
 
     Assertions.assertEquals(streamId, registryEvent.getStreamId());
@@ -124,7 +124,7 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertNotNull(registryEvent.getDateTime());
     Assertions.assertEquals(traceId, registryEvent.getTraceId());
     Assertions.assertEquals(RegistryEventSubType.RESP, registryEvent.getEventSubType());
-    Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
+    Assertions.assertEquals(REQUESTOR_ID, registryEvent.getRequestorId());
     Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
 
     Assertions.assertEquals(streamId, registryEvent.getStreamId());
@@ -173,7 +173,7 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertNotNull(registryEvent.getDateTime());
     Assertions.assertEquals(traceId, registryEvent.getTraceId());
     Assertions.assertEquals(RegistryEventSubType.RESP, registryEvent.getEventSubType());
-    Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
+    Assertions.assertEquals(REQUESTOR_ID, registryEvent.getRequestorId());
     Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
 
     Assertions.assertEquals(streamId, registryEvent.getStreamId());

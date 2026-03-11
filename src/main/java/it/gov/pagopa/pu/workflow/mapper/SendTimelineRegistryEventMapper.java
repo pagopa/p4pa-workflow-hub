@@ -18,7 +18,7 @@ public class SendTimelineRegistryEventMapper {
 
   public static final String REGISTRY_SEND = "REGISTRY_SEND";
   public static final String REGISTRY_ORIGIN = "workflow-hub";
-  public static final String GRANTOR_ID = "SEND";
+  public static final String REQUESTOR_ID = "SEND";
 
   private final JsonMapper jsonMapper;
 
@@ -60,7 +60,7 @@ public class SendTimelineRegistryEventMapper {
       .dateTime(OffsetDateTime.now())
       .traceId(traceId)
       .eventSubType(RegistryEventSubType.RESP)
-      .requestorId(GRANTOR_ID)
+      .requestorId(REQUESTOR_ID)
       .grantorId(workflowId)
       .streamId(streamId)
       .eventId(progressResponseElementV28DTO.getEventId())
