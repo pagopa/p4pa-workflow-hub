@@ -5,7 +5,6 @@ import it.gov.pagopa.pu.registries.dto.generated.RegistryEventSubType;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.event.registries.dto.RegistryEventSendTimelineDTO;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.utils.TestUtils;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.wfsendnotification.SendNotificationStreamConsumeWF;
 import org.junit.jupiter.api.AfterEach;
@@ -75,8 +74,8 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertNotNull(registryEvent.getDateTime());
     Assertions.assertEquals(traceId, registryEvent.getTraceId());
     Assertions.assertEquals(RegistryEventSubType.RESP, registryEvent.getEventSubType());
-    Assertions.assertEquals(workflowId, registryEvent.getRequestorId());
-    Assertions.assertEquals(GRANTOR_ID, registryEvent.getGrantorId());
+    Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
+    Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
 
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
@@ -121,8 +120,8 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertNotNull(registryEvent.getDateTime());
     Assertions.assertEquals(traceId, registryEvent.getTraceId());
     Assertions.assertEquals(RegistryEventSubType.RESP, registryEvent.getEventSubType());
-    Assertions.assertEquals(workflowId, registryEvent.getRequestorId());
-    Assertions.assertEquals(GRANTOR_ID, registryEvent.getGrantorId());
+    Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
+    Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
 
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
@@ -137,22 +136,46 @@ class SendTimelineRegistryEventMapperTest {
   @Test
   void testMapWithException() {
     //GIVEN
+    TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
+    ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
+    event.setEventId("eventId");
+    event.setIun("iun");
+    event.setNewStatus(NotificationStatusV26DTO.ACCEPTED);
+    event.setNotificationRequestId("notificationRequestId");
+    event.setElement(timelineElement);
+
     String streamId = "streamId";
+    String expectedRegistryId = String.join(
+      "-",
+      streamId,
+      event.getEventId()
+    );
     String traceId = "traceId";
     String workflowId = generateWorkflowId(streamId, SendNotificationStreamConsumeWF.class);
-    ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
 
     Mockito.when(jsonMapperMock.writeValueAsString(Mockito.any()))
       .thenThrow(new RuntimeException());
 
     //WHEN
-    WorkflowInternalErrorException workflowInternalErrorException =
-      Assertions.assertThrows(
-        WorkflowInternalErrorException.class,
-        () -> sendTimelineRegistryEventMapper.mapSuccess(event, streamId, workflowId, traceId)
-      );
+    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapError(event, streamId, workflowId, traceId);
 
     //THEN
-    Assertions.assertEquals("Error serializing object to JSON", workflowInternalErrorException.getMessage());
+    Assertions.assertEquals(expectedRegistryId, registryEvent.getRegistryId());
+    Assertions.assertEquals(REGISTRY_ORIGIN, registryEvent.getRegistryOrigin());
+    Assertions.assertEquals(REGISTRY_SEND, registryEvent.getRegistryType());
+    Assertions.assertNotNull(registryEvent.getDateTime());
+    Assertions.assertEquals(traceId, registryEvent.getTraceId());
+    Assertions.assertEquals(RegistryEventSubType.RESP, registryEvent.getEventSubType());
+    Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
+    Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
+
+    Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
+    Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
+    Assertions.assertEquals(event.getIun(), registryEvent.getIun());
+    Assertions.assertEquals(event.getNewStatus().name(), registryEvent.getNewStatus());
+    Assertions.assertEquals(RegistryOutcome.KO, registryEvent.getOutcome());
+    Assertions.assertNull(registryEvent.getBody());
+
+    TestUtils.checkNotNullFields(registryEvent, "body");
   }
 }

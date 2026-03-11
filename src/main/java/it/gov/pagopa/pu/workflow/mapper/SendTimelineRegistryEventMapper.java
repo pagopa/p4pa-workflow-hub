@@ -6,7 +6,6 @@ import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatusV26DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.workflow.event.registries.dto.RegistryEventSendTimelineDTO;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -61,24 +60,31 @@ public class SendTimelineRegistryEventMapper {
       .dateTime(OffsetDateTime.now())
       .traceId(traceId)
       .eventSubType(RegistryEventSubType.RESP)
-      .requestorId(workflowId)
-      .grantorId(GRANTOR_ID)
+      .requestorId(GRANTOR_ID)
+      .grantorId(workflowId)
       .streamId(streamId)
       .eventId(progressResponseElementV28DTO.getEventId())
       .notificationRequestId(progressResponseElementV28DTO.getNotificationRequestId())
       .iun(progressResponseElementV28DTO.getIun())
       .newStatus(Optional.ofNullable(progressResponseElementV28DTO.getNewStatus()).map(NotificationStatusV26DTO::name).orElse(null))
       .outcome(outcome)
-      .body(serializeObjectToJson(progressResponseElementV28DTO.getElement()))
+      .body(
+        serializeObjectToJson(
+          progressResponseElementV28DTO.getElement(),
+          streamId,
+          progressResponseElementV28DTO.getEventId()
+        )
+      )
       .build();
   }
 
-  private String serializeObjectToJson(Object object) {
+  private String serializeObjectToJson(Object object, String streamId, String eventId) {
     try {
       return jsonMapper.writeValueAsString(object);
     } catch (Exception e) {
-      log.error("Error serializing object to JSON", e);
-      throw new WorkflowInternalErrorException("Error serializing object to JSON");
+      String warnMessage = "Error in serializing object to JSON, for event %s from stream %s".formatted(eventId, streamId);
+      log.warn(warnMessage, e);
+      return null;
     }
   }
 
