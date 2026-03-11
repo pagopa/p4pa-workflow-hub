@@ -32,6 +32,7 @@ public class RegistryEventSendTimelineDTO {
   @NotNull
   private String grantorId;
 
+  private Long organizationId;
   private String streamId;
   private String eventId;
   private TimelineElementCategoryV27DTO eventType;

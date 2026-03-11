@@ -28,22 +28,25 @@ public class SendTimelineRegistryEventMapper {
 
   public RegistryEventSendTimelineDTO mapSuccess(
     ProgressResponseElementV28DTO progressResponseElementV28DTO,
+    Long organizationId,
     String streamId,
     String workflowId,
     String traceId) {
-    return map(progressResponseElementV28DTO, streamId, workflowId, traceId, RegistryOutcome.OK);
+    return map(progressResponseElementV28DTO, organizationId, streamId, workflowId, traceId, RegistryOutcome.OK);
   }
 
   public RegistryEventSendTimelineDTO mapError(
     ProgressResponseElementV28DTO progressResponseElementV28DTO,
+    Long organizationId,
     String streamId,
     String workflowId,
     String traceId) {
-    return map(progressResponseElementV28DTO, streamId, workflowId, traceId, RegistryOutcome.KO);
+    return map(progressResponseElementV28DTO, organizationId, streamId, workflowId, traceId, RegistryOutcome.KO);
   }
 
   private RegistryEventSendTimelineDTO map(
     ProgressResponseElementV28DTO progressResponseElementV28DTO,
+    Long organizationId,
     String streamId,
     String workflowId,
     String traceId,
@@ -62,6 +65,7 @@ public class SendTimelineRegistryEventMapper {
       .eventSubType(RegistryEventSubType.RESP)
       .requestorId(REQUESTOR_ID)
       .grantorId(workflowId)
+      .organizationId(organizationId)
       .streamId(streamId)
       .eventId(progressResponseElementV28DTO.getEventId())
       .eventType(progressResponseElementV28DTO.getElement().getCategory())
