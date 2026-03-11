@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.event.registries.dto;
 
 import it.gov.pagopa.pu.registries.dto.generated.RegistryEventSubType;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
+import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,7 @@ public class RegistryEventSendTimelineDTO {
 
   private String streamId;
   private String eventId;
+  private TimelineElementCategoryV27DTO eventType;
   private String notificationRequestId;
   private String iun;
   private String newStatus;

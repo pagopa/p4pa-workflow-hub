@@ -64,6 +64,7 @@ public class SendTimelineRegistryEventMapper {
       .grantorId(workflowId)
       .streamId(streamId)
       .eventId(progressResponseElementV28DTO.getEventId())
+      .eventType(progressResponseElementV28DTO.getElement().getCategory())
       .notificationRequestId(progressResponseElementV28DTO.getNotificationRequestId())
       .iun(progressResponseElementV28DTO.getIun())
       .newStatus(Optional.ofNullable(progressResponseElementV28DTO.getNewStatus()).map(NotificationStatusV26DTO::name).orElse(null))

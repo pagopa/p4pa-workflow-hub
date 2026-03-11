@@ -45,6 +45,7 @@ class SendTimelineRegistryEventMapperTest {
   void testMapSuccess() {
     //GIVEN
     TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
+    timelineElement.setCategory(TimelineElementCategoryV27DTO.NOTIFICATION_VIEWED);
     ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
     event.setEventId("eventId");
     event.setIun("iun");
@@ -77,7 +78,9 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
     Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
 
+    Assertions.assertEquals(streamId, registryEvent.getStreamId());
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
+    Assertions.assertEquals(event.getElement().getCategory(), registryEvent.getEventType());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
     Assertions.assertEquals(event.getIun(), registryEvent.getIun());
     Assertions.assertEquals(event.getNewStatus().name(), registryEvent.getNewStatus());
@@ -91,6 +94,7 @@ class SendTimelineRegistryEventMapperTest {
   void testMapError() {
     //GIVEN
     TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
+    timelineElement.setCategory(TimelineElementCategoryV27DTO.NOTIFICATION_VIEWED);
     ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
     event.setEventId("eventId");
     event.setIun("iun");
@@ -123,7 +127,9 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
     Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
 
+    Assertions.assertEquals(streamId, registryEvent.getStreamId());
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
+    Assertions.assertEquals(event.getElement().getCategory(), registryEvent.getEventType());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
     Assertions.assertEquals(event.getIun(), registryEvent.getIun());
     Assertions.assertEquals(event.getNewStatus().name(), registryEvent.getNewStatus());
@@ -137,6 +143,7 @@ class SendTimelineRegistryEventMapperTest {
   void testMapWithException() {
     //GIVEN
     TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
+    timelineElement.setCategory(TimelineElementCategoryV27DTO.NOTIFICATION_VIEWED);
     ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
     event.setEventId("eventId");
     event.setIun("iun");
@@ -169,7 +176,9 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(GRANTOR_ID, registryEvent.getRequestorId());
     Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
 
+    Assertions.assertEquals(streamId, registryEvent.getStreamId());
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
+    Assertions.assertEquals(event.getElement().getCategory(), registryEvent.getEventType());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
     Assertions.assertEquals(event.getIun(), registryEvent.getIun());
     Assertions.assertEquals(event.getNewStatus().name(), registryEvent.getNewStatus());
