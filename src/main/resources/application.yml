@@ -190,7 +190,7 @@ spring:
               max-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MAX_POLLER_SIZE:5}"
   cloud:
     function:
-      definition: paymentsConsumer;paymentsProducer;dataEventsProducer;registryProducer
+      definition: paymentsConsumer;paymentsProducer;dataEventsProducer;registriesProducer
     stream:
       binders:
         kafka-payments-producer:
@@ -216,11 +216,11 @@ spring:
               configuration:
                 sasl.jaas.config: "\${KAFKA_DATA_EVENTS_PRODUCER_SASL_JAAS_CONFIG:}"
                 key.serializer: org.apache.kafka.common.serialization.StringSerializer
-        kafka-registry-producer:
+        kafka-registries-producer:
           type: kafka
           environment:
             spring.cloud.stream.kafka.binder:
-              brokers: "\${KAFKA_REGISTRIES_BINDER_BROKER:}"
+              brokers: "\${KAFKA_REGISTRIES_BINDER_BROKER:\${KAFKA_BINDER_BROKER:}}"
               configuration:
                 sasl.jaas.config: "\${KAFKA_REGISTRIES_PRODUCER_SASL_JAAS_CONFIG:}"
                 key.serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -239,8 +239,8 @@ spring:
           binder: kafka-data-events-producer
           content-type: "\${KAFKA_CONTENT_TYPE:application/json}"
           destination: "\${KAFKA_TOPIC_DATA_EVENTS:p4pa-payhub-data-events-evh}"
-        registryProducer-out-0:
-          binder: kafka-registry-producer
+        registriesProducer-out-0:
+          binder: kafka-registries-producer
           content-type: "\${KAFKA_CONTENT_TYPE:application/json}"
           destination: "\${KAFKA_TOPIC_REGISTRIES:p4pa-payhub-registries-evh}"
       kafka:
@@ -284,7 +284,7 @@ spring:
                 retry.backoff.ms: "\${KAFKA_DATA_EVENTS_PRODUCER_RETRY_MS:\${KAFKA_RETRY_MS:10000}}"
                 linger.ms: "\${KAFKA_DATA_EVENTS_PRODUCER_LINGER_MS:\${KAFKA_LINGER_MS:2}}"
                 batch.size: "\${KAFKA_DATA_EVENTS_PRODUCER_BATCH_SIZE:\${KAFKA_BATCH_SIZE:16384}}"
-          registryProducer-out-0:
+          registriesProducer-out-0:
             producer:
               configuration:
                 client.id: workflow-hub

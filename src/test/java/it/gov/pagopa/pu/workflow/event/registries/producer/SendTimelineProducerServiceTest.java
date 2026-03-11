@@ -32,7 +32,7 @@ class SendTimelineProducerServiceTest {
 
     // Then
     Mockito.verify(streamBridge, Mockito.times(1)).send(
-      Mockito.eq("registryProducer-out-0"),
+      Mockito.eq("registriesProducer-out-0"),
       Mockito.any(),
       Mockito.<Message<?>>argThat(m -> {
         Assertions.assertEquals(event, m.getPayload());

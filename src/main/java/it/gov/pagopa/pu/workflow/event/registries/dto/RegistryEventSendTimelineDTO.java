@@ -31,6 +31,7 @@ public class RegistryEventSendTimelineDTO {
   @NotNull
   private String grantorId;
 
+  private String streamId;
   private String eventId;
   private String notificationRequestId;
   private String iun;

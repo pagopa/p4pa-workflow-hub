@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.mapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryEventSubType;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
@@ -26,7 +25,7 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 class SendTimelineRegistryEventMapperTest {
 
   @Mock
-  private ObjectMapper objectMapperMock;
+  private JsonMapper jsonMapperMock;
 
   @InjectMocks
   private SendTimelineRegistryEventMapper sendTimelineRegistryEventMapper;
@@ -34,17 +33,17 @@ class SendTimelineRegistryEventMapperTest {
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      objectMapperMock
+      jsonMapperMock
     );
   }
 
   @BeforeEach
   void setUp() {
-    sendTimelineRegistryEventMapper = new SendTimelineRegistryEventMapper(objectMapperMock);
+    sendTimelineRegistryEventMapper = new SendTimelineRegistryEventMapper(jsonMapperMock);
   }
 
   @Test
-  void testMapSuccess() throws JsonProcessingException {
+  void testMapSuccess() {
     //GIVEN
     TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
     ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
@@ -63,11 +62,11 @@ class SendTimelineRegistryEventMapperTest {
     String traceId = "traceId";
     String workflowId = generateWorkflowId(streamId, SendNotificationStreamConsumeWF.class);
 
-    Mockito.when(objectMapperMock.writeValueAsString(timelineElement))
+    Mockito.when(jsonMapperMock.writeValueAsString(timelineElement))
       .thenReturn("serialized");
 
     //WHEN
-    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, streamId, traceId);
+    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, streamId, workflowId, traceId);
 
     //THEN
     Assertions.assertEquals(expectedRegistryId, registryEvent.getRegistryId());
@@ -90,7 +89,7 @@ class SendTimelineRegistryEventMapperTest {
   }
 
   @Test
-  void testMapError() throws JsonProcessingException {
+  void testMapError() {
     //GIVEN
     TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
     ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
@@ -109,11 +108,11 @@ class SendTimelineRegistryEventMapperTest {
     String traceId = "traceId";
     String workflowId = generateWorkflowId(streamId, SendNotificationStreamConsumeWF.class);
 
-    Mockito.when(objectMapperMock.writeValueAsString(timelineElement))
+    Mockito.when(jsonMapperMock.writeValueAsString(timelineElement))
       .thenReturn("serialized");
 
     //WHEN
-    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapError(event, streamId, traceId);
+    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapError(event, streamId, workflowId, traceId);
 
     //THEN
     Assertions.assertEquals(expectedRegistryId, registryEvent.getRegistryId());
@@ -136,20 +135,21 @@ class SendTimelineRegistryEventMapperTest {
   }
 
   @Test
-  void testMapWithException() throws JsonProcessingException {
+  void testMapWithException() {
     //GIVEN
     String streamId = "streamId";
     String traceId = "traceId";
+    String workflowId = generateWorkflowId(streamId, SendNotificationStreamConsumeWF.class);
     ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
 
-    Mockito.when(objectMapperMock.writeValueAsString(Mockito.any()))
+    Mockito.when(jsonMapperMock.writeValueAsString(Mockito.any()))
       .thenThrow(new RuntimeException());
 
     //WHEN
     WorkflowInternalErrorException workflowInternalErrorException =
       Assertions.assertThrows(
         WorkflowInternalErrorException.class,
-        () -> sendTimelineRegistryEventMapper.mapSuccess(event, streamId, traceId)
+        () -> sendTimelineRegistryEventMapper.mapSuccess(event, streamId, workflowId, traceId)
       );
 
     //THEN

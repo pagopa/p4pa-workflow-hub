@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 @Component
 public class SendTimelineProducerService {
 
-  @Value("${spring.cloud.stream.bindings.registryProducer-out-0.binder}")
+  @Value("${spring.cloud.stream.bindings.registriesProducer-out-0.binder}")
   private String binder;
 
   private final StreamBridge streamBridge;
@@ -33,7 +33,7 @@ public class SendTimelineProducerService {
   }
 
   public void notifySendTimelineEvent(RegistryEventSendTimelineDTO payload, String sendStreamId) {
-    streamBridge.send("registryProducer-out-0", binder,
+    streamBridge.send("registriesProducer-out-0", binder,
       MessageBuilder.withPayload(payload)
         .setHeader(KafkaHeaders.KEY, String.valueOf(sendStreamId))
         .build()

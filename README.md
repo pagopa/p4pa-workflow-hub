@@ -147,7 +147,7 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | KAFKA_BINDER_BROKER                | Comma separated list of brokers to which the Kafka binder connects |                        |
 | KAFKA_PAYMENTS_BINDER_BROKER       | Comma separated list of brokers to which the Kafka binder connects | ${KAFKA_BINDER_BROKER} |
 | KAFKA_DATA_EVENTS_BINDER_BROKER    | Comma separated list of brokers to which the Kafka binder connects | ${KAFKA_BINDER_BROKER} |
-| KAFKA_REGISTRIES_BINDER_BROKER       | Comma separated list of brokers to which the Kafka binder connects | ${KAFKA_BINDER_BROKER} |
+| KAFKA_REGISTRIES_BINDER_BROKER     | Comma separated list of brokers to which the Kafka binder connects | ${KAFKA_BINDER_BROKER} |
 | KAFKA_CONFIG_HEARTBEAT_INTERVAL_MS | Hearth beat interval (milliseconds)                                | 3000                   |
 | KAFKA_CONFIG_SESSION_TIMEOUT_MS    | Session timeout (milliseconds)                                     | 30000                  |
 | KAFKA_CONFIG_REQUEST_TIMEOUT_MS    | Request timeout (milliseconds)                                     | 60000                  |
@@ -157,26 +157,26 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | KAFKA_CONFIG_MAX_REQUEST_SIZE      | Max request size                                                   | 1000000                |
 
 ###### 📤 KAFKA PRODUCERS
-| ENV                                                 | DESCRIPTION                                       | DEFAULT                     |
-|-----------------------------------------------------|---------------------------------------------------|-----------------------------|
-| KAFKA_TOPIC_PAYMENTS                                | Topic where to publish payment event              | p4pa-payhub-payments-evh    |
-| KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG            | JAAS Config string used to perform authentication |                             |
-| KAFKA_PAYMENTS_PRODUCER_CONNECTION_MAX_IDLE_TIME    | Max producer idle time (milliseconds)             | 180000                      |
-| KAFKA_PAYMENTS_PRODUCER_RETRY_MS                    | Producer retry waiting time (milliseconds)        | 10000                       |
-| KAFKA_PAYMENTS_PRODUCER_LINGER_MS                   | Producer linger time (milliseconds)               | 2                           |
-| KAFKA_PAYMENTS_PRODUCER_BATCH_SIZE                  | Producer batch size                               | 16384                       |
-| KAFKA_TOPIC_DATA_EVENTS                             | Topic where to publish data events                | p4pa-payhub-data-events-evh | 
-| KAFKA_DATA_EVENTS_PRODUCER_SASL_JAAS_CONFIG         | JAAS Config string used to perform authentication |                             |
-| KAFKA_DATA_EVENTS_PRODUCER_CONNECTION_MAX_IDLE_TIME | Max producer idle time (milliseconds)             | 180000                      |
-| KAFKA_DATA_EVENTS_PRODUCER_RETRY_MS                 | Producer retry waiting time (milliseconds)        | 10000                       |
-| KAFKA_DATA_EVENTS_PRODUCER_LINGER_MS                | Producer linger time (milliseconds)               | 2                           |
-| KAFKA_DATA_EVENTS_PRODUCER_BATCH_SIZE               | Producer batch size                               | 16384                       |
-| KAFKA_TOPIC_REGISTRIES                                | Topic where to publish data events                | p4pa-payhub-data-events-evh | 
-| KAFKA_REGISTRIES_PRODUCER_SASL_JAAS_CONFIG            | JAAS Config string used to perform authentication |                             |
-| KAFKA_REGISTRIES_PRODUCER_CONNECTION_MAX_IDLE_TIME    | Max producer idle time (milliseconds)             | 180000                      |
-| KAFKA_REGISTRIES_PRODUCER_RETRY_MS                    | Producer retry waiting time (milliseconds)        | 10000                       |
-| KAFKA_REGISTRIES_PRODUCER_LINGER_MS                   | Producer linger time (milliseconds)               | 2                           |
-| KAFKA_REGISTRIES_PRODUCER_BATCH_SIZE                  | Producer batch size                               | 16384                       |
+| ENV                                                  | DESCRIPTION                                       | DEFAULT                     |
+|------------------------------------------------------|---------------------------------------------------|-----------------------------|
+| KAFKA_TOPIC_PAYMENTS                                 | Topic where to publish payment event              | p4pa-payhub-payments-evh    |
+| KAFKA_PAYMENTS_PRODUCER_SASL_JAAS_CONFIG             | JAAS Config string used to perform authentication |                             |
+| KAFKA_PAYMENTS_PRODUCER_CONNECTION_MAX_IDLE_TIME     | Max producer idle time (milliseconds)             | 180000                      |
+| KAFKA_PAYMENTS_PRODUCER_RETRY_MS                     | Producer retry waiting time (milliseconds)        | 10000                       |
+| KAFKA_PAYMENTS_PRODUCER_LINGER_MS                    | Producer linger time (milliseconds)               | 2                           |
+| KAFKA_PAYMENTS_PRODUCER_BATCH_SIZE                   | Producer batch size                               | 16384                       |
+| KAFKA_TOPIC_DATA_EVENTS                              | Topic where to publish data events                | p4pa-payhub-data-events-evh | 
+| KAFKA_DATA_EVENTS_PRODUCER_SASL_JAAS_CONFIG          | JAAS Config string used to perform authentication |                             |
+| KAFKA_DATA_EVENTS_PRODUCER_CONNECTION_MAX_IDLE_TIME  | Max producer idle time (milliseconds)             | 180000                      |
+| KAFKA_DATA_EVENTS_PRODUCER_RETRY_MS                  | Producer retry waiting time (milliseconds)        | 10000                       |
+| KAFKA_DATA_EVENTS_PRODUCER_LINGER_MS                 | Producer linger time (milliseconds)               | 2                           |
+| KAFKA_DATA_EVENTS_PRODUCER_BATCH_SIZE                | Producer batch size                               | 16384                       |
+| KAFKA_TOPIC_REGISTRIES                               | Topic where to publish registry events            | p4pa-payhub-registries-evh  | 
+| KAFKA_REGISTRIES_PRODUCER_SASL_JAAS_CONFIG           | JAAS Config string used to perform authentication |                             |
+| KAFKA_REGISTRIES_PRODUCER_CONNECTION_MAX_IDLE_TIME   | Max producer idle time (milliseconds)             | 180000                      |
+| KAFKA_REGISTRIES_PRODUCER_RETRY_MS                   | Producer retry waiting time (milliseconds)        | 10000                       |
+| KAFKA_REGISTRIES_PRODUCER_LINGER_MS                  | Producer linger time (milliseconds)               | 2                           |
+| KAFKA_REGISTRIES_PRODUCER_BATCH_SIZE                 | Producer batch size                               | 16384                       |
 
 ###### 📥 KAFKA CONSUMERS
 | ENV                                              | DESCRIPTION                                                                                    | DEFAULT                                            |
