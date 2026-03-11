@@ -153,6 +153,11 @@ class SendEventStreamProcessingServiceImplTest {
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
+    Mockito.verify(publishSendNotificationPaymentEventActivityMock)
+      .publishSendNotificationEvent(
+        Mockito.isA(DebtPositionSendNotificationDTO.class),
+        Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null))
+      );
     Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
