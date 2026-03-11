@@ -155,7 +155,7 @@ spring:
               initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_MAX_POLLER_SIZE:5}"
-      - task-queue: SendNotificationPublishPaymentEventSendWF_LOCAL
+      - task-queue: SendNotificationPublishEventSendWF_LOCAL
         capacity:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
@@ -190,7 +190,7 @@ spring:
               max-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MAX_POLLER_SIZE:5}"
   cloud:
     function:
-      definition: paymentsConsumer;paymentsProducer;dataEventsProducer
+      definition: paymentsConsumer;paymentsProducer;dataEventsProducer;registryProducer
     stream:
       binders:
         kafka-payments-producer:
@@ -216,6 +216,14 @@ spring:
               configuration:
                 sasl.jaas.config: "\${KAFKA_DATA_EVENTS_PRODUCER_SASL_JAAS_CONFIG:}"
                 key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        kafka-registry-producer:
+          type: kafka
+          environment:
+            spring.cloud.stream.kafka.binder:
+              brokers: "\${KAFKA_REGISTRIES_BINDER_BROKER:}"
+              configuration:
+                sasl.jaas.config: "\${KAFKA_REGISTRIES_PRODUCER_SASL_JAAS_CONFIG:}"
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
       bindings:
         paymentsProducer-out-0:
           binder: kafka-payments-producer
@@ -231,6 +239,10 @@ spring:
           binder: kafka-data-events-producer
           content-type: "\${KAFKA_CONTENT_TYPE:application/json}"
           destination: "\${KAFKA_TOPIC_DATA_EVENTS:p4pa-payhub-data-events-evh}"
+        registryProducer-out-0:
+          binder: kafka-registry-producer
+          content-type: "\${KAFKA_CONTENT_TYPE:application/json}"
+          destination: "\${KAFKA_TOPIC_REGISTRIES:p4pa-payhub-registries-evh}"
       kafka:
         binder:
           auto-create-topics: false
@@ -272,6 +284,15 @@ spring:
                 retry.backoff.ms: "\${KAFKA_DATA_EVENTS_PRODUCER_RETRY_MS:\${KAFKA_RETRY_MS:10000}}"
                 linger.ms: "\${KAFKA_DATA_EVENTS_PRODUCER_LINGER_MS:\${KAFKA_LINGER_MS:2}}"
                 batch.size: "\${KAFKA_DATA_EVENTS_PRODUCER_BATCH_SIZE:\${KAFKA_BATCH_SIZE:16384}}"
+          registryProducer-out-0:
+            producer:
+              configuration:
+                client.id: pu-pagopapayments
+                connections.max.idle.ms: "\${KAFKA_REGISTRIES_PRODUCER_CONNECTION_MAX_IDLE_TIME:180000}"
+                retry.backoff.ms: "\${KAFKA_REGISTRIES_PRODUCER_RETRY_MS:\${KAFKA_RETRY_MS:10000}}"
+                linger.ms: "\${KAFKA_REGISTRIES_PRODUCER_LINGER_MS:\${KAFKA_LINGER_MS:2}}"
+                batch.size: "\${KAFKA_REGISTRIES_PRODUCER_BATCH_SIZE:\${KAFKA_BATCH_SIZE:16384}}"
+
 management:
   info:
     build.enabled: true

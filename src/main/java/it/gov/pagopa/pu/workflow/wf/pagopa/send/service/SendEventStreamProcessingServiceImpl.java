@@ -53,7 +53,8 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         yield streamEvent.getEventId();
       }
       case VIEWED -> {
-        this.sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(streamEvent.getNotificationRequestId());
+        SendNotificationDTO sendNotification = this.sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(streamEvent.getNotificationRequestId());
+        publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
         yield streamEvent.getEventId();
       }
       case null -> {

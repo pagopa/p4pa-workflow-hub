@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendNotificationPaymentEventActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendTimelineEventActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -56,7 +57,7 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
   public PublishSendNotificationPaymentEventActivity buildPublishSendNotificationPaymentEventActivityStub() {
     return Workflow.newActivityStub(PublishSendNotificationPaymentEventActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-        TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL, this));
+        TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PUBLISH_EVENT_LOCAL, this));
   }
 
 }
