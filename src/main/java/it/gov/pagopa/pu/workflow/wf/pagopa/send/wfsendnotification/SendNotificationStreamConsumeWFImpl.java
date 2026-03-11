@@ -11,6 +11,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendTimelineEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.service.SendEventStreamProcessingService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.service.SendEventStreamProcessingServiceImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -39,6 +40,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private GetSendNotificationEventsFromStreamActivity getSendNotificationEventsFromStreamActivity;
   private SendEventStreamProcessingService sendEventStreamProcessingService;
   private UpdateLastProcessedStreamEventIdActivity updateLastProcessedStreamEventIdActivity;
+  private PublishSendTimelineEventActivity publishSendTimelineEventActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -59,6 +61,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       wfConfig.buildFetchSendLegalFactActivityStub()
     );
     updateLastProcessedStreamEventIdActivity = wfConfig.buildUpdateLastProcessedStreamEventIdActivityStub();
+    publishSendTimelineEventActivity = wfConfig.buildPublishSendTimelineEventActivityStub();
   }
 
   @Override
@@ -79,7 +82,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
           sendStreamId
         );
         if (!CollectionUtils.isEmpty(streamEvents)) {
-          lastProcessedEventId = processingStreamEvents(sendStreamId, streamEvents, lastProcessedEventId);
+          lastProcessedEventId = processingStreamEvents(sendStreamDTO.getOrganizationId(), sendStreamId, streamEvents, lastProcessedEventId);
         }
       } catch(Throwable t) {
         log.error("Something went wrong processing stream {}: {}",
@@ -95,7 +98,8 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
   }
 
-  private String processingStreamEvents(String sendStreamId, List<ProgressResponseElementV28DTO> streamEventBatch, String lastProcessedEventId) {
+  private String processingStreamEvents(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEventBatch, String lastProcessedEventId) {
+    String traceId = Utilities.getTraceId();
     for (ProgressResponseElementV28DTO streamEvent : streamEventBatch) {
       String lastEventId;
       try {
@@ -111,6 +115,8 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
           lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
         } else {
           log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()));
+          publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, organizationId, sendStreamId, traceId);
+          lastProcessedEventId = streamEvent.getEventId(); //skip events sent to Dead Letter
           break;
         }
       }
