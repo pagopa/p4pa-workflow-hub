@@ -34,6 +34,9 @@ public class ClassificationControllerImpl implements ClassificationApi {
   public ResponseEntity<WorkflowCreatedDTO> transferClassification(Long orgId, String iuv, String iur, Integer transferIndex) {
     log.info("Creating transfer classification Workflow for organization id {} and iuv {} and iur {} and transfer index {}", orgId, iuv, iur, transferIndex);
     WorkflowCreatedDTO wfExec = transferClassificationWFClient.startTransferClassification(new TransferClassificationStartSignalDTO(orgId, iuv, iur, transferIndex));
+    if (wfExec == null) {
+      return ResponseEntity.noContent().build();
+    }
     return ResponseEntity.status(201).body(wfExec);
   }
 
@@ -42,7 +45,9 @@ public class ClassificationControllerImpl implements ClassificationApi {
     log.info("Creating iud classification Workflow for organization id {} and iud {}", orgId, iud);
     IudClassificationNotifyPaymentNotificationSignalDTO signalDTO = new IudClassificationNotifyPaymentNotificationSignalDTO(iud, orgId);
     WorkflowCreatedDTO wfExec =  iudClassificationWFClient.notifyPaymentNotification(signalDTO);
-
+    if (wfExec == null) {
+      return ResponseEntity.noContent().build();
+    }
     return ResponseEntity.status(201).body(wfExec);
   }
 
@@ -51,7 +56,9 @@ public class ClassificationControllerImpl implements ClassificationApi {
     log.info("Creating iud classification Workflow for organization id {} and iud {} and iuv {} and iur {} and transfer indexes {}", orgId, iud, iuv, iur, transferIndexes);
     IudClassificationNotifyReceiptSignalDTO signalDTO = new IudClassificationNotifyReceiptSignalDTO(orgId, iud, iuv, iur, transferIndexes);
     WorkflowCreatedDTO wfExec = iudClassificationWFClient.notifyReceipt(signalDTO);
-
+    if (wfExec == null) {
+      return ResponseEntity.noContent().build();
+    }
     return ResponseEntity.status(201).body(wfExec);
   }
 
@@ -59,6 +66,9 @@ public class ClassificationControllerImpl implements ClassificationApi {
   public ResponseEntity<WorkflowCreatedDTO> assessmentsClassification(Long orgId, String iuv, String iud) {
     log.info("Creating assessments classification Workflow for organization id {} and iuv {} and iud {}", orgId, iuv, iud);
     WorkflowCreatedDTO wfExec = classifyAssessmentsWFClient.startAssessmentsClassification(new ClassifyAssessmentStartSignalDTO(orgId, iuv, iud));
+    if (wfExec == null) {
+      return ResponseEntity.noContent().build();
+    }
     return ResponseEntity.status(201).body(wfExec);
   }
 }
