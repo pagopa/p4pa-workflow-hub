@@ -27,7 +27,7 @@ public class SendTimelineProducerService {
   @Configuration
   static class SendTimelineConfig {
     @Bean
-    public Supplier<Message<RegistryEventSendTimelineDTO>> sendTimelineProducer() {
+    public Supplier<Message<RegistryEventSendTimelineDTO>> registriesProducer() {
       return () -> null;
     }
   }
