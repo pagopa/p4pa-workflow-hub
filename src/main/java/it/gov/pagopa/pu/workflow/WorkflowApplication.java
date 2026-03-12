@@ -14,7 +14,8 @@ import java.util.TimeZone;
   exclude = {ErrorMvcAutoConfiguration.class},
   scanBasePackages = {
     "it.gov.pagopa.pu.workflow",
-    "it.gov.pagopa.payhub.activities.connector.auth"
+    "it.gov.pagopa.payhub.activities.connector.auth",
+    "it.gov.pagopa.pu.common"
   })
 @Import({
   NotRetryableActivityExceptionHandlerAspect.class,
