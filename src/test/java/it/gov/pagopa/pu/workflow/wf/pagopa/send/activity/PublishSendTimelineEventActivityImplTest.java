@@ -1,7 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.activity;
 
-import io.temporal.workflow.Workflow;
-import io.temporal.workflow.WorkflowInfo;
+import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityExecutionContext;
+import io.temporal.activity.ActivityInfo;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementV27DTO;
 import it.gov.pagopa.pu.workflow.event.registries.dto.RegistryEventSendTimelineDTO;
@@ -47,11 +48,13 @@ class PublishSendTimelineEventActivityImplTest {
     RegistryEventSendTimelineDTO registryEvent = new RegistryEventSendTimelineDTO();
     Mockito.when(sendTimelineRegistryEventMapperMock.mapSuccess(event, ORGANIZATION_ID, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
       .thenReturn(registryEvent);
-    WorkflowInfo workflowInfo = Mockito.mock(WorkflowInfo.class);
-    Mockito.when(workflowInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
+    ActivityInfo activityInfo = Mockito.mock(ActivityInfo.class);
+    Mockito.when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
+    ActivityExecutionContext activityExecutionContext = Mockito.mock(ActivityExecutionContext.class);
+    Mockito.when(activityExecutionContext.getInfo()).thenReturn(activityInfo);
 
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(Workflow::getInfo).thenReturn(workflowInfo);
+    try (MockedStatic<Activity> activityMock = Mockito.mockStatic(Activity.class)) {
+      activityMock.when(Activity::getExecutionContext).thenReturn(activityExecutionContext);
       //WHEN
       publishSendTimelineEventActivityImpl.publishSendTimelineEvent(event, ORGANIZATION_ID, SEND_STREAM_ID, TRACE_ID);
 
@@ -74,11 +77,13 @@ class PublishSendTimelineEventActivityImplTest {
     RegistryEventSendTimelineDTO registryEvent = new RegistryEventSendTimelineDTO();
     Mockito.when(sendTimelineRegistryEventMapperMock.mapError(event, ORGANIZATION_ID, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
       .thenReturn(registryEvent);
-    WorkflowInfo workflowInfo = Mockito.mock(WorkflowInfo.class);
-    Mockito.when(workflowInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
+    ActivityInfo activityInfo = Mockito.mock(ActivityInfo.class);
+    Mockito.when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
+    ActivityExecutionContext activityExecutionContext = Mockito.mock(ActivityExecutionContext.class);
+    Mockito.when(activityExecutionContext.getInfo()).thenReturn(activityInfo);
 
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(Workflow::getInfo).thenReturn(workflowInfo);
+    try (MockedStatic<Activity> activityMock = Mockito.mockStatic(Activity.class)) {
+      activityMock.when(Activity::getExecutionContext).thenReturn(activityExecutionContext);
       //WHEN
       publishSendTimelineEventActivityImpl.publishSendTimelineErrorEvent(event, ORGANIZATION_ID, sendStreamId, traceId);
 

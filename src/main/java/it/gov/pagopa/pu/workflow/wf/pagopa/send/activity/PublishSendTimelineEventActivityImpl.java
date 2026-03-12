@@ -1,5 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.activity;
 
+import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityInfo;
 import io.temporal.spring.boot.ActivityImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
@@ -30,7 +32,7 @@ public class PublishSendTimelineEventActivityImpl implements PublishSendTimeline
   @Override
   public void publishSendTimelineEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, Long organizationId, String sendStreamId, String traceId) {
     log.info("Publishing SendNotification timeline event {} (IUN {}) for notificationRequest: {}", sendTimelineEventDTO.getElement().getCategory(), sendTimelineEventDTO.getIun(), sendTimelineEventDTO.getNotificationRequestId());
-    String workflowId = Workflow.getInfo().getWorkflowId();
+    String workflowId = Activity.getExecutionContext().getInfo().getWorkflowId();
     RegistryEventSendTimelineDTO registryEventSendTimelineDTO =
       sendTimelineRegistryEventMapper.mapSuccess(sendTimelineEventDTO, organizationId, sendStreamId, workflowId, traceId);
     sendTimelineProducerService.notifySendTimelineEvent(registryEventSendTimelineDTO, sendStreamId);
@@ -39,7 +41,7 @@ public class PublishSendTimelineEventActivityImpl implements PublishSendTimeline
   @Override
   public void publishSendTimelineErrorEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, Long organizationId, String sendStreamId, String traceId) {
     log.info("Publishing SendNotification error for timeline event {} (IUN {}) for notificationRequest: {}", sendTimelineEventDTO.getElement().getCategory(), sendTimelineEventDTO.getIun(), sendTimelineEventDTO.getNotificationRequestId());
-    String workflowId = Workflow.getInfo().getWorkflowId();
+    String workflowId = Activity.getExecutionContext().getInfo().getWorkflowId();
     RegistryEventSendTimelineDTO registryEventSendTimelineDTO =
       sendTimelineRegistryEventMapper.mapError(sendTimelineEventDTO, organizationId, sendStreamId, workflowId, traceId);
     sendTimelineProducerService.notifySendTimelineEvent(registryEventSendTimelineDTO, sendStreamId);
