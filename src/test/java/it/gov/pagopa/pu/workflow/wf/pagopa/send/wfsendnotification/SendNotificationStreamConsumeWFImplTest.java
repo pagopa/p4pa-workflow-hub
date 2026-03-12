@@ -11,6 +11,7 @@ import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.activity.PublishSendTimelineEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.service.SendEventStreamProcessingService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.config.SendNotificationProcessWfConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -48,6 +49,8 @@ class SendNotificationStreamConsumeWFImplTest {
   private SendEventStreamProcessingService sendEventStreamProcessingServiceMock;
   @Mock
   private UpdateLastProcessedStreamEventIdActivity updateLastProcessedStreamEventIdActivityMock;
+  @Mock
+  private PublishSendTimelineEventActivity publishSendTimelineEventActivityMock;
 
   private SendNotificationStreamConsumeWFImpl wf;
 
@@ -59,6 +62,7 @@ class SendNotificationStreamConsumeWFImplTest {
     Mockito.when(wfConfigMock.buildGetSendStreamActivityStub()).thenReturn(getSendStreamActivityMock);
     Mockito.when(wfConfigMock.buildGetSendNotificationEventsFromStreamActivityStub()).thenReturn(getSendNotificationEventsFromStreamActivityMock);
     Mockito.when(wfConfigMock.buildUpdateLastProcessedStreamEventIdActivityStub()).thenReturn(updateLastProcessedStreamEventIdActivityMock);
+    Mockito.when(wfConfigMock.buildPublishSendTimelineEventActivityStub()).thenReturn(publishSendTimelineEventActivityMock);
 
     Mockito.when(applicationContextMock.getBean(SendNotificationProcessWfConfig.class)).thenReturn(wfConfigMock);
 
@@ -162,6 +166,11 @@ class SendNotificationStreamConsumeWFImplTest {
 
       //THEN
       Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
+      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+        .updateLastProcessedStreamEventId(
+          SEND_STREAM_ID,
+          sendEvent1.getEventId()
+        );
     }
 
   }
@@ -262,7 +271,7 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
-          sendEvent1.getEventId()
+          sendEvent2.getEventId()
         );
     }
 
@@ -313,7 +322,7 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
-          sendEvent1.getEventId()
+          sendEvent2.getEventId()
         );
     }
 
@@ -364,7 +373,7 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
-          sendEvent1.getEventId()
+          sendEvent2.getEventId()
         );
     }
 
@@ -415,7 +424,7 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
-          sendEvent1.getEventId()
+          sendEvent2.getEventId()
         );
     }
 
