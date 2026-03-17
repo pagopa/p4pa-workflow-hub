@@ -17,7 +17,7 @@ import java.time.temporal.ChronoUnit;
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY)
 public class MassiveNoticesGenerationWFImpl implements MassiveNoticesGenerationWF, ApplicationContextAware {
   private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
-  private static final int WAITING_SECONDS_NEXT_POLL = 60 * 2;
+  private static final int WAITING_SECONDS_NEXT_ITERATION = 60 * 2;
 
   private int loopExecutionCount = 0;
 
@@ -49,7 +49,7 @@ public class MassiveNoticesGenerationWFImpl implements MassiveNoticesGenerationW
   private void waitForNextIteration(Long ingestionFlowFileId) {
     Workflow.sleep(
       Duration.of(
-        WAITING_SECONDS_NEXT_POLL,
+        WAITING_SECONDS_NEXT_ITERATION,
         ChronoUnit.SECONDS
       )
     );
