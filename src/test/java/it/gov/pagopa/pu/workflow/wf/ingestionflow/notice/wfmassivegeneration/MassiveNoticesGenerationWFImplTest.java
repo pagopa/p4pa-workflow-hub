@@ -29,8 +29,8 @@ class MassiveNoticesGenerationWFImplTest {
 
   private MassiveNoticesGenerationWFImpl wf;
 
-  private final long FIXED_TIME_MILLIS = Instant.parse("2024-01-01T10:00:00Z").toEpochMilli();
-  private final LocalDate EXPECTED_SCHEDULE_DATE = Instant.ofEpochMilli(FIXED_TIME_MILLIS)
+  private static final long FIXED_TIME_MILLIS = Instant.parse("2024-01-01T10:00:00Z").toEpochMilli();
+  private static final LocalDate EXPECTED_SCHEDULE_DATE = Instant.ofEpochMilli(FIXED_TIME_MILLIS)
     .atZone(ZoneId.systemDefault())
     .toLocalDate()
     .plusDays(100);
