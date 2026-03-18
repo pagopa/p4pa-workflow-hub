@@ -129,11 +129,11 @@ class SendEventStreamProcessingServiceImplTest {
   }
 
   @Test
-  void givenViewedEventWhenProcessSendStreamEventThenOk() {
+  void givenDeliveredEventWhenProcessSendStreamEventThenOk() {
     //GIVEN
     ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       null,
-      NotificationStatusV26DTO.VIEWED
+      NotificationStatusV26DTO.DELIVERED
     );
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
