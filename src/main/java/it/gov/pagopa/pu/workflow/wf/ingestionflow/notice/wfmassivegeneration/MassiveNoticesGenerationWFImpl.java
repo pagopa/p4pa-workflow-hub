@@ -12,9 +12,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 @Slf4j
@@ -50,14 +47,7 @@ public class MassiveNoticesGenerationWFImpl implements MassiveNoticesGenerationW
       }
     } while (result == 0);
 
-    long currentTimeMillis = Workflow.currentTimeMillis();
-
-    LocalDate scheduleDate = Instant.ofEpochMilli(currentTimeMillis)
-      .atZone(ZoneId.systemDefault())
-      .toLocalDate()
-      .plusDays(DAYS_TO_KEEP_FILE);
-
-    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, scheduleDate);
+    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, Duration.ofDays(DAYS_TO_KEEP_FILE));
   }
 
   private void waitForNextIteration(Long ingestionFlowFileId) {

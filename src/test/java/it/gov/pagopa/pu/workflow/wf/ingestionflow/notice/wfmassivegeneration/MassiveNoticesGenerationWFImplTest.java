@@ -14,9 +14,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.time.Duration;
 
@@ -29,11 +26,7 @@ class MassiveNoticesGenerationWFImplTest {
 
   private MassiveNoticesGenerationWFImpl wf;
 
-  private static final long FIXED_TIME_MILLIS = Instant.parse("2024-01-01T10:00:00Z").toEpochMilli();
-  private static final LocalDate EXPECTED_SCHEDULE_DATE = Instant.ofEpochMilli(FIXED_TIME_MILLIS)
-    .atZone(ZoneId.systemDefault())
-    .toLocalDate()
-    .plusDays(100);
+  private static final Duration EXPECTED_RETENTION_DURATION = Duration.ofDays(100);
 
   @BeforeEach
   void setUp() {
@@ -67,14 +60,10 @@ class MassiveNoticesGenerationWFImplTest {
 
     Mockito.when(fetchAndMergeNoticesActivityMock.fetchAndMergeNotices(ingestionFlowFileId)).thenReturn(1);
 
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(Workflow::currentTimeMillis).thenReturn(FIXED_TIME_MILLIS);
+    wf.generate(ingestionFlowFileId);
 
-      wf.generate(ingestionFlowFileId);
-
-      Mockito.verify(fetchAndMergeNoticesActivityMock).fetchAndMergeNotices(ingestionFlowFileId);
-      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
-    }
+    Mockito.verify(fetchAndMergeNoticesActivityMock).fetchAndMergeNotices(ingestionFlowFileId);
+    Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
   }
 
   @Test
@@ -88,12 +77,11 @@ class MassiveNoticesGenerationWFImplTest {
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
-      workflowMock.when(Workflow::currentTimeMillis).thenReturn(FIXED_TIME_MILLIS);
 
       wf.generate(ingestionFlowFileId);
 
       Mockito.verify(fetchAndMergeNoticesActivityMock, Mockito.times(3)).fetchAndMergeNotices(ingestionFlowFileId);
-      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
     }
   }
 
@@ -110,13 +98,12 @@ class MassiveNoticesGenerationWFImplTest {
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
-      workflowMock.when(Workflow::currentTimeMillis).thenReturn(FIXED_TIME_MILLIS);
 
       wf.generate(ingestionFlowFileId);
 
       Mockito.verify(fetchAndMergeNoticesActivityMock, Mockito.times(101)).fetchAndMergeNotices(ingestionFlowFileId);
       workflowMock.verify(() -> Workflow.continueAsNew(ingestionFlowFileId), Mockito.times(1));
-      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
     }
   }
 }

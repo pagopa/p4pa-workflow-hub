@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
+import java.time.Duration;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleMassiveNoticesFileDeletionWFActivityImplTest {
@@ -38,22 +38,22 @@ class ScheduleMassiveNoticesFileDeletionWFActivityImplTest {
   @Test
   void whenScheduleFileDeletionThenOk() {
     Long ingestionFlowFileId = 1L;
-    LocalDate scheduleDate = LocalDate.now();
+    Duration retentionDuration = Duration.ofDays(100);
 
-    Mockito.when(workflowServiceMock.buildWorkflowStubScheduled(
+    Mockito.when(workflowServiceMock.buildWorkflowStubDelayed(
         Mockito.eq(DeleteMassiveNoticesFileWF.class),
         Mockito.eq(TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY),
         Mockito.anyString(),
-        Mockito.eq(scheduleDate)))
+        Mockito.eq(retentionDuration)))
       .thenReturn(deleteMassiveNoticesFileWFMock);
 
-    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, scheduleDate);
+    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, retentionDuration);
 
-    Mockito.verify(workflowServiceMock).buildWorkflowStubScheduled(
+    Mockito.verify(workflowServiceMock).buildWorkflowStubDelayed(
       Mockito.eq(DeleteMassiveNoticesFileWF.class),
       Mockito.eq(TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY),
       Mockito.anyString(),
-      Mockito.eq(scheduleDate)
+      Mockito.eq(retentionDuration)
     );
 
     Mockito.verify(workflowClientServiceMock).start(Mockito.any(), Mockito.eq(ingestionFlowFileId));

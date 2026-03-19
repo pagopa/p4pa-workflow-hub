@@ -8,7 +8,7 @@ import it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.deletemassivenoticesfil
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.Duration;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
@@ -25,14 +25,14 @@ public class ScheduleMassiveNoticesFileDeletionWFActivityImpl implements Schedul
   }
 
   @Override
-  public void scheduleMassiveNoticesFileDeletionWF(Long ingestionFlowFileId, LocalDate scheduleDate) {
-    log.info("Start of scheduling the delete massive notices file WF: {}, on {}", ingestionFlowFileId, scheduleDate);
+  public void scheduleMassiveNoticesFileDeletionWF(Long ingestionFlowFileId, Duration retentionDuration) {
+    log.info("Start of scheduling the delete massive notices file WF: {}, with delay of {} days", ingestionFlowFileId, retentionDuration.toDays());
     String workflowId = generateWorkflowId(ingestionFlowFileId, DeleteMassiveNoticesFileWF.class);
-    DeleteMassiveNoticesFileWF workflow = workflowService.buildWorkflowStubScheduled(
+    DeleteMassiveNoticesFileWF workflow = workflowService.buildWorkflowStubDelayed(
       DeleteMassiveNoticesFileWF.class,
       TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY,
       workflowId,
-      scheduleDate
+      retentionDuration
     );
     workflowClientService.start(workflow::deleteMassiveNoticesFile, ingestionFlowFileId);
   }
