@@ -4,6 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.notice.FetchAndMergeNoticesActivity;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.activity.ScheduleMassiveNoticesFileDeletionWFActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.config.MassiveNoticesGenerationWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -18,15 +19,18 @@ import java.time.temporal.ChronoUnit;
 public class MassiveNoticesGenerationWFImpl implements MassiveNoticesGenerationWF, ApplicationContextAware {
   private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
   private static final int WAITING_SECONDS_NEXT_ITERATION = 60 * 2;
+  private static final Duration RETENTION_DURATION = Duration.ofDays(100);
 
   private int loopExecutionCount = 0;
 
   private FetchAndMergeNoticesActivity fetchAndMergeNoticesActivity;
+  private ScheduleMassiveNoticesFileDeletionWFActivity scheduleMassiveNoticesFileDeletionWFActivity;
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     MassiveNoticesGenerationWFConfig wfConfig = applicationContext.getBean(MassiveNoticesGenerationWFConfig.class);
     this.fetchAndMergeNoticesActivity = wfConfig.buildFetchAndMergeNoticesActivityStub();
+    this.scheduleMassiveNoticesFileDeletionWFActivity = wfConfig.buildScheduleMassiveNoticesFileDeletionWFActivityStub();
   }
 
   @Override
@@ -43,7 +47,7 @@ public class MassiveNoticesGenerationWFImpl implements MassiveNoticesGenerationW
       }
     } while (result == 0);
 
-    // TODO: invoke scheduleMassiveNoticesFileDeletionWF when P4ADEV-4548 is completed
+    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, RETENTION_DURATION);
   }
 
   private void waitForNextIteration(Long ingestionFlowFileId) {

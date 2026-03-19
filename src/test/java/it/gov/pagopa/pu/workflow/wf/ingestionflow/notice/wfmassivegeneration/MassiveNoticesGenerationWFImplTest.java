@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.wfmassivegeneration;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.notice.FetchAndMergeNoticesActivity;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.activity.ScheduleMassiveNoticesFileDeletionWFActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.config.MassiveNoticesGenerationWFConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,8 +21,12 @@ import java.time.Duration;
 class MassiveNoticesGenerationWFImplTest {
   @Mock
   private FetchAndMergeNoticesActivity fetchAndMergeNoticesActivityMock;
+  @Mock
+  private ScheduleMassiveNoticesFileDeletionWFActivity scheduleMassiveNoticesFileDeletionWFActivityMock;
 
   private MassiveNoticesGenerationWFImpl wf;
+
+  private static final Duration EXPECTED_RETENTION_DURATION = Duration.ofDays(100);
 
   @BeforeEach
   void setUp() {
@@ -34,6 +39,8 @@ class MassiveNoticesGenerationWFImplTest {
 
     Mockito.when(massiveNoticesGenerationWFConfigMock.buildFetchAndMergeNoticesActivityStub())
       .thenReturn(fetchAndMergeNoticesActivityMock);
+    Mockito.when(massiveNoticesGenerationWFConfigMock.buildScheduleMassiveNoticesFileDeletionWFActivityStub())
+      .thenReturn(scheduleMassiveNoticesFileDeletionWFActivityMock);
 
     wf = new MassiveNoticesGenerationWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -42,7 +49,8 @@ class MassiveNoticesGenerationWFImplTest {
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      fetchAndMergeNoticesActivityMock
+      fetchAndMergeNoticesActivityMock,
+      scheduleMassiveNoticesFileDeletionWFActivityMock
     );
   }
 
@@ -55,6 +63,7 @@ class MassiveNoticesGenerationWFImplTest {
     wf.generate(ingestionFlowFileId);
 
     Mockito.verify(fetchAndMergeNoticesActivityMock).fetchAndMergeNotices(ingestionFlowFileId);
+    Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
   }
 
   @Test
@@ -72,6 +81,7 @@ class MassiveNoticesGenerationWFImplTest {
       wf.generate(ingestionFlowFileId);
 
       Mockito.verify(fetchAndMergeNoticesActivityMock, Mockito.times(3)).fetchAndMergeNotices(ingestionFlowFileId);
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
     }
   }
 
@@ -93,6 +103,7 @@ class MassiveNoticesGenerationWFImplTest {
 
       Mockito.verify(fetchAndMergeNoticesActivityMock, Mockito.times(101)).fetchAndMergeNotices(ingestionFlowFileId);
       workflowMock.verify(() -> Workflow.continueAsNew(ingestionFlowFileId), Mockito.times(1));
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
     }
   }
 }
