@@ -4,10 +4,13 @@ import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.deletemassivenoticesfile.DeleteMassiveNoticesFileWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+
+import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Service
 @Slf4j
@@ -20,16 +23,17 @@ public class ScheduleMassiveNoticesFileDeletionWFActivityImpl implements Schedul
     this.workflowService = workflowService;
     this.workflowClientService = workflowClientService;
   }
+
   @Override
   public void scheduleFileDeletion(Long ingestionFlowFileId, LocalDate scheduleDate) {
-    log.info("Start of scheduling the massive notices file deletion WF: {}, on {}", ingestionFlowFileId, scheduleDate);
-//    String workflowId = generateWorkflowId(ingestionFlowFileId, PH);
-//    PH workflow = workflowService.buildWorkflowStubScheduled(
-//      PH,
-//      TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY,
-//      workflowId,
-//      scheduleDate
-//    );
-//    workflowClientService.start(workflow::PH, ingestionFlowFileId);
+    log.info("Start of scheduling the delete massive notices file WF: {}, on {}", ingestionFlowFileId, scheduleDate);
+    String workflowId = generateWorkflowId(ingestionFlowFileId, DeleteMassiveNoticesFileWF.class);
+    DeleteMassiveNoticesFileWF workflow = workflowService.buildWorkflowStubScheduled(
+      DeleteMassiveNoticesFileWF.class,
+      TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY,
+      workflowId,
+      scheduleDate
+    );
+    workflowClientService.start(workflow::deleteMassiveNoticesFile, ingestionFlowFileId);
   }
 }
