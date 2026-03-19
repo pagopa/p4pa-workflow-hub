@@ -4,7 +4,7 @@ import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
 /**
- * Workflow to delete massive notices file related to an IngestionFlowFile
+ * Workflow to generate massive notices file related to an IngestionFlowFile
  * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/2763620525/Generazione+massiva+avvisi>Confluence page</a>
  */
 @WorkflowInterface
