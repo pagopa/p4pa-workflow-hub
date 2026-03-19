@@ -1,0 +1,17 @@
+package it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.config;
+
+import io.temporal.workflow.Workflow;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.notice.DeleteMassiveNoticesFileActivity;
+import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConfigurationProperties(prefix = "workflow.delete-massive-notices-file")
+public class DeleteMassiveNoticesFileWFConfig extends BaseWfConfig {
+
+  public DeleteMassiveNoticesFileActivity buildDeleteMassiveNoticesFileActivityStub() {
+    return Workflow.newActivityStub(DeleteMassiveNoticesFileActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+}
