@@ -47,7 +47,7 @@ class ScheduleMassiveNoticesFileDeletionWFActivityImplTest {
         Mockito.eq(scheduleDate)))
       .thenReturn(deleteMassiveNoticesFileWFMock);
 
-    scheduleMassiveNoticesFileDeletionWFActivity.scheduleFileDeletion(ingestionFlowFileId, scheduleDate);
+    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, scheduleDate);
 
     Mockito.verify(workflowServiceMock).buildWorkflowStubScheduled(
       Mockito.eq(DeleteMassiveNoticesFileWF.class),

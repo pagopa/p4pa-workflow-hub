@@ -57,7 +57,7 @@ public class MassiveNoticesGenerationWFImpl implements MassiveNoticesGenerationW
       .toLocalDate()
       .plusDays(DAYS_TO_KEEP_FILE);
 
-    scheduleMassiveNoticesFileDeletionWFActivity.scheduleFileDeletion(ingestionFlowFileId, scheduleDate);
+    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, scheduleDate);
   }
 
   private void waitForNextIteration(Long ingestionFlowFileId) {

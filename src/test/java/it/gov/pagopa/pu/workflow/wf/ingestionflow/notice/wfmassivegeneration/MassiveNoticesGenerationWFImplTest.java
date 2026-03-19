@@ -73,7 +73,7 @@ class MassiveNoticesGenerationWFImplTest {
       wf.generate(ingestionFlowFileId);
 
       Mockito.verify(fetchAndMergeNoticesActivityMock).fetchAndMergeNotices(ingestionFlowFileId);
-      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivity).scheduleFileDeletion(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivity).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
     }
   }
 
@@ -93,7 +93,7 @@ class MassiveNoticesGenerationWFImplTest {
       wf.generate(ingestionFlowFileId);
 
       Mockito.verify(fetchAndMergeNoticesActivityMock, Mockito.times(3)).fetchAndMergeNotices(ingestionFlowFileId);
-      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivity).scheduleFileDeletion(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivity).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
     }
   }
 
@@ -116,7 +116,7 @@ class MassiveNoticesGenerationWFImplTest {
 
       Mockito.verify(fetchAndMergeNoticesActivityMock, Mockito.times(101)).fetchAndMergeNotices(ingestionFlowFileId);
       workflowMock.verify(() -> Workflow.continueAsNew(ingestionFlowFileId), Mockito.times(1));
-      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivity).scheduleFileDeletion(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivity).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_SCHEDULE_DATE);
     }
   }
 }

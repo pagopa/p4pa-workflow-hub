@@ -25,7 +25,7 @@ public class ScheduleMassiveNoticesFileDeletionWFActivityImpl implements Schedul
   }
 
   @Override
-  public void scheduleFileDeletion(Long ingestionFlowFileId, LocalDate scheduleDate) {
+  public void scheduleMassiveNoticesFileDeletionWF(Long ingestionFlowFileId, LocalDate scheduleDate) {
     log.info("Start of scheduling the delete massive notices file WF: {}, on {}", ingestionFlowFileId, scheduleDate);
     String workflowId = generateWorkflowId(ingestionFlowFileId, DeleteMassiveNoticesFileWF.class);
     DeleteMassiveNoticesFileWF workflow = workflowService.buildWorkflowStubScheduled(
