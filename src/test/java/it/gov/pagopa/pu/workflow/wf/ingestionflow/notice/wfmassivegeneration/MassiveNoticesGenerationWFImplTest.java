@@ -26,8 +26,6 @@ class MassiveNoticesGenerationWFImplTest {
 
   private MassiveNoticesGenerationWFImpl wf;
 
-  private static final Duration EXPECTED_RETENTION_DURATION = Duration.ofDays(100);
-
   @BeforeEach
   void setUp() {
     MassiveNoticesGenerationWFConfig massiveNoticesGenerationWFConfigMock = Mockito.mock(MassiveNoticesGenerationWFConfig.class);
@@ -63,7 +61,7 @@ class MassiveNoticesGenerationWFImplTest {
     wf.generate(ingestionFlowFileId);
 
     Mockito.verify(fetchAndMergeNoticesActivityMock).fetchAndMergeNotices(ingestionFlowFileId);
-    Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
+    Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId);
   }
 
   @Test
@@ -81,7 +79,7 @@ class MassiveNoticesGenerationWFImplTest {
       wf.generate(ingestionFlowFileId);
 
       Mockito.verify(fetchAndMergeNoticesActivityMock, Mockito.times(3)).fetchAndMergeNotices(ingestionFlowFileId);
-      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId);
     }
   }
 
@@ -103,7 +101,7 @@ class MassiveNoticesGenerationWFImplTest {
 
       Mockito.verify(fetchAndMergeNoticesActivityMock, Mockito.times(101)).fetchAndMergeNotices(ingestionFlowFileId);
       workflowMock.verify(() -> Workflow.continueAsNew(ingestionFlowFileId), Mockito.times(1));
-      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, EXPECTED_RETENTION_DURATION);
+      Mockito.verify(scheduleMassiveNoticesFileDeletionWFActivityMock).scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId);
     }
   }
 }

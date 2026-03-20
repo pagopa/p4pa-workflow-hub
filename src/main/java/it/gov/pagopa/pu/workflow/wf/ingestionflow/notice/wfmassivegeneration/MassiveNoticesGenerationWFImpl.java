@@ -19,7 +19,6 @@ import java.time.temporal.ChronoUnit;
 public class MassiveNoticesGenerationWFImpl implements MassiveNoticesGenerationWF, ApplicationContextAware {
   private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
   private static final int WAITING_SECONDS_NEXT_ITERATION = 60 * 2;
-  private static final Duration RETENTION_DURATION = Duration.ofDays(100);
 
   private int loopExecutionCount = 0;
 
@@ -47,7 +46,7 @@ public class MassiveNoticesGenerationWFImpl implements MassiveNoticesGenerationW
       }
     } while (result == 0);
 
-    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, RETENTION_DURATION);
+    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId);
   }
 
   private void waitForNextIteration(Long ingestionFlowFileId) {
