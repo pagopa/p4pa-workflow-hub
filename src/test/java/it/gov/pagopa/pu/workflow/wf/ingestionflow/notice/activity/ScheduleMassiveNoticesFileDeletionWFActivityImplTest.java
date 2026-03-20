@@ -35,6 +35,7 @@ class ScheduleMassiveNoticesFileDeletionWFActivityImplTest {
       RETENTION_DAYS
     );
   }
+
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
