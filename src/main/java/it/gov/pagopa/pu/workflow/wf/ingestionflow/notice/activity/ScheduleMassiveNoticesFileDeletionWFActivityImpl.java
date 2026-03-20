@@ -6,6 +6,7 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.notice.deletemassivenoticesfile.DeleteMassiveNoticesFileWF;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -18,21 +19,27 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 public class ScheduleMassiveNoticesFileDeletionWFActivityImpl implements ScheduleMassiveNoticesFileDeletionWFActivity {
   private final WorkflowService workflowService;
   private final WorkflowClientService workflowClientService;
+  private final Duration retentionDuration;
 
-  public ScheduleMassiveNoticesFileDeletionWFActivityImpl(WorkflowService workflowService, WorkflowClientService workflowClientService) {
+  public ScheduleMassiveNoticesFileDeletionWFActivityImpl(
+    WorkflowService workflowService,
+    WorkflowClientService workflowClientService,
+    @Value("${workflow.massive-notices-generation.retention-days}") int retentionDays
+  ) {
     this.workflowService = workflowService;
     this.workflowClientService = workflowClientService;
+    this.retentionDuration = Duration.ofDays(retentionDays);
   }
 
   @Override
-  public void scheduleMassiveNoticesFileDeletionWF(Long ingestionFlowFileId, Duration retentionDuration) {
-    log.info("Start of scheduling the delete massive notices file WF: {}, with delay of {} days", ingestionFlowFileId, retentionDuration.toDays());
+  public void scheduleMassiveNoticesFileDeletionWF(Long ingestionFlowFileId) {
+    log.info("Start of scheduling the delete massive notices file WF: {}, with delay of {} days", ingestionFlowFileId, this.retentionDuration.toDays());
     String workflowId = generateWorkflowId(ingestionFlowFileId, DeleteMassiveNoticesFileWF.class);
     DeleteMassiveNoticesFileWF workflow = workflowService.buildWorkflowStubDelayed(
       DeleteMassiveNoticesFileWF.class,
       TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY,
       workflowId,
-      retentionDuration
+      this.retentionDuration
     );
     workflowClientService.start(workflow::deleteMassiveNoticesFile, ingestionFlowFileId);
   }

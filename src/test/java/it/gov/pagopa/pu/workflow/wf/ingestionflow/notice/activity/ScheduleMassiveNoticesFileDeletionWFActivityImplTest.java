@@ -25,11 +25,16 @@ class ScheduleMassiveNoticesFileDeletionWFActivityImplTest {
 
   private ScheduleMassiveNoticesFileDeletionWFActivity scheduleMassiveNoticesFileDeletionWFActivity;
 
+  private static final int RETENTION_DAYS = 100;
+
   @BeforeEach
   void setUp() {
-    scheduleMassiveNoticesFileDeletionWFActivity = new ScheduleMassiveNoticesFileDeletionWFActivityImpl(workflowServiceMock, workflowClientServiceMock);
+    scheduleMassiveNoticesFileDeletionWFActivity = new ScheduleMassiveNoticesFileDeletionWFActivityImpl(
+      workflowServiceMock,
+      workflowClientServiceMock,
+      RETENTION_DAYS
+    );
   }
-
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
@@ -38,7 +43,7 @@ class ScheduleMassiveNoticesFileDeletionWFActivityImplTest {
   @Test
   void whenScheduleFileDeletionThenOk() {
     Long ingestionFlowFileId = 1L;
-    Duration retentionDuration = Duration.ofDays(100);
+    Duration retentionDuration = Duration.ofDays(RETENTION_DAYS);
 
     Mockito.when(workflowServiceMock.buildWorkflowStubDelayed(
         Mockito.eq(DeleteMassiveNoticesFileWF.class),
@@ -47,7 +52,7 @@ class ScheduleMassiveNoticesFileDeletionWFActivityImplTest {
         Mockito.eq(retentionDuration)))
       .thenReturn(deleteMassiveNoticesFileWFMock);
 
-    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId, retentionDuration);
+    scheduleMassiveNoticesFileDeletionWFActivity.scheduleMassiveNoticesFileDeletionWF(ingestionFlowFileId);
 
     Mockito.verify(workflowServiceMock).buildWorkflowStubDelayed(
       Mockito.eq(DeleteMassiveNoticesFileWF.class),
