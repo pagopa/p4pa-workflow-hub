@@ -4,7 +4,6 @@ import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.InstallmentIngestionFlowFileActivity;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.MassiveNoticeGenerationStatusRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
@@ -12,6 +11,7 @@ import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDe
 import it.gov.pagopa.pu.workflow.utilities.Constants;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.BaseIngestionFlowFileWFImpl;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.activity.StartMassiveNoticesGenerationWFActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,12 +30,10 @@ public class DebtPositionIngestionFlowWFImpl extends BaseIngestionFlowFileWFImpl
    * The threshold is very high ({@link Constants#THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW}), lock acquire is the first activity called, we are not interested on WF history, we will clear it before real limit
    */
   private static final int LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY = 1000;
-  private static final int MAX_ATTEMPTS = 30;
-  private static final Duration RETRY_INTERVAL = Duration.ofSeconds(30);
 
   private IngestionFlowFileProcessingLockerActivity ingestionFlowFileProcessingLockerActivity;
   private SynchronizeIngestedDebtPositionActivity synchronizeIngestedDebtPositionActivity;
-  private MassiveNoticeGenerationStatusRetrieverActivity massiveNoticeGenerationStatusRetrieverActivity;
+  private StartMassiveNoticesGenerationWFActivity startMassiveNoticesGenerationWFActivity;
 
   @Override
   protected Function<Long, InstallmentIngestionFlowFileResult> buildActivityStubs(ApplicationContext applicationContext) {
@@ -44,7 +42,7 @@ public class DebtPositionIngestionFlowWFImpl extends BaseIngestionFlowFileWFImpl
     InstallmentIngestionFlowFileActivity installmentIngestionFlowFileActivity = wfConfig.buildInstallmentIngestionFlowFileActivityStub();
     ingestionFlowFileProcessingLockerActivity = wfConfig.buildIngestionFlowFileProcessingLockerActivityStub();
     synchronizeIngestedDebtPositionActivity = wfConfig.buildSynchronizeIngestedDebtPositionActivityStub();
-    massiveNoticeGenerationStatusRetrieverActivity = wfConfig.buildMassiveNoticeGenerationStatusRetrieverActivity();
+    startMassiveNoticesGenerationWFActivity = wfConfig.buildStartMassiveNoticesGenerationWFActivityStub();
 
     return installmentIngestionFlowFileActivity::processFile;
   }
@@ -80,26 +78,7 @@ public class DebtPositionIngestionFlowWFImpl extends BaseIngestionFlowFileWFImpl
     boolean success = ingestionResult.getErrorDescription() == null;
 
     if (StringUtils.isNotBlank(syncDpResult.getPdfGeneratedId()) && success) {
-      retrieveNoticesGenerationStatus(ingestionResult, syncDpResult.getPdfGeneratedId());
-    }
-  }
-
-  private void retrieveNoticesGenerationStatus(IngestionFlowFileResult ingestionResult, String pdfGeneratedId) {
-    int attemptCounter = 0;
-    while (attemptCounter < MAX_ATTEMPTS &&
-      massiveNoticeGenerationStatusRetrieverActivity.retrieveNoticesGenerationStatus(ingestionResult.getOrganizationId(), pdfGeneratedId) == null) {
-      attemptCounter++;
-
-      log.info("Generation status not retrieved, retrying for pdfGeneratedId {} (attempt {})", pdfGeneratedId, attemptCounter);
-      Workflow.sleep(RETRY_INTERVAL);
-    }
-
-    if (attemptCounter >= MAX_ATTEMPTS) {
-      String errorMessage = String.format("Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.", pdfGeneratedId);
-      log.error(errorMessage);
-      mergeErrorDescriptions(ingestionResult, "notice generation", errorMessage);
-    } else {
-      log.info("Generation status retrieved for pdfGeneratedId {}", pdfGeneratedId);
+      startMassiveNoticesGenerationWFActivity.startMassiveNoticesGenerationWF(ingestionFlowFileId);
     }
   }
 }
