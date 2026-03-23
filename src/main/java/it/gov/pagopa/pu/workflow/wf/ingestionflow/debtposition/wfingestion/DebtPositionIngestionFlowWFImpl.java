@@ -75,9 +75,8 @@ public class DebtPositionIngestionFlowWFImpl extends BaseIngestionFlowFileWFImpl
       = synchronizeIngestedDebtPositionActivity.synchronizeIngestedDebtPosition(ingestionFlowFileId);
 
     mergeErrorDescriptions(ingestionResult, "synchronization", syncDpResult.getErrorsDescription());
-    boolean success = ingestionResult.getErrorDescription() == null;
 
-    if (StringUtils.isNotBlank(syncDpResult.getPdfGeneratedId()) && success) {
+    if (StringUtils.isNotBlank(syncDpResult.getPdfGeneratedId())) {
       startMassiveNoticesGenerationWFActivity.startMassiveNoticesGenerationWF(ingestionFlowFileId);
     }
   }
