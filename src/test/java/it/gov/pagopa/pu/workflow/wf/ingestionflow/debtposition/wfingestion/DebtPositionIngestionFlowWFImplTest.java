@@ -172,7 +172,7 @@ class DebtPositionIngestionFlowWFImplTest {
   }
 
   @Test
-  void givenFailingProcessingConditionWhenIngestThenKo() {
+  void givenFailingProcessingConditionWhenIngestThenAddErrorDescriptionAndStartMassiveNoticesGenerationWF() {
     long ingestionFlowFileId = 1L;
 
     InstallmentIngestionFlowFileResult installmentIngestionFlowFileResult = new InstallmentIngestionFlowFileResult();
@@ -199,6 +199,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
+      Mockito.verify(startMassiveNoticesGenerationWFActivityMock).startMassiveNoticesGenerationWF(ingestionFlowFileId);
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
@@ -216,7 +217,7 @@ class DebtPositionIngestionFlowWFImplTest {
   }
 
   @Test
-  void givenExceptionDuringFileProcessWhenIngestThenKo() {
+  void givenExceptionDuringFileProcessWhenIngestThenAddErrorDescriptionAndStartMassiveNoticesGenerationWF() {
     long ingestionFlowFileId = 1L;
 
     Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
@@ -237,6 +238,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
+      Mockito.verify(startMassiveNoticesGenerationWFActivityMock).startMassiveNoticesGenerationWF(ingestionFlowFileId);
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
