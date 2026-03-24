@@ -3,7 +3,9 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.service;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.FetchSendLegalFactActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.SendNotificationDateRetrieveActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.UpdateSendNotificationStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.ValidateSendNotificationStatusActivity;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
@@ -18,16 +20,18 @@ import static it.gov.pagopa.pu.workflow.utilities.Constants.LEGAL_FACT_ID_PREFIX
 public class SendEventStreamProcessingServiceImpl implements SendEventStreamProcessingService {
 
   private final UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity;
+  private final ValidateSendNotificationStatusActivity validateSendNotificationStatusActivity;
   private final SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity;
   private final PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity;
   private final FetchSendLegalFactActivity fetchSendLegalFactActivity;
 
   public SendEventStreamProcessingServiceImpl(
-    UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity,
+    UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity, ValidateSendNotificationStatusActivity validateSendNotificationStatusActivity,
     SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity,
     PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity,
     FetchSendLegalFactActivity fetchSendLegalFactActivity) {
     this.updateSendNotificationStatusActivity = updateSendNotificationStatusActivity;
+    this.validateSendNotificationStatusActivity = validateSendNotificationStatusActivity;
     this.sendNotificationDateRetrieveActivity = sendNotificationDateRetrieveActivity;
     this.publishSendNotificationPaymentEventActivity = publishSendNotificationPaymentEventActivity;
     this.fetchSendLegalFactActivity = fetchSendLegalFactActivity;
@@ -43,18 +47,47 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   private String processNotificationEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
     return switch (streamEvent.getNewStatus()) {
       case ACCEPTED -> {
-        SendNotificationDTO sendNotification = this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId());
+        SendNotificationDTO sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
         yield streamEvent.getEventId();
       }
       case REFUSED -> {
-        SendNotificationDTO sendNotification = this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId());
+        SendNotificationDTO sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendErrorEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null));
+        yield streamEvent.getEventId();
+      }
+      case DELIVERING -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERING);
         yield streamEvent.getEventId();
       }
       case DELIVERED -> {
         SendNotificationDTO sendNotification = this.sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(streamEvent.getNotificationRequestId());
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERED);
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
+        yield streamEvent.getEventId();
+      }
+      case VIEWED -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.VIEWED);
+        yield streamEvent.getEventId();
+      }
+      case EFFECTIVE_DATE -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.EFFECTIVE_DATE);
+        yield streamEvent.getEventId();
+      }
+      case PAID -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.PAID);
+        yield streamEvent.getEventId();
+      }
+      case UNREACHABLE -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.UNREACHABLE);
+        yield streamEvent.getEventId();
+      }
+      case CANCELLED -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.CANCELLED);
+        yield streamEvent.getEventId();
+      }
+      case RETURNED_TO_SENDER -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.RETURNED_TO_SENDER);
         yield streamEvent.getEventId();
       }
       case null -> {

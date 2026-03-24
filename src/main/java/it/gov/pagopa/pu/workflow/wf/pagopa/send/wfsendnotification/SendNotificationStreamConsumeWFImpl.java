@@ -56,6 +56,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     getSendStreamActivity = wfConfig.buildGetSendStreamActivityStub();
     sendEventStreamProcessingService = new SendEventStreamProcessingServiceImpl(
       wfConfig.buildUpdateSendNotificationStatusActivityStub(),
+      wfConfig.buildValidateSendNotificationStatusActivityStub(),
       wfConfig.buildSendNotificationDateRetrieveActivityStub(),
       wfConfig.buildPublishSendNotificationPaymentEventActivityStub(),
       wfConfig.buildFetchSendLegalFactActivityStub()

@@ -42,6 +42,10 @@ public class SendNotificationProcessWfConfig extends BaseWfConfig {
     return Workflow.newActivityStub(UpdateSendNotificationStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
+  public ValidateSendNotificationStatusActivity buildValidateSendNotificationStatusActivityStub() {
+    return Workflow.newActivityStub(ValidateSendNotificationStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
   public GetSendStreamActivity buildGetSendStreamActivityStub() {
     return Workflow.newActivityStub(GetSendStreamActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
