@@ -226,7 +226,7 @@ class SendEventStreamProcessingServiceImplTest {
 
   private static Stream<NotificationStatusV26DTO> nonMappedNotificationStatusScenarios() {
     return Stream.of(
-      NotificationStatusV26DTO.EFFECTIVE_DATE,
+      NotificationStatusV26DTO.IN_VALIDATION,
       null
     );
   }
