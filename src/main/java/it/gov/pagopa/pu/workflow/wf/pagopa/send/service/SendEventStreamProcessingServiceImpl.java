@@ -56,17 +56,13 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         this.publishSendErrorEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null));
         yield streamEvent.getEventId();
       }
-      case DELIVERING -> {
-        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERING);
-        yield streamEvent.getEventId();
-      }
       case DELIVERED -> {
         SendNotificationDTO sendNotification = this.sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(streamEvent.getNotificationRequestId());
         this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERED);
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
         yield streamEvent.getEventId();
       }
-      case VIEWED, EFFECTIVE_DATE, PAID, UNREACHABLE, CANCELLED, RETURNED_TO_SENDER -> {
+      case DELIVERING, VIEWED, EFFECTIVE_DATE, PAID, UNREACHABLE, CANCELLED, RETURNED_TO_SENDER -> {
         this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(),
           NotificationStatus.valueOf(streamEvent.getNewStatus().name()));
         yield streamEvent.getEventId();
