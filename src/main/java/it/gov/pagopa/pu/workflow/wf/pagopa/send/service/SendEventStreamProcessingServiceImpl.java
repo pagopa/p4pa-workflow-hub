@@ -66,28 +66,9 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
         yield streamEvent.getEventId();
       }
-      case VIEWED -> {
-        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.VIEWED);
-        yield streamEvent.getEventId();
-      }
-      case EFFECTIVE_DATE -> {
-        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.EFFECTIVE_DATE);
-        yield streamEvent.getEventId();
-      }
-      case PAID -> {
-        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.PAID);
-        yield streamEvent.getEventId();
-      }
-      case UNREACHABLE -> {
-        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.UNREACHABLE);
-        yield streamEvent.getEventId();
-      }
-      case CANCELLED -> {
-        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.CANCELLED);
-        yield streamEvent.getEventId();
-      }
-      case RETURNED_TO_SENDER -> {
-        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.RETURNED_TO_SENDER);
+      case VIEWED, EFFECTIVE_DATE, PAID, UNREACHABLE, CANCELLED, RETURNED_TO_SENDER -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(),
+          NotificationStatus.valueOf(streamEvent.getNewStatus().name()));
         yield streamEvent.getEventId();
       }
       case null -> {
