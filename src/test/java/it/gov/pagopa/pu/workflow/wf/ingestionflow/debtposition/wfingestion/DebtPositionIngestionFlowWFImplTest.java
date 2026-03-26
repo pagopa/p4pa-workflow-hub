@@ -6,16 +6,15 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.InstallmentIngestionFlowFileActivity;
-import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.MassiveNoticeGenerationStatusRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.debtposition.SynchronizeIngestedDebtPositionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.InstallmentIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.debtposition.SyncIngestedDebtPositionDTO;
-import it.gov.pagopa.pu.pagopapayments.dto.generated.SignedUrlResultDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.activity.StartMassiveNoticesGenerationWFActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.debtposition.config.DebtPositionIngestionFlowWfConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +43,7 @@ class DebtPositionIngestionFlowWFImplTest {
   @Mock
   private SynchronizeIngestedDebtPositionActivity synchronizeIngestedDebtPositionActivityMock;
   @Mock
-  private MassiveNoticeGenerationStatusRetrieverActivity massiveNoticeGenerationStatusRetrieverActivityMock;
+  private StartMassiveNoticesGenerationWFActivity startMassiveNoticesGenerationWFActivityMock;
   @Mock
   private DataEventsProducerService dataEventsProducerServiceMock;
 
@@ -75,8 +74,8 @@ class DebtPositionIngestionFlowWFImplTest {
       .thenReturn(installmentIngestionFlowFileActivityMock);
     Mockito.when(debtPositionIngestionFlowWfConfigMock.buildSynchronizeIngestedDebtPositionActivityStub())
       .thenReturn(synchronizeIngestedDebtPositionActivityMock);
-    Mockito.when(debtPositionIngestionFlowWfConfigMock.buildMassiveNoticeGenerationStatusRetrieverActivity())
-      .thenReturn(massiveNoticeGenerationStatusRetrieverActivityMock);
+    Mockito.when(debtPositionIngestionFlowWfConfigMock.buildStartMassiveNoticesGenerationWFActivityStub())
+      .thenReturn(startMassiveNoticesGenerationWFActivityMock);
     Mockito.when(applicationContextMock.getBean(DataEventsProducerService.class))
       .thenReturn(dataEventsProducerServiceMock);
 
@@ -92,7 +91,7 @@ class DebtPositionIngestionFlowWFImplTest {
       updateIngestionFlowStatusActivityMock,
       sendEmailIngestionFlowActivityMock,
       synchronizeIngestedDebtPositionActivityMock,
-      massiveNoticeGenerationStatusRetrieverActivityMock,
+      startMassiveNoticesGenerationWFActivityMock,
       dataEventsProducerServiceMock
     );
   }
@@ -113,10 +112,6 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
       .thenReturn(new SyncIngestedDebtPositionDTO("", pdfGeneratedId, null));
 
-    Mockito.when(massiveNoticeGenerationStatusRetrieverActivityMock.retrieveNoticesGenerationStatus(
-        installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId))
-      .thenReturn(new SignedUrlResultDTO());
-
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
 
@@ -124,8 +119,7 @@ class DebtPositionIngestionFlowWFImplTest {
 
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock).retrieveNoticesGenerationStatus(
-        installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
+      Mockito.verify(startMassiveNoticesGenerationWFActivityMock).startMassiveNoticesGenerationWF(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFileStatus.PROCESSING),
@@ -178,7 +172,7 @@ class DebtPositionIngestionFlowWFImplTest {
   }
 
   @Test
-  void givenFailingProcessingConditionWhenIngestThenKo() {
+  void givenFailingProcessingConditionWhenIngestThenAddErrorDescriptionAndStartMassiveNoticesGenerationWF() {
     long ingestionFlowFileId = 1L;
 
     InstallmentIngestionFlowFileResult installmentIngestionFlowFileResult = new InstallmentIngestionFlowFileResult();
@@ -205,6 +199,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
+      Mockito.verify(startMassiveNoticesGenerationWFActivityMock).startMassiveNoticesGenerationWF(ingestionFlowFileId);
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
@@ -222,7 +217,7 @@ class DebtPositionIngestionFlowWFImplTest {
   }
 
   @Test
-  void givenExceptionDuringFileProcessWhenIngestThenKo() {
+  void givenExceptionDuringFileProcessWhenIngestThenAddErrorDescriptionAndStartMassiveNoticesGenerationWF() {
     long ingestionFlowFileId = 1L;
 
     Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
@@ -243,6 +238,7 @@ class DebtPositionIngestionFlowWFImplTest {
         Error on synchronizeIngestedDebtPositionActivity
         """.stripTrailing();
 
+      Mockito.verify(startMassiveNoticesGenerationWFActivityMock).startMassiveNoticesGenerationWF(ingestionFlowFileId);
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
@@ -276,12 +272,6 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
       .thenReturn(new SyncIngestedDebtPositionDTO("", pdfGeneratedId, null));
 
-    Mockito.when(massiveNoticeGenerationStatusRetrieverActivityMock.retrieveNoticesGenerationStatus(
-        installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId))
-      .thenReturn(null)
-      .thenReturn(null)
-      .thenReturn(new SignedUrlResultDTO());
-
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
 
@@ -289,8 +279,7 @@ class DebtPositionIngestionFlowWFImplTest {
 
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock, Mockito.times(3)).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock, Mockito.times(3)).retrieveNoticesGenerationStatus(
-        installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
+      Mockito.verify(startMassiveNoticesGenerationWFActivityMock).startMassiveNoticesGenerationWF(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFileStatus.PROCESSING),
@@ -324,10 +313,6 @@ class DebtPositionIngestionFlowWFImplTest {
     Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
       .thenReturn(new SyncIngestedDebtPositionDTO("", pdfGeneratedId, null));
 
-    Mockito.when(massiveNoticeGenerationStatusRetrieverActivityMock.retrieveNoticesGenerationStatus(
-        installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId))
-      .thenReturn(new SignedUrlResultDTO());
-
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
       workflowMock.when(() -> Workflow.continueAsNew(Mockito.any())).then(invocation -> null);
@@ -336,8 +321,7 @@ class DebtPositionIngestionFlowWFImplTest {
 
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock, Mockito.times(1001)).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock).retrieveNoticesGenerationStatus(
-        installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
+      Mockito.verify(startMassiveNoticesGenerationWFActivityMock).startMassiveNoticesGenerationWF(ingestionFlowFileId);
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         Mockito.eq(ingestionFlowFileId),
         Mockito.eq(IngestionFlowFileStatus.PROCESSING),
@@ -348,58 +332,4 @@ class DebtPositionIngestionFlowWFImplTest {
       Mockito.verify(dataEventsProducerServiceMock).notifyIngestionEvent(any(), any());
     }
   }
-
-  @Test
-  void whenMassiveNoticeGenerationStatusRetriesMaxAttemptsReached() {
-    Long ingestionFlowFileId = 1L;
-    String pdfGeneratedId = "generatedId";
-
-    InstallmentIngestionFlowFileResult installmentIngestionFlowFileResult = new InstallmentIngestionFlowFileResult();
-    installmentIngestionFlowFileResult.setProcessedRows(5L);
-    installmentIngestionFlowFileResult.setTotalRows(10L);
-    installmentIngestionFlowFileResult.setOrganizationId(123L);
-
-    Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
-    Mockito.when(installmentIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(installmentIngestionFlowFileResult);
-
-    Mockito.when(synchronizeIngestedDebtPositionActivityMock.synchronizeIngestedDebtPosition(ingestionFlowFileId))
-      .thenReturn(new SyncIngestedDebtPositionDTO("", pdfGeneratedId, null));
-
-    AtomicInteger attemptCounter = new AtomicInteger(0);
-    Mockito.doAnswer(invocation -> {
-        if (attemptCounter.incrementAndGet() <= 30) {
-          return null;
-        }
-        return new SignedUrlResultDTO();
-      }).when(massiveNoticeGenerationStatusRetrieverActivityMock)
-      .retrieveNoticesGenerationStatus(installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
-
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
-
-      wf.ingest(ingestionFlowFileId);
-
-      String errorDescription = String.format("""
-        There were errors during the notice generation of the ingested file:Max attempts reached for pdfGeneratedId %s. Unable to retrieve generation status.
-        """, pdfGeneratedId).stripTrailing();
-
-      Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
-      Mockito.verify(installmentIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
-      Mockito.verify(massiveNoticeGenerationStatusRetrieverActivityMock, Mockito.times(30))
-        .retrieveNoticesGenerationStatus(installmentIngestionFlowFileResult.getOrganizationId(), pdfGeneratedId);
-      Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
-        ingestionFlowFileId,
-        IngestionFlowFileStatus.PROCESSING,
-        IngestionFlowFileStatus.WARNING,
-        InstallmentIngestionFlowFileResult.builder()
-          .processedRows(installmentIngestionFlowFileResult.getProcessedRows())
-          .totalRows(installmentIngestionFlowFileResult.getTotalRows())
-          .errorDescription(errorDescription)
-          .organizationId(123L)
-          .build());
-      Mockito.verify(sendEmailIngestionFlowActivityMock).sendIngestionFlowFileCompleteEmail(ingestionFlowFileId, false);
-      Mockito.verify(dataEventsProducerServiceMock).notifyIngestionEvent(any(), any());
-    }
-  }
-
 }
