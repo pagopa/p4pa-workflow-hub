@@ -82,7 +82,7 @@ val hibernateCoreVersion = "7.1.18.Final"
 val jackson2CoreVersion = "2.21.1"
 val jackson3CoreVersion = "3.1.0"
 
-val p4paActivitiesVersion = "1.183.3"
+val p4paActivitiesVersion = "1.184.1"
 
 val springCloudDepsVersion = "2025.1.1"
 
