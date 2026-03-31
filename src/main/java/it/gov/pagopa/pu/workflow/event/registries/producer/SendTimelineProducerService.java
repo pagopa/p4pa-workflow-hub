@@ -35,7 +35,7 @@ public class SendTimelineProducerService {
   public void notifySendTimelineEvent(RegistryEventSendTimelineDTO payload, String sendStreamId) {
     streamBridge.send("registriesProducer-out-0", binder,
       MessageBuilder.withPayload(payload)
-        .setHeader(KafkaHeaders.KEY, String.valueOf(sendStreamId))
+        .setHeader(KafkaHeaders.KEY, String.valueOf("SEND_NOTIFICATION-"+sendStreamId))
         .build()
     );
   }
