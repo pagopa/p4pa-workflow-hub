@@ -6,7 +6,6 @@ import it.gov.pagopa.pu.workflow.connector.organization.service.OrganizationServ
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.dto.DebtPositionEventDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import it.gov.pagopa.pu.workflow.utilities.PaymentEventTypeUtils;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClient;
@@ -73,7 +72,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
               .transferIndexes(i.getTransfers().stream()
                 .filter(t ->{
                   Organization organization = organizationService.getOrganizationByFiscalCode(t.getOrgFiscalCode())
-                    .orElseThrow(() -> new WorkflowNotFoundException("[ORGANIZATION_NOT_FOUND] Organization not found with fiscalCode " + t.getOrgFiscalCode()));
+                    .orElseThrow(() -> new IllegalArgumentException("[ORGANIZATION_NOT_FOUND] Organization not found with fiscalCode " + t.getOrgFiscalCode()));
                   return debtPosition.getOrganizationId().equals(organization.getOrganizationId());
                 })
                 .map(TransferDTO::getTransferIndex)
