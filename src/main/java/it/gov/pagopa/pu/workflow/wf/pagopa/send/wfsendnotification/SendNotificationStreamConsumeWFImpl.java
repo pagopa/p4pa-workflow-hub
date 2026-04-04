@@ -105,6 +105,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       String lastEventId;
       try {
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
+        publishSendTimelineEventActivity.publishSendTimelineEvent(streamEvent, organizationId, sendStreamId, traceId);
         if(lastEventId != null) lastProcessedEventId = lastEventId;
       } catch (Exception e) {
         if(e instanceof ActivityFailure &&

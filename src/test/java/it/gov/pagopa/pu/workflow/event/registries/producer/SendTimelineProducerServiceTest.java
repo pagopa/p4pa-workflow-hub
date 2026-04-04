@@ -36,7 +36,7 @@ class SendTimelineProducerServiceTest {
       Mockito.any(),
       Mockito.<Message<?>>argThat(m -> {
         Assertions.assertEquals(event, m.getPayload());
-        Assertions.assertEquals(streamId, m.getHeaders().get(KafkaHeaders.KEY));
+        Assertions.assertEquals("SEND_NOTIFICATION-"+streamId, m.getHeaders().get(KafkaHeaders.KEY));
         return true;
       }));
   }
