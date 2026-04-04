@@ -2,6 +2,8 @@ package it.gov.pagopa.pu.common.kafka.config.tracing;
 
 import io.micrometer.observation.ObservationRegistry;
 import it.gov.pagopa.payhub.activities.performancelogger.PerformanceLogger;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.function.context.catalog.ObservationFunctionAroundWrapperExt;
 import org.springframework.cloud.function.context.catalog.SimpleFunctionRegistry;
@@ -9,6 +11,7 @@ import org.springframework.cloud.function.observability.FunctionObservationConve
 import org.springframework.integration.IntegrationMessageHeaderAccessor;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +31,7 @@ public class KafkaPerformanceLogger extends ObservationFunctionAroundWrapperExt 
 
   @Override
   protected Object doApply(Object messageObj, SimpleFunctionRegistry.FunctionInvocationWrapper targetFunction) {
-    if (messageObj instanceof Message<?> message) {
+    if (messageObj instanceof Message<?> message && targetFunction.isConsumer()) {
       String contextData = "%s][%s".formatted(
         getTopicDetails(message),
         getMessageDetails(message)
@@ -37,12 +40,38 @@ public class KafkaPerformanceLogger extends ObservationFunctionAroundWrapperExt 
       if(deliveryAttempt > 1){
         contextData += "][ATTEMPT=" + deliveryAttempt;
       }
-      return PerformanceLogger.execute(
-        "INCOMING_EVENT",
-        contextData,
-        () -> super.doApply(message, targetFunction),
-        null,
-        null);
+
+      String[] traceIdHolder = new String[1];
+      Message<Object> messageWrapper = new Message<>() {
+        @Override
+        public Object getPayload() {
+          traceIdHolder[0] = Utilities.getTraceId();
+          return message.getPayload();
+        }
+
+        @Override
+        public MessageHeaders getHeaders() {
+          return message.getHeaders();
+        }
+      };
+
+      //noinspection EmptyFinallyBlock
+      try {
+        return PerformanceLogger.execute(
+          "INCOMING_EVENT",
+          contextData,
+          () -> {
+            try {
+              return super.doApply(messageWrapper, targetFunction);
+            }finally {
+              MDC.put("traceId", traceIdHolder[0]);
+            }
+          },
+          null,
+          null);
+      } finally {
+        // traceId not removed in order to make it available to ErrorHandler
+      }
     } else {
       return super.doApply(messageObj, targetFunction);
     }
