@@ -49,7 +49,7 @@ class KafkaPerformanceLoggerTest {
   }
 
   public static MemoryAppender buildPerformanceLoggerMemoryAppender(String appender) {
-    ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("PERFORMANCE_LOG."+appender);
+    ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("PERFORMANCE_LOG." + appender);
     MemoryAppender memoryAppender = new MemoryAppender();
     memoryAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
     logger.setLevel(ch.qos.logback.classic.Level.INFO);
@@ -80,7 +80,7 @@ class KafkaPerformanceLoggerTest {
   }
 
   @Test
-  void givenNoMessageWhenDoApplyThenCallSuper(){
+  void givenNoMessageWhenDoApplyThenCallSuper() {
     // Given
     SimpleFunctionRegistry.FunctionInvocationWrapper targetFunction = Mockito.mock(SimpleFunctionRegistry.FunctionInvocationWrapper.class);
 
@@ -95,7 +95,7 @@ class KafkaPerformanceLoggerTest {
   }
 
   @Test
-  void givenNoConsumerFunctionWhenDoApplyThenCallSuper(){
+  void givenNoConsumerFunctionWhenDoApplyThenCallSuper() {
     // Given
     SimpleFunctionRegistry.FunctionInvocationWrapper targetFunction = Mockito.mock(SimpleFunctionRegistry.FunctionInvocationWrapper.class);
 
@@ -113,7 +113,7 @@ class KafkaPerformanceLoggerTest {
   }
 
   @Test
-  void givenNoHeadersWhenDoApplyThenLog(){
+  void givenNoHeadersWhenDoApplyThenLog() {
     // Given
     SimpleFunctionRegistry.FunctionInvocationWrapper targetFunction = Mockito.mock(SimpleFunctionRegistry.FunctionInvocationWrapper.class);
     Message<?> messageMock = new GenericMessage<>("test");
@@ -134,7 +134,7 @@ class KafkaPerformanceLoggerTest {
   }
 
   @Test
-  void givenFirstAttemptWhenDoApplyThenLog(){
+  void givenFirstAttemptWhenDoApplyThenLog() {
     // Given
     SimpleFunctionRegistry.FunctionInvocationWrapper targetFunction = Mockito.mock(SimpleFunctionRegistry.FunctionInvocationWrapper.class);
     Message<?> messageMock = new GenericMessage<>("test", Map.of(
@@ -160,7 +160,7 @@ class KafkaPerformanceLoggerTest {
   }
 
   @Test
-  void whenDoApplyThenLog(){
+  void whenDoApplyThenLog() {
     // Given
     SimpleFunctionRegistry.FunctionInvocationWrapper targetFunction = Mockito.mock(SimpleFunctionRegistry.FunctionInvocationWrapper.class);
     Message<?> messageMock = new GenericMessage<>("test", Map.of(
