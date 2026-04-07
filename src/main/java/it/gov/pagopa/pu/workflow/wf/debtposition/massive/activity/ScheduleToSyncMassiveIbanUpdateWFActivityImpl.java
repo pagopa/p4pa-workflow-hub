@@ -1,8 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.massive.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
-import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
-import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.dto.MassiveIbanUpdateToSyncSignalDTO;
@@ -13,17 +11,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY_LOCAL)
 public class ScheduleToSyncMassiveIbanUpdateWFActivityImpl implements ScheduleToSyncMassiveIbanUpdateWFActivity {
-  private final WorkflowService workflowService;
-  private final WorkflowClientService workflowClientService;
   private final MassiveDebtPositionWFClient massiveDebtPositionWFClient;
 
-  public ScheduleToSyncMassiveIbanUpdateWFActivityImpl(
-    WorkflowService workflowService,
-    WorkflowClientService workflowClientService,
-    MassiveDebtPositionWFClient massiveDebtPositionWFClient
-  ) {
-    this.workflowService = workflowService;
-    this.workflowClientService = workflowClientService;
+  public ScheduleToSyncMassiveIbanUpdateWFActivityImpl(MassiveDebtPositionWFClient massiveDebtPositionWFClient) {
     this.massiveDebtPositionWFClient = massiveDebtPositionWFClient;
   }
 
