@@ -142,6 +142,34 @@ class WorkflowClientServiceTest {
   }
 
   @Test
+  void testStartWfProc6(){
+    try(MockedStatic<WorkflowClient> workflowClientMockedStatic = Mockito.mockStatic(WorkflowClient.class)){
+      // Given
+      WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("workflowId", "runId");
+      WorkflowExecution wfExecMock = TemporalTestUtils.buildWorkflowExecutionMock(expectedResult);
+
+      Functions.Proc6<Object, Object, Object, Object, Object, Object> wf = Mockito.mock(Functions.Proc6.class);
+      Object arg1 = new Object();
+      Object arg2 = new Object();
+      Object arg3 = new Object();
+      Object arg4 = new Object();
+      Object arg5 = new Object();
+      Object arg6 = new Object();
+
+      workflowClientMockedStatic.when(() -> WorkflowClient.start(Mockito.same(wf),
+          Mockito.same(arg1), Mockito.same(arg2), Mockito.same(arg3), Mockito.same(arg4), Mockito.same(arg5), Mockito.same(arg6)))
+        .thenReturn(wfExecMock);
+
+      // When
+      WorkflowCreatedDTO result = service.start(wf,
+        arg1, arg2, arg3, arg4, arg5, arg6);
+
+      // Then
+      Assertions.assertEquals(expectedResult, result);
+    }
+  }
+
+  @Test
   void testStartWfProc(){
     try(MockedStatic<WorkflowClient> workflowClientMockedStatic = Mockito.mockStatic(WorkflowClient.class)){
       // Given
