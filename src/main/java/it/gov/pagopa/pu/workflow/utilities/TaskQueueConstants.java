@@ -16,6 +16,7 @@ public class TaskQueueConstants {
   public static final String TASK_QUEUE_DP_RESERVED_CUSTOM_SYNC_LOCAL = "DebtPositionCustomSyncWF_LOCAL";
 
   public static final String TASK_QUEUE_DP_LOW_PRIORITY = "DebtPositionWF";
+  public static final String TASK_QUEUE_DP_LOW_PRIORITY_LOCAL = "DebtPositionWF_LOCAL";
 //endregion
 
 //region ImportData domain

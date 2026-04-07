@@ -4,6 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.debtposition.massive.MassiveIbanUpdateActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.activity.ScheduleToSyncMassiveIbanUpdateWFActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.config.MassiveDebtPositionWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -15,6 +16,7 @@ import org.springframework.context.ApplicationContextAware;
 public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, ApplicationContextAware {
 
   private MassiveIbanUpdateActivity massiveIbanUpdateActivity;
+  private ScheduleToSyncMassiveIbanUpdateWFActivity scheduleToSyncMassiveIbanUpdateWFActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -27,14 +29,18 @@ public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, Application
     MassiveDebtPositionWFConfig wfConfig = applicationContext.getBean(MassiveDebtPositionWFConfig.class);
 
     massiveIbanUpdateActivity = wfConfig.buildMassiveIbanUpdateActivityStub();
+    scheduleToSyncMassiveIbanUpdateWFActivity = wfConfig.buildScheduleToSyncMassiveIbanUpdateWFActivityStub();
   }
 
   @Override
   public void massiveIbanUpdate(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban) {
     log.info("Start MassiveIbanUpdate Workflow for debtPositionTypeOrgId {} or organizationId {}", dptoId, orgId);
 
-    massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
-    //TODO - reschedule with P4ADEV-4535
+    boolean isToSchedule = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+    if (isToSchedule) {
+      scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+    }
   }
 
 }
