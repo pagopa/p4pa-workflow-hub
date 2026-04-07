@@ -38,7 +38,7 @@ public class ReceiptPagopaIngestionWFImpl extends BaseIngestionFlowFileWFImpl<Re
     try {
       installmentDTO = receiptPagopaNotifySilActivity.notifyReceiptToSil(result.getReceiptDTO());
     } catch (Exception e) {
-      log.error("Error in notify SIL for receipt id[{}]", ingestionFlowFileId, e);
+      log.error("Error in notify SIL for receipt id[{}] loaded with ingestionFlowFileId[{}]", result.getReceiptDTO().getReceiptId(), ingestionFlowFileId, e);
     }
     receiptPagopaSendEmailActivity.sendReceiptHandledEmail(result.getReceiptDTO(), installmentDTO);
   }
