@@ -4,10 +4,14 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.dto.MassiveIbanUpdateToSyncSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWF;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
@@ -17,10 +21,16 @@ public class MassiveDebtPositionWFClient {
 
   private final WorkflowService workflowService;
   private final WorkflowClientService workflowClientService;
+  private final Duration scheduleDuration;
 
-  public MassiveDebtPositionWFClient(WorkflowService workflowService, WorkflowClientService workflowClientService) {
+  public MassiveDebtPositionWFClient(
+    WorkflowService workflowService,
+    WorkflowClientService workflowClientService,
+    @Value("${workflow.massive-debt-position.schedule-minutes-massive-iban-update-to-sync}") int scheduleMinutes
+  ) {
     this.workflowService = workflowService;
     this.workflowClientService = workflowClientService;
+    this.scheduleDuration = Duration.ofMinutes(scheduleMinutes);
   }
 
   public WorkflowCreatedDTO startMassiveIbanUpdate(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban){
@@ -34,5 +44,21 @@ public class MassiveDebtPositionWFClient {
       workflowId);
 
     return workflowClientService.start(workflow::massiveIbanUpdate, orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+  }
+
+  public WorkflowCreatedDTO startMassiveIbanUpdateToSync(MassiveIbanUpdateToSyncSignalDTO signalDTO) {
+    Long orgId = signalDTO.getOrgId();
+    Long dptoId = signalDTO.getDptoId();
+
+    log.info("Start of scheduling to sync massive iban update WF for debtPositionTypeOrgId {} or organizationId {}, with delay of {} minutes", dptoId, orgId, this.scheduleDuration.toMinutes());
+
+    String workflowId = generateWorkflowId(orgId + "_TO_SYNC", MassiveIbanUpdateWF.class);
+    MassiveIbanUpdateWF workflow = workflowService.buildWorkflowStubDelayed(
+      MassiveIbanUpdateWF.class,
+      TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY,
+      workflowId,
+      this.scheduleDuration
+    );
+    return workflowClientService.start(workflow::massiveIbanUpdate, orgId, dptoId, signalDTO.getOldIban(), signalDTO.getNewIban(), signalDTO.getOldPostalIban(), signalDTO.getNewPostalIban());
   }
 }

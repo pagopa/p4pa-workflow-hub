@@ -3,6 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.massive.activity;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.dto.MassiveIbanUpdateToSyncSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWF;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +23,7 @@ class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
   @Mock
   private WorkflowClientService workflowClientServiceMock;
   @Mock
-  private MassiveIbanUpdateWF massiveIbanUpdateWFMock;
+  private MassiveDebtPositionWFClient massiveDebtPositionWFClientMock;
 
   private ScheduleToSyncMassiveIbanUpdateWFActivity scheduleToSyncMassiveIbanUpdateWFActivity;
 
@@ -32,17 +34,18 @@ class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
     scheduleToSyncMassiveIbanUpdateWFActivity = new ScheduleToSyncMassiveIbanUpdateWFActivityImpl(
       workflowServiceMock,
       workflowClientServiceMock,
-      SCHEDULE_MINUTES
+      massiveDebtPositionWFClientMock
     );
   }
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock, massiveDebtPositionWFClientMock);
   }
 
   @Test
   void whenScheduleToSyncMassiveIbanUpdateWFThenOk() {
+    // Given
     Long orgId = 1L;
     Long dptoId = 1L;
     String oldIban = "oldIban";
@@ -50,33 +53,19 @@ class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
     String oldPostalIban = "oldPostalIban";
     String newPostalIban = "newPostalIban";
 
-    Duration scheduleDuration = Duration.ofMinutes(SCHEDULE_MINUTES);
+    MassiveIbanUpdateToSyncSignalDTO expectedSignalDTO = MassiveIbanUpdateToSyncSignalDTO.builder()
+      .orgId(orgId)
+      .dptoId(dptoId)
+      .oldIban(oldIban)
+      .newIban(newIban)
+      .oldPostalIban(oldPostalIban)
+      .newPostalIban(newPostalIban)
+      .build();
 
-    Mockito.when(workflowServiceMock.buildWorkflowStubDelayed(
-        Mockito.eq(MassiveIbanUpdateWF.class),
-        Mockito.eq(TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY),
-        Mockito.anyString(),
-        Mockito.eq(scheduleDuration)))
-      .thenReturn(massiveIbanUpdateWFMock);
-
+    // When
     scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
 
-    Mockito.verify(workflowServiceMock).buildWorkflowStubDelayed(
-      Mockito.eq(MassiveIbanUpdateWF.class),
-      Mockito.eq(TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY),
-      Mockito.anyString(),
-      Mockito.eq(scheduleDuration)
-    );
-
-    Mockito.verify(workflowClientServiceMock)
-      .start(
-        Mockito.any(),
-        Mockito.eq(orgId),
-        Mockito.eq(dptoId),
-        Mockito.eq(oldIban),
-        Mockito.eq(newIban),
-        Mockito.eq(oldPostalIban),
-        Mockito.eq(newPostalIban)
-      );
+    // Then
+    Mockito.verify(massiveDebtPositionWFClientMock).startMassiveIbanUpdateToSync(expectedSignalDTO);
   }
 }
