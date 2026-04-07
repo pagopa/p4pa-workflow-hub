@@ -1,8 +1,10 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.massive.MassiveIbanUpdateActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.activity.ScheduleToSyncMassiveIbanUpdateWFActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.config.MassiveDebtPositionWFConfig;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,8 @@ class MassiveIbanUpdateWFImplTest {
 
   @Mock
   private MassiveIbanUpdateActivity massiveIbanUpdateActivityMock;
+  @Mock
+  private ScheduleToSyncMassiveIbanUpdateWFActivity scheduleToSyncMassiveIbanUpdateWFActivityMock;
 
   private MassiveIbanUpdateWFImpl wf;
 
@@ -32,6 +36,7 @@ class MassiveIbanUpdateWFImplTest {
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
     Mockito.when(wfConfigMock.buildMassiveIbanUpdateActivityStub()).thenReturn(massiveIbanUpdateActivityMock);
+    Mockito.when(wfConfigMock.buildScheduleToSyncMassiveIbanUpdateWFActivityStub()).thenReturn(scheduleToSyncMassiveIbanUpdateWFActivityMock);
     Mockito.when(applicationContextMock.getBean(MassiveDebtPositionWFConfig.class)).thenReturn(wfConfigMock);
 
     wf = new MassiveIbanUpdateWFImpl();
@@ -40,16 +45,28 @@ class MassiveIbanUpdateWFImplTest {
 
   @AfterEach
   void verifyNoMoreInteractions() {
-    Mockito.verifyNoMoreInteractions(massiveIbanUpdateActivityMock);
+    Mockito.verifyNoMoreInteractions(massiveIbanUpdateActivityMock, scheduleToSyncMassiveIbanUpdateWFActivityMock);
   }
 
   @Test
-  void givenValidParamsWhenMassiveIbanUpdateThenActivityInvokedWithCorrectArgs() {
+  void givenValidParamsWhenMassiveIbanUpdateThenActivityInvokedWithCorrectArgsAndNotSchedule() {
+    Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
+      .thenReturn(false);
+
     // When
     wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
 
     // Then
     Mockito.verify(massiveIbanUpdateActivityMock)
       .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
+  }
+
+  @Test
+  void givenValidParamsWhenMassiveIbanUpdateThenActivityInvokedWithCorrectArgsAndSchedule() {
+    Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
+      .thenReturn(true);
+    Mockito.doNothing().when(scheduleToSyncMassiveIbanUpdateWFActivityMock).scheduleToSyncMassiveIbanUpdateWF(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
+
+    Assertions.assertDoesNotThrow(() -> wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN));
   }
 }
