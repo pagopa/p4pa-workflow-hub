@@ -50,6 +50,6 @@ class MassiveIbanUpdateWFImplTest {
 
     // Then
     Mockito.verify(massiveIbanUpdateActivityMock)
-      .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, NEW_IBAN, OLD_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
+      .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
   }
 }
