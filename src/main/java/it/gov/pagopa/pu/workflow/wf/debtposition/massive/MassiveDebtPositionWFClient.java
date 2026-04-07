@@ -26,7 +26,7 @@ public class MassiveDebtPositionWFClient {
   public WorkflowCreatedDTO startMassiveIbanUpdate(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban){
     log.debug("Starting massiveIbanUpdate process having orgId {}", orgId);
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC;
-    String workflowId = generateWorkflowId("MassiveIbanUpdateWF_"+orgId, MassiveIbanUpdateWF.class);
+    String workflowId = generateWorkflowId(orgId, MassiveIbanUpdateWF.class);
 
     MassiveIbanUpdateWF workflow = workflowService.buildWorkflowStubToStartNew(
       MassiveIbanUpdateWF.class,

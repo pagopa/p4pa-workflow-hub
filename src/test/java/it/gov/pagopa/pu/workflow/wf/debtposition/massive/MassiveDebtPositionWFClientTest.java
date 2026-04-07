@@ -1,0 +1,70 @@
+package it.gov.pagopa.pu.workflow.wf.debtposition.massive;
+
+import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
+import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWF;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWFImpl;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
+class MassiveDebtPositionWFClientTest {
+
+  @Mock
+  private WorkflowService workflowServiceMock;
+  @Mock
+  private WorkflowClientService workflowClientServiceMock;
+  @Mock
+  private MassiveIbanUpdateWF massiveIbanUpdateWFMock;
+
+  private MassiveDebtPositionWFClient client;
+
+  @BeforeEach
+  void init() {
+    client = new MassiveDebtPositionWFClient(workflowServiceMock, workflowClientServiceMock);
+  }
+
+  @AfterEach
+  void verifyNoMoreInteractions() {
+    Mockito.verifyNoMoreInteractions(workflowServiceMock, workflowClientServiceMock);
+  }
+
+  @Test
+  void givenOrgIdAndIbansWhenStartMassiveIbanUpdateThenOk() {
+    // Given
+    Long orgId = 1L;
+    Long dptoId = 2L;
+    String oldIban = "IT60X0542811101000000123456";
+    String newIban = "IT60X0542811101000000654321";
+    String oldPostalIban = "IT60X0760111100000000123456";
+    String newPostalIban = "IT60X0760111100000000654321";
+
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC;
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("MassiveIbanUpdateWF-" + orgId, "RUNID");
+
+    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(MassiveIbanUpdateWF.class, taskQueue, expectedResult.getWorkflowId()))
+      .thenReturn(massiveIbanUpdateWFMock);
+
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult,
+      orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+    // When
+    WorkflowCreatedDTO result = client.startMassiveIbanUpdate(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+    // Then
+    assertEquals(expectedResult, result);
+    Mockito.verify(massiveIbanUpdateWFMock).massiveIbanUpdate(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, MassiveIbanUpdateWFImpl.class);
+  }
+}

@@ -101,6 +101,18 @@ public class TemporalTestUtils {
     });
   }
 
+  public static <A1, A2, A3, A4, A5, A6> void configureWorkflowClientServiceMock(WorkflowClientService workflowClientServiceMock, WorkflowCreatedDTO expectedResult, A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5, A6 arg6){
+    Mockito.when(workflowClientServiceMock.start(TemporalTestUtils.buildArgumentMatcherProc(arg1, arg2, arg3, arg4, arg5, arg6),
+        Mockito.same(arg1), Mockito.same(arg2), Mockito.same(arg3), Mockito.same(arg4), Mockito.same(arg5), Mockito.same(arg6)))
+      .thenReturn(expectedResult);
+  }
+  public static <A1, A2, A3, A4, A5, A6> Functions.Proc6<A1, A2, A3, A4, A5, A6> buildArgumentMatcherProc(A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5, A6 arg6){
+    return Mockito.argThat((Functions.Proc6<A1, A2, A3, A4, A5, A6> f) -> {
+      f.apply(arg1, arg2, arg3, arg4, arg5, arg6);
+      return true;
+    });
+  }
+
   public static void configureWorkflowClientServiceMock(WorkflowClientService workflowClientServiceMock, WorkflowCreatedDTO expectedResult){
     Mockito.when(workflowClientServiceMock.start(TemporalTestUtils.buildArgumentMatcherProc()))
       .thenReturn(expectedResult);
