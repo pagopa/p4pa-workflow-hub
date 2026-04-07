@@ -36,7 +36,7 @@ public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, Application
   public void massiveIbanUpdate(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban) {
     log.info("Start MassiveIbanUpdate Workflow for debtPositionTypeOrgId {} or organizationId {}", dptoId, orgId);
 
-    Boolean isToSchedule = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+    boolean isToSchedule = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
 
     if (isToSchedule) {
       scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);

@@ -33,7 +33,7 @@ public class ScheduleToSyncMassiveIbanUpdateWFActivityImpl implements ScheduleTo
 
   @Override
   public void scheduleToSyncMassiveIbanUpdateWF(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban) {
-    log.info("Start of scheduling to sync massive iban update WF for org with id {}, with delay of {} minutes", orgId, this.scheduleDuration.toMinutes());
+    log.info("Start of scheduling to sync massive iban update WF for debtPositionTypeOrgId {} or organizationId {}, with delay of {} minutes", dptoId, orgId, this.scheduleDuration.toMinutes());
     String workflowId = generateWorkflowId(orgId + "_TO_SYNC", MassiveIbanUpdateWF.class);
     MassiveIbanUpdateWF workflow = workflowService.buildWorkflowStubDelayed(
       MassiveIbanUpdateWF.class,
