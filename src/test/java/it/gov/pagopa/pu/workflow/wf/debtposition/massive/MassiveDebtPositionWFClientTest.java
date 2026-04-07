@@ -32,11 +32,9 @@ class MassiveDebtPositionWFClientTest {
 
   private MassiveDebtPositionWFClient client;
 
-  private static final int SCHEDULE_MINUTES = 5;
-
   @BeforeEach
   void init() {
-    client = new MassiveDebtPositionWFClient(workflowServiceMock, workflowClientServiceMock, SCHEDULE_MINUTES);
+    client = new MassiveDebtPositionWFClient(workflowServiceMock, workflowClientServiceMock);
   }
 
   @AfterEach
@@ -74,7 +72,7 @@ class MassiveDebtPositionWFClientTest {
   }
 
   @Test
-  void givenMassiveIbanUpdateToSyncSignalDTOWhenStartMassiveIbanUpdateToSyncThenOk() {
+  void givenMassiveIbanUpdateToSyncSignalDTOWhenScheduleMassiveIbanUpdateToSyncThenOk() {
     // Given
     Long orgId = 1L;
     Long dptoId = 1L;
@@ -92,7 +90,7 @@ class MassiveDebtPositionWFClientTest {
       .newPostalIban(newPostalIban)
       .build();
 
-    Duration scheduleDuration = Duration.ofMinutes(SCHEDULE_MINUTES);
+    Duration scheduleDuration = Duration.ofMinutes(5);
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("MassiveIbanUpdateWF-" + orgId + "_TO_SYNC", "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStubDelayed(
@@ -106,7 +104,7 @@ class MassiveDebtPositionWFClientTest {
       orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
 
     // When
-    WorkflowCreatedDTO result = client.startMassiveIbanUpdateToSync(signalDTO);
+    WorkflowCreatedDTO result = client.scheduleMassiveIbanUpdateToSync(signalDTO, scheduleDuration);
 
     // Then
     assertEquals(expectedResult, result);

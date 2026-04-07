@@ -5,16 +5,24 @@ import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.dto.MassiveIbanUpdateToSyncSignalDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 
 @Service
 @Slf4j
 @ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY_LOCAL)
 public class ScheduleToSyncMassiveIbanUpdateWFActivityImpl implements ScheduleToSyncMassiveIbanUpdateWFActivity {
   private final MassiveDebtPositionWFClient massiveDebtPositionWFClient;
+  private final Duration scheduleDuration;
 
-  public ScheduleToSyncMassiveIbanUpdateWFActivityImpl(MassiveDebtPositionWFClient massiveDebtPositionWFClient) {
+  public ScheduleToSyncMassiveIbanUpdateWFActivityImpl(
+    MassiveDebtPositionWFClient massiveDebtPositionWFClient,
+    @Value("${workflow.massive-debt-position.schedule-minutes-massive-iban-update-to-sync}") int scheduleMinutes
+  ) {
     this.massiveDebtPositionWFClient = massiveDebtPositionWFClient;
+    this.scheduleDuration = Duration.ofMinutes(scheduleMinutes);
   }
 
   @Override
@@ -27,6 +35,7 @@ public class ScheduleToSyncMassiveIbanUpdateWFActivityImpl implements ScheduleTo
       .oldPostalIban(oldPostalIban)
       .newPostalIban(newPostalIban)
       .build();
-    massiveDebtPositionWFClient.startMassiveIbanUpdateToSync(signalDTO);
+
+    massiveDebtPositionWFClient.scheduleMassiveIbanUpdateToSync(signalDTO, scheduleDuration);
   }
 }

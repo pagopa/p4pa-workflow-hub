@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
+
 @ExtendWith(MockitoExtension.class)
 class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
   @Mock
@@ -17,9 +19,11 @@ class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
 
   private ScheduleToSyncMassiveIbanUpdateWFActivity scheduleToSyncMassiveIbanUpdateWFActivity;
 
+  private static final int SCHEDULE_MINUTES = 5;
+
   @BeforeEach
   void setUp() {
-    scheduleToSyncMassiveIbanUpdateWFActivity = new ScheduleToSyncMassiveIbanUpdateWFActivityImpl(massiveDebtPositionWFClientMock);
+    scheduleToSyncMassiveIbanUpdateWFActivity = new ScheduleToSyncMassiveIbanUpdateWFActivityImpl(massiveDebtPositionWFClientMock, SCHEDULE_MINUTES);
   }
 
   @AfterEach
@@ -50,6 +54,5 @@ class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
     scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
 
     // Then
-    Mockito.verify(massiveDebtPositionWFClientMock).startMassiveIbanUpdateToSync(expectedSignalDTO);
-  }
+    Mockito.verify(massiveDebtPositionWFClientMock).scheduleMassiveIbanUpdateToSync(expectedSignalDTO, Duration.ofMinutes(SCHEDULE_MINUTES));  }
 }
