@@ -33,7 +33,7 @@ public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, Application
   public void massiveIbanUpdate(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban) {
     log.info("Start MassiveIbanUpdate Workflow for debtPositionTypeOrgId {} or organizationId {}", dptoId, orgId);
 
-    massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, newIban, oldIban, oldPostalIban, newPostalIban);
+    massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
     //TODO - reschedule with P4ADEV-4535
   }
 
