@@ -62,17 +62,13 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
         yield streamEvent.getEventId();
       }
-      case DELIVERING, VIEWED, EFFECTIVE_DATE, PAID, UNREACHABLE, CANCELLED, RETURNED_TO_SENDER -> {
-        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(),
-          NotificationStatus.valueOf(streamEvent.getNewStatus().name()));
-        yield streamEvent.getEventId();
-      }
       case null -> {
         log.info("Skipping event with status 'null' for SEND stream with id {}", sendStreamId);
         yield streamEvent.getEventId();
       }
       default -> {
-        log.info("Skipping event with status {} for SEND stream with id {}", streamEvent.getNewStatus(), sendStreamId);
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(),
+          NotificationStatus.valueOf(streamEvent.getNewStatus().name()));
         yield streamEvent.getEventId();
       }
     };

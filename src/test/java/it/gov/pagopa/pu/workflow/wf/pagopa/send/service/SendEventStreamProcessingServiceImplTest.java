@@ -197,10 +197,11 @@ class SendEventStreamProcessingServiceImplTest {
     Mockito.verifyNoInteractions(publishSendNotificationPaymentEventActivityMock);
   }
 
-  @ParameterizedTest
-  @MethodSource("nonMappedNotificationStatusScenarios")
-  void givenNonMappedEventWhenProcessSendStreamEventThenOk(NotificationStatusV26DTO notificationStatusDTO) {
+  @Test
+  void givenNullEventWhenProcessSendStreamEventThenOk() {
     //GIVEN
+    NotificationStatusV26DTO notificationStatusDTO = null;
+
     ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       null,
       notificationStatusDTO
@@ -222,13 +223,6 @@ class SendEventStreamProcessingServiceImplTest {
         Mockito.isA(LegalFactCategoryDTO.class),
         Mockito.isA(String.class)
       );
-  }
-
-  private static Stream<NotificationStatusV26DTO> nonMappedNotificationStatusScenarios() {
-    return Stream.of(
-      NotificationStatusV26DTO.IN_VALIDATION,
-      null
-    );
   }
 
   @Test
