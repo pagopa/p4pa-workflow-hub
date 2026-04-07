@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY)
 public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, ApplicationContextAware {
 
   private MassiveIbanUpdateActivity massiveIbanUpdateActivity;
