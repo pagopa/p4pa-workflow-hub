@@ -57,7 +57,7 @@ class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
         Mockito.eq(TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY),
         Mockito.anyString(),
         Mockito.eq(scheduleDuration)))
-      .thenReturn(MassiveIbanUpdateWFMock);
+      .thenReturn(massiveIbanUpdateWFMock);
 
     scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
 
@@ -65,7 +65,7 @@ class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
       Mockito.eq(MassiveIbanUpdateWF.class),
       Mockito.eq(TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY),
       Mockito.anyString(),
-      Mockito.eq(retentionDuration)
+      Mockito.eq(scheduleDuration)
     );
 
     Mockito.verify(workflowClientServiceMock)
