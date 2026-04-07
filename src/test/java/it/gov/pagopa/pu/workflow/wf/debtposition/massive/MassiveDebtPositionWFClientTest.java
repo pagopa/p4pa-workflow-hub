@@ -49,7 +49,7 @@ class MassiveDebtPositionWFClientTest {
     String oldPostalIban = "IT60X0760111100000000123456";
     String newPostalIban = "IT60X0760111100000000654321";
 
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("MassiveIbanUpdateWF-" + orgId, "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(MassiveIbanUpdateWF.class, taskQueue, expectedResult.getWorkflowId()))
