@@ -151,6 +151,17 @@ class WorkflowExceptionHandlerTest {
   }
 
   @Test
+  void handleWorkflowConflict() throws Exception {
+    doThrow(new WorkflowConflictException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isConflict())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_CONFLICT"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Error"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
   void handleWorkflowNotFoundException() throws Exception {
     doThrow(new WorkflowNotFoundException("Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
 

@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.controller.wf;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.pu.workflow.controller.generated.DebtPositionApi;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -49,5 +50,11 @@ public class DebtPositionControllerImpl implements DebtPositionApi {
     log.info("Starting workflow for handle expiration of debt position with debtPositionId: {}", debtPositionId);
     WorkflowCreatedDTO wfExec = service.checkDpExpiration(debtPositionId);
     return new ResponseEntity<>(wfExec, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<WorkflowCreatedDTO> massiveDpIbanUpdate(Long orgId, MassiveDebtPositionIbanUpdateRequestDTO massiveDebtPositionIbanUpdateRequestDTO) {
+    log.info("Starting workflow for handle massive debt position iban updade having orgId: {}", orgId);
+    return ResponseEntity.ok(service.massiveIbanUpdate(orgId, massiveDebtPositionIbanUpdateRequestDTO));
   }
 }
