@@ -44,7 +44,7 @@ public class WorkflowExceptionHandler {
 
   private static final String ERROR_MESSAGE_FORMAT = "[%s] %s";
 
-  @ExceptionHandler(WorkflowExecutionAlreadyStarted.class)
+  @ExceptionHandler({WorkflowExecutionAlreadyStarted.class, WorkflowConflictException.class})
   public ResponseEntity<WorkflowErrorDTO> handleWorkflowExecutionAlreadyStarted(WorkflowExecutionAlreadyStarted ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_CONFLICT);
   }

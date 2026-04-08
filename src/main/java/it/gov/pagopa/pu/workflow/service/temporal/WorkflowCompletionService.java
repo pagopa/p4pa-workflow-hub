@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.temporal;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.TooManyAttemptsException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowConflictException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,9 @@ import static io.temporal.api.enums.v1.WorkflowExecutionStatus.*;
 @Service
 public class WorkflowCompletionService {
 
-    private final WorkflowService workflowService;
+  private static final String ERR_WF_EXISTS = "[WF_ALREADY_EXISTS] - %s already exists and not terminated";
+
+  private final WorkflowService workflowService;
 
     /**
      * <a href="https://docs.temporal.io/workflows#status">Closed statuses</a>
@@ -70,4 +73,20 @@ public class WorkflowCompletionService {
         log.info("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxAttempts);
         throw new TooManyAttemptsException("[TOO_MANY_ATTEMPTS] Maximum number of retries reached for workflow " + workflowId);
     }
+
+
+  /**
+   * Check Workflow exists and not terminated.
+   *
+   * @param workflowId The ID of the workflow to check.
+   * @throws WorkflowConflictException If workflow exists and not in a terminal status.
+   */
+  public void checkWorkflowExistsAndNotTerminated(String workflowId) {
+    WorkflowStatusDTO wfStatus = workflowService.getWorkflowStatus(workflowId);
+
+    if (wfStatus != null && wfTerminationStatuses.contains(wfStatus.getStatus())) {
+      log.warn("Conflict detected: workflow {} already exists in status {}", workflowId, wfStatus.getStatus());
+      throw new WorkflowConflictException(String.format(ERR_WF_EXISTS, workflowId));
+    }
+  }
 }
