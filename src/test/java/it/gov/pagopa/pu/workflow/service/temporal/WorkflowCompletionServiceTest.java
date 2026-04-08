@@ -133,6 +133,15 @@ class WorkflowCompletionServiceTest {
   }
 
   @Test
+  void givenNullWorkflowWhenCheckWorkflowExistsAndNotTerminatedThenSuccess() {
+    // GIVEN
+    Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID)).thenReturn(null);
+
+    // WHEN & THEN
+    assertDoesNotThrow(() -> service.checkWorkflowExistsAndNotTerminated(WORKFLOW_ID));
+  }
+
+  @Test
   void givenCancelledWorkflowWhenCheckWorkflowExistsAndNotTerminatedThenException() {
     // GIVEN
     WorkflowStatusDTO statusRunning = new WorkflowStatusDTO()
