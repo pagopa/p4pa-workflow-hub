@@ -234,7 +234,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowErrorDTO'
-  /workflow/debt-position/{orgId}/massiveibanupdate:
+  /workflow/debt-position/{orgId}/massive-iban-update:
     post:
       tags:
         - DebtPosition

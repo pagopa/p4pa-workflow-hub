@@ -152,7 +152,7 @@ class DebtPositionControllerTest {
 
     Mockito.when(serviceMock.massiveIbanUpdate(orgId, requestDTO)).thenReturn(expected);
 
-    MvcResult result = mockMvc.perform(post("/workflowhub/workflow/debt-position/{orgId}/massiveibanupdate", orgId)
+    MvcResult result = mockMvc.perform(post("/workflowhub/workflow/debt-position/{orgId}/massive-iban-update", orgId)
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDTO)))
       .andExpect(status().isOk())
