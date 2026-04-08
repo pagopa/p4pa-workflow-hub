@@ -84,7 +84,7 @@ public class WorkflowCompletionService {
   public void checkWorkflowExistsAndNotTerminated(String workflowId) {
     WorkflowStatusDTO wfStatus = workflowService.getWorkflowStatus(workflowId);
 
-    if (wfStatus != null && wfTerminationStatuses.contains(wfStatus.getStatus())) {
+    if (wfStatus != null && !wfTerminationStatuses.contains(wfStatus.getStatus())) {
       log.warn("Conflict detected: workflow {} already exists in status {}", workflowId, wfStatus.getStatus());
       throw new WorkflowConflictException(String.format(ERR_WF_EXISTS, workflowId));
     }
