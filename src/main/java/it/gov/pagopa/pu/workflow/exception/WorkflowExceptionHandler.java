@@ -44,7 +44,7 @@ public class WorkflowExceptionHandler {
 
   private static final String ERROR_MESSAGE_FORMAT = "[%s] %s";
 
-  @ExceptionHandler({WorkflowExecutionAlreadyStarted.class, WorkflowConflictException.class})
+  @ExceptionHandler(WorkflowExecutionAlreadyStarted.class)
   public ResponseEntity<WorkflowErrorDTO> handleWorkflowExecutionAlreadyStarted(WorkflowExecutionAlreadyStarted ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_CONFLICT);
   }
@@ -62,6 +62,11 @@ public class WorkflowExceptionHandler {
   @ExceptionHandler({WorkflowNotFoundException.class, WorkflowTypeNotFoundException.class, ResourceNotFoundException.class, io.temporal.client.WorkflowNotFoundException.class})
   public ResponseEntity<WorkflowErrorDTO> handleNotFoundException(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CategoryEnum.WORKFLOW_NOT_FOUND);
+  }
+
+  @ExceptionHandler({WorkflowConflictException.class})
+  public ResponseEntity<WorkflowErrorDTO> handleConflictException(RuntimeException ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_CONFLICT);
   }
 
   @ExceptionHandler({WorkflowInternalErrorException.class})

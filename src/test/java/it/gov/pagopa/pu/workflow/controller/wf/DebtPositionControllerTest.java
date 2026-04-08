@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
+import it.gov.pagopa.pu.workflow.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -127,6 +128,33 @@ class DebtPositionControllerTest {
 
     MvcResult result = mockMvc.perform(post("/workflowhub/workflow/debt-position/{debtPositionId}/check-expiration", debtPositionId)
         .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    WorkflowCreatedDTO resultResponse = objectMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+    assertEquals(expected, resultResponse);
+  }
+
+  @Test
+  void whenMassiveDpIbanUpdateThenOk() throws Exception {
+    String workflowId = "workflow-1";
+    Long orgId = 1L;
+    MassiveDebtPositionIbanUpdateRequestDTO requestDTO =
+      MassiveDebtPositionIbanUpdateRequestDTO.builder()
+        .oldIban("OLDIBAN")
+        .newIban("NEWIBAN")
+        .build();
+
+
+    WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
+      .workflowId(workflowId)
+      .build();
+
+    Mockito.when(serviceMock.massiveIbanUpdate(orgId, requestDTO)).thenReturn(expected);
+
+    MvcResult result = mockMvc.perform(post("/workflowhub/workflow/debt-position/{orgId}/massiveibanupdate", orgId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(requestDTO)))
       .andExpect(status().isOk())
       .andReturn();
 
