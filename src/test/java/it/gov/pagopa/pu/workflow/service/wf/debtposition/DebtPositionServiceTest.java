@@ -11,7 +11,6 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
 import it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.DebtPositionSyncService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWF;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +41,7 @@ class DebtPositionServiceTest {
   private DebtPositionService service;
 
   private static final Long ORG_ID = 1L;
-  private static final String BASE_WF_ID = MassiveIbanUpdateWF.class.getName() + "-" + ORG_ID;
+  private static final String BASE_WF_ID = "MassiveIbanUpdateWF-" + ORG_ID;
   private static final String SYNC_WF_ID = BASE_WF_ID + "_TO_SYNC";
 
   @BeforeEach
