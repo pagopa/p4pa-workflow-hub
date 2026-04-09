@@ -9,8 +9,12 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
 import it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.DebtPositionSyncService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWF;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdatetosync.MassiveIbanUpdateToSyncWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Service
 @Slf4j
@@ -44,8 +48,8 @@ public class DebtPositionServiceImpl implements DebtPositionService {
 
   @Override
   public WorkflowCreatedDTO massiveIbanUpdate(Long orgId, MassiveDebtPositionIbanUpdateRequestDTO requestDTO) {
-    String baseWfId = "MassiveIbanUpdateWF-" + orgId;
-    String syncWfName = "MassiveIbanUpdateToSyncWF-" + orgId;
+    String baseWfId = generateWorkflowId(orgId, MassiveIbanUpdateWF.class);
+    String syncWfName = generateWorkflowId(orgId, MassiveIbanUpdateToSyncWF.class);
 
     workflowCompletionService.checkWorkflowExistsAndNotTerminated(baseWfId);
     workflowCompletionService.checkWorkflowExistsAndNotTerminated(syncWfName);
