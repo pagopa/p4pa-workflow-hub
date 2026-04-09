@@ -1,0 +1,45 @@
+package it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate;
+
+import io.temporal.spring.boot.WorkflowImpl;
+import it.gov.pagopa.payhub.activities.activity.debtposition.massive.MassiveIbanUpdateActivity;
+import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.activity.ScheduleToSyncMassiveIbanUpdateWFActivity;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.config.MassiveDebtPositionWFConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+@Slf4j
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY)
+public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, ApplicationContextAware {
+
+  private MassiveIbanUpdateActivity massiveIbanUpdateActivity;
+  private ScheduleToSyncMassiveIbanUpdateWFActivity scheduleToSyncMassiveIbanUpdateWFActivity;
+
+  /**
+   * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
+   * Anyway it allows to override ActivityOptions, but actually it's not supporting the override based on the particular workflow.<BR />
+   * In {@link TemporalWFImplementationCustomizer} we are already setting defaults to all workflows.<BR />
+   * Use this as an example to override based on the particular workflow.
+   */
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    MassiveDebtPositionWFConfig wfConfig = applicationContext.getBean(MassiveDebtPositionWFConfig.class);
+
+    massiveIbanUpdateActivity = wfConfig.buildMassiveIbanUpdateActivityStub();
+    scheduleToSyncMassiveIbanUpdateWFActivity = wfConfig.buildScheduleToSyncMassiveIbanUpdateWFActivityStub();
+  }
+
+  @Override
+  public void massiveIbanUpdate(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban) {
+    log.info("Start MassiveIbanUpdate Workflow for debtPositionTypeOrgId {} or organizationId {}", dptoId, orgId);
+
+    boolean isToSchedule = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+    if (isToSchedule) {
+      scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+    }
+  }
+}

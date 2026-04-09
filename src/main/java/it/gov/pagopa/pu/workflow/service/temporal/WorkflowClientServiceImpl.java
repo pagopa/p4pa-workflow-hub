@@ -50,6 +50,11 @@ public class WorkflowClientServiceImpl implements WorkflowClientService{
   }
 
   @Override
+  public <A1, A2, A3, A4, A5, A6> WorkflowCreatedDTO start(Functions.Proc6<A1, A2, A3, A4, A5, A6> workflow, A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5, A6 arg6) {
+    return mapAndLogWfExec(WorkflowClient.start(workflow, arg1, arg2, arg3, arg4, arg5, arg6));
+  }
+
+  @Override
   public WorkflowCreatedDTO signalWithStart(WorkflowStub workflowStub, String signalName, Object[] signalArgs, Object[] startArgs){
     WorkflowExecution wfExec = workflowStub.signalWithStart(signalName, signalArgs, startArgs);
     return mapAndLogWfExec(wfExec);

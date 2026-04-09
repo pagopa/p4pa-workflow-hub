@@ -64,6 +64,11 @@ public class WorkflowExceptionHandler {
     return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CategoryEnum.WORKFLOW_NOT_FOUND);
   }
 
+  @ExceptionHandler({WorkflowConflictException.class})
+  public ResponseEntity<WorkflowErrorDTO> handleConflictException(RuntimeException ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_CONFLICT);
+  }
+
   @ExceptionHandler({WorkflowInternalErrorException.class})
   public ResponseEntity<WorkflowErrorDTO> handleInternalError(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.INTERNAL_SERVER_ERROR, WorkflowErrorDTO.CategoryEnum.WORKFLOW_GENERIC_ERROR);

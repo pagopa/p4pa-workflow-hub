@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.service.temporal;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.TooManyAttemptsException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowConflictException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -129,5 +130,47 @@ class WorkflowCompletionServiceTest {
     );
 
     assertEquals("[TOO_MANY_ATTEMPTS] Maximum number of retries reached for workflow " + WORKFLOW_ID, exception.getMessage());
+  }
+
+  @Test
+  void givenNullWorkflowWhenCheckWorkflowExistsAndNotTerminatedThenSuccess() {
+    // GIVEN
+    Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID)).thenReturn(null);
+
+    // WHEN & THEN
+    assertDoesNotThrow(() -> service.checkWorkflowExistsAndNotTerminated(WORKFLOW_ID));
+  }
+
+  @Test
+  void givenCancelledWorkflowWhenCheckWorkflowExistsAndNotTerminatedThenException() {
+    // GIVEN
+    WorkflowStatusDTO statusRunning = new WorkflowStatusDTO()
+      .status(WORKFLOW_EXECUTION_STATUS_RUNNING);
+    Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID)).thenReturn(statusRunning);
+
+    // WHEN & THEN
+    WorkflowConflictException exception = assertThrows(WorkflowConflictException.class,
+      () -> service.checkWorkflowExistsAndNotTerminated(WORKFLOW_ID));
+
+    assertTrue(exception.getMessage().contains(WORKFLOW_ID));
+  }
+
+  @Test
+  void givenCancelledWorkflowWhenCheckWorkflowExistsAndNotTerminatedThenSuccess() {
+    // GIVEN
+    WorkflowStatusDTO statusCanceled = new WorkflowStatusDTO()
+      .status(WORKFLOW_EXECUTION_STATUS_CANCELED);
+    Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID)).thenReturn(statusCanceled);
+
+    // WHEN & THEN
+    assertDoesNotThrow(() -> service.checkWorkflowExistsAndNotTerminated(WORKFLOW_ID));
+  }
+
+  @Test
+  void givenWorkflowNotFoundWhenCheckWorkflowExistsAndNotTerminatedThenSuccess() {
+    Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID))
+      .thenThrow(new it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException("Not found"));
+
+    assertDoesNotThrow(() -> service.checkWorkflowExistsAndNotTerminated(WORKFLOW_ID));
   }
 }
