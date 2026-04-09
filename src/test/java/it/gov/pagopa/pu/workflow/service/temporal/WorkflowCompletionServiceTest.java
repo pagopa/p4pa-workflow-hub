@@ -165,4 +165,12 @@ class WorkflowCompletionServiceTest {
     // WHEN & THEN
     assertDoesNotThrow(() -> service.checkWorkflowExistsAndNotTerminated(WORKFLOW_ID));
   }
+
+  @Test
+  void givenWorkflowNotFoundWhenCheckWorkflowExistsAndNotTerminatedThenSuccess() {
+    Mockito.when(workflowServiceMock.getWorkflowStatus(WORKFLOW_ID))
+      .thenThrow(new it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException("Not found"));
+
+    assertDoesNotThrow(() -> service.checkWorkflowExistsAndNotTerminated(WORKFLOW_ID));
+  }
 }
