@@ -87,8 +87,8 @@ public class WorkflowCompletionService {
 
     try {
       wfStatus = workflowService.getWorkflowStatus(workflowId);
-    } catch (WorkflowNotFoundException e) {
-      log.info("Workflow with ID {} not found", workflowId);
+    } catch (WorkflowNotFoundException ignored) {
+      log.debug("Workflow with ID {} not found", workflowId);
     }
 
     if (wfStatus != null && !wfTerminationStatuses.contains(wfStatus.getStatus())) {
