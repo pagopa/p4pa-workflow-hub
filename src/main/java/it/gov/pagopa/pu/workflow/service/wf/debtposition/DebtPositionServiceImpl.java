@@ -45,7 +45,7 @@ public class DebtPositionServiceImpl implements DebtPositionService {
   @Override
   public WorkflowCreatedDTO massiveIbanUpdate(Long orgId, MassiveDebtPositionIbanUpdateRequestDTO requestDTO) {
     String baseWfId = "MassiveIbanUpdateWF-" + orgId;
-    String syncWfName = baseWfId + "_TO_SYNC";
+    String syncWfName = "MassiveIbanUpdateWFToSync-" + orgId;
 
     workflowCompletionService.checkWorkflowExistsAndNotTerminated(baseWfId);
     workflowCompletionService.checkWorkflowExistsAndNotTerminated(syncWfName);

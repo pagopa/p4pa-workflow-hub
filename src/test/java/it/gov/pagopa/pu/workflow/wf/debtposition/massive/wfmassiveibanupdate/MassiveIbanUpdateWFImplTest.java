@@ -1,7 +1,5 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate;
 
-import io.temporal.workflow.Workflow;
-import io.temporal.workflow.WorkflowInfo;
 import it.gov.pagopa.payhub.activities.activity.debtposition.massive.MassiveIbanUpdateActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.activity.ScheduleToSyncMassiveIbanUpdateWFActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.config.MassiveDebtPositionWFConfig;
@@ -11,12 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
-
-import java.util.Arrays;
 
 @ExtendWith(MockitoExtension.class)
 class MassiveIbanUpdateWFImplTest {
@@ -54,93 +49,24 @@ class MassiveIbanUpdateWFImplTest {
   }
 
   @Test
-  void givenNotToSyncWfWhenMassiveIbanUpdateThenActivityInvokedWithCorrectArgsAndNotSchedule() {
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      WorkflowInfo workflowInfoMock = Mockito.mock(WorkflowInfo.class);
-      workflowMock.when(Workflow::getInfo).thenReturn(workflowInfoMock);
-      Mockito.when(workflowInfoMock.getWorkflowId()).thenReturn("WORKFLOW_ID");
+  void givenValidParamsWhenMassiveIbanUpdateThenActivityInvokedWithCorrectArgsAndNotSchedule() {
+    Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
+      .thenReturn(false);
 
-      Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
-        .thenReturn(false);
+    // When
+    wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
 
-      Assertions.assertDoesNotThrow(() -> wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN));
-    }
+    // Then
+    Mockito.verify(massiveIbanUpdateActivityMock)
+      .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
   }
 
   @Test
-  void givenNotToSyncWfWhenMassiveIbanUpdateThenActivityInvokedWithCorrectArgsAndSchedule() {
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      WorkflowInfo workflowInfoMock = Mockito.mock(WorkflowInfo.class);
-      workflowMock.when(Workflow::getInfo).thenReturn(workflowInfoMock);
-      Mockito.when(workflowInfoMock.getWorkflowId()).thenReturn("WORKFLOW_ID");
+  void givenValidParamsWhenMassiveIbanUpdateThenActivityInvokedWithCorrectArgsAndSchedule() {
+    Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
+      .thenReturn(true);
+    Mockito.doNothing().when(scheduleToSyncMassiveIbanUpdateWFActivityMock).scheduleToSyncMassiveIbanUpdateWF(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
 
-      Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
-        .thenReturn(true);
-      Mockito.doNothing().when(scheduleToSyncMassiveIbanUpdateWFActivityMock).scheduleToSyncMassiveIbanUpdateWF(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
-
-      Assertions.assertDoesNotThrow(() -> wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN));
-    }
-  }
-
-  @Test
-  void givenToSyncWfWhenMassiveIbanUpdateThenDoesNotRetry() {
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      WorkflowInfo workflowInfoMock = Mockito.mock(WorkflowInfo.class);
-      workflowMock.when(Workflow::getInfo).thenReturn(workflowInfoMock);
-      Mockito.when(workflowInfoMock.getWorkflowId()).thenReturn("WORKFLOW_ID_TO_SYNC");
-
-      Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
-        .thenReturn(false);
-
-      wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
-
-      Mockito.verify(massiveIbanUpdateActivityMock)
-        .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
-    }
-  }
-
-  @Test
-  void givenToSyncWfWhenMassiveIbanUpdateThenRetriesAndSleeps() {
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      WorkflowInfo workflowInfoMock = Mockito.mock(WorkflowInfo.class);
-      workflowMock.when(Workflow::getInfo).thenReturn(workflowInfoMock);
-      Mockito.when(workflowInfoMock.getWorkflowId()).thenReturn("WORKFLOW_ID_TO_SYNC");
-
-      Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
-        .thenReturn(true, false);
-
-      wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
-
-      Mockito.verify(massiveIbanUpdateActivityMock, Mockito.times(2))
-        .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
-    }
-  }
-
-  @Test
-  void givenToSyncWfWhenMassiveIbanUpdateReachesLoopLimitThenContinueAsNew() {
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      WorkflowInfo workflowInfoMock = Mockito.mock(WorkflowInfo.class);
-      workflowMock.when(Workflow::getInfo).thenReturn(workflowInfoMock);
-      Mockito.when(workflowInfoMock.getWorkflowId()).thenReturn("WORKFLOW_ID_TO_SYNC");
-
-      Boolean[] ninetyNineTrues = new Boolean[99];
-      Arrays.fill(ninetyNineTrues, true);
-
-      Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(
-          ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
-        .thenReturn(true, ninetyNineTrues)
-        .thenReturn(false);
-
-      workflowMock.when(() -> Workflow.continueAsNew(
-        ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN
-      )).then(invocation -> null);
-
-      wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
-
-      Mockito.verify(massiveIbanUpdateActivityMock, Mockito.times(101))
-        .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
-
-      workflowMock.verify(() -> Workflow.continueAsNew(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN), Mockito.times(1));
-    }
+    Assertions.assertDoesNotThrow(() -> wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN));
   }
 }

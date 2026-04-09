@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.dto.MassiveIbanUpdateToSyncSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWF;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWFImpl;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdatetosync.MassiveIbanUpdateWFToSync;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,8 @@ class MassiveDebtPositionWFClientTest {
   private WorkflowClientService workflowClientServiceMock;
   @Mock
   private MassiveIbanUpdateWF massiveIbanUpdateWFMock;
+  @Mock
+  private MassiveIbanUpdateWFToSync massiveIbanUpdateWFToSync;
 
   private MassiveDebtPositionWFClient client;
 
@@ -91,14 +94,14 @@ class MassiveDebtPositionWFClientTest {
       .build();
 
     Duration scheduleDuration = Duration.ofMinutes(5);
-    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("MassiveIbanUpdateWF-" + orgId + "_TO_SYNC", "RUNID");
+    WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("MassiveIbanUpdateWFToSync-" + orgId, "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStubDelayed(
-        MassiveIbanUpdateWF.class,
+        MassiveIbanUpdateWFToSync.class,
         TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY,
         expectedResult.getWorkflowId(),
         scheduleDuration))
-      .thenReturn(massiveIbanUpdateWFMock);
+      .thenReturn(massiveIbanUpdateWFToSync);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult,
       orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
