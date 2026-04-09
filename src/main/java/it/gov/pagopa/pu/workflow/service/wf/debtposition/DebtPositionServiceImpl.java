@@ -9,7 +9,6 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
 import it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.DebtPositionSyncService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
