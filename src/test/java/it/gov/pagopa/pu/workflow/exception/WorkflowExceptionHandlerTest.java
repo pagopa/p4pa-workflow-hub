@@ -146,7 +146,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isConflict())
       .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_CONFLICT"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("workflowId='null', runId='null"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("workflowId='null', runId='null'"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -202,7 +202,7 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isNotFound())
       .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_NOT_FOUND"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("workflowId='null', runId='null"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("workflowId='null', runId='null'"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
