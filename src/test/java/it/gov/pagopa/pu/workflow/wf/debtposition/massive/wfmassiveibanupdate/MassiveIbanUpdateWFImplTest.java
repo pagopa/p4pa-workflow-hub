@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 @ExtendWith(MockitoExtension.class)
 class MassiveIbanUpdateWFImplTest {
