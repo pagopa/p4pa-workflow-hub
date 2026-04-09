@@ -4,6 +4,7 @@ import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.TooManyAttemptsException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowConflictException;
+import it.gov.pagopa.pu.workflow.exception.custom.WorkflowNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -82,7 +83,13 @@ public class WorkflowCompletionService {
    * @throws WorkflowConflictException If workflow exists and not in a terminal status.
    */
   public void checkWorkflowExistsAndNotTerminated(String workflowId) {
-    WorkflowStatusDTO wfStatus = workflowService.getWorkflowStatus(workflowId);
+    WorkflowStatusDTO wfStatus = null;
+
+    try {
+      wfStatus = workflowService.getWorkflowStatus(workflowId);
+    } catch (WorkflowNotFoundException e) {
+      log.info("Workflow with ID {} not found", workflowId);
+    }
 
     if (wfStatus != null && !wfTerminationStatuses.contains(wfStatus.getStatus())) {
       log.warn("Conflict detected: workflow {} already exists in status {}", workflowId, wfStatus.getStatus());
