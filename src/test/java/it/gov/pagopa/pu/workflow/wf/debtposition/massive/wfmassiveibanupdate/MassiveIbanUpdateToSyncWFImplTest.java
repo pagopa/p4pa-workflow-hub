@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.debtposition.massive.MassiveIbanUpdateActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.config.MassiveDebtPositionWFConfig;
-import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdatetosync.MassiveIbanUpdateWFToSyncImpl;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdatetosync.MassiveIbanUpdateToSyncWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 @ExtendWith(MockitoExtension.class)
-class MassiveIbanUpdateWFToSyncImplTest {
+class MassiveIbanUpdateToSyncWFImplTest {
   public static final Long ORG_ID = 1L;
   public static final Long DPTO_ID = 2L;
   public static final String OLD_IBAN = "IT60X0542811101000000123456";
@@ -30,7 +30,7 @@ class MassiveIbanUpdateWFToSyncImplTest {
   @Mock
   private MassiveIbanUpdateActivity massiveIbanUpdateActivityMock;
 
-  private MassiveIbanUpdateWFToSyncImpl wf;
+  private MassiveIbanUpdateToSyncWFImpl wf;
 
   @BeforeEach
   void setUp() {
@@ -40,7 +40,7 @@ class MassiveIbanUpdateWFToSyncImplTest {
     Mockito.when(wfConfigMock.buildMassiveIbanUpdateActivityStub()).thenReturn(massiveIbanUpdateActivityMock);
     Mockito.when(applicationContextMock.getBean(MassiveDebtPositionWFConfig.class)).thenReturn(wfConfigMock);
 
-    wf = new MassiveIbanUpdateWFToSyncImpl();
+    wf = new MassiveIbanUpdateToSyncWFImpl();
     wf.setApplicationContext(applicationContextMock);
   }
 

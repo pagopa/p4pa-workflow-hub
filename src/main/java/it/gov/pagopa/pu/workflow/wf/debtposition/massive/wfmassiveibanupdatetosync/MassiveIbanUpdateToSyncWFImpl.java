@@ -15,7 +15,7 @@ import java.time.temporal.ChronoUnit;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY)
-public class MassiveIbanUpdateWFToSyncImpl implements MassiveIbanUpdateWFToSync, ApplicationContextAware {
+public class MassiveIbanUpdateToSyncWFImpl implements MassiveIbanUpdateToSyncWF, ApplicationContextAware {
   private MassiveIbanUpdateActivity massiveIbanUpdateActivity;
 
   private int loopExecutionCount = 0;

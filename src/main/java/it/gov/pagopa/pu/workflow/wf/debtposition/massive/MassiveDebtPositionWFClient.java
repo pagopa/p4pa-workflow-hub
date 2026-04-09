@@ -7,7 +7,7 @@ import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.dto.MassiveIbanUpdateToSyncSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate.MassiveIbanUpdateWF;
 
-import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdatetosync.MassiveIbanUpdateWFToSync;
+import it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdatetosync.MassiveIbanUpdateToSyncWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -49,9 +49,9 @@ public class MassiveDebtPositionWFClient {
 
     log.info("Start of scheduling to sync massive iban update WF for debtPositionTypeOrgId {} or organizationId {}, with delay of {} minutes", dptoId, orgId, scheduleDuration.toMinutes());
 
-    String workflowId = generateWorkflowId(orgId, MassiveIbanUpdateWFToSync.class);
-    MassiveIbanUpdateWFToSync workflow = workflowService.buildWorkflowStubDelayed(
-      MassiveIbanUpdateWFToSync.class,
+    String workflowId = generateWorkflowId(orgId, MassiveIbanUpdateToSyncWF.class);
+    MassiveIbanUpdateToSyncWF workflow = workflowService.buildWorkflowStubDelayed(
+      MassiveIbanUpdateToSyncWF.class,
       TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY,
       workflowId,
       scheduleDuration
