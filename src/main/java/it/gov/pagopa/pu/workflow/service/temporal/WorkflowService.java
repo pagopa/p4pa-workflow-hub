@@ -3,7 +3,6 @@ package it.gov.pagopa.pu.workflow.service.temporal;
 import io.temporal.client.WorkflowNotFoundException;
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowConflictException;
 import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
 
 import java.time.Duration;
