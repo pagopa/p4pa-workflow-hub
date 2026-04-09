@@ -16,7 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import java.time.Duration;
+import java.util.Arrays;
 
 @ExtendWith(MockitoExtension.class)
 class MassiveIbanUpdateWFImplTest {
@@ -96,7 +96,6 @@ class MassiveIbanUpdateWFImplTest {
 
       Mockito.verify(massiveIbanUpdateActivityMock)
         .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
-      workflowMock.verify(() -> Workflow.sleep(Mockito.any(Duration.class)), Mockito.never());
     }
   }
 
@@ -114,6 +113,34 @@ class MassiveIbanUpdateWFImplTest {
 
       Mockito.verify(massiveIbanUpdateActivityMock, Mockito.times(2))
         .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
+    }
+  }
+
+  @Test
+  void givenToSyncWfWhenMassiveIbanUpdateReachesLoopLimitThenContinueAsNew() {
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      WorkflowInfo workflowInfoMock = Mockito.mock(WorkflowInfo.class);
+      workflowMock.when(Workflow::getInfo).thenReturn(workflowInfoMock);
+      Mockito.when(workflowInfoMock.getWorkflowId()).thenReturn("WORKFLOW_ID_TO_SYNC");
+
+      Boolean[] ninetyNineTrues = new Boolean[99];
+      Arrays.fill(ninetyNineTrues, true);
+
+      Mockito.when(massiveIbanUpdateActivityMock.massiveIbanUpdateRetrieveAndUpdateDp(
+          ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN))
+        .thenReturn(true, ninetyNineTrues)
+        .thenReturn(false);
+
+      workflowMock.when(() -> Workflow.continueAsNew(
+        ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN
+      )).then(invocation -> null);
+
+      wf.massiveIbanUpdate(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
+
+      Mockito.verify(massiveIbanUpdateActivityMock, Mockito.times(101))
+        .massiveIbanUpdateRetrieveAndUpdateDp(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN);
+
+      workflowMock.verify(() -> Workflow.continueAsNew(ORG_ID, DPTO_ID, OLD_IBAN, NEW_IBAN, OLD_POSTAL_IBAN, NEW_POSTAL_IBAN), Mockito.times(1));
     }
   }
 }
