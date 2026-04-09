@@ -12,12 +12,20 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY)
 public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, ApplicationContextAware {
 
   private MassiveIbanUpdateActivity massiveIbanUpdateActivity;
   private ScheduleToSyncMassiveIbanUpdateWFActivity scheduleToSyncMassiveIbanUpdateWFActivity;
+
+  private int loopExecutionCount = 0;
+
+  private static final int WAITING_SECONDS_BEFORE_RETRY = 5 * 60;
+  private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -38,13 +46,38 @@ public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, Application
     log.info("Start MassiveIbanUpdate Workflow for debtPositionTypeOrgId {} or organizationId {}", dptoId, orgId);
 
     String workflowId = Workflow.getInfo().getWorkflowId();
-    log.info("WF_TEST: " + workflowId);
 
-//    boolean isToSchedule = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
-//
-//    if (isToSchedule) {
-//      scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
-//    }
+    if (!workflowId.contains("TO_SYNC")) {
+      boolean isToSchedule = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+      if (isToSchedule) {
+        scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+      }
+
+      return;
+    }
+
+    boolean isToRetry;
+    do {
+      isToRetry = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+
+      if (isToRetry) {
+        waitForNextIteration(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+      }
+    } while(isToRetry);
   }
 
+  private void waitForNextIteration(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban) {
+    Workflow.sleep(
+      Duration.of(
+        WAITING_SECONDS_BEFORE_RETRY,
+        ChronoUnit.SECONDS
+      )
+    );
+    loopExecutionCount += 1;
+    if(loopExecutionCount >= LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY) {
+      loopExecutionCount = 0;
+      Workflow.continueAsNew(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+    }
+  }
 }
