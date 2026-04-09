@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.massive.wfmassiveibanupdate;
 
 import io.temporal.spring.boot.WorkflowImpl;
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.debtposition.massive.MassiveIbanUpdateActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -36,11 +37,14 @@ public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, Application
   public void massiveIbanUpdate(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban) {
     log.info("Start MassiveIbanUpdate Workflow for debtPositionTypeOrgId {} or organizationId {}", dptoId, orgId);
 
-    boolean isToSchedule = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+    String workflowId = Workflow.getInfo().getWorkflowId();
+    log.info("WF_TEST: " + workflowId);
 
-    if (isToSchedule) {
-      scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
-    }
+//    boolean isToSchedule = massiveIbanUpdateActivity.massiveIbanUpdateRetrieveAndUpdateDp(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+//
+//    if (isToSchedule) {
+//      scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
+//    }
   }
 
 }
