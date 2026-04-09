@@ -33,7 +33,7 @@ public class MassiveDebtPositionWFClient {
   public WorkflowCreatedDTO startMassiveIbanUpdate(Long orgId, Long dptoId, String oldIban, String newIban, String oldPostalIban, String newPostalIban){
     log.debug("Starting massiveIbanUpdate process having orgId {}", orgId);
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
-    String workflowId = generateWorkflowId(orgId, MassiveIbanUpdateWF.class);
+    String workflowId = getMassiveIbanUpdateWFId(orgId);
 
     MassiveIbanUpdateWF workflow = workflowService.buildWorkflowStubToStartNew(
       MassiveIbanUpdateWF.class,
@@ -49,7 +49,7 @@ public class MassiveDebtPositionWFClient {
 
     log.info("Start of scheduling to sync massive iban update WF for debtPositionTypeOrgId {} or organizationId {}, with delay of {} minutes", dptoId, orgId, scheduleDuration.toMinutes());
 
-    String workflowId = generateWorkflowId(orgId, MassiveIbanUpdateToSyncWF.class);
+    String workflowId = getMassiveIbanUpdateToSyncWFId(orgId);
     MassiveIbanUpdateToSyncWF workflow = workflowService.buildWorkflowStubDelayed(
       MassiveIbanUpdateToSyncWF.class,
       TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY,
@@ -58,5 +58,13 @@ public class MassiveDebtPositionWFClient {
     );
 
     return workflowClientService.start(workflow::massiveIbanUpdate, orgId, dptoId, signalDTO.getOldIban(), signalDTO.getNewIban(), signalDTO.getOldPostalIban(), signalDTO.getNewPostalIban());
+  }
+
+  public static String getMassiveIbanUpdateWFId(Long orgId) {
+    return generateWorkflowId(orgId, MassiveIbanUpdateWF.class);
+  }
+
+  public static String getMassiveIbanUpdateToSyncWFId(Long orgId) {
+    return generateWorkflowId(orgId, MassiveIbanUpdateToSyncWF.class);
   }
 }
