@@ -31,7 +31,7 @@ class MassiveDebtPositionWFClientTest {
   @Mock
   private MassiveIbanUpdateWF massiveIbanUpdateWFMock;
   @Mock
-  private MassiveIbanUpdateWFToSync massiveIbanUpdateWFToSync;
+  private MassiveIbanUpdateWFToSync massiveIbanUpdateWFToSyncMock;
 
   private MassiveDebtPositionWFClient client;
 
@@ -101,7 +101,7 @@ class MassiveDebtPositionWFClientTest {
         TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY,
         expectedResult.getWorkflowId(),
         scheduleDuration))
-      .thenReturn(massiveIbanUpdateWFToSync);
+      .thenReturn(massiveIbanUpdateWFToSyncMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult,
       orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
