@@ -38,6 +38,7 @@ public class RegistryEventSendTimelineDTO {
   private TimelineElementCategoryV27DTO eventType;
   private String notificationRequestId;
   private String iun;
+  private Integer recipientIndex;
   private String newStatus;
   private RegistryOutcome outcome;
   private String body;
