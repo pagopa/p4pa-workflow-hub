@@ -42,7 +42,7 @@ class DebtPositionServiceTest {
 
   private static final Long ORG_ID = 1L;
   private static final String BASE_WF_ID = "MassiveIbanUpdateWF-" + ORG_ID;
-  private static final String SYNC_WF_ID = BASE_WF_ID + "_TO_SYNC";
+  private static final String SYNC_WF_ID = "MassiveIbanUpdateToSyncWF-" + ORG_ID;
 
   @BeforeEach
   void init(){

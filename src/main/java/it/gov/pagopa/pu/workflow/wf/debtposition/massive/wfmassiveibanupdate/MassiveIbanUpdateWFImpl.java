@@ -42,5 +42,4 @@ public class MassiveIbanUpdateWFImpl implements MassiveIbanUpdateWF, Application
       scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
     }
   }
-
 }
