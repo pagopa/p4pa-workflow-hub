@@ -157,7 +157,7 @@ class SendTimelineRegistryEventMapperTest {
   void testMapWithException() {
     //GIVEN
     TimelineElementDetailsV27DTO timelineDetails = new TimelineElementDetailsV27DTO();
-    timelineDetails.setRecIndex(1);
+    timelineDetails.setRecIndex(null);
     TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
     timelineElement.setCategory(TimelineElementCategoryV27DTO.NOTIFICATION_VIEWED);
     timelineElement.setDetails(timelineDetails);
@@ -204,7 +204,7 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(RegistryOutcome.KO, registryEvent.getOutcome());
     Assertions.assertNull(registryEvent.getBody());
 
-    Assertions.assertEquals(timelineDetails.getRecIndex(), registryEvent.getRecipientIndex());
+    Assertions.assertEquals(0, registryEvent.getRecipientIndex());
 
     TestUtils.checkNotNullFields(registryEvent, "body");
   }

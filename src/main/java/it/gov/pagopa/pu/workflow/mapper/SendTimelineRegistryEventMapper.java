@@ -88,7 +88,7 @@ public class SendTimelineRegistryEventMapper {
   private static Integer extractRecipientIndex(ProgressResponseElementV28DTO progressResponseElementV28DTO) {
     return Optional.ofNullable(progressResponseElementV28DTO.getElement().getDetails())
       .map(TimelineElementDetailsV27DTO::getRecIndex)
-      .orElse(null);
+      .orElse(0);
   }
 
   private String serializeObjectToJson(Object object, String streamId, String eventId) {
