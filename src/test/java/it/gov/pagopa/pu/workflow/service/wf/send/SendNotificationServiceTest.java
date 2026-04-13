@@ -1,7 +1,8 @@
 package it.gov.pagopa.pu.workflow.service.wf.send;
 
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.SendNotificationWFClient;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.SendNotificationProcessWFClient;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.SendNotificationStreamWFClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,18 +16,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class SendNotificationServiceTest {
 
   @Mock
-  private SendNotificationWFClient sendNotificationWFClientMock;
+  private SendNotificationProcessWFClient sendNotificationProcessWFClientMock;
+  @Mock
+  private SendNotificationStreamWFClient sendNotificationStreamWFClientMock;
 
   private SendNotificationService service;
 
   @BeforeEach
   void init(){
-    service = new SendNotificationServiceImpl(sendNotificationWFClientMock);
+    service = new SendNotificationServiceImpl(
+      sendNotificationProcessWFClientMock,
+      sendNotificationStreamWFClientMock
+    );
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(sendNotificationWFClientMock);
+    Mockito.verifyNoMoreInteractions(
+      sendNotificationProcessWFClientMock,
+      sendNotificationStreamWFClientMock
+    );
   }
 
   @Test
@@ -39,7 +48,7 @@ class SendNotificationServiceTest {
       .runId("RUNID")
       .build();
 
-    Mockito.when(sendNotificationWFClientMock.startSendNotificationProcess(Mockito.same(sendNotificationId)))
+    Mockito.when(sendNotificationProcessWFClientMock.startSendNotificationProcess(Mockito.same(sendNotificationId)))
       .thenReturn(expectedResult);
 
     // When
@@ -59,7 +68,7 @@ class SendNotificationServiceTest {
       .runId("RUNID")
       .build();
 
-    Mockito.when(sendNotificationWFClientMock.startSendNotificationStreamConsume(Mockito.same(sendStreamId)))
+    Mockito.when(sendNotificationStreamWFClientMock.startSendNotificationStreamConsume(Mockito.same(sendStreamId)))
       .thenReturn(expectedResult);
 
     // When

@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.utils.faker;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
 import it.gov.pagopa.pu.workflow.utils.TestUtils;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.dto.DebtPositionSendNotificationDTO;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.dto.DebtPositionSendNotificationDTO;
 
 import java.time.OffsetDateTime;
 import java.util.List;
