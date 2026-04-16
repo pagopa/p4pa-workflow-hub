@@ -1,7 +1,10 @@
 package it.gov.pagopa.pu.workflow.exception.custom;
 
-public class WorkflowTypeNotFoundException extends RuntimeException {
+import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
+
+public class WorkflowTypeNotFoundException extends BaseBusinessException {
+
   public WorkflowTypeNotFoundException(String message) {
-    super(message);
+    super(ErrorCodeConstants.ERROR_CODE_WORKFLOW_TYPE_NOT_FOUND, message);
   }
 }

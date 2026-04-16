@@ -3,8 +3,7 @@ package it.gov.pagopa.pu.workflow.utilities;
 import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
-import java.util.Set;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
 import java.time.*;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,12 +36,13 @@ public class UtilitiesTest {
   }
 
   private static void testGenerateWorkflowIdWhenNullErrors(Long id, Class<?> workflow) {
-    WorkflowInternalErrorException exception = assertThrows(
-      WorkflowInternalErrorException.class,
+    IllegalStateBusinessException exception = assertThrows(
+      IllegalStateBusinessException.class,
       () -> Utilities.generateWorkflowId(id, workflow)
     );
 
-    assertEquals("[INVALID_WORKFLOW_ID] The ID or the workflow must not be null", exception.getMessage());
+    assertEquals("INVALID_WORKFLOW_ID",exception.getCode());
+    assertEquals("The ID or the workflow must not be null", exception.getMessage());
   }
 
   @Test

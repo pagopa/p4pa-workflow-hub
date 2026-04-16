@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.complete.generic;
 import it.gov.pagopa.pu.organization.dto.generated.Broker;
 import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
 import it.gov.pagopa.pu.workflow.connector.organization.service.BrokerService;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ class PagoPASyncInteractionModelRetrieverServiceTest {
       .thenReturn(Optional.empty());
 
     // When, Then
-    Assertions.assertThrows(IllegalStateException.class, () -> service.retrieveInteractionModel(organizationId, accessToken));
+    Assertions.assertThrows(IllegalStateBusinessException.class, () -> service.retrieveInteractionModel(organizationId, accessToken));
   }
 
   @Test

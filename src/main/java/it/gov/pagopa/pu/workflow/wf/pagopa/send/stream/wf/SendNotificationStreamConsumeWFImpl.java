@@ -11,14 +11,15 @@ import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkip
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
+import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config.SendNotificationStreamWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service.SendEventStreamProcessingService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service.SendEventStreamProcessingServiceImpl;
-import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -76,7 +77,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     SendStreamDTO sendStreamDTO = getSendStreamActivity.fetchSendStream(sendStreamId);
     if(sendStreamDTO == null) {
       log.error("[STREAMS_NOT_FOUND] Cannot fetch stream: SEND stream non found for sendStreamId {}", sendStreamId);
-      throw new WorkflowInternalErrorException("[SEND_STATUS_ERROR] Workflow terminated during starting of readSendStream for sendStreamId %s with ERROR: cannot found SEND stream.".formatted(sendStreamId));
+      throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_SEND_STATUS_ERROR, "Workflow terminated during starting of readSendStream for sendStreamId %s with ERROR: cannot found SEND stream.".formatted(sendStreamId));
     }
 
     String lastProcessedEventId = sendStreamDTO.getLastEventId(); //start reading after latest processed event
@@ -149,7 +150,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       return getSendStreamActivity.fetchSendStream(sendStreamId) != null;
     } catch (HttpClientErrorException.NotFound e) {
       log.error("STREAMS_NOT_FOUND] Cannot fetch stream: SEND stream non found for sendStreamId {}", sendStreamId);
-      throw new WorkflowInternalErrorException("[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: " + e.getMessage());
+      throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_SEND_STATUS_ERROR, "Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: " + e.getMessage());
     } catch (Exception e) {
       return true;
     }

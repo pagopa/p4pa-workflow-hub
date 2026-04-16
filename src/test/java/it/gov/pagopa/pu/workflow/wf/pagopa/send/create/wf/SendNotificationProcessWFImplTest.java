@@ -10,7 +10,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationPaymentsDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.utils.faker.SendNotificationDTOFaker;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
@@ -164,13 +164,14 @@ class SendNotificationProcessWFImplTest {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
 
-      WorkflowInternalErrorException exception = assertThrows(
-        WorkflowInternalErrorException.class,
+      IllegalStateBusinessException exception = assertThrows(
+        IllegalStateBusinessException.class,
         () -> wf.sendNotificationProcess(sendNotificationId)
       );
 
+      assertEquals("SEND_DELIVERY_CONFLICT", exception.getCode());
       assertEquals(
-        "[SEND_DELIVERY_CONFLICT] Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId,
+        "Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId,
         exception.getMessage()
       );
     }

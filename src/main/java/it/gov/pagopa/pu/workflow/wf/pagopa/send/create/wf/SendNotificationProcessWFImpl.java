@@ -10,7 +10,8 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
+import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.activity.PublishSendNotificationPaymentEventActivity;
@@ -59,7 +60,7 @@ public class SendNotificationProcessWFImpl implements SendNotificationProcessWF,
       deliveryNotificationActivity.deliverySendNotification(sendNotificationId);
     } catch (SendNotificationConflictException e) {
       log.error("Conflict on delivery for sendNotificationId {}", sendNotificationId);
-      throw new WorkflowInternalErrorException("[SEND_DELIVERY_CONFLICT] Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId);
+      throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_SEND_DELIVERY_CONFLICT, "Workflow terminated during deliverySendNotification for sendNotificationId " + sendNotificationId);
     } catch (RuntimeException e) {
       SendNotificationDTO notification = getSendNotificationActivity.getSendNotification(sendNotificationId);
       if (notification != null && !notification.getPayments().isEmpty()) {

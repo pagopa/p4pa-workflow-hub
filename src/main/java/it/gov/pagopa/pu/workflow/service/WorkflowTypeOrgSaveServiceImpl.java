@@ -8,6 +8,7 @@ import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;
 import it.gov.pagopa.pu.workflow.repository.WorkflowTypeOrgRepository;
 import it.gov.pagopa.pu.workflow.repository.WorkflowTypeRepository;
 import it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.config.WfExecutionConfigMergeService;
+import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,7 +28,7 @@ public class WorkflowTypeOrgSaveServiceImpl implements WorkflowTypeOrgSaveServic
   public WorkflowTypeOrg save(WorkflowTypeOrg entity) {
     Long workflowTypeId = entity.getWorkflowTypeId();
     WorkflowType workflowType = workflowTypeRepository.findById(workflowTypeId)
-      .orElseThrow(() -> new WorkflowTypeNotFoundException("[WORKFLOW_TYPE_NOT_FOUND] Cannot find WorkflowType having id " + workflowTypeId));
+      .orElseThrow(() -> new WorkflowTypeNotFoundException("Cannot find WorkflowType having id " + workflowTypeId));
 
     validateWfExecutionConfigType(entity, workflowType, workflowTypeId);
 
@@ -39,7 +40,8 @@ public class WorkflowTypeOrgSaveServiceImpl implements WorkflowTypeOrgSaveServic
   private static void validateWfExecutionConfigType(WorkflowTypeOrg entity, WorkflowType workflowType, Long workflowTypeId) {
     if (!entity.getDefaultExecutionConfig().getClass().equals(workflowType.getDefaultExecutionConfig().getClass())) {
       throw new InvalidWfExecutionConfigException(
-        "[INVALID_EXECUTION_CONFIG_TYPE] Invalid execution config type for workflowTypeId: %d. Expected: %s, Found: %s".formatted(
+        ErrorCodeConstants.ERROR_CODE_INVALID_EXECUTION_CONFIG_TYPE,
+        "Invalid execution config type for workflowTypeId: %d. Expected: %s, Found: %s".formatted(
           workflowTypeId,
           workflowType.getDefaultExecutionConfig().getClass().getSimpleName(),
           entity.getDefaultExecutionConfig().getClass().getSimpleName()));

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
+import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +43,7 @@ public class WfExecutionConfigMergeService {
     try {
       return objectMapper.readValue(objectMapper.writeValueAsString(wfConfig), wfConfig.getClass());
     } catch (JsonProcessingException e) {
-      throw new IllegalStateException("[INVALID_EXECUTION_CONFIG] Cannot clone WfExecutionConfig class " + wfConfig.getClass().getSimpleName(), e);
+      throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_INVALID_EXECUTION_CONFIG, "Cannot clone WfExecutionConfig class " + wfConfig.getClass().getSimpleName(), e);
     }
   }
 
@@ -58,7 +60,7 @@ public class WfExecutionConfigMergeService {
           .readValue(objectMapper.writeValueAsString(wfExecutionConfig)),
         defaultConfig.getClass());
     } catch (IOException e) {
-      throw new IllegalStateException("[INVALID_EXECUTION_CONFIG] Cannot merge WfExecutionConfig from class " + wfExecutionConfig.getClass().getSimpleName() + " to class " + defaultConfig.getClass().getSimpleName(), e);
+      throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_INVALID_EXECUTION_CONFIG, "Cannot merge WfExecutionConfig from class " + wfExecutionConfig.getClass().getSimpleName() + " to class " + defaultConfig.getClass().getSimpleName(), e);
     }
   }
 }

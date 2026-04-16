@@ -12,7 +12,7 @@ import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkip
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatusV26DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config.SendNotificationStreamWfConfig;
@@ -98,13 +98,14 @@ class SendNotificationStreamConsumeWFImplTest {
         .then(invocation -> null);
 
       //WHEN
-      WorkflowInternalErrorException workflowInternalErrorException =
-        Assertions.assertThrows(WorkflowInternalErrorException.class, () -> wf.readSendStream(INVALID_SEND_STREAM_ID));
+      IllegalStateBusinessException workflowInternalErrorException =
+        Assertions.assertThrows(IllegalStateBusinessException.class, () -> wf.readSendStream(INVALID_SEND_STREAM_ID));
 
       //THEN
       Mockito.verify(getSendStreamActivityMock).fetchSendStream(INVALID_SEND_STREAM_ID);
+      Assertions.assertEquals("SEND_STATUS_ERROR", workflowInternalErrorException.getCode());
       Assertions.assertEquals(
-        "[SEND_STATUS_ERROR] Workflow terminated during starting of readSendStream for sendStreamId %s with ERROR: cannot found SEND stream.".formatted(INVALID_SEND_STREAM_ID),
+        "Workflow terminated during starting of readSendStream for sendStreamId %s with ERROR: cannot found SEND stream.".formatted(INVALID_SEND_STREAM_ID),
         workflowInternalErrorException.getMessage()
       );
     }
@@ -635,11 +636,12 @@ class SendNotificationStreamConsumeWFImplTest {
         .then(invocation -> null);
 
       //WHEN
-      WorkflowInternalErrorException actualException =
-        Assertions.assertThrows(WorkflowInternalErrorException.class, () -> wf.readSendStream(SEND_STREAM_ID));
+      IllegalStateBusinessException actualException =
+        Assertions.assertThrows(IllegalStateBusinessException.class, () -> wf.readSendStream(SEND_STREAM_ID));
 
+      Assertions.assertEquals("SEND_STATUS_ERROR", actualException.getCode());
       Assertions.assertEquals(
-        "[SEND_STATUS_ERROR] Workflow terminated during isStreamStillOpened for sendStreamId " + SEND_STREAM_ID + " with ERROR: 404 NotFound",
+        "Workflow terminated during isStreamStillOpened for sendStreamId " + SEND_STREAM_ID + " with ERROR: 404 NotFound",
         actualException.getMessage()
       );
 
