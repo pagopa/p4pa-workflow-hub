@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.assessments;
 
 import io.temporal.client.WorkflowStub;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
+import it.gov.pagopa.pu.workflow.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.workflow.service.organization.OrganizationRetrieverService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
@@ -115,7 +115,7 @@ class ClassifyAssessmentsWFClientTest {
   private void testGenerateWorkflowIdWhenNullErrors(Long orgId, String iuv, String iud) {
     ClassifyAssessmentStartSignalDTO classifyAssessmentStartSignalDTO = new ClassifyAssessmentStartSignalDTO(orgId, iuv, iud);
     Mockito.when(organizationRetrieverServiceMock.isClassificationEnabled(orgId)).thenReturn(true);
-    assertThrows(WorkflowInternalErrorException.class,
+    assertThrows(InvalidValueException.class,
       () -> client.startAssessmentsClassification(classifyAssessmentStartSignalDTO),
       "The ID or the workflow must not be null");
   }

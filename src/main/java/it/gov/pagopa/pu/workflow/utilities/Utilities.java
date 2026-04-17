@@ -3,11 +3,7 @@ package it.gov.pagopa.pu.workflow.utilities;
 import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
-import it.gov.pagopa.pu.workflow.exception.custom.WorkflowInternalErrorException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.mapstruct.Named;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -17,6 +13,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class Utilities {
@@ -32,7 +32,7 @@ public class Utilities {
 
   public static String generateWorkflowId(String id, Class<?> workflowInterface) {
     if (id == null || workflowInterface == null) {
-      throw new WorkflowInternalErrorException("[INVALID_WORKFLOW_ID] The ID or the workflow must not be null");
+      throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_INVALID_WORKFLOW_ID, "The ID or the workflow must not be null");
     }
     return String.format("%s-%s", workflowInterface.getSimpleName(), id);
   }

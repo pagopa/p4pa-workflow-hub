@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPositionFineClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +81,7 @@ class DebtPositionCustomWfSyncServiceTest {
     wfExecutionParameters.setWfExecutionConfig(genericConfig);
 
     // When & Then
-    assertThrows(IllegalStateException.class,
+    assertThrows(IllegalStateBusinessException.class,
       () -> service.invokeWorkflow(debtPositionDTO, paymentEventRequest, wfExecutionParameters));
   }
 

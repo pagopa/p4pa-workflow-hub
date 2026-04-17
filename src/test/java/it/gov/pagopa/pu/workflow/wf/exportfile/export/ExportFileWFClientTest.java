@@ -40,7 +40,7 @@ class ExportFileWFClientTest {
   }
 
   @Test
-  void whenIngestThenOk() {
+  void whenExportFileThenOk() {
     // Given
     Long exportFileId = 1L;
     ExportFileTypeEnum exportFileType = ExportFileTypeEnum.PAID;
