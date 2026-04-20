@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.service;
 
 import it.gov.pagopa.payhub.activities.util.AESUtils;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
@@ -32,7 +33,7 @@ public class DataCipherService {
         try {
             return encrypt(jsonMapper.writeValueAsString(obj));
         } catch (JacksonException e) {
-            throw new IllegalStateException("[JSON_SERIALIZATION_ERROR] Cannot serialize object as JSON", e);
+            throw new IllegalStateBusinessException("JSON_SERIALIZATION_ERROR", "Cannot serialize object as JSON", e);
         }
     }
 
@@ -40,7 +41,7 @@ public class DataCipherService {
         try {
             return jsonMapper.readValue(decrypt(cipherData), clazz);
         } catch (JacksonException e) {
-            throw new IllegalStateException("[JSON_DESERIALIZATION_ERROR] Cannot deserialize object as JSON", e);
+            throw new IllegalStateBusinessException("JSON_DESERIALIZATION_ERROR", "Cannot deserialize object as JSON", e);
         }
     }
 }

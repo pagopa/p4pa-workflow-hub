@@ -19,7 +19,7 @@ import static io.temporal.api.enums.v1.WorkflowExecutionStatus.*;
 @Service
 public class WorkflowCompletionService {
 
-  private static final String ERR_WF_EXISTS = "[WF_ALREADY_EXISTS] - %s already exists and not terminated";
+  private static final String ERR_WF_EXISTS = "%s already exists and not terminated";
 
   private final WorkflowService workflowService;
 
@@ -72,7 +72,7 @@ public class WorkflowCompletionService {
         } while (attempts <= maxAttempts);
 
         log.info("Workflow {} did not complete after {} retries. No further attempts will be made.", workflowId, maxAttempts);
-        throw new TooManyAttemptsException("[TOO_MANY_ATTEMPTS] Maximum number of retries reached for workflow " + workflowId);
+        throw new TooManyAttemptsException("Maximum number of retries reached for workflow " + workflowId);
     }
 
 

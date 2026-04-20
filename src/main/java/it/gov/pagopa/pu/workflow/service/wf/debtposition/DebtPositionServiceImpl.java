@@ -8,12 +8,12 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
 import it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.DebtPositionSyncService;
 import it.gov.pagopa.pu.workflow.wf.debtposition.expirationdp.CheckDebtPositionExpirationWfClient;
-import it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient;
+import it.gov.pagopa.pu.workflow.wf.debtposition.iban.MassiveDebtPositionWFClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient.getMassiveIbanUpdateToSyncWFId;
-import static it.gov.pagopa.pu.workflow.wf.debtposition.massive.MassiveDebtPositionWFClient.getMassiveIbanUpdateWFId;
+import static it.gov.pagopa.pu.workflow.wf.debtposition.iban.MassiveDebtPositionWFClient.getMassiveIbanUpdateToSyncWFId;
+import static it.gov.pagopa.pu.workflow.wf.debtposition.iban.MassiveDebtPositionWFClient.getMassiveIbanUpdateWFId;
 
 @Service
 @Slf4j

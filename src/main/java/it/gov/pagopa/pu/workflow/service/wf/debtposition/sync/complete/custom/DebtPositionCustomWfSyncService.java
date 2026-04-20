@@ -6,6 +6,8 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecution
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
+import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.DebtPositionFineClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,7 @@ public class DebtPositionCustomWfSyncService {
     if (wfExecutionConfig instanceof FineWfExecutionConfig fineWfExecutionConfig) {
       return fineClient.synchronizeFineDP(debtPositionDTO, paymentEventRequest, wfExecutionParameters.isMassive(), fineWfExecutionConfig);
     } else {
-      throw new IllegalStateException("[INVALID_CONFIG] WfExecutionConfig not supported: " + wfExecutionConfig.getClass());
+      throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_INVALID_CONFIG, "WfExecutionConfig not supported: " + wfExecutionConfig.getClass());
     }
   }
 }

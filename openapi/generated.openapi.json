@@ -2244,6 +2244,9 @@
           "category" : {
             "$ref" : "#/components/schemas/CategoryEnum"
           },
+          "code" : {
+            "type" : "string"
+          },
           "message" : {
             "type" : "string"
           },
@@ -2251,7 +2254,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "category", "message" ]
+        "required" : [ "category", "code", "message" ]
       },
       "WorkflowCreatedDTO" : {
         "type" : "object",
@@ -2292,7 +2295,8 @@
           "newPostalIban" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "newIban", "oldIban" ]
       },
       "Action" : {
         "type" : "string",

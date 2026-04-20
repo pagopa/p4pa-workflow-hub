@@ -149,7 +149,8 @@ class WorkflowServiceTest {
         () -> workflowService.getWorkflowStatus(workflowId)
       );
 
-      assertEquals("[WORKFLOW_NOT_FOUND] workflowId='test-workflow-id', runId='', workflowType='Workflow not found'", exception.getMessage());
+      assertEquals("WORKFLOW_NOT_FOUND",exception.getCode());
+      assertEquals("workflowId='test-workflow-id', runId='', workflowType='Workflow not found'", exception.getMessage());
     }
   }
 
@@ -172,7 +173,8 @@ class WorkflowServiceTest {
         () -> workflowService.getWorkflowStatus(workflowId)
       );
 
-      assertEquals("[WORKFLOW_INTERNAL_ERROR] workflowId='test-workflow-id', runId='', workflowType='Generic Error'", exception.getMessage());
+      assertEquals("WORKFLOW_INTERNAL_ERROR",exception.getCode());
+      assertEquals("workflowId='test-workflow-id', runId='', workflowType='Generic Error'", exception.getMessage());
     }
   }
 

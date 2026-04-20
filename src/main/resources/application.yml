@@ -522,6 +522,14 @@ workflow:
     retry-backoff-coefficient: "\${ORG_SIL_SERVICE_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${ORG_SIL_SERVICE_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
+  send-notification-ingestion:
+    schedule-to-start-timeout-in-seconds: "\${SEND_NOTIFICATION_INGESTION_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
+    start-to-close-timeout-in-seconds: "\${SEND_NOTIFICATION_INGESTION_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
+  # massive notices generation
   massive-notices-generation:
     start-to-close-timeout-in-seconds: "\${MASSIVE_NOTICE_GENERATION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${MASSIVE_NOTICE_GENERATION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
@@ -560,7 +568,7 @@ workflow:
     retry-backoff-coefficient: "\${ASSESSMENTS_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${ASSESSMENTS_CLASSIFICATION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  # pagopa payments reporting
+  # pagoPa payments reporting
   payments-reporting-pagopa-brokers-fetch:
     start-to-close-timeout-in-seconds: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
@@ -573,7 +581,7 @@ workflow:
     retry-backoff-coefficient: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${PAYMENTS_REPORTING_PAGOPA_ORGANIZATION_FETCH_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  # pagopa taxonomy synchronization
+  # pagoPa taxonomy synchronization
   synchronize-taxonomy-pagopa-fetch:
     start-to-close-timeout-in-seconds: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
     retry-initial-interval-in-millis: "\${SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
@@ -587,12 +595,11 @@ workflow:
     retry-backoff-coefficient: "\${SEND_NOTIFICATION_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${SEND_NOTIFICATION_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  send-notification-ingestion:
-    schedule-to-start-timeout-in-seconds: "\${SEND_NOTIFICATION_INGESTION_CONFIG_SCHEDULE_TO_START_TIMEOUT_IN_SECONDS:\${workflow.default.scheduleToStartTimeoutInSeconds}}"
-    start-to-close-timeout-in-seconds: "\${SEND_NOTIFICATION_INGESTION_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
-    retry-initial-interval-in-millis: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${SEND_NOTIFICATION_INGESTION_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+  send-notification-stream:
+    start-to-close-timeout-in-seconds: "\${SEND_NOTIFICATION_STREAM_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${SEND_NOTIFICATION_STREAM_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${SEND_NOTIFICATION_STREAM_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${SEND_NOTIFICATION_STREAM_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
   # assessments
   create-assessments:

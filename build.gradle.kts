@@ -82,7 +82,7 @@ val hibernateCoreVersion = "7.1.18.Final"
 // fix cve
 val jackson3CoreVersion = "3.1.1"
 
-val p4paActivitiesVersion = "1.187.2"
+val p4paActivitiesVersion = "1.187.3"
 
 val springCloudDepsVersion = "2025.1.1"
 
