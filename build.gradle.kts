@@ -82,7 +82,7 @@ val hibernateCoreVersion = "7.1.18.Final"
 // fix cve
 val jackson3CoreVersion = "3.1.1"
 
-val p4paActivitiesVersion = "1.187.3"
+val p4paActivitiesVersion = "1.188.2"
 
 val springCloudDepsVersion = "2025.1.1"
 
@@ -183,6 +183,12 @@ dependencies {
   mockitoAgent("org.mockito:mockito-core") { isTransitive = false }
 }
 tasks {
+  jar {
+      from("${rootProject.projectDir}") {
+          include("LICENSE.md")
+          into("META-INF")
+      }
+  }
   test {
     jvmArgs("-javaagent:${mockitoAgent.asPath}")
     testLogging.events = setOf(TestLogEvent.FAILED)

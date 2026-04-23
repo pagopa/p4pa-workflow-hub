@@ -54,5 +54,6 @@ class ScheduleToSyncMassiveIbanUpdateWFActivityImplTest {
     scheduleToSyncMassiveIbanUpdateWFActivity.scheduleToSyncMassiveIbanUpdateWF(orgId, dptoId, oldIban, newIban, oldPostalIban, newPostalIban);
 
     // Then
-    Mockito.verify(massiveDebtPositionWFClientMock).scheduleMassiveIbanUpdateToSync(expectedSignalDTO, Duration.ofMinutes(SCHEDULE_MINUTES));  }
+    Mockito.verify(massiveDebtPositionWFClientMock).scheduleMassiveIbanUpdateToSync(expectedSignalDTO, Duration.ofMinutes(SCHEDULE_MINUTES));
+  }
 }
