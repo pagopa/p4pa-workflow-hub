@@ -14,7 +14,7 @@ import java.time.Duration;
 @ExtendWith(MockitoExtension.class)
 class ScheduleMassiveNoticesFileDeletionWFActivityImplTest {
   @Mock
-  private DeleteMassiveNoticesFileWFClient deleteMassiveNoticesFileWFClientMock;;
+  private DeleteMassiveNoticesFileWFClient deleteMassiveNoticesFileWFClientMock;
 
   private ScheduleMassiveNoticesFileDeletionWFActivity scheduleMassiveNoticesFileDeletionWFActivity;
 
