@@ -174,6 +174,26 @@ class PaymentsConsumerTest {
         Utilities.extractIudsFromDescription(eventDescription).stream().toList() );
   }
 
+  @Test
+  void givenRtReceivedAndOrganizationNotFoundWhenAcceptThenSkipNotifyReceipt() {
+    // Given
+    DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(buildPaidDebtPosition())
+      .eventType(PaymentEventType.RT_RECEIVED)
+      .eventDescription("receiptId:2")
+      .build();
+
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1"))
+      .thenReturn(Optional.empty());
+
+    // When
+    paymentsConsumer.accept(paymentEventDTO);
+
+    // Then
+    Mockito.verifyNoInteractions(wfClientMock);
+    Mockito.verify(createAssessmentsWFClientMock).createAssessments(2L);
+  }
 
   private DebtPositionDTO buildPaidDebtPosition() {
     DebtPositionDTO out = DebtPositionFaker.buildDebtPositionDTO();
