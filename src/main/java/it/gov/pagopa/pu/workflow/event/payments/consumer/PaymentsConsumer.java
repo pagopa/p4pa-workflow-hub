@@ -63,22 +63,31 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
         debtPosition.getPaymentOptions().stream()
           .flatMap((PaymentOptionDTO paymentOptionDTO) -> paymentOptionDTO.getInstallments().stream())
           .filter(i -> InstallmentStatus.PAID.equals(i.getStatus()))
-          .forEach(i -> iudClassificationWFClient.notifyReceipt(
-            IudClassificationNotifyReceiptSignalDTO.builder()
-              .organizationId(debtPosition.getOrganizationId())
-              .iud(i.getIud())
-              .iuv(i.getIuv())
-              .iur(i.getIur())
-              .transferIndexes(i.getTransfers().stream()
-                .filter(t ->{
-                  Organization organization = organizationService.getOrganizationByFiscalCode(t.getOrgFiscalCode())
-                    .orElseThrow(() -> new IllegalArgumentException("[ORGANIZATION_NOT_FOUND] Organization not found with fiscalCode " + t.getOrgFiscalCode()));
-                  return debtPosition.getOrganizationId().equals(organization.getOrganizationId());
-                })
-                .map(TransferDTO::getTransferIndex)
-                .toList())
-              .build()
-          ));
+          .forEach(i -> {
+            List<Integer> transferIndexes = i.getTransfers().stream()
+              .filter(t -> {
+                Optional<Organization> orgOpt = organizationService.getOrganizationByFiscalCode(t.getOrgFiscalCode());
+                if (orgOpt.isEmpty()) {
+                  log.info("Organization not found with fiscalCode {}, skipping transfer", t.getOrgFiscalCode());
+                  return false;
+                }
+                return debtPosition.getOrganizationId().equals(orgOpt.get().getOrganizationId());
+              })
+              .map(TransferDTO::getTransferIndex)
+              .toList();
+
+            if (!transferIndexes.isEmpty()) {
+              iudClassificationWFClient.notifyReceipt(
+                IudClassificationNotifyReceiptSignalDTO.builder()
+                  .organizationId(debtPosition.getOrganizationId())
+                  .iud(i.getIud())
+                  .iuv(i.getIuv())
+                  .iur(i.getIur())
+                  .transferIndexes(transferIndexes)
+                  .build()
+              );
+            }
+          });
 
         handleCreateAssessments((DebtPositionEventDTO)paymentEventDTO, debtPosition);
         handleDeletionOfPaidInstallmentsOnPagoPa((DebtPositionEventDTO) paymentEventDTO, debtPosition);

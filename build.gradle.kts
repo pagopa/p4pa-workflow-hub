@@ -6,11 +6,11 @@ import java.util.*
 
 plugins {
   java
-  id("org.springframework.boot") version "4.0.5"
+  id("org.springframework.boot") version "4.0.6"
   id("io.spring.dependency-management") version "1.1.7"
   jacoco
   id("org.sonarqube") version "7.2.3.7755"
-  id("com.github.ben-manes.versions") version "0.53.0"
+  id("com.github.ben-manes.versions") version "0.54.0"
   id("org.openapi.generator") version "7.21.0"
   id("org.ajoberstar.grgit") version "5.3.2"
   id("com.gorylenko.gradle-git-properties") version "2.5.7"
@@ -58,31 +58,28 @@ repositories {
   }
 }
 
-val springDocOpenApiVersion = "3.0.2"
+val springDocOpenApiVersion = "3.0.3"
 val openApiToolsVersion = "0.2.10"
 val springWolfAsyncApiVersion = "1.20.0"
 val springWolfUiAsyncApiVersion = "1.20.0"
-val micrometerVersion = "1.6.4"
-val otelVersion = "1.60.1"
-val bouncycastleVersion = "1.83"
+val micrometerVersion = "1.6.5"
+val otelVersion = "1.61.0"
+val bouncycastleVersion = "1.84"
 val mapStructVersion = "1.6.3"
 val temporalVersion = "1.34.0"
 val protobufJavaVersion = "4.34.1"
 val grpcBomVersion = "1.80.0"
-val guavaVersion = "33.5.0-jre"
+val guavaVersion = "33.6.0-jre"
 val postgresJdbcVersion = "42.7.10"
 val podamVersion = "8.0.2.RELEASE"
 val caffeineVersion = "3.2.3"
 val commonsLang3Version = "3.20.0"
-val lz4JavaVersion = "1.10.4"
+val lz4JavaVersion = "1.11.0"
 
 // Downgrading in order to handle List of enums in SpringDataRest exposed queries
 val hibernateCoreVersion = "7.1.18.Final"
 
-// fix cve
-val jackson3CoreVersion = "3.1.1"
-
-val p4paActivitiesVersion = "1.188.2"
+val p4paActivitiesVersion = "1.191.3"
 
 val springCloudDepsVersion = "2025.1.1"
 
@@ -146,9 +143,6 @@ dependencies {
   implementation(platform("io.grpc:grpc-bom:${grpcBomVersion}"))
   implementation("com.google.guava:guava:$guavaVersion")
   implementation("io.opentelemetry:opentelemetry-opentracing-shim:${otelVersion}")
-
-  // CVE fix
-  implementation("tools.jackson.core:jackson-core:$jackson3CoreVersion")
 
   compileOnly("org.projectlombok:lombok")
 
@@ -241,6 +235,10 @@ springBoot {
   mainClass.value("it.gov.pagopa.pu.workflow.WorkflowApplication")
 }
 
+tasks.withType<Copy> {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 openApiGenerate {
   generatorName.set("spring")
   inputSpec.set("$rootDir/openapi/p4pa-workflow-hub.openapi.yaml")
@@ -275,12 +273,21 @@ openApiGenerate {
   )
 }
 
+var targetEnv = when (Objects.requireNonNullElse(
+  System.getProperty("targetBranch"),
+  grgit.branch.current().name
+)) {
+  "uat" -> "uat"
+  "main" -> "main"
+  else -> "develop"
+}
+
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateREGISTRIES") {
   group = "openapi"
   description = "description"
 
   generatorName.set("java")
-  remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-registries/refs/heads/$targetEnv/openapi/generated.openapi.json")
+  remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-registries.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
   apiPackage.set("it.gov.pagopa.pu.registries.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.registries.dto.generated")
@@ -303,17 +310,4 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
     )
   )
   library.set("resttemplate")
-}
-
-var targetEnv = when (Objects.requireNonNullElse(
-  System.getProperty("targetBranch"),
-  grgit.branch.current().name
-)) {
-  "uat" -> "uat"
-  "main" -> "main"
-  else -> "develop"
-}
-
-tasks.withType<Copy> {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
