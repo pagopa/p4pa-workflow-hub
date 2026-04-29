@@ -235,6 +235,10 @@ springBoot {
   mainClass.value("it.gov.pagopa.pu.workflow.WorkflowApplication")
 }
 
+tasks.withType<Copy> {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 openApiGenerate {
   generatorName.set("spring")
   inputSpec.set("$rootDir/openapi/p4pa-workflow-hub.openapi.yaml")
@@ -269,12 +273,21 @@ openApiGenerate {
   )
 }
 
+var targetEnv = when (Objects.requireNonNullElse(
+  System.getProperty("targetBranch"),
+  grgit.branch.current().name
+)) {
+  "uat" -> "uat"
+  "main" -> "main"
+  else -> "develop"
+}
+
 tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("openApiGenerateREGISTRIES") {
   group = "openapi"
   description = "description"
 
   generatorName.set("java")
-  remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-registries/refs/heads/$targetEnv/openapi/generated.openapi.json")
+  remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-registries.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
   apiPackage.set("it.gov.pagopa.pu.registries.controller.generated")
   modelPackage.set("it.gov.pagopa.pu.registries.dto.generated")
@@ -297,17 +310,4 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
     )
   )
   library.set("resttemplate")
-}
-
-var targetEnv = when (Objects.requireNonNullElse(
-  System.getProperty("targetBranch"),
-  grgit.branch.current().name
-)) {
-  "uat" -> "uat"
-  "main" -> "main"
-  else -> "develop"
-}
-
-tasks.withType<Copy> {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
