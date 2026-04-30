@@ -1,0 +1,23 @@
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.create.mapper;
+
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.dto.DebtPositionSendNotificationDTO;
+
+import java.util.List;
+
+public class SendNotification2DebtPositionSendNotificationsMapper {
+  private SendNotification2DebtPositionSendNotificationsMapper() {}
+
+  public static List<DebtPositionSendNotificationDTO> map(SendNotificationDTO sendNotificationDTO) {
+    return sendNotificationDTO.getPayments().stream()
+      .map(p -> (DebtPositionSendNotificationDTO) DebtPositionSendNotificationDTO.builder()
+        .sendNotificationId(sendNotificationDTO.getSendNotificationId())
+        .organizationId(sendNotificationDTO.getOrganizationId())
+        .debtPositionId(p.getDebtPositionId())
+        .iun(sendNotificationDTO.getIun())
+        .status(sendNotificationDTO.getStatus())
+        .noticeCodes(p.getNavList())
+        .build()
+      ).toList();
+  }
+}
