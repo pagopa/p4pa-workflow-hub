@@ -1,5 +1,5 @@
-import com.github.jk1.license.filter.*
-import com.github.jk1.license.render.*
+import com.github.jk1.license.filter.SpdxLicenseBundleNormalizer
+import com.github.jk1.license.render.XmlReportRenderer
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import java.util.*
@@ -79,7 +79,7 @@ val lz4JavaVersion = "1.11.0"
 // Downgrading in order to handle List of enums in SpringDataRest exposed queries
 val hibernateCoreVersion = "7.1.18.Final"
 
-val p4paActivitiesVersion = "1.191.6"
+val p4paActivitiesVersion = "1.192.0"
 
 val springCloudDepsVersion = "2025.1.1"
 

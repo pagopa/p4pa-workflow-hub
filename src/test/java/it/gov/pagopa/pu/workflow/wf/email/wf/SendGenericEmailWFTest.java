@@ -43,13 +43,14 @@ class SendGenericEmailWFTest {
   @Test
   void test(){
     // Given
+    Long brokerId = 1L;
     EmailDTO emailDTO = new EmailDTO();
 
     // When
-    workflow.sendGenericEmail(emailDTO);
+    workflow.sendGenericEmail(emailDTO, brokerId);
 
     // Then
     Mockito.verify(sendEmailActivityMock)
-      .sendEmail(Mockito.same(emailDTO));
+      .sendEmail(Mockito.same(emailDTO), Mockito.eq(brokerId));
   }
 }
