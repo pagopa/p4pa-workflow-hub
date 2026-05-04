@@ -31,9 +31,9 @@ public class SendGenericEmailWFImpl implements SendGenericEmailWF, ApplicationCo
   }
 
   @Override
-  public void sendGenericEmail(EmailDTO emailDTO) {
+  public void sendGenericEmail(EmailDTO emailDTO, Long brokerId) {
     log.info("Sending email");
-    sendEmailActivity.sendEmail(emailDTO);
+    sendEmailActivity.sendEmail(emailDTO, brokerId);
     log.info("Completed email send");
   }
 
