@@ -79,7 +79,7 @@ val lz4JavaVersion = "1.11.0"
 // Downgrading in order to handle List of enums in SpringDataRest exposed queries
 val hibernateCoreVersion = "7.1.18.Final"
 
-val p4paActivitiesVersion = "1.192.0"
+val p4paActivitiesVersion = "1.192.1"
 
 val springCloudDepsVersion = "2025.1.1"
 
