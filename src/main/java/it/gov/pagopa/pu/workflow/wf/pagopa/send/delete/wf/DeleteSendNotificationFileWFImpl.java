@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.wf;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.delete.DeleteSendNotificationFileActivity;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.config.DeleteSendNotificationFileWfConfig;
@@ -14,7 +15,6 @@ import org.springframework.context.ApplicationContextAware;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION)
@@ -46,7 +46,7 @@ public class DeleteSendNotificationFileWFImpl implements DeleteSendNotificationF
   private void waitForNextExpirationDate(String sendNotificationId, OffsetDateTime nextFileExpirationDate) {
     OffsetDateTime now = OffsetDateTime.ofInstant(
       Instant.ofEpochMilli(Workflow.currentTimeMillis()),
-      ZoneOffset.UTC
+      Utilities.ZONEID
     );
     Duration waitDuration = Duration.between(now, nextFileExpirationDate);
 

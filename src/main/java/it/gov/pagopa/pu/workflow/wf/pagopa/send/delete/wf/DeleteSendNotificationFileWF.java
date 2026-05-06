@@ -8,6 +8,7 @@ import io.temporal.workflow.WorkflowMethod;
  * <p>
  * This workflow coordinates a series of activities for deleting the expired notification files
  * </p>
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/2626388056/Notifica+SEND+New>Confluence page</a>
  * */
 @WorkflowInterface
 public interface DeleteSendNotificationFileWF {
