@@ -50,7 +50,7 @@ public class DeleteSendNotificationFileWFImpl implements DeleteSendNotificationF
     );
     Duration waitDuration = Duration.between(now, nextFileExpirationDate);
 
-    if (!waitDuration.isNegative() && !waitDuration.isZero()) {
+    if (waitDuration.isPositive()) {
       log.info("Sleeping until {} for deleteSendNotificationExpiredFiles of sendNotificationId {}", nextFileExpirationDate, sendNotificationId);
       Workflow.sleep(waitDuration);
     }
