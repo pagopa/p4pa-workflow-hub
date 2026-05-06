@@ -2,10 +2,7 @@ package it.gov.pagopa.pu.workflow.connector.organization.config;
 
 import it.gov.pagopa.payhub.activities.config.rest.RestTemplateConfig;
 import it.gov.pagopa.payhub.activities.connector.organization.config.OrganizationApiClientConfig;
-import it.gov.pagopa.pu.organization.client.generated.BrokerSearchControllerApi;
-import it.gov.pagopa.pu.organization.client.generated.OrganizationEntityControllerApi;
-import it.gov.pagopa.pu.organization.client.generated.OrganizationSearchControllerApi;
-import it.gov.pagopa.pu.organization.client.generated.TaxonomySearchControllerApi;
+import it.gov.pagopa.pu.organization.client.generated.*;
 import it.gov.pagopa.pu.organization.generated.ApiClient;
 import it.gov.pagopa.pu.organization.generated.BaseApi;
 import jakarta.annotation.PreDestroy;
@@ -25,6 +22,8 @@ public class OrganizationApisHolder {
   private final TaxonomySearchControllerApi taxonomySearchControllerApi;
 
   private final BrokerSearchControllerApi brokerSearchControllerApi;
+
+  private final OrganizationApi organizationApi;
 
   private final ThreadLocal<String> bearerTokenHolder = new ThreadLocal<>();
 
@@ -46,6 +45,7 @@ public class OrganizationApisHolder {
     this.taxonomySearchControllerApi = new TaxonomySearchControllerApi(apiClient);
     this.organizationEntityControllerApi = new OrganizationEntityControllerApi(apiClient);
     this.brokerSearchControllerApi = new BrokerSearchControllerApi(apiClient);
+    this.organizationApi = new OrganizationApi(apiClient);
   }
 
   @PreDestroy
@@ -70,6 +70,10 @@ public class OrganizationApisHolder {
 
   public BrokerSearchControllerApi getBrokerSearchControllerApi(String accessToken) {
     return getApi(accessToken, brokerSearchControllerApi);
+  }
+
+  public OrganizationApi getOrganizationApi(String accessToken) {
+    return getApi(accessToken, organizationApi);
   }
 
   private <T extends BaseApi> T getApi(String accessToken, T api) {

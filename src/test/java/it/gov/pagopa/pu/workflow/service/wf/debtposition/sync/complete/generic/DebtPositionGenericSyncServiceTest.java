@@ -85,13 +85,15 @@ class DebtPositionGenericSyncServiceTest {
   private void testInvokeWorkflowThenInvokeWfClient(PagoPaInteractionModel  interactionModel, boolean massive, TriFunction<DebtPositionDTO, PaymentEventRequestDTO, GenericWfExecutionConfig, WorkflowCreatedDTO> expectedWfClientInvoke) {
     // Given
     String accessToken = "ACCESSTOKEN";
+    String stationId = "STATIONID";
     long organizationId = 1L;
     DebtPositionDTO debtPosition = new DebtPositionDTO();
     debtPosition.setOrganizationId(organizationId);
+    debtPosition.setStationId(stationId);
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
     GenericWfExecutionConfig wfExecutionConfig = new GenericWfExecutionConfig();
 
-    Mockito.when(interactionModelRetrieverServiceMock.retrieveInteractionModel(organizationId, accessToken))
+    Mockito.when(interactionModelRetrieverServiceMock.retrieveInteractionModel(organizationId, stationId, accessToken))
       .thenReturn(interactionModel);
 
     debtPosition.setFlagPuPagoPaPayment(true);
