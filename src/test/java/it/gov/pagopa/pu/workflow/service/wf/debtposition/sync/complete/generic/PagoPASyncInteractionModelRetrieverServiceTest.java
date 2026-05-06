@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.complete.generic;
 
-import it.gov.pagopa.pu.organization.dto.generated.Broker;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStationDTO;
 import it.gov.pagopa.pu.organization.dto.generated.PagoPaInteractionModel;
-import it.gov.pagopa.pu.workflow.connector.organization.service.BrokerService;
+import it.gov.pagopa.pu.workflow.connector.organization.service.OrganizationService;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,31 +19,32 @@ import java.util.Optional;
 class PagoPASyncInteractionModelRetrieverServiceTest {
 
   @Mock
-  private BrokerService brokerServiceMock;
+  private OrganizationService organizationServiceMock;
 
   private PagoPASyncInteractionModelRetrieverService service;
 
   @BeforeEach
   void init(){
-    service = new PagoPASyncInteractionModelRetrieverService(brokerServiceMock);
+    service = new PagoPASyncInteractionModelRetrieverService(organizationServiceMock);
   }
 
   @AfterEach
   void verifyNoMoreInteractions(){
-    Mockito.verifyNoMoreInteractions(brokerServiceMock);
+    Mockito.verifyNoMoreInteractions(organizationServiceMock);
   }
 
   @Test
-  void givenNotExistentBrokerWhenRetrieveInteractionModelThenIllegalStateException(){
+  void givenNotExistentStationWhenRetrieveInteractionModelThenIllegalStateException(){
     // Given
     long organizationId = 1L;
     String accessToken = "ACCESSTOKEN";
+    String stationId = "STATIONNULL";
 
-    Mockito.when(brokerServiceMock.findByBrokeredOrganizationId(organizationId, accessToken))
+    Mockito.when(organizationServiceMock.findOrganizationStation(organizationId, stationId, accessToken))
       .thenReturn(Optional.empty());
 
     // When, Then
-    Assertions.assertThrows(IllegalStateBusinessException.class, () -> service.retrieveInteractionModel(organizationId, accessToken));
+    Assertions.assertThrows(IllegalStateBusinessException.class, () -> service.retrieveInteractionModel(organizationId, stationId, accessToken));
   }
 
   @Test
@@ -51,17 +52,18 @@ class PagoPASyncInteractionModelRetrieverServiceTest {
     // Given
     long organizationId = 1L;
     String accessToken = "ACCESSTOKEN";
+    String stationId = "STATIONID";
 
-    Broker broker = new Broker();
-    broker.setPagoPaInteractionModel(PagoPaInteractionModel .SYNC);
+    OrganizationStationDTO organizationStationDTO = new OrganizationStationDTO();
+    organizationStationDTO.setPagoPaInteractionModel(PagoPaInteractionModel.SYNC);
 
-    Mockito.when(brokerServiceMock.findByBrokeredOrganizationId(organizationId, accessToken))
-      .thenReturn(Optional.of(broker));
+    Mockito.when(organizationServiceMock.findOrganizationStation(organizationId, stationId, accessToken))
+      .thenReturn(Optional.of(organizationStationDTO));
 
     // When
-    PagoPaInteractionModel  result = service.retrieveInteractionModel(organizationId, accessToken);
+    PagoPaInteractionModel  result = service.retrieveInteractionModel(organizationId, stationId, accessToken);
 
     // Then
-    Assertions.assertSame(broker.getPagoPaInteractionModel(), result);
+    Assertions.assertSame(organizationStationDTO.getPagoPaInteractionModel(), result);
   }
 }

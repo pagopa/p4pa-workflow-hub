@@ -23,4 +23,6 @@ public class ErrorCodeConstants {
   public static final String ERROR_CODE_SEND_DELIVERY_CONFLICT = "SEND_DELIVERY_CONFLICT";
   public static final String ERROR_CODE_SEND_STATUS_ERROR = "SEND_STATUS_ERROR";
 
+  public static final String ERROR_CODE_STATION_NOT_FOUND = "STATION_NOT_FOUND";
+
 }
