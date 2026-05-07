@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.connector.organization.service;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStationDTO;
 import it.gov.pagopa.pu.workflow.connector.organization.client.OrganizationSearchClient;
 import java.util.Optional;
 import org.springframework.cache.annotation.CacheConfig;
@@ -32,5 +33,11 @@ public class OrganizationServiceImpl implements OrganizationService {
   @Override
   public Organization getOrganizationById(Long organizationId, String accessToken) {
     return organizationSearchClient.findById(organizationId, accessToken);
+  }
+
+  @Override
+  public Optional<OrganizationStationDTO> findOrganizationStation(Long organizationId, String stationId, String accessToken) {
+    return Optional.ofNullable(
+      organizationSearchClient.findOrganizationStation(organizationId, stationId, accessToken));
   }
 }
