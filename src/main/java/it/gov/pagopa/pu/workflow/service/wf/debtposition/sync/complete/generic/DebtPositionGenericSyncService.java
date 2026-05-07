@@ -29,7 +29,7 @@ public class DebtPositionGenericSyncService {
       return wfClient.synchronizeNoPagoPADP(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
     }
 
-    return switch (interactionModelRetrieverService.retrieveInteractionModel(debtPositionDTO.getOrganizationId(), accessToken)) {
+    return switch (interactionModelRetrieverService.retrieveInteractionModel(debtPositionDTO.getOrganizationId(), debtPositionDTO.getStationId(), accessToken)) {
       case SYNC ->
         wfClient.synchronizeDPSync(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
       case SYNC_ACA ->

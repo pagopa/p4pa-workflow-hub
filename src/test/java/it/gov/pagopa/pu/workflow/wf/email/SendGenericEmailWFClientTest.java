@@ -42,6 +42,7 @@ class SendGenericEmailWFClientTest {
   @Test
   void whenSendEmailThenOk() {
     // Given
+    Long brokerId = 1L;
     EmailDTO emailDTO = new EmailDTO();
     String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("SendGenericEmailWF-" + emailDTO.hashCode(), "RUNID");
@@ -49,14 +50,14 @@ class SendGenericEmailWFClientTest {
     Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(SendGenericEmailWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
-    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, emailDTO);
+    TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, emailDTO, brokerId);
 
     // When
-    WorkflowCreatedDTO result = client.sendEmail(emailDTO);
+    WorkflowCreatedDTO result = client.sendEmail(emailDTO, brokerId);
 
     // Then
     Assertions.assertEquals(expectedResult, result);
-    Mockito.verify(wfMock).sendGenericEmail(Mockito.same(emailDTO));
+    Mockito.verify(wfMock).sendGenericEmail(Mockito.same(emailDTO), Mockito.eq(brokerId));
 
     TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendGenericEmailWFImpl.class);
   }

@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.connector.organization.service;
 
 import it.gov.pagopa.payhub.activities.connector.auth.AuthnService;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
+import it.gov.pagopa.pu.organization.dto.generated.OrganizationStationDTO;
 import it.gov.pagopa.pu.workflow.connector.organization.client.OrganizationSearchClient;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -89,5 +90,22 @@ class OrganizationServiceTest {
     Organization result = organizationService.getOrganizationById(organizationId, accessToken);
 
     assertSame(expectedResult, result);
+  }
+
+  @Test
+  void whenFindOrganizationStationThenInvokeClient(){
+    // Given
+    Long organizationId = 1L;
+    String stationId = "STATIONID";
+    OrganizationStationDTO expectedResult = new OrganizationStationDTO();
+    Mockito.when(organizationSearchClientMock.findOrganizationStation(organizationId, stationId, accessToken))
+      .thenReturn(expectedResult);
+
+    // When
+    Optional<OrganizationStationDTO> result = organizationService.findOrganizationStation(organizationId, stationId, accessToken);
+
+    // Then
+    Assertions.assertTrue(result.isPresent());
+    assertSame(expectedResult, result.get());
   }
 }
