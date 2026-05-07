@@ -44,7 +44,7 @@ class DeleteSendNotificationFileWFClientTest {
   void whenStartDeleteSendNotificationExpiredFilesThenOk() {
     // Given
     String sendNotificationId = "sendNotificationId";
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("DeleteSendNotificationFileWF-"+sendNotificationId, "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(DeleteSendNotificationFileWF.class, taskQueue, expectedResult.getWorkflowId()))

@@ -24,7 +24,7 @@ public class DeleteSendNotificationFileWFClient {
 
   public WorkflowCreatedDTO startDeleteSendNotificationExpiredFiles(String sendNotificationId) {
     log.debug("Starting delete send notification expired files process having id {}", sendNotificationId);
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     String workflowId = generateWorkflowId(sendNotificationId, DeleteSendNotificationFileWF.class);
 
     DeleteSendNotificationFileWF workflow = workflowService.buildWorkflowStubToStartNew(
