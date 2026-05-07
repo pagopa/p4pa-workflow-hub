@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY)
 public class DeleteSendNotificationFileWFImpl implements DeleteSendNotificationFileWF, ApplicationContextAware {
   private DeleteSendNotificationFileActivity deleteSendNotificationFileActivity;
 

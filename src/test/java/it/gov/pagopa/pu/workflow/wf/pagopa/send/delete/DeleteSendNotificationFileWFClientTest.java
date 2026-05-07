@@ -5,8 +5,8 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.wf.SendNotificationProcessWFImpl;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.wf.DeleteSendNotificationFileWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.wf.DeleteSendNotificationFileWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,7 @@ class DeleteSendNotificationFileWFClientTest {
     // Then
     assertEquals(expectedResult, result);
 
-    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SendNotificationProcessWFImpl.class);
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, DeleteSendNotificationFileWFImpl.class);
   }
 
 }
