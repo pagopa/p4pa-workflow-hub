@@ -4,6 +4,7 @@ import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfEx
 import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
+import it.gov.pagopa.pu.workflow.utilities.Constants;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.SynchronizeDebtPositionWfClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,8 @@ public class DebtPositionGenericSyncService {
       debtPositionDTO.getDebtPositionId(),
       paymentEventRequest!=null? paymentEventRequest.getPaymentEventType() : null);
 
-    if (Boolean.FALSE.equals(debtPositionDTO.getFlagPuPagoPaPayment())) {
+    if (Boolean.FALSE.equals(debtPositionDTO.getFlagPuPagoPaPayment())
+      || Constants.UNKNOWN_STATION_ID.equals(debtPositionDTO.getStationId())) {
       return wfClient.synchronizeNoPagoPADP(debtPositionDTO, paymentEventRequest, wfExecutionConfig);
     }
 
