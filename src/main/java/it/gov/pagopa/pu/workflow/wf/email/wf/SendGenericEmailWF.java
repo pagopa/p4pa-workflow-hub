@@ -12,5 +12,5 @@ import it.gov.pagopa.payhub.activities.dto.email.EmailDTO;
 public interface SendGenericEmailWF {
 
     @WorkflowMethod
-    void sendGenericEmail(EmailDTO emailDTO, Long brokerId);
+    void sendGenericEmail(EmailDTO emailDTO);
 }
