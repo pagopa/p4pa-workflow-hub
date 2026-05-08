@@ -15,4 +15,6 @@ public class Constants {
    * Prefix of legal fact id, to be removed before passing legalFactId as parameter to SEND API endpoints
    */
   public static final String LEGAL_FACT_ID_PREFIX = "safestorage://";
+
+  public static final String UNKNOWN_STATION_ID = "UNKNOWN";
 }
