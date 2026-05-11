@@ -23,8 +23,8 @@ public class SendGenericEmailWFClient {
     this.workflowClientService = workflowClientService;
   }
 
-  public WorkflowCreatedDTO sendEmail(EmailDTO emailDTO, Long brokerId) {
-    log.info("Sending email");
+  public WorkflowCreatedDTO sendEmail(EmailDTO emailDTO) {
+    log.info("Sending email using broker {}", emailDTO.getBrokerId());
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
     String workflowId  = generateWorkflowId(String.valueOf(emailDTO.hashCode()), SendGenericEmailWF.class);
@@ -33,6 +33,6 @@ public class SendGenericEmailWFClient {
       SendGenericEmailWF.class,
       taskQueue,
       workflowId);
-    return workflowClientService.start(workflow::sendGenericEmail, emailDTO, brokerId);
+    return workflowClientService.start(workflow::sendGenericEmail, emailDTO);
   }
 }
