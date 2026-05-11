@@ -1,12 +1,12 @@
-package it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.wf;
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.wfsendlegalfact;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.delete.DeleteSendNotificationFileActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.delete.DeleteSendLegalFactFileActivity;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.config.DeleteSendNotificationFileWfConfig;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.config.DeleteSendLegalFactFileWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -18,8 +18,8 @@ import java.time.OffsetDateTime;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY)
-public class DeleteSendNotificationFileWFImpl implements DeleteSendNotificationFileWF, ApplicationContextAware {
-  private DeleteSendNotificationFileActivity deleteSendNotificationFileActivity;
+public class DeleteSendLegalFactFileWFImpl implements DeleteSendLegalFactFileWF, ApplicationContextAware {
+  private DeleteSendLegalFactFileActivity deleteSendLegalFactFileActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -29,15 +29,15 @@ public class DeleteSendNotificationFileWFImpl implements DeleteSendNotificationF
    */
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    DeleteSendNotificationFileWfConfig wfConfig = applicationContext.getBean(DeleteSendNotificationFileWfConfig.class);
-    deleteSendNotificationFileActivity = wfConfig.buildDeleteSendNotificationFileActivityStub();
+    DeleteSendLegalFactFileWfConfig wfConfig = applicationContext.getBean(DeleteSendLegalFactFileWfConfig.class);
+    deleteSendLegalFactFileActivity = wfConfig.buildDeleteSendLegalFactFileActivityStub();
   }
 
   @Override
-  public void deleteSendNotificationExpiredFiles(String sendNotificationId) {
-    log.info("Start deleteSendNotificationExpiredFiles Workflow for sendNotificationId {}.", sendNotificationId);
+  public void deleteSendLegalFactExpiredFiles(String sendNotificationId) {
+    log.info("Start deleteSendLegalFactExpiredFiles Workflow for sendNotificationId {}.", sendNotificationId);
 
-    OffsetDateTime nextFileExpirationDate = deleteSendNotificationFileActivity.deleteSendNotificationExpiredFiles(sendNotificationId);
+    OffsetDateTime nextFileExpirationDate = deleteSendLegalFactFileActivity.deleteSendLegalFactFile(sendNotificationId);
     if(nextFileExpirationDate != null) {
       waitForNextExpirationDate(sendNotificationId, nextFileExpirationDate);
     }
@@ -51,7 +51,7 @@ public class DeleteSendNotificationFileWFImpl implements DeleteSendNotificationF
     Duration waitDuration = Duration.between(now, nextFileExpirationDate);
 
     if (waitDuration.isPositive()) {
-      log.info("Sleeping until {} for deleteSendNotificationExpiredFiles of sendNotificationId {}", nextFileExpirationDate, sendNotificationId);
+      log.info("Sleeping until {} for deleteSendLegalFactExpiredFiles of sendNotificationId {}", nextFileExpirationDate, sendNotificationId);
       Workflow.sleep(waitDuration);
     }
     Workflow.continueAsNew(sendNotificationId);
