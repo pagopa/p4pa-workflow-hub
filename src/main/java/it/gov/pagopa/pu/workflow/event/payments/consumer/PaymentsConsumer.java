@@ -12,7 +12,6 @@ import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClien
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
-import it.gov.pagopa.pu.workflow.wf.pagopa.paidinstallments.DeletePaidInstallmentsOnPagoPaWFClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -32,20 +31,17 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
   private final CreateAssessmentsWFClient createAssessmentsWFClient;
   private final CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient;
   private final OrganizationService organizationService;
-  private final DeletePaidInstallmentsOnPagoPaWFClient deletePaidInstallmentsOnPagoPaWFClient;
 
   public PaymentsConsumer(
     IudClassificationWFClient iudClassificationWFClient,
     CreateAssessmentsWFClient createAssessmentsWFClient,
     CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient,
-    OrganizationService organizationService,
-    DeletePaidInstallmentsOnPagoPaWFClient deletePaidInstallmentsOnPagoPaWFClient
+    OrganizationService organizationService
   ) {
     this.iudClassificationWFClient = iudClassificationWFClient;
     this.createAssessmentsWFClient = createAssessmentsWFClient;
     this.createAssessmentsRegistryWFClient = createAssessmentsRegistryWFClient;
     this.organizationService = organizationService;
-    this.deletePaidInstallmentsOnPagoPaWFClient = deletePaidInstallmentsOnPagoPaWFClient;
   }
 
   @Override
@@ -90,7 +86,6 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
           });
 
         handleCreateAssessments((DebtPositionEventDTO)paymentEventDTO, debtPosition);
-        handleDeletionOfPaidInstallmentsOnPagoPa((DebtPositionEventDTO) paymentEventDTO, debtPosition);
       } else {
         log.error("Unexpected payload related to RT_RECEIVED event: provided {} having payload type {}"
           , paymentEventDTO.getClass().getName(),
@@ -103,14 +98,6 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
     Set<Long> receiptIds = extractReceiptIdsFromEventDescription(event, debtPosition);
     if (!receiptIds.isEmpty()) {
       receiptIds.forEach(createAssessmentsWFClient::createAssessments);
-    }
-  }
-
-  private void handleDeletionOfPaidInstallmentsOnPagoPa(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
-    Set<Long> receiptIds =  extractReceiptIdsFromEventDescription(event, debtPosition);
-
-    if (!receiptIds.isEmpty()) {
-      receiptIds.forEach(receiptId -> deletePaidInstallmentsOnPagoPaWFClient.deletePaidInstallments(debtPosition, receiptId));
     }
   }
 
