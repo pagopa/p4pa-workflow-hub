@@ -6,6 +6,7 @@ import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import io.temporal.api.workflow.v1.WorkflowExecutionInfo;
 import io.temporal.client.WorkflowClient;
 import io.temporal.internal.client.WorkflowClientHelper;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
@@ -37,10 +38,10 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
-
 @SpringBootTest(classes = {WorkflowApplication.class,
   // loading real implementation to test NotRetryable extension
-  UpdateIngestionFlowStatusActivityImpl.class})
+  UpdateIngestionFlowStatusActivityImpl.class,
+  IngestionFlowFileProcessingLockerActivityImpl.class})
 @TestPropertySource(properties = {
   "spring.datasource.driver-class-name=org.h2.Driver",
   "spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1",
@@ -55,6 +56,7 @@ import static org.mockito.Mockito.*;
   "spring.temporal.workers[0].activity-beans[0]: updateIngestionFlowStatusActivityImpl",
   "spring.temporal.workers[0].activity-beans[1]: fileActivityMock",
   "spring.temporal.workers[0].activity-beans[2]: emailActivityMock",
+  "spring.temporal.workers[0].activity-beans[3]: ingestionFlowFileProcessingLockerActivityImpl",
 
   "workflow.base-ingestion-flow.retry-maximum-attempts: 3",
   "workflow.base-ingestion-flow.retry-maximum-interval: 100",
@@ -96,18 +98,21 @@ class TemporalSpringBootIntegrationTest {
   // Using real UpdateIngestionFlowStatusActivityImpl which depends on the following
   @MockitoBean
   private IngestionFlowFileService ingestionFlowFileServiceMock;
+  @MockitoSpyBean
+  private IngestionFlowFileProcessingLockerActivityImpl ingestionFlowFileProcessingLockerActivityImpl;
 
   @Autowired
   private PaymentsReportingIngestionWFClient workflowClient;
 
   @AfterEach
-  void verifyNoMoreInteractions(){
+  void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
       fileActivityMock,
       ingestionFlowFileServiceMock,
       emailActivityMock,
       statusActivitySpy,
-      iufClassificationWFClientMock
+      iufClassificationWFClientMock,
+      ingestionFlowFileProcessingLockerActivityImpl
     );
   }
 
@@ -127,6 +132,8 @@ class TemporalSpringBootIntegrationTest {
       .processedRows(result.getProcessedRows())
       .build();
 
+    when(ingestionFlowFileProcessingLockerActivityImpl.acquireIngestionFlowFileProcessingLock(anyLong()))
+      .thenReturn(true);
     when(fileActivityMock.processFile(anyLong())).thenReturn(result);
 
     when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
@@ -136,46 +143,44 @@ class TemporalSpringBootIntegrationTest {
 
     waitUntilWfCompletion(wfExec);
 
-    verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    verify(ingestionFlowFileServiceMock).updateProcessingIfNoOtherProcessing(anyLong());
+    verify(ingestionFlowFileProcessingLockerActivityImpl)
+      .acquireIngestionFlowFileProcessingLock(1L);
     verify(fileActivityMock).processFile(1L);
     verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
-    verify(ingestionFlowFileServiceMock).updateStatus(1L, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
+    verify(ingestionFlowFileServiceMock).updateStatus(1L,IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
     verify(emailActivityMock).sendIngestionFlowFileCompleteEmail(1L, true);
-    verify(iufClassificationWFClientMock)
-      .notifyPaymentsReporting(new IufClassificationNotifyPaymentsReportingSignalDTO(result.getOrganizationId(), result.getIuf(), result.getTransfers()));
-  }
+    verify(iufClassificationWFClientMock).notifyPaymentsReporting(new IufClassificationNotifyPaymentsReportingSignalDTO( result.getOrganizationId(), result.getIuf(), result.getTransfers()));
+ }
 
   @Test
   void givenNotRetryableExceptionWhenExecuteWfThenStopExecutionWithoutRetries() {
-    WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
-    waitUntilWfFailed(wfExec);
-
-    verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
-  }
-
-  @Test
-  void givenNotRetryableExceptionExtensionWhenExecuteWfThenStopExecutionWithoutRetries() {
-    when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
-      .thenThrow(new NotRetryableActivityException("extension"){});
+    when(ingestionFlowFileProcessingLockerActivityImpl.acquireIngestionFlowFileProcessingLock(anyLong())).thenThrow(new NotRetryableActivityException("exception"));
 
     WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
     waitUntilWfFailed(wfExec);
 
-    verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    verify(ingestionFlowFileServiceMock).updateStatus(anyLong(), any(), any(), any());
+    verify(ingestionFlowFileServiceMock).updateProcessingIfNoOtherProcessing(anyLong());
+    verify(ingestionFlowFileProcessingLockerActivityImpl).acquireIngestionFlowFileProcessingLock(1L);
+    verifyNoInteractions(fileActivityMock, emailActivityMock, iufClassificationWFClientMock, statusActivitySpy);
   }
 
   @Test
-  void givenRetryableExceptionWhenExecuteWfThenRetrieActivityUntilMax() {
+  void givenRetryableExceptionWhenExecuteWfThenRetryActivityUntilMax() {
+    when(ingestionFlowFileProcessingLockerActivityImpl
+      .acquireIngestionFlowFileProcessingLock(anyLong())).thenReturn(true);
     when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenThrow(new RuntimeException("RetryableActivityException"));
 
     WorkflowCreatedDTO wfExec = workflowClient.ingest(1L);
     waitUntilWfFailed(wfExec);
 
-    verify(statusActivitySpy, times(3)).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
+    verify(ingestionFlowFileProcessingLockerActivityImpl)
+      .acquireIngestionFlowFileProcessingLock(1L);
+    verify(ingestionFlowFileServiceMock).updateProcessingIfNoOtherProcessing(anyLong());
+    verify(fileActivityMock).processFile(1L);
+    verify(statusActivitySpy, times(3)).updateIngestionFlowFileStatus(
+      eq(1L), eq(IngestionFlowFileStatus.PROCESSING), any(), any());
     verify(ingestionFlowFileServiceMock, times(3)).updateStatus(anyLong(), any(), any(), any());
   }
 
