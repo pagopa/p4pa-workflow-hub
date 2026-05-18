@@ -1,4 +1,4 @@
-package it.gov.pagopa.pu.workflow.wf.pagopa.paidinstallments.config;
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.config;
 
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
 import org.junit.jupiter.api.Test;
@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-class DeletePaidInstallmentsOnPagoPaWfConfigTest {
+class DeleteSendLegalFactFileWfConfigTest {
 
-  private final DeletePaidInstallmentsOnPagoPaWfConfig config = new DeletePaidInstallmentsOnPagoPaWfConfig();
+  private final DeleteSendLegalFactFileWfConfig config = new DeleteSendLegalFactFileWfConfig();
 
   private final Map<Class<?>, Class<?>> localActivityInterface2Impl = Map.of();
 
@@ -16,5 +16,4 @@ class DeletePaidInstallmentsOnPagoPaWfConfigTest {
   void testTaskQueueAlignment() throws InvocationTargetException, IllegalAccessException {
     TemporalTestUtils.verifyActivityStubConfiguration(config, localActivityInterface2Impl);
   }
-
 }

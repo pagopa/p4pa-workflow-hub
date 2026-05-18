@@ -10,13 +10,10 @@ import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.InstallmentFaker;
 import it.gov.pagopa.pu.workflow.utils.faker.PaymentOptionFaker;
-import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClient;
+import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
-import java.util.Optional;
-
-import it.gov.pagopa.pu.workflow.wf.pagopa.paidinstallments.DeletePaidInstallmentsOnPagoPaWFClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentsConsumerTest {
@@ -39,8 +37,6 @@ class PaymentsConsumerTest {
   private CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClientMock;
   @Mock
   private OrganizationService organizationServiceMock;
-  @Mock
-  private DeletePaidInstallmentsOnPagoPaWFClient deletePaidInstallmentsOnPagoPaWFClientMock;
 
   private PaymentsConsumer paymentsConsumer;
 
@@ -49,8 +45,7 @@ class PaymentsConsumerTest {
     this.paymentsConsumer = new PaymentsConsumer(wfClientMock,
       createAssessmentsWFClientMock,
       createAssessmentsRegistryWFClientMock,
-      organizationServiceMock,
-      deletePaidInstallmentsOnPagoPaWFClientMock);
+      organizationServiceMock);
   }
 
   @AfterEach
