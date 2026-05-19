@@ -30,17 +30,25 @@ public abstract class BaseOrganizationSequentialIngestionFlowFileWFImpl<T extend
     while (!getIngestionFlowFileProcessingLockerActivity().acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)) {
       attemptCounter++;
 
-      if (attemptCounter >= LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY) {
+      if (attemptCounter >= getLockAttemptsBeforeCleanWfHistory()) {
         log.info("Max attempts reached, continuing as new for ingestionFlowFileId {}",
           ingestionFlowFileId);
         Workflow.continueAsNew(ingestionFlowFileId);
       }
 
       log.info("Lock not acquired, retrying for ingestionFlowFileId {}", ingestionFlowFileId);
-      Workflow.sleep(SLEEP_BETWEEN_ACQUIRE_LOCK);
+      Workflow.sleep(getSleepBetweenAcquireLock());
     }
   }
 
   /** Returns the activity stub for acquiring the processing lock */
   protected abstract IngestionFlowFileProcessingLockerActivity getIngestionFlowFileProcessingLockerActivity();
+
+  protected Duration getSleepBetweenAcquireLock(){
+    return SLEEP_BETWEEN_ACQUIRE_LOCK;
+  }
+
+  protected int getLockAttemptsBeforeCleanWfHistory(){
+    return LOCK_ATTEMPTS_BEFORE_CLEAN_WF_HISTORY;
+  }
 }
