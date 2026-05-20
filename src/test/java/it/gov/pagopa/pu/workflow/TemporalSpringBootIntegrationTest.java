@@ -9,6 +9,7 @@ import io.temporal.internal.client.WorkflowClientHelper;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivityImpl;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.HandlePaymentsReportingDeletionActivityImpl;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivityImpl;
 import it.gov.pagopa.payhub.activities.connector.processexecutions.IngestionFlowFileService;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
@@ -41,7 +42,9 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = {WorkflowApplication.class,
   // loading real implementation to test NotRetryable extension
   UpdateIngestionFlowStatusActivityImpl.class,
-  IngestionFlowFileProcessingLockerActivityImpl.class})
+  IngestionFlowFileProcessingLockerActivityImpl.class,
+  HandlePaymentsReportingDeletionActivityImpl.class
+})
 @TestPropertySource(properties = {
   "spring.datasource.driver-class-name=org.h2.Driver",
   "spring.datasource.url=jdbc:h2:mem:db;DB_CLOSE_DELAY=-1",
@@ -57,6 +60,7 @@ import static org.mockito.Mockito.*;
   "spring.temporal.workers[0].activity-beans[1]: fileActivityMock",
   "spring.temporal.workers[0].activity-beans[2]: emailActivityMock",
   "spring.temporal.workers[0].activity-beans[3]: ingestionFlowFileProcessingLockerActivityImpl",
+  "spring.temporal.workers[0].activity-beans[4]: handlePaymentsReportingDeletionActivityImpl",
 
   "workflow.base-ingestion-flow.retry-maximum-attempts: 3",
   "workflow.base-ingestion-flow.retry-maximum-interval: 100",
@@ -100,6 +104,8 @@ class TemporalSpringBootIntegrationTest {
   private IngestionFlowFileService ingestionFlowFileServiceMock;
   @MockitoSpyBean
   private IngestionFlowFileProcessingLockerActivityImpl ingestionFlowFileProcessingLockerActivityImpl;
+  @MockitoBean
+  private HandlePaymentsReportingDeletionActivityImpl handlePaymentsReportingDeletionActivityImpl;
 
   @Autowired
   private PaymentsReportingIngestionWFClient workflowClient;
@@ -112,7 +118,8 @@ class TemporalSpringBootIntegrationTest {
       emailActivityMock,
       statusActivitySpy,
       iufClassificationWFClientMock,
-      ingestionFlowFileProcessingLockerActivityImpl
+      ingestionFlowFileProcessingLockerActivityImpl,
+      handlePaymentsReportingDeletionActivityImpl
     );
   }
 
@@ -135,6 +142,8 @@ class TemporalSpringBootIntegrationTest {
     when(ingestionFlowFileProcessingLockerActivityImpl.acquireIngestionFlowFileProcessingLock(anyLong()))
       .thenReturn(true);
     when(fileActivityMock.processFile(anyLong())).thenReturn(result);
+    when(handlePaymentsReportingDeletionActivityImpl.handlePaymentsReportingDeletion(anyLong(), anyString(), anyLong()))
+      .thenReturn(List.of());
 
     when(ingestionFlowFileServiceMock.updateStatus(anyLong(), any(), any(), any()))
       .thenReturn(1);
@@ -150,6 +159,7 @@ class TemporalSpringBootIntegrationTest {
     verify(statusActivitySpy).updateIngestionFlowFileStatus(1L, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
     verify(ingestionFlowFileServiceMock).updateStatus(1L,IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, expectedIngestionFlowFileResult);
     verify(emailActivityMock).sendIngestionFlowFileCompleteEmail(1L, true);
+    verify(handlePaymentsReportingDeletionActivityImpl).handlePaymentsReportingDeletion(1L, result.getIuf(), 1L);
     verify(iufClassificationWFClientMock).notifyPaymentsReporting(new IufClassificationNotifyPaymentsReportingSignalDTO( result.getOrganizationId(), result.getIuf(), result.getTransfers()));
  }
 
