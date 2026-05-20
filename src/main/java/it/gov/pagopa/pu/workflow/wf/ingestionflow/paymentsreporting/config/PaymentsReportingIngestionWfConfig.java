@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config;
 
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.HandlePaymentsReportingDeletionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
@@ -29,5 +30,8 @@ public class PaymentsReportingIngestionWfConfig extends BaseWfConfig {
         this));
   }
 
+  public HandlePaymentsReportingDeletionActivity buildHandlePaymentsReportingDeletionActivity() {
+    return Workflow.newActivityStub(HandlePaymentsReportingDeletionActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
 }
 

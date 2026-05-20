@@ -4,6 +4,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlowStatusActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.HandlePaymentsReportingDeletionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.PaymentsReportingTransferDTO;
 import it.gov.pagopa.payhub.activities.dto.ingestion.paymentsreporting.PaymentsReportingIngestionFlowFileActivityResult;
@@ -42,6 +43,8 @@ class PaymentsReportingIngestionWFTest {
   @Mock
   private NotifyPaymentsReportingToIufClassificationActivity notifyPaymentsReportingToIufClassificationActivityMock;
   @Mock
+  private HandlePaymentsReportingDeletionActivity handlePaymentsReportingDeletionActivityMock;
+  @Mock
   private DataEventsProducerService dataEventsProducerServiceMock;
 
   private PaymentsReportingIngestionWFImpl wf;
@@ -71,6 +74,8 @@ class PaymentsReportingIngestionWFTest {
       .thenReturn(paymentsReportingIngestionFlowFileActivityMock);
     Mockito.when(paymentsReportingIngestionWfConfig.buildNotifyPaymentsReportingToIufClassificationActivityStub())
       .thenReturn(notifyPaymentsReportingToIufClassificationActivityMock);
+    Mockito.when(paymentsReportingIngestionWfConfig.buildHandlePaymentsReportingDeletionActivity())
+        .thenReturn(handlePaymentsReportingDeletionActivityMock);
     Mockito.when(applicationContextMock.getBean(DataEventsProducerService.class))
       .thenReturn(dataEventsProducerServiceMock);
 
@@ -86,6 +91,7 @@ class PaymentsReportingIngestionWFTest {
       ingestionFlowFileProcessingLockerActivityMock,
       paymentsReportingIngestionFlowFileActivityMock,
       notifyPaymentsReportingToIufClassificationActivityMock,
+      handlePaymentsReportingDeletionActivityMock,
       dataEventsProducerServiceMock
     );
   }
@@ -103,6 +109,14 @@ class PaymentsReportingIngestionWFTest {
       .paymentOutcomeCode("CODICEESITO")
       .build();
 
+    PaymentsReportingTransferDTO paymentsReportingTransferDTODeleted = PaymentsReportingTransferDTO.builder()
+      .iur("iur-2")
+      .iuv("iuv-2")
+      .transferIndex(1)
+      .orgId(organizationId)
+      .paymentOutcomeCode("CODICEESITO")
+      .build();
+
     PaymentsReportingIngestionFlowFileActivityResult expectedResult = PaymentsReportingIngestionFlowFileActivityResult.builder()
       .iuf("iuf-1")
       .organizationId(organizationId)
@@ -110,6 +124,8 @@ class PaymentsReportingIngestionWFTest {
       .build();
 
     Mockito.when(ingestionFlowFileProcessingLockerActivityMock.acquireIngestionFlowFileProcessingLock(ingestionFlowFileId)).thenReturn(true);
+    Mockito.when(handlePaymentsReportingDeletionActivityMock.handlePaymentsReportingDeletion(organizationId, "iuf-1", ingestionFlowFileId))
+        .thenReturn(List.of(paymentsReportingTransferDTODeleted));
     Mockito.when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(expectedResult);
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -119,10 +135,9 @@ class PaymentsReportingIngestionWFTest {
 
       Mockito.verify(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
       Mockito.verify(paymentsReportingIngestionFlowFileActivityMock).processFile(ingestionFlowFileId);
+      Mockito.verify(handlePaymentsReportingDeletionActivityMock).handlePaymentsReportingDeletion(organizationId, "iuf-1", ingestionFlowFileId);
       Mockito.verify(notifyPaymentsReportingToIufClassificationActivityMock).signalPaymentsReportingIufClassificationWithStart(
-        organizationId,
-        "iuf-1",
-        List.of(paymentsReportingTransferDTO)
+        organizationId, "iuf-1", List.of(paymentsReportingTransferDTO, paymentsReportingTransferDTODeleted)
       );
       Mockito.verify(updateIngestionFlowStatusActivityMock).updateIngestionFlowFileStatus(
         Mockito.eq(ingestionFlowFileId),
@@ -159,6 +174,8 @@ class PaymentsReportingIngestionWFTest {
       .thenReturn(false)
       .thenReturn(true);
     Mockito.when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(expectedResult);
+    Mockito.when(handlePaymentsReportingDeletionActivityMock.handlePaymentsReportingDeletion(organizationId, "iuf-1", ingestionFlowFileId))
+      .thenReturn(List.of());
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
@@ -210,6 +227,8 @@ class PaymentsReportingIngestionWFTest {
       return true;
     }).when(ingestionFlowFileProcessingLockerActivityMock).acquireIngestionFlowFileProcessingLock(ingestionFlowFileId);
     Mockito.when(paymentsReportingIngestionFlowFileActivityMock.processFile(ingestionFlowFileId)).thenReturn(expectedResult);
+    Mockito.when(handlePaymentsReportingDeletionActivityMock.handlePaymentsReportingDeletion(organizationId, "iuf-1", ingestionFlowFileId))
+      .thenReturn(List.of());
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class))).then(invocation -> null);
