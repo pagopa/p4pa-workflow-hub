@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.classification.transfer;
 
 import io.temporal.client.WorkflowStub;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.exception.custom.InvalidValueException;
 import it.gov.pagopa.pu.workflow.service.organization.OrganizationRetrieverService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;

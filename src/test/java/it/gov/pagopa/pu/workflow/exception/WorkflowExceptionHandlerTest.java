@@ -3,6 +3,10 @@ package it.gov.pagopa.pu.workflow.exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
+import it.gov.pagopa.payhub.activities.exception.ConflictException;
+import it.gov.pagopa.payhub.activities.exception.ForbiddenException;
+import it.gov.pagopa.payhub.activities.exception.InvalidValueException;
+import it.gov.pagopa.payhub.activities.exception.NotAuthorizedException;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
 import it.gov.pagopa.pu.workflow.exception.custom.*;
@@ -260,8 +264,8 @@ class WorkflowExceptionHandlerTest {
     performRequest(DATA, MediaType.APPLICATION_JSON)
       .andExpect(MockMvcResultMatchers.status().isBadRequest())
       .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED"))
-      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED] Error"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("INGESTION_FLOW_FILE_TYPE_NOT_SUPPORTED"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[INGESTION_FLOW_FILE_TYPE_NOT_SUPPORTED] Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
@@ -286,6 +290,42 @@ class WorkflowExceptionHandlerTest {
       .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_GENERIC_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("WORKFLOW_INTERNAL_ERROR"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[WORKFLOW_INTERNAL_ERROR] Error"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleConflictException() throws Exception {
+    doThrow(new ConflictException("ERRORCODE", "Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isConflict())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_CONFLICT"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ERRORCODE"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ERRORCODE] Error"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleForbiddenException() throws Exception {
+    doThrow(new ForbiddenException("ERRORCODE", "Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isForbidden())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_FORBIDDEN"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ERRORCODE"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ERRORCODE] Error"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
+  }
+
+  @Test
+  void handleNotAuthorized() throws Exception {
+    doThrow(new NotAuthorizedException("ERRORCODE", "Error")).when(testControllerSpy).testEndpoint(DATA, BODY);
+
+    performRequest(DATA, MediaType.APPLICATION_JSON)
+      .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+      .andExpect(MockMvcResultMatchers.jsonPath("$.category").value("WORKFLOW_UNAUTHORIZED"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("ERRORCODE"))
+      .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("[ERRORCODE] Error"))
       .andExpect(MockMvcResultMatchers.jsonPath("$.traceId").value(traceId));
   }
 
