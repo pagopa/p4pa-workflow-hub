@@ -1,5 +1,7 @@
 package it.gov.pagopa.pu.workflow.exception.custom;
 
+import it.gov.pagopa.payhub.activities.exception.BaseBusinessException;
+
 public class IllegalStateBusinessException extends BaseBusinessException {
   public IllegalStateBusinessException(String code, String message) {
     this(code, message, null);

@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.exception;
 
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
+import it.gov.pagopa.payhub.activities.exception.*;
 import it.gov.pagopa.payhub.activities.exception.ingestionflow.IngestionFlowTypeNotSupportedException;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowErrorDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.*;
@@ -63,12 +64,22 @@ public class WorkflowExceptionHandler {
     return handleException(ex, request, HttpStatus.BAD_REQUEST, WorkflowErrorDTO.CategoryEnum.WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG);
   }
 
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<WorkflowErrorDTO> handleForbiddenException(ForbiddenException ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.FORBIDDEN, WorkflowErrorDTO.CategoryEnum.WORKFLOW_FORBIDDEN);
+  }
+
+  @ExceptionHandler(NotAuthorizedException.class)
+  public ResponseEntity<WorkflowErrorDTO> handleNotAuthorizedException(Exception ex, HttpServletRequest request) {
+    return handleException(ex, request, HttpStatus.UNAUTHORIZED, WorkflowErrorDTO.CategoryEnum.WORKFLOW_UNAUTHORIZED);
+  }
+
   @ExceptionHandler({WorkflowNotFoundException.class, WorkflowTypeNotFoundException.class, ResourceNotFoundException.class, io.temporal.client.WorkflowNotFoundException.class})
   public ResponseEntity<WorkflowErrorDTO> handleNotFoundException(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.NOT_FOUND, WorkflowErrorDTO.CategoryEnum.WORKFLOW_NOT_FOUND);
   }
 
-  @ExceptionHandler({WorkflowConflictException.class})
+  @ExceptionHandler({ConflictException.class, WorkflowConflictException.class})
   public ResponseEntity<WorkflowErrorDTO> handleConflictException(RuntimeException ex, HttpServletRequest request) {
     return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_CONFLICT);
   }
