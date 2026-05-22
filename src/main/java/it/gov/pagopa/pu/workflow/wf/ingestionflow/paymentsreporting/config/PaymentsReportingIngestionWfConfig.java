@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.config;
 
 import io.temporal.workflow.Workflow;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.IngestionFlowFileProcessingLockerActivity;
+import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.HandlePaymentsReportingDeletionActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.paymentsreporting.PaymentsReportingIngestionFlowFileActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
@@ -13,6 +15,10 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "workflow.payments-reporting-ingestion")
 public class PaymentsReportingIngestionWfConfig extends BaseWfConfig {
 
+  public IngestionFlowFileProcessingLockerActivity buildIngestionFlowFileProcessingLockerActivityStub() {
+    return Workflow.newActivityStub(IngestionFlowFileProcessingLockerActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
   public PaymentsReportingIngestionFlowFileActivity buildPaymentsReportingIngestionFlowFileActivityStub() {
     return Workflow.newActivityStub(PaymentsReportingIngestionFlowFileActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
@@ -24,5 +30,8 @@ public class PaymentsReportingIngestionWfConfig extends BaseWfConfig {
         this));
   }
 
+  public HandlePaymentsReportingDeletionActivity buildHandlePaymentsReportingDeletionActivity() {
+    return Workflow.newActivityStub(HandlePaymentsReportingDeletionActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
 }
 
