@@ -57,6 +57,6 @@ public class SendNotificationStreamWfConfig extends BaseWfConfig {
   public StartDeleteSendNotificationFileActivity buildStartDeleteSendNotificationFileActivityStub() {
     return Workflow.newActivityStub(StartDeleteSendNotificationFileActivity.class,
       TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
-        TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_DELETE_EXPIRED_LOCAL,this));
+        TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_LOCAL,this));
   }
 }

@@ -188,14 +188,14 @@ spring:
               initial-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MAX_POLLER_SIZE:5}"
-      - task-queue: SendNotificationDeleteExpiredWF_LOCAL
+      - task-queue: SendWF_LOCAL
         capacity:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
-              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_DELETE_EXPIRED_LOCAL_MIN_POLLER_SIZE:1}"
-              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_DELETE_EXPIRED_LOCAL_MIN_POLLER_SIZE:1}"
-              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_DELETE_EXPIRED_LOCAL_MAX_POLLER_SIZE:5}"
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_LOCAL_MAX_POLLER_SIZE:5}"
   cloud:
     function:
       definition: paymentsConsumer;paymentsProducer;dataEventsProducer;registriesProducer
