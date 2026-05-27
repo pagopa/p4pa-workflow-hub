@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_LOCAL)
+@ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY_LOCAL)
 public class StartDeleteSendNotificationFileActivityImpl implements StartDeleteSendNotificationFileActivity {
 
   private final DeleteSendNotificationFileWFClient deleteSendNotificationFileWFClient;

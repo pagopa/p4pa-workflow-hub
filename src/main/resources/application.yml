@@ -193,9 +193,9 @@ spring:
           activity-task-pollers-configuration:
             poller-behavior-autoscaling:
               enabled: true
-              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_LOCAL_MIN_POLLER_SIZE:1}"
-              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_LOCAL_MIN_POLLER_SIZE:1}"
-              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_LOCAL_MAX_POLLER_SIZE:5}"
+              initial-concurrent-task-pollers: "\${WF_SEND_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_MEDIUM_PRIORITY_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_MEDIUM_PRIORITY_LOCAL_MAX_POLLER_SIZE:5}"
   cloud:
     function:
       definition: paymentsConsumer;paymentsProducer;dataEventsProducer;registriesProducer
