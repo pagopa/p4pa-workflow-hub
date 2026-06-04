@@ -12,6 +12,7 @@ import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -53,4 +54,9 @@ public class SendNotificationStreamWfConfig extends BaseWfConfig {
         TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PUBLISH_EVENT_LOCAL, this));
   }
 
+  public StartDeleteSendNotificationFileActivity buildStartDeleteSendNotificationFileActivityStub() {
+    return Workflow.newActivityStub(StartDeleteSendNotificationFileActivity.class,
+      TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+        TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM_CONSUME_LOCAL,this));
+  }
 }

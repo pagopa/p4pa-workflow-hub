@@ -15,6 +15,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config.SendNotificationStreamWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service.SendEventStreamProcessingService;
 import org.junit.jupiter.api.AfterEach;
@@ -54,6 +55,8 @@ class SendNotificationStreamConsumeWFImplTest {
   private UpdateLastProcessedStreamEventIdActivity updateLastProcessedStreamEventIdActivityMock;
   @Mock
   private PublishSendTimelineEventActivity publishSendTimelineEventActivityMock;
+  @Mock
+  private StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivityMock;
 
   private SendNotificationStreamConsumeWFImpl wf;
 
@@ -67,6 +70,7 @@ class SendNotificationStreamConsumeWFImplTest {
     Mockito.when(wfConfigMock.buildGetSendNotificationEventsFromStreamActivityStub()).thenReturn(getSendNotificationEventsFromStreamActivityMock);
     Mockito.when(wfConfigMock.buildUpdateLastProcessedStreamEventIdActivityStub()).thenReturn(updateLastProcessedStreamEventIdActivityMock);
     Mockito.when(wfConfigMock.buildPublishSendTimelineEventActivityStub()).thenReturn(publishSendTimelineEventActivityMock);
+    Mockito.when(wfConfigMock.buildStartDeleteSendNotificationFileActivityStub()).thenReturn(startDeleteSendNotificationFileActivityMock);
 
     Mockito.when(applicationContextMock.getBean(SendNotificationStreamWfConfig.class)).thenReturn(wfConfigMock);
 
