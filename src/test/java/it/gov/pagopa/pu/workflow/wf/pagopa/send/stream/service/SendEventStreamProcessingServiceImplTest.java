@@ -9,6 +9,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.dto.DebtPositionSendNotificationDTO;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendLegalFactFileActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -45,6 +46,8 @@ class SendEventStreamProcessingServiceImplTest {
   private FetchSendLegalFactActivity fetchSendLegalFactActivityMock;
   @Mock
   private StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivityMock;
+  @Mock
+  private StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivityMock;
 
   @InjectMocks
   private SendEventStreamProcessingServiceImpl sendEventStreamProcessingService;
@@ -57,7 +60,8 @@ class SendEventStreamProcessingServiceImplTest {
       sendNotificationDateRetrieveActivityMock,
       publishSendNotificationPaymentEventActivityMock,
       fetchSendLegalFactActivityMock,
-      startDeleteSendNotificationFileActivityMock
+      startDeleteSendNotificationFileActivityMock,
+      startDeleteSendLegalFactFileActivityMock
     );
   }
 
@@ -151,6 +155,7 @@ class SendEventStreamProcessingServiceImplTest {
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
     Mockito.doNothing().when(startDeleteSendNotificationFileActivityMock).startDeleteSendNotificationExpiredFiles(sendNotificationDTO.getSendNotificationId());
+    Mockito.doNothing().when(startDeleteSendLegalFactFileActivityMock).startDeleteSendLegalFactExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
     //WHEN
     String actualResult =
