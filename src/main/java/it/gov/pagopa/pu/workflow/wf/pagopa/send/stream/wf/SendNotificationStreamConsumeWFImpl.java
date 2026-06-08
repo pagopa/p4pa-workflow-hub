@@ -65,7 +65,8 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       wfConfig.buildSendNotificationDateRetrieveActivityStub(),
       wfNotificaionProcessConfig.buildPublishSendNotificationPaymentEventActivityStub(),
       wfConfig.buildFetchSendLegalFactActivityStub(),
-      wfConfig.buildStartDeleteSendNotificationFileActivityStub()
+      wfConfig.buildStartDeleteSendNotificationFileActivityStub(),
+      wfConfig.buildStartDeleteSendLegalFactFileActivityStub()
     );
     updateLastProcessedStreamEventIdActivity = wfConfig.buildUpdateLastProcessedStreamEventIdActivityStub();
     publishSendTimelineEventActivity = wfConfig.buildPublishSendTimelineEventActivityStub();

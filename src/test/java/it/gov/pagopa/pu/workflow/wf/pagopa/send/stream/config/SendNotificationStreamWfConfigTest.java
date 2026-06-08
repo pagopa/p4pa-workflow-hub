@@ -1,10 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config;
 
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivityImpl;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivity;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivityImpl;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.*;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +15,9 @@ class SendNotificationStreamWfConfigTest {
     PublishSendTimelineEventActivity.class,
     PublishSendTimelineEventActivityImpl.class,
     StartDeleteSendNotificationFileActivity.class,
-    StartDeleteSendNotificationFileActivityImpl.class
+    StartDeleteSendNotificationFileActivityImpl.class,
+    StartDeleteSendLegalFactFileActivity.class,
+    StartDeleteSendLegalFactFileActivityImpl.class
   );
 
   @Test
