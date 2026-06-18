@@ -46,7 +46,6 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
 
   @Override
   public void accept(PaymentEventDTO paymentEventDTO) {
-
     if(PaymentEventTypeUtils.CREATE_OR_UPDATE_STATUSES.contains(paymentEventDTO.getEventType())
        && paymentEventDTO.getPayload() instanceof DebtPositionDTO debtPosition) {
         List<String> iudList = Utilities.extractIudsFromDescription(paymentEventDTO.getEventDescription()).stream().toList();
@@ -85,7 +84,10 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
             }
           });
 
-        handleCreateAssessments((DebtPositionEventDTO)paymentEventDTO, debtPosition);
+        Set<Long> receiptIds = extractReceiptIdsFromEventDescription((DebtPositionEventDTO)paymentEventDTO, debtPosition);
+
+        handleCreateAssessments(receiptIds);
+        handleCreateAssessmentsRegistry(paymentEventDTO, debtPosition, receiptIds);
       } else {
         log.error("Unexpected payload related to RT_RECEIVED event: provided {} having payload type {}"
           , paymentEventDTO.getClass().getName(),
@@ -94,10 +96,25 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
     }
   }
 
-  private void handleCreateAssessments(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
-    Set<Long> receiptIds = extractReceiptIdsFromEventDescription(event, debtPosition);
+  private void handleCreateAssessments(Set<Long> receiptIds) {
     if (!receiptIds.isEmpty()) {
       receiptIds.forEach(createAssessmentsWFClient::createAssessments);
+    }
+  }
+
+  private void handleCreateAssessmentsRegistry(PaymentEventDTO<?> event, DebtPositionDTO debtPosition, Set<Long> receiptIds) {
+    List<String> iudListFromInstallments = debtPosition.getPaymentOptions().stream()
+      .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
+      .filter(installment -> installment.getReceiptId() != null && receiptIds.contains(installment.getReceiptId()))
+      .map(InstallmentDTO::getIud)
+      .toList();
+
+    if (!iudListFromInstallments.isEmpty()) {
+      createAssessmentsRegistryWFClient.createAssessmentsRegistry(
+        event.getEventId(),
+        debtPosition,
+        iudListFromInstallments
+      );
     }
   }
 
