@@ -12,6 +12,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.mapper.SendNotification2DebtPositionSendNotificationsMapper;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendLegalFactFileActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivity;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,18 +27,22 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   private final PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity;
   private final FetchSendLegalFactActivity fetchSendLegalFactActivity;
   private final StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity;
+  private final StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity;
 
   public SendEventStreamProcessingServiceImpl(
     UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity, ValidateSendNotificationStatusActivity validateSendNotificationStatusActivity,
     SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity,
     PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity,
-    FetchSendLegalFactActivity fetchSendLegalFactActivity, StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity) {
+    FetchSendLegalFactActivity fetchSendLegalFactActivity,
+    StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity,
+    StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity) {
     this.updateSendNotificationStatusActivity = updateSendNotificationStatusActivity;
     this.validateSendNotificationStatusActivity = validateSendNotificationStatusActivity;
     this.sendNotificationDateRetrieveActivity = sendNotificationDateRetrieveActivity;
     this.publishSendNotificationPaymentEventActivity = publishSendNotificationPaymentEventActivity;
     this.fetchSendLegalFactActivity = fetchSendLegalFactActivity;
     this.startDeleteSendNotificationFileActivity = startDeleteSendNotificationFileActivity;
+    this.startDeleteSendLegalFactFileActivity = startDeleteSendLegalFactFileActivity;
   }
 
   @Override
@@ -64,6 +69,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERED);
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
         startDeleteSendNotificationFileActivity.startDeleteSendNotificationExpiredFiles(sendNotification.getSendNotificationId());
+        startDeleteSendLegalFactFileActivity.startDeleteSendLegalFactExpiredFiles(sendNotification.getSendNotificationId());
         yield streamEvent.getEventId();
       }
       case DELIVERING, VIEWED, EFFECTIVE_DATE, PAID, UNREACHABLE, CANCELLED, RETURNED_TO_SENDER -> {
