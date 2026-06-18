@@ -63,9 +63,11 @@ class PaymentsConsumerTest {
     organization.setOrgFiscalCode("FC_ORG1");
     organization.setOrganizationId(1L);
 
+    DebtPositionDTO debtPositionDTO = buildPaidDebtPosition(2L);
+
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
       .eventId("EVENTID")
-      .payload(buildPaidDebtPosition())
+      .payload(debtPositionDTO)
       .eventType(PaymentEventType.RT_RECEIVED)
       .eventDescription("receiptId:2")
       .build();
@@ -85,6 +87,8 @@ class PaymentsConsumerTest {
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud5", "iuv5", "iur1",  Collections.singletonList(1)));
     Mockito.verify(createAssessmentsWFClientMock)
       .createAssessments(2L);
+    Mockito.verify(createAssessmentsRegistryWFClientMock)
+      .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
   }
 
   @Test
@@ -93,10 +97,11 @@ class PaymentsConsumerTest {
     organization.setOrgFiscalCode("FC_ORG1");
     organization.setOrganizationId(1L);
 
-    // Given
+    DebtPositionDTO debtPositionDTO = buildPaidDebtPosition(1L);
+
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
       .eventId("EVENTID")
-      .payload(buildPaidDebtPosition())
+      .payload(debtPositionDTO)
       .eventType(PaymentEventType.RT_RECEIVED)
       .eventDescription("receiptId:undefined")
       .build();
@@ -116,6 +121,8 @@ class PaymentsConsumerTest {
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud5", "iuv5", "iur1",  Collections.singletonList(1)));
     Mockito.verify(createAssessmentsWFClientMock)
       .createAssessments(1L);
+    Mockito.verify(createAssessmentsRegistryWFClientMock)
+      .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
   }
 
   @Test
@@ -123,7 +130,7 @@ class PaymentsConsumerTest {
     // Given
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
       .eventId("EVENTID")
-      .payload(buildPaidDebtPosition())
+      .payload(buildPaidDebtPosition(1L))
       .eventType(PaymentEventType.SYNC_ERROR)
       .build();
 
@@ -151,7 +158,7 @@ class PaymentsConsumerTest {
   @Test
   void givenCreateOrUpdateStatusesWhenAcceptThenInvokeClient() {
     // Given
-    DebtPositionDTO debtPositionDTO = buildPaidDebtPosition();
+    DebtPositionDTO debtPositionDTO = buildPaidDebtPosition(1L);
     String eventDescription = "IUD: id1, id2, id3;";
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
       .eventId("EVENTID")
@@ -172,9 +179,10 @@ class PaymentsConsumerTest {
   @Test
   void givenRtReceivedAndOrganizationNotFoundWhenAcceptThenSkipNotifyReceipt() {
     // Given
+    DebtPositionDTO debtPositionDTO = buildPaidDebtPosition(2L);
     DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
       .eventId("EVENTID")
-      .payload(buildPaidDebtPosition())
+      .payload(debtPositionDTO)
       .eventType(PaymentEventType.RT_RECEIVED)
       .eventDescription("receiptId:2")
       .build();
@@ -188,19 +196,21 @@ class PaymentsConsumerTest {
     // Then
     Mockito.verifyNoInteractions(wfClientMock);
     Mockito.verify(createAssessmentsWFClientMock).createAssessments(2L);
+    Mockito.verify(createAssessmentsRegistryWFClientMock)
+      .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
   }
 
-  private DebtPositionDTO buildPaidDebtPosition() {
+  private DebtPositionDTO buildPaidDebtPosition(Long receiptIdForPaid) {
     DebtPositionDTO out = DebtPositionFaker.buildDebtPositionDTO();
     out.setPaymentOptions(List.of(
       buildPaymentOption(List.of(
-        buildInstallment(InstallmentStatus.PAID, "iuv1", "iur1", "iud1"),
-        buildInstallment(InstallmentStatus.UNPAID, "iuv2", null, "iud2"),
-        buildInstallment(InstallmentStatus.PAID, "iuv3", "iur2", "iud3")
+        buildInstallment(InstallmentStatus.PAID, "iuv1", "iur1", "iud1", receiptIdForPaid),
+        buildInstallment(InstallmentStatus.UNPAID, "iuv2", null, "iud2", null),
+        buildInstallment(InstallmentStatus.PAID, "iuv3", "iur2", "iud3", receiptIdForPaid)
       )),
       buildPaymentOption(List.of(
-        buildInstallment(InstallmentStatus.UNPAID, "iuv4", null, "iud4"),
-        buildInstallment(InstallmentStatus.PAID, "iuv5", "iur1", "iud5")
+        buildInstallment(InstallmentStatus.UNPAID, "iuv4", null, "iud4", null),
+        buildInstallment(InstallmentStatus.PAID, "iuv5", "iur1", "iud5", receiptIdForPaid)
       ))
     ));
     return out;
@@ -212,12 +222,13 @@ class PaymentsConsumerTest {
     return out;
   }
 
-  private static InstallmentDTO buildInstallment(InstallmentStatus status, String iuv, String iur, String iud) {
+  private static InstallmentDTO buildInstallment(InstallmentStatus status, String iuv, String iur, String iud, Long receiptId) {
     InstallmentDTO out = InstallmentFaker.buildInstallmentDTO();
     out.setStatus(status);
     out.setIuv(iuv);
     out.setIur(iur);
     out.setIud(iud);
+    out.setReceiptId(receiptId);
     out.setTransfers(List.of(
       TransferDTO.builder()
         .orgFiscalCode("FC_ORG1")
