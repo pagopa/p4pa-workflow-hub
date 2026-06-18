@@ -92,6 +92,43 @@ class PaymentsConsumerTest {
   }
 
   @Test
+  void givenExpectedEventWhenAcceptThenFilterByReceiptId() {
+    Organization organization = new Organization();
+    organization.setOrgFiscalCode("FC_ORG1");
+    organization.setOrganizationId(1L);
+
+    DebtPositionDTO debtPositionDTO = DebtPositionFaker.buildDebtPositionDTO();
+    debtPositionDTO.setPaymentOptions(List.of(
+      buildPaymentOption(List.of(
+        buildInstallment(InstallmentStatus.PAID, "iuv1", "iur1", "iud1", 2L),
+        buildInstallment(InstallmentStatus.PAID, "iuv3", "iur2", "iud3", 99L)
+      ))
+    ));
+
+    DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(debtPositionDTO)
+      .eventType(PaymentEventType.RT_RECEIVED)
+      .eventDescription("receiptId:2")
+      .build();
+
+    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
+      Optional.of(organization));
+
+    paymentsConsumer.accept(paymentEventDTO);
+
+    Mockito.verify(wfClientMock)
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud1", "iuv1", "iur1", Collections.singletonList(1)));
+    Mockito.verify(wfClientMock)
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud3", "iuv3", "iur2", Collections.singletonList(1)));
+    Mockito.verify(createAssessmentsWFClientMock)
+      .createAssessments(2L);
+
+    Mockito.verify(createAssessmentsRegistryWFClientMock)
+      .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1"));
+  }
+
+  @Test
   void givenExpectedEventWithUncorrectReceiptIdWhenAcceptThenInvokeClient() {
     Organization organization = new Organization();
     organization.setOrgFiscalCode("FC_ORG1");
