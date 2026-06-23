@@ -1,9 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service;
 
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.FetchSendLegalFactActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.SendNotificationDateRetrieveActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.UpdateSendNotificationStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.ValidateSendNotificationStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
@@ -28,6 +25,8 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   private final FetchSendLegalFactActivity fetchSendLegalFactActivity;
   private final StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity;
   private final StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity;
+  private final GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivity;
+
 
   public SendEventStreamProcessingServiceImpl(
     UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity, ValidateSendNotificationStatusActivity validateSendNotificationStatusActivity,
@@ -35,7 +34,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
     PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity,
     FetchSendLegalFactActivity fetchSendLegalFactActivity,
     StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity,
-    StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity) {
+    StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity, GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivity) {
     this.updateSendNotificationStatusActivity = updateSendNotificationStatusActivity;
     this.validateSendNotificationStatusActivity = validateSendNotificationStatusActivity;
     this.sendNotificationDateRetrieveActivity = sendNotificationDateRetrieveActivity;
@@ -43,6 +42,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
     this.fetchSendLegalFactActivity = fetchSendLegalFactActivity;
     this.startDeleteSendNotificationFileActivity = startDeleteSendNotificationFileActivity;
     this.startDeleteSendLegalFactFileActivity = startDeleteSendLegalFactFileActivity;
+    this.getSendNotificationByNotificationRequestIdActivity = getSendNotificationByNotificationRequestIdActivity;
   }
 
   @Override
@@ -53,17 +53,20 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   }
 
   private String processNotificationEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
-    SendNotificationDTO sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
+    SendNotificationDTO sendNotification = this.getSendNotificationByNotificationRequestIdActivity
+      .getSendNotificationByNotificationRequestId(streamEvent.getNotificationRequestId());
     if(streamEvent.getNewStatus()!=null && sendNotification.getStatus().getValue().equals(streamEvent.getNewStatus().getValue())) {
       return streamEvent.getEventId();
     }
 
     return switch (streamEvent.getNewStatus()) {
       case ACCEPTED -> {
+        sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
         yield streamEvent.getEventId();
       }
       case REFUSED -> {
+        sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendErrorEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null));
         yield streamEvent.getEventId();
       }

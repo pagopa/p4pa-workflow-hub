@@ -1,9 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service;
 
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.FetchSendLegalFactActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.SendNotificationDateRetrieveActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.UpdateSendNotificationStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.ValidateSendNotificationStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -48,6 +45,8 @@ class SendEventStreamProcessingServiceImplTest {
   private StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivityMock;
   @Mock
   private StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivityMock;
+  @Mock
+  private GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivity;
 
   @InjectMocks
   private SendEventStreamProcessingServiceImpl sendEventStreamProcessingService;
@@ -61,7 +60,8 @@ class SendEventStreamProcessingServiceImplTest {
       publishSendNotificationPaymentEventActivityMock,
       fetchSendLegalFactActivityMock,
       startDeleteSendNotificationFileActivityMock,
-      startDeleteSendLegalFactFileActivityMock
+      startDeleteSendLegalFactFileActivityMock,
+      getSendNotificationByNotificationRequestIdActivity
     );
   }
 
@@ -77,6 +77,9 @@ class SendEventStreamProcessingServiceImplTest {
     sendNotificationDTO.setStatus(NotificationStatus.SENDING);
 
     Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -118,6 +121,9 @@ class SendEventStreamProcessingServiceImplTest {
     Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
 
     //WHEN
     String actualResult =
@@ -157,7 +163,7 @@ class SendEventStreamProcessingServiceImplTest {
     Mockito.when(sendNotificationDateRetrieveActivityMock.sendNotificationDateRetrieve(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -201,7 +207,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -235,7 +241,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.DELIVERED);
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -263,7 +269,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -307,7 +313,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.DELIVERED);
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -337,7 +343,7 @@ class SendEventStreamProcessingServiceImplTest {
       null
     );
 
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(null);
 
@@ -367,7 +373,7 @@ class SendEventStreamProcessingServiceImplTest {
       null
     );
 
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(null);
 
