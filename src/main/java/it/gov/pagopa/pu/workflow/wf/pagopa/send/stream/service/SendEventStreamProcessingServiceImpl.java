@@ -28,6 +28,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   private final GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivity;
 
 
+  @SuppressWarnings("java:S107")
   public SendEventStreamProcessingServiceImpl(
     UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity, ValidateSendNotificationStatusActivity validateSendNotificationStatusActivity,
     SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity,
