@@ -4,10 +4,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.FetchSendLegalFactActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.SendNotificationDateRetrieveActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.UpdateSendNotificationStatusActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.ValidateSendNotificationStatusActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -35,6 +32,10 @@ public class SendNotificationStreamWfConfig extends BaseWfConfig {
 
   public ValidateSendNotificationStatusActivity buildValidateSendNotificationStatusActivityStub() {
     return Workflow.newActivityStub(ValidateSendNotificationStatusActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public GetSendNotificationByNotificationRequestIdActivity buildGetSendNotificationByNotificationRequestIdActivityStub() {
+    return Workflow.newActivityStub(GetSendNotificationByNotificationRequestIdActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
   public GetSendStreamActivity buildGetSendStreamActivityStub() {

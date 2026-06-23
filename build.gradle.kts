@@ -80,7 +80,7 @@ val commonsLang3Version = "3.20.0"
 // Downgrading in order to handle List of enums in SpringDataRest exposed queries (see https://github.com/spring-projects/spring-data-commons/issues/3502)
 val hibernateCoreVersion = "7.1.18.Final"
 
-val p4paActivitiesVersion = "1.196.4"
+val p4paActivitiesVersion = "1.197.0"
 
 val springCloudDepsVersion = "2025.1.2"
 
