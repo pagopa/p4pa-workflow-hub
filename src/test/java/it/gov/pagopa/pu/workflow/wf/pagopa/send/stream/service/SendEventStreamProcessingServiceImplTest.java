@@ -74,6 +74,7 @@ class SendEventStreamProcessingServiceImplTest {
     );
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.SENDING);
 
     Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
       NOTIFICATION_REQUEST_ID
@@ -112,6 +113,7 @@ class SendEventStreamProcessingServiceImplTest {
     );
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
 
     Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
       NOTIFICATION_REQUEST_ID
@@ -150,10 +152,15 @@ class SendEventStreamProcessingServiceImplTest {
     );
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
 
     Mockito.when(sendNotificationDateRetrieveActivityMock.sendNotificationDateRetrieve(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
+    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
+
     Mockito.doNothing().when(startDeleteSendNotificationFileActivityMock).startDeleteSendNotificationExpiredFiles(sendNotificationDTO.getSendNotificationId());
     Mockito.doNothing().when(startDeleteSendLegalFactFileActivityMock).startDeleteSendLegalFactExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
@@ -185,14 +192,52 @@ class SendEventStreamProcessingServiceImplTest {
 
   @ParameterizedTest
   @EnumSource(value = NotificationStatusV26DTO.class, names = {
+    "UNREACHABLE"
+  })
+  void givenSimpleEventWhenProcessSendStreamEventThenUpdateStatusAndStartDeleteLegal(NotificationStatusV26DTO dtoStatus) {
+    // GIVEN
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(null, dtoStatus);
+    NotificationStatus expectedDomainStatus = NotificationStatus.valueOf(dtoStatus.name());
+
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
+    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
+
+    Mockito.doNothing().when(startDeleteSendNotificationFileActivityMock).startDeleteSendNotificationExpiredFiles(sendNotificationDTO.getSendNotificationId());
+    Mockito.doNothing().when(startDeleteSendLegalFactFileActivityMock).startDeleteSendLegalFactExpiredFiles(sendNotificationDTO.getSendNotificationId());
+
+
+    // WHEN
+    String actualResult = sendEventStreamProcessingService.processSendStreamEvent(SEND_STREAM_ID, sendEvent);
+
+    // THEN
+    Assertions.assertEquals(sendEvent.getEventId(), actualResult);
+
+    Mockito.verify(updateSendNotificationStatusActivityMock)
+      .updateSendNotificationStatus(NOTIFICATION_REQUEST_ID, expectedDomainStatus);
+
+    Mockito.verifyNoInteractions(sendNotificationDateRetrieveActivityMock);
+    Mockito.verifyNoInteractions(publishSendNotificationPaymentEventActivityMock);
+  }
+
+
+  @ParameterizedTest
+  @EnumSource(value = NotificationStatusV26DTO.class, names = {
     "DELIVERING", "VIEWED", "EFFECTIVE_DATE", "PAID",
-    "UNREACHABLE", "CANCELLED", "RETURNED_TO_SENDER"
+    "CANCELLED", "RETURNED_TO_SENDER"
   })
   void givenSimpleEventWhenProcessSendStreamEventThenUpdateStatus(NotificationStatusV26DTO dtoStatus) {
     // GIVEN
     ProgressResponseElementV28DTO sendEvent = buildSendEvent(null, dtoStatus);
-
     NotificationStatus expectedDomainStatus = NotificationStatus.valueOf(dtoStatus.name());
+
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.DELIVERED);
+    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
 
     // WHEN
     String actualResult = sendEventStreamProcessingService.processSendStreamEvent(SEND_STREAM_ID, sendEvent);
@@ -215,6 +260,12 @@ class SendEventStreamProcessingServiceImplTest {
       null,
       notificationStatusDTO
     );
+
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
+    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
 
     //WHEN
     String actualResult =
@@ -251,8 +302,14 @@ class SendEventStreamProcessingServiceImplTest {
 
     ProgressResponseElementV28DTO sendEvent = buildSendEvent(
       List.of(legalFactsId),
-      null
+      NotificationStatusV26DTO.DELIVERED
     );
+
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.DELIVERED);
+    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
 
     //WHEN
     String actualResult =
@@ -280,6 +337,10 @@ class SendEventStreamProcessingServiceImplTest {
       null
     );
 
+    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(null);
+
     //WHEN
     String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
@@ -305,6 +366,10 @@ class SendEventStreamProcessingServiceImplTest {
       null,
       null
     );
+
+    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(null);
 
     //WHEN
     String actualResult =

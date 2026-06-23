@@ -53,26 +53,36 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   }
 
   private String processNotificationEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
+    SendNotificationDTO sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
+    if(streamEvent.getNewStatus()!=null && sendNotification.getStatus().getValue().equals(streamEvent.getNewStatus().getValue())) {
+      return streamEvent.getEventId();
+    }
+
     return switch (streamEvent.getNewStatus()) {
       case ACCEPTED -> {
-        SendNotificationDTO sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
         yield streamEvent.getEventId();
       }
       case REFUSED -> {
-        SendNotificationDTO sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendErrorEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null));
         yield streamEvent.getEventId();
       }
       case DELIVERED -> {
-        SendNotificationDTO sendNotification = this.sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(streamEvent.getNotificationRequestId());
+        sendNotification = this.sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(streamEvent.getNotificationRequestId());
         this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERED);
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
         startDeleteSendNotificationFileActivity.startDeleteSendNotificationExpiredFiles(sendNotification.getSendNotificationId());
         startDeleteSendLegalFactFileActivity.startDeleteSendLegalFactExpiredFiles(sendNotification.getSendNotificationId());
         yield streamEvent.getEventId();
       }
-      case DELIVERING, VIEWED, EFFECTIVE_DATE, PAID, UNREACHABLE, CANCELLED, RETURNED_TO_SENDER -> {
+      case UNREACHABLE -> {
+        this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(),
+          NotificationStatus.valueOf(streamEvent.getNewStatus().name()));
+        startDeleteSendNotificationFileActivity.startDeleteSendNotificationExpiredFiles(sendNotification.getSendNotificationId());
+        startDeleteSendLegalFactFileActivity.startDeleteSendLegalFactExpiredFiles(sendNotification.getSendNotificationId());
+        yield streamEvent.getEventId();
+      }
+      case DELIVERING, VIEWED, EFFECTIVE_DATE, PAID, CANCELLED, RETURNED_TO_SENDER -> {
         this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(),
           NotificationStatus.valueOf(streamEvent.getNewStatus().name()));
         yield streamEvent.getEventId();
