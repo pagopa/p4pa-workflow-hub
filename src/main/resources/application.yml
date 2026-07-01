@@ -624,6 +624,14 @@ workflow:
     retry-backoff-coefficient: "\${SEND_NOTIFICATION_STREAM_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${SEND_NOTIFICATION_STREAM_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
+  # send campaign
+
+  send-campaign:
+    start-to-close-timeout-in-seconds: "\${SEND_CAMPAIGN_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
+    retry-initial-interval-in-millis: "\${SEND_CAMPAIGN_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${SEND_CAMPAIGN_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${SEND_CAMPAIGN_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+
   # assessments
   create-assessments:
     start-to-close-timeout-in-seconds: "\${CREATE_ASSESSMENTS_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
@@ -664,6 +672,8 @@ schedule:
     cron-expression: "\${SCHEDULE_SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH_CRON:0 0 * * *}" # each day, 00:00 (Europe/Rome)
   export-file-expiration:
     days: "\${SCHEDULE_EXPORT_FILE_EXPIRATION_DAYS:30}"
+  send-campaign-counters-refresh:
+    cron-expression: "\${SCHEDULE_REFRESH_SEND_CAMPAIGN_COUNTERS_CRON:0 0 * * 0}" # each Sunday, 00:00 (Europe/Rome)
 
 springdoc:
   api-docs.version: openapi_3_0
