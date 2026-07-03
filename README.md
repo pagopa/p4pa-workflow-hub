@@ -33,6 +33,7 @@ See [Postman collection](/postman/p4pa-workflow-hub-E2E.postman_collection.json)
 * `POST /workflowhub/workflow/taxonomy/synchronize`: To manually start pagoPa taxonomy synchronization workflow;
 
 ### 📌 Common HTTP status returned:
+* `200`: Successful operation;
 * `401`: Invalid access token provided, thus a new login is required;
 * `403`: Trying to access a not authorized resource.
 
