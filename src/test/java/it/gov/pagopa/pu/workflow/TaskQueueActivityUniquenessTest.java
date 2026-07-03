@@ -5,6 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import io.temporal.spring.boot.autoconfigure.template.WorkersTemplate;
 import it.gov.pagopa.pu.workflow.utils.MemoryAppender;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.AlignSendCampaignCountersScheduler;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFetchScheduler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,8 @@ class TaskQueueActivityUniquenessTest {
   private PaymentsReportingPagoPaBrokersFetchScheduler paymentsReportingPagoPaBrokersFetchSchedulerMock;
   @MockitoBean
   private SynchronizeTaxonomyPagoPaFetchScheduler synchronizeTaxonomyPagoPaFetchSchedulerMock;
+  @MockitoBean
+  private AlignSendCampaignCountersScheduler alignSendCampaignCountersSchedulerMock;
 
   @Autowired
   private WorkersTemplate workersTemplate;
