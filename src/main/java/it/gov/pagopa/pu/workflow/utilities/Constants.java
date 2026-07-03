@@ -9,7 +9,7 @@ public class Constants {
    * <BR />
    * It could be useful instead use: Workflow.getInfo().isContinueAsNewSuggested()
    */
-  public static final int THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW = 50_000;
+  public static final int THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW = 2;
 
   /**
    * Prefix of legal fact id, to be removed before passing legalFactId as parameter to SEND API endpoints
