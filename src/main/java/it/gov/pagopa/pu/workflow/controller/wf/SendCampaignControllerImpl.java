@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import it.gov.pagopa.pu.workflow.controller.generated.SendCampaignApi;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.wf.send.campaign.SendCampaignService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-public class SendCampaignControllerImpl {
+public class SendCampaignControllerImpl implements SendCampaignApi {
 
   private final SendCampaignService service;
 
@@ -17,9 +18,9 @@ public class SendCampaignControllerImpl {
     this.service = service;
   }
 
-  public ResponseEntity<WorkflowCreatedDTO> sendCampaignCountersRefresh() {
-    log.info("Starting send campaign counters refresh process");
-    WorkflowCreatedDTO workflowCreatedDTO = service.sendCampaignCountersRefresh();
+  public ResponseEntity<WorkflowCreatedDTO> alignSendCampaignCounters() {
+    log.info("Starting send campaign counters alignment process");
+    WorkflowCreatedDTO workflowCreatedDTO = service.alignSendCampaignCounters();
     return new ResponseEntity<>(workflowCreatedDTO, HttpStatus.OK);
   }
 }

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum ScheduleEnum {
   PAYMENTS_REPORTING_PAGOPA_BROKERS_FETCH("PaymentsReportingPagoPaBrokersFetchSchedule"),
   SYNCHRONIZE_TAXONOMY_PAGOPA_FETCH("SynchronizeTaxonomyPagoPaFetchSchedule"),
-  REFRESH_SEND_CAMPAIGN_COUNTERS("SendCampaignCountersRefreshSchedule");
+  ALIGN_SEND_CAMPAIGN_COUNTERS("AlignSendCampaignCountersSchedule");
 
   private final String value;
 }

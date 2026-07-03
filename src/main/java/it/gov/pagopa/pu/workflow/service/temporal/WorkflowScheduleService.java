@@ -10,7 +10,7 @@ import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
  * */
 public interface WorkflowScheduleService {
 
-  ScheduleHandle schedule(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression);
+  ScheduleHandle schedule(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression, Object... arguments);
   ScheduleHandle getSchedule(ScheduleEnum scheduleId);
   ScheduleInfoDTO getScheduleInfo(ScheduleEnum scheduleId);
 }

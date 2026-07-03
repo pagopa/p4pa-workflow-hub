@@ -5,7 +5,7 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf.SendNotificationStreamConsumeWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignSendCampaignCountersWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,16 +25,16 @@ public class SendCampaignWFClient {
     this.workflowClientService = workflowClientService;
   }
 
-  public WorkflowCreatedDTO startSendCampaignCountersRefresh() {
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION; //TODO create/refer new task queue
+  public WorkflowCreatedDTO startAlignSendCampaignCounters() {
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
     String uuid = UUID.randomUUID().toString(); //TODO understand if there is an input to this WF, or if it's ok to use a different id for each invocation
-    String workflowId = generateWorkflowId(uuid, SendNotificationStreamConsumeWF.class); //TODO change WF reference to newly created WF
+    String workflowId = generateWorkflowId(uuid, AlignSendCampaignCountersWF.class);
 
-    SendNotificationStreamConsumeWF workflow = workflowService.buildWorkflowStubToStartNew( //TODO change WF reference to newly created WF
-      SendNotificationStreamConsumeWF.class,
+    AlignSendCampaignCountersWF workflow = workflowService.buildWorkflowStubToStartNew(
+      AlignSendCampaignCountersWF.class,
       taskQueue,
       workflowId
     );
-    return workflowClientService.start(workflow::readSendStream, uuid); //TODO change method reference to method of newly created WF
+    return workflowClientService.start(workflow::alignCountersForAllActiveCampaigns, null); //for starting we do not pass any campaignId
   }
 }

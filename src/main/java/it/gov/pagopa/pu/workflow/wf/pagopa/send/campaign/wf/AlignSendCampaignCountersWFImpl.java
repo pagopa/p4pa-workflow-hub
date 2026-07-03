@@ -17,8 +17,8 @@ import java.util.ListIterator;
 import static it.gov.pagopa.pu.workflow.utilities.Constants.THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_NOTIFICATION) //TODO create/refer new task queue
-public class SendCampaignCountersRefreshWFImpl implements SendCampaignCountersRefreshWF, ApplicationContextAware {
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY)
+public class AlignSendCampaignCountersWFImpl implements AlignSendCampaignCountersWF, ApplicationContextAware {
 
   private FetchSendCampaignsActivity fetchSendCampaignsActivity;
   private AlignSendCampaignActivity alignSendCampaignActivity;
@@ -32,13 +32,10 @@ public class SendCampaignCountersRefreshWFImpl implements SendCampaignCountersRe
   }
 
   @Override
-  public void refreshCountersForAllActiveCampaigns(String idOfLatestAlignedCampaign) {
-    log.info("Start refreshCountersForAllActiveCampaigns Workflow, starting from campaign with id {}", idOfLatestAlignedCampaign);
+  public void alignCountersForAllActiveCampaigns(String idOfLatestAlignedCampaign) {
+    log.info("Start alignCountersForAllActiveCampaigns workflow, starting from campaign with id {}", idOfLatestAlignedCampaign);
 
-    List<String> campaignIds = fetchSendCampaignsActivity.fetchSendCampaignIds()
-      .stream()
-      .sorted()
-      .toList();
+    List<String> campaignIds = fetchSendCampaignsActivity.fetchSendCampaignIds();
     int indexOfLatestAlignedCampaign = idOfLatestAlignedCampaign != null ? campaignIds.indexOf(idOfLatestAlignedCampaign) : -1;
     ListIterator<String> campaignIterator = campaignIds.listIterator(indexOfLatestAlignedCampaign + 1);
     int activityCounter = 0;
@@ -46,7 +43,7 @@ public class SendCampaignCountersRefreshWFImpl implements SendCampaignCountersRe
       try {
         alignSendCampaignActivity.alignSendCampaign(campaignIterator.next());
       } catch (Exception e) {
-        log.error("Something when wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), e.getMessage());
+        log.warn("Something when wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), e.getMessage());
       } finally {
         activityCounter++;
       }

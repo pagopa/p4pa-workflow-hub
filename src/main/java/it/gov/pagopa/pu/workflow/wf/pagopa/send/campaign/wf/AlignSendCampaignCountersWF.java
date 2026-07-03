@@ -4,7 +4,7 @@ import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 
 @WorkflowInterface
-public interface SendCampaignCountersRefreshWF {
+public interface AlignSendCampaignCountersWF {
   @WorkflowMethod
-  void refreshCountersForAllActiveCampaigns(String idOfLatestAlignedCampaign);
+  void alignCountersForAllActiveCampaigns(String idOfLatestAlignedCampaign);
 }

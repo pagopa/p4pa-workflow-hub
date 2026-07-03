@@ -36,7 +36,7 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
   }
 
   @Override
-  public ScheduleHandle schedule(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression) {
+  public ScheduleHandle schedule(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression, Object... arguments) {
     log.info("Scheduling {} on taskQueue {}", scheduleId, taskQueue);
 
     ScheduleHandle handle = getSchedule(scheduleId);
@@ -60,24 +60,25 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
         workflowInterface,
         taskQueue,
         scheduleId,
-        cronExpression);
+        cronExpression,
+        arguments);
       log.info("Created schedule {}", handle.describe());
     }
 
     return handle;
   }
 
-  private void checkExistingSchedule(Class<?> workflowInterface, String taskQueue, ScheduleEnum scheduleId, String cronExpression, ScheduleDescription describe, ScheduleHandle handle) {
+  private void checkExistingSchedule(Class<?> workflowInterface, String taskQueue, ScheduleEnum scheduleId, String cronExpression, ScheduleDescription describe, ScheduleHandle handle, Object... arguments) {
     List<String> existingCronExpressions = describe.getSchedule().getSpec().getCronExpressions();
     if (CollectionUtils.isEmpty(existingCronExpressions) || !existingCronExpressions.getFirst().equals(cronExpression)) {
       log.info("Schedule {} already exists but with a different cron expression {}. Updating it with the new one {}.", scheduleId, existingCronExpressions, cronExpression);
       handle.delete();
-      scheduleInner(workflowInterface, taskQueue, scheduleId, cronExpression);
+      scheduleInner(workflowInterface, taskQueue, scheduleId, cronExpression, arguments);
       log.info("Existing schedule updated {}", describe);
     }
   }
 
-  private ScheduleHandle scheduleInner(Class<?> workflowInterface, String taskQueue, ScheduleEnum scheduleId, String cronExpression) {
+  private ScheduleHandle scheduleInner(Class<?> workflowInterface, String taskQueue, ScheduleEnum scheduleId, String cronExpression, Object... arguments) {
     WorkflowOptions workflowOptions = WorkflowOptions.newBuilder()
       .setWorkflowId(scheduleId.getValue())
       .setTaskQueue(taskQueue)
@@ -91,6 +92,7 @@ public class WorkflowScheduleServiceImpl implements WorkflowScheduleService {
     Schedule schedule = Schedule.newBuilder()
       .setAction(ScheduleActionStartWorkflow.newBuilder()
         .setWorkflowType(workflowInterface)
+        .setArguments(arguments)
         .setOptions(workflowOptions)
         .build())
       .setSpec(scheduleSpec)
