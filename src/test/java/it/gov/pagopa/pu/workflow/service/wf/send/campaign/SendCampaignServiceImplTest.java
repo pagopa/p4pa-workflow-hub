@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class SendCampaignServiceImplTest {
   @Mock
@@ -40,7 +42,7 @@ class SendCampaignServiceImplTest {
       .runId("RUNID")
       .build();
 
-    Mockito.when(sendCampaignWFClientMock.startAlignSendCampaignCounters())
+    when(sendCampaignWFClientMock.startAlignSendCampaignCounters())
       .thenReturn(expectedResult);
 
     // When

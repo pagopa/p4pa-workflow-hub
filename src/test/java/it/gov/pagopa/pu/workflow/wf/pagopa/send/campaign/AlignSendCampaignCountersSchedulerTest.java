@@ -15,6 +15,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class AlignSendCampaignCountersSchedulerTest {
 
@@ -31,9 +34,9 @@ class AlignSendCampaignCountersSchedulerTest {
     // Given
     String cronExpression = "cron";
 
-    ScheduleHandle expectedResult = Mockito.mock(ScheduleHandle.class);
+    ScheduleHandle expectedResult = mock(ScheduleHandle.class);
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
-    Mockito.when(workflowScheduleServiceMock.schedule(
+    when(workflowScheduleServiceMock.schedule(
         ScheduleEnum.ALIGN_SEND_CAMPAIGN_COUNTERS,
         AlignSendCampaignCountersWF.class,
         taskQueue,

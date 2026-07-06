@@ -16,8 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SendCampaignWFClientTest {
@@ -47,7 +46,7 @@ class SendCampaignWFClientTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("AlignSendCampaignCountersWF-1", "RUNID");
 
-    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(Mockito.eq(AlignSendCampaignCountersWF.class), Mockito.eq(taskQueue), Mockito.startsWith("AlignSendCampaignCountersWF-")))
+    when(workflowServiceMock.buildWorkflowStubToStartNew(Mockito.eq(AlignSendCampaignCountersWF.class), Mockito.eq(taskQueue), Mockito.startsWith("AlignSendCampaignCountersWF-")))
       .thenReturn(alignSendCampaignCountersWF);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, null);
