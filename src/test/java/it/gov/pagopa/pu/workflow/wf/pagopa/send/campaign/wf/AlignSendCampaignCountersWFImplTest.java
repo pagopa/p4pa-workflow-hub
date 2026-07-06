@@ -17,6 +17,8 @@ import org.springframework.context.ApplicationContext;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static it.gov.pagopa.pu.workflow.utilities.Constants.THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW;
+
 @ExtendWith(MockitoExtension.class)
 class AlignSendCampaignCountersWFImplTest {
 
@@ -76,18 +78,22 @@ class AlignSendCampaignCountersWFImplTest {
   }
 
   @Test
-  void givenMoreThen50000IdsWhenAlignCountersForAllActiveCampaignsThenContinueAsNew() {
+  void givenMoreThenThresholdWhenAlignCountersForAllActiveCampaignsThenContinueAsNew() {
     //GIVEN
+    List<String> campaignIdList =
+      IntStream.rangeClosed(1, THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW + 1)
+        .mapToObj(String::valueOf)
+        .toList();
     Mockito.when(fetchSendCampaignsActivityMock.fetchSendCampaignIds())
-      .thenReturn(IntStream.range(0,50_001).mapToObj(String::valueOf).toList());
+      .thenReturn(campaignIdList);
     Mockito.doNothing()
-      .when(alignSendCampaignActivityMock).alignSendCampaign(Mockito.anyString());
+      .when(alignSendCampaignActivityMock).alignSendCampaign(Mockito.argThat(campaignIdList::contains));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       //WHEN
       wf.alignCountersForAllActiveCampaigns(null);
       //THEN
-      workflowMock.verify(() -> Workflow.continueAsNew("49999"));
+      workflowMock.verify(() -> Workflow.continueAsNew(String.valueOf(THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW)));
     }
   }
 
