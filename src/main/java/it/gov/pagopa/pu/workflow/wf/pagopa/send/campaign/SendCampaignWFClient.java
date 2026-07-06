@@ -27,7 +27,7 @@ public class SendCampaignWFClient {
 
   public WorkflowCreatedDTO startAlignSendCampaignCounters() {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
-    String uuid = UUID.randomUUID().toString(); //TODO understand if there is an input to this WF, or if it's ok to use a different id for each invocation
+    String uuid = UUID.randomUUID().toString();
     String workflowId = generateWorkflowId(uuid, AlignSendCampaignCountersWF.class);
 
     AlignSendCampaignCountersWF workflow = workflowService.buildWorkflowStubToStartNew(

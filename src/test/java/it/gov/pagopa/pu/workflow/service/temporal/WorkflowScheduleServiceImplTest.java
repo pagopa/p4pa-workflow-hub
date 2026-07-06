@@ -68,7 +68,7 @@ class WorkflowScheduleServiceImplTest {
     Mockito.when(scheduleClientMock.getHandle(scheduleId.getValue()))
       .thenReturn(previousHandle);
 
-    ScheduleHandle expectedHandle = configureCreateScheduleMock(scheduleId, workflowInterface, taskQueue, cronExpression);
+    ScheduleHandle expectedHandle = configureCreateScheduleMock(scheduleId, workflowInterface, taskQueue, cronExpression, null);
 
     // When
     ScheduleHandle actualHandle = workflowScheduleService.schedule(scheduleId, workflowInterface, taskQueue, cronExpression);
@@ -79,7 +79,7 @@ class WorkflowScheduleServiceImplTest {
     Mockito.verifyNoMoreInteractions(previousHandle);
   }
 
-  private ScheduleHandle configureCreateScheduleMock(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression) {
+  private ScheduleHandle configureCreateScheduleMock(ScheduleEnum scheduleId, Class<?> workflowInterface, String taskQueue, String cronExpression, String argument) {
     ScheduleHandle expectedHandle = Mockito.mock(ScheduleHandle.class);
     ScheduleSpec expectedScheduleSpec = ScheduleSpec.newBuilder()
       .setCronExpressions(List.of(cronExpression))
@@ -90,6 +90,7 @@ class WorkflowScheduleServiceImplTest {
         Mockito.eq(scheduleId.getValue()),
         Mockito.argThat(schedule -> schedule.getAction() instanceof ScheduleActionStartWorkflow scheduleAction &&
           scheduleAction.getWorkflowType().equals(workflowInterface.getSimpleName()) &&
+          checkArgument(scheduleAction, argument) &&
           scheduleAction.getOptions().getTaskQueue().equals(taskQueue) &&
           scheduleAction.getOptions().getWorkflowId().equals(scheduleId.getValue())
           && schedule.getSpec().equals(expectedScheduleSpec)),
@@ -135,7 +136,7 @@ class WorkflowScheduleServiceImplTest {
     Mockito.when(scheduleClientMock.getHandle(scheduleId.getValue()))
       .thenReturn(previousHandle);
 
-    configureCreateScheduleMock(scheduleId, workflowInterface, taskQueue, cronExpression);
+    configureCreateScheduleMock(scheduleId, workflowInterface, taskQueue, cronExpression, null);
 
     // When
     ScheduleHandle actualHandle = workflowScheduleService.schedule(scheduleId, workflowInterface, taskQueue, cronExpression);
@@ -327,4 +328,38 @@ class WorkflowScheduleServiceImplTest {
     assertNull(result.getLastManualExecution());
     assertEquals(t2, result.getLastExecution());
   }
+
+  @Test
+  void test() {
+    // Given
+    Class<?> workflowInterface = PaymentsReportingPagoPaBrokersFetchWF.class;
+    String taskQueue = "DUMMYTASKQUEUE";
+    ScheduleEnum scheduleId = SCHEDULE_ID;
+    String cronExpression = "0/5 * * * *";
+    ScheduleHandle previousHandle = Mockito.mock(ScheduleHandle.class);
+
+    Mockito.when(previousHandle.describe())
+      .thenThrow(new ScheduleException(null));
+    Mockito.when(scheduleClientMock.getHandle(scheduleId.getValue()))
+      .thenReturn(previousHandle);
+
+    ScheduleHandle expectedHandle = configureCreateScheduleMock(scheduleId, workflowInterface, taskQueue, cronExpression, "argument1");
+
+    // When
+    ScheduleHandle actualHandle = workflowScheduleService.schedule(scheduleId, workflowInterface, taskQueue, cronExpression, "argument1");
+
+    // Then
+    assertSame(expectedHandle, actualHandle);
+
+    Mockito.verifyNoMoreInteractions(previousHandle);
+  }
+
+  private static boolean checkArgument(ScheduleActionStartWorkflow scheduleAction, String actualArgument) {
+    if(actualArgument==null) {
+      return true;
+    }
+    String expectedArgument = scheduleAction.getArguments().get(0, String.class);
+    return expectedArgument.equals(actualArgument);
+  }
+
 }
