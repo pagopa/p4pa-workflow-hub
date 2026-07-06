@@ -1,0 +1,113 @@
+package it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf;
+
+import io.temporal.workflow.Workflow;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.AlignSendCampaignActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.FetchSendCampaignsActivity;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.config.SendCampaignWfConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationContext;
+
+import java.util.List;
+import java.util.stream.IntStream;
+
+@ExtendWith(MockitoExtension.class)
+class AlignSendCampaignCountersWFImplTest {
+
+  @Mock
+  private FetchSendCampaignsActivity fetchSendCampaignsActivityMock;
+  @Mock
+  private AlignSendCampaignActivity alignSendCampaignActivityMock;
+
+  private AlignSendCampaignCountersWFImpl wf;
+
+  @BeforeEach
+  void setUp() {
+    SendCampaignWfConfig wfConfigMock = Mockito.mock(SendCampaignWfConfig.class);
+    ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+
+    Mockito.when(wfConfigMock.buildFetchSendCampaignsActivityStub()).thenReturn(fetchSendCampaignsActivityMock);
+    Mockito.when(wfConfigMock.buildAlignSendCampaignActivityStub()).thenReturn(alignSendCampaignActivityMock);
+
+    Mockito.when(applicationContextMock.getBean(SendCampaignWfConfig.class)).thenReturn(wfConfigMock);
+
+    wf = new AlignSendCampaignCountersWFImpl();
+    wf.setApplicationContext(applicationContextMock);
+  }
+
+  @AfterEach
+  void verifyNoMoreInteractions() {
+    Mockito.verifyNoMoreInteractions(
+      fetchSendCampaignsActivityMock,
+      alignSendCampaignActivityMock
+    );
+  }
+
+  @Test
+  void givenNoIdOfLatestAlignedCampaignWhenAlignCountersForAllActiveCampaignsThenAlignAll() {
+    //GIVEN
+    Mockito.when(fetchSendCampaignsActivityMock.fetchSendCampaignIds())
+      .thenReturn(List.of("0","1","2","3"));
+    //WHEN
+    wf.alignCountersForAllActiveCampaigns(null);
+    //THEN
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("0");
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("1");
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("2");
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("3");
+  }
+
+  @Test
+  void givenIdOfLatestAlignedCampaignWhenAlignCountersForAllActiveCampaignsThenAlignRemaining() {
+    //GIVEN
+    Mockito.when(fetchSendCampaignsActivityMock.fetchSendCampaignIds())
+      .thenReturn(List.of("0","1","2","3"));
+    //WHEN
+    wf.alignCountersForAllActiveCampaigns("1");
+    //THEN
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("2");
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("3");
+  }
+
+  @Test
+  void givenMoreThen50000IdsWhenAlignCountersForAllActiveCampaignsThenContinueAsNew() {
+    //GIVEN
+    Mockito.when(fetchSendCampaignsActivityMock.fetchSendCampaignIds())
+      .thenReturn(IntStream.range(0,50_001).mapToObj(String::valueOf).toList());
+    Mockito.doNothing()
+      .when(alignSendCampaignActivityMock).alignSendCampaign(Mockito.anyString());
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      //WHEN
+      wf.alignCountersForAllActiveCampaigns(null);
+      //THEN
+      workflowMock.verify(() -> Workflow.continueAsNew("49999"));
+    }
+  }
+
+  @Test
+  void givenErrorInAlignCampaignsWhenAlignCountersForAllActiveCampaignsThenSkipErrors() {
+    //GIVEN
+    Mockito.when(fetchSendCampaignsActivityMock.fetchSendCampaignIds())
+      .thenReturn(List.of("0","1","2","3"));
+    Mockito.doThrow(new RuntimeException("error"))
+      .when(alignSendCampaignActivityMock)
+      .alignSendCampaign("1");
+    Mockito.doThrow(new RuntimeException("error"))
+      .when(alignSendCampaignActivityMock)
+      .alignSendCampaign("2");
+    //WHEN
+    wf.alignCountersForAllActiveCampaigns(null);
+    //THEN
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("0");
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("1");
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("2");
+    Mockito.verify(alignSendCampaignActivityMock).alignSendCampaign("3");
+  }
+}
