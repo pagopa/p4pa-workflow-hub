@@ -5,6 +5,7 @@ import io.swagger.v3.core.converter.ModelConverters;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.schedules.ScheduleClient;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.AlignSendCampaignCountersScheduler;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFetchScheduler;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -61,6 +62,8 @@ class OpenApiGeneratorTest {
   private PaymentsReportingPagoPaBrokersFetchScheduler paymentsReportingPagoPaBrokersFetchSchedulerMock;
   @MockitoBean
   private SynchronizeTaxonomyPagoPaFetchScheduler synchronizeTaxonomyPagoPaFetchSchedulerMock;
+  @MockitoBean
+  private AlignSendCampaignCountersScheduler alignSendCampaignCountersSchedulerMock;
 
   @Value("${springdoc.api-docs.version}")
   private String apiDocsVersion;

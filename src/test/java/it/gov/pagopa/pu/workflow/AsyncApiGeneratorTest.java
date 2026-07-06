@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.schedules.ScheduleClient;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.AlignSendCampaignCountersScheduler;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFetchScheduler;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -54,6 +55,8 @@ class AsyncApiGeneratorTest {
   private PaymentsReportingPagoPaBrokersFetchScheduler paymentsReportingPagoPaBrokersFetchSchedulerMock;
   @MockitoBean
   private SynchronizeTaxonomyPagoPaFetchScheduler synchronizeTaxonomyPagoPaFetchSchedulerMock;
+  @MockitoBean
+  private AlignSendCampaignCountersScheduler alignSendCampaignCountersSchedulerMock;
 
   @Test
   void generateAndVerifyCommit() throws Exception {

@@ -23,6 +23,7 @@ import it.gov.pagopa.pu.workflow.wf.classification.iuf.IufClassificationWFClient
 import it.gov.pagopa.pu.workflow.wf.classification.iuf.dto.IufClassificationNotifyPaymentsReportingSignalDTO;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.paymentsreporting.PaymentsReportingIngestionWFClient;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.PaymentsReportingPagoPaBrokersFetchScheduler;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.AlignSendCampaignCountersScheduler;
 import it.gov.pagopa.pu.workflow.wf.pagopa.taxonomy.SynchronizeTaxonomyPagoPaFetchScheduler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -87,6 +88,8 @@ class TemporalSpringBootIntegrationTest {
   private PaymentsReportingPagoPaBrokersFetchScheduler paymentsReportingPagoPaBrokersFetchSchedulerMock;
   @MockitoBean
   private SynchronizeTaxonomyPagoPaFetchScheduler synchronizeTaxonomyPagoPaFetchSchedulerMock;
+  @MockitoBean
+  private AlignSendCampaignCountersScheduler alignSendCampaignCountersSchedulerMock;
 
   @MockitoBean("fileActivityMock")
   private PaymentsReportingIngestionFlowFileActivityImpl fileActivityMock;
