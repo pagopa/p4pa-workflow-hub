@@ -5,13 +5,12 @@ import io.temporal.failure.ApplicationFailure;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationTimelineCategoryActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatusV26DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
@@ -60,6 +59,8 @@ class SendNotificationStreamConsumeWFImplTest {
   private StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivityMock;
   @Mock
   private StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivityMock;
+  @Mock
+  private NotifySendNotificationTimelineCategoryActivity notifySendNotificationTimelineCategoryActivityMock;
 
   private SendNotificationStreamConsumeWFImpl wf;
 
@@ -75,6 +76,7 @@ class SendNotificationStreamConsumeWFImplTest {
     Mockito.when(wfConfigMock.buildPublishSendTimelineEventActivityStub()).thenReturn(publishSendTimelineEventActivityMock);
     Mockito.when(wfConfigMock.buildStartDeleteSendNotificationFileActivityStub()).thenReturn(startDeleteSendNotificationFileActivityMock);
     Mockito.when(wfConfigMock.buildStartDeleteSendLegalFactFileActivityStub()).thenReturn(startDeleteSendLegalFactFileActivityMock);
+    Mockito.when(wfConfigMock.buildNotifySendNotificationTimelineCategoryActivityStub()).thenReturn(notifySendNotificationTimelineCategoryActivityMock);
 
     Mockito.when(applicationContextMock.getBean(SendNotificationStreamWfConfig.class)).thenReturn(wfConfigMock);
 
@@ -91,7 +93,8 @@ class SendNotificationStreamConsumeWFImplTest {
       getSendStreamActivityMock,
       getSendNotificationEventsFromStreamActivityMock,
       sendEventStreamProcessingServiceMock,
-      updateLastProcessedStreamEventIdActivityMock
+      updateLastProcessedStreamEventIdActivityMock,
+      notifySendNotificationTimelineCategoryActivityMock
     );
   }
 
@@ -172,6 +175,12 @@ class SendNotificationStreamConsumeWFImplTest {
         Mockito.isA(ProgressResponseElementV28DTO.class)
       );
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -222,6 +231,12 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
+
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -274,6 +289,12 @@ class SendNotificationStreamConsumeWFImplTest {
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -324,6 +345,12 @@ class SendNotificationStreamConsumeWFImplTest {
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
+
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -376,6 +403,12 @@ class SendNotificationStreamConsumeWFImplTest {
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -427,6 +460,12 @@ class SendNotificationStreamConsumeWFImplTest {
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -473,6 +512,12 @@ class SendNotificationStreamConsumeWFImplTest {
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenReturn(sendEvent2.getEventId());
+
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -521,6 +566,12 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId())
       .thenReturn(sendEvent2.getEventId());
+
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -596,6 +647,11 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -638,6 +694,12 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
+
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+    );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -691,6 +753,12 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -734,6 +802,12 @@ class SendNotificationStreamConsumeWFImplTest {
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId());
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -776,6 +850,12 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -817,6 +897,12 @@ class SendNotificationStreamConsumeWFImplTest {
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
+
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -867,6 +953,12 @@ class SendNotificationStreamConsumeWFImplTest {
         Mockito.isA(String.class)
       );
 
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        Mockito.anyMap()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -884,11 +976,22 @@ class SendNotificationStreamConsumeWFImplTest {
   }
 
   private static ProgressResponseElementV28DTO buildSendEvent(String sendEventId, NotificationStatusV26DTO notificationStatus) {
+    return buildSendEvent(sendEventId, notificationStatus, null);
+  }
+
+  private static ProgressResponseElementV28DTO buildSendEvent(String sendEventId, NotificationStatusV26DTO notificationStatus, TimelineElementCategoryV27DTO category) {
     ProgressResponseElementV28DTO sendEvent = new ProgressResponseElementV28DTO();
     sendEvent.setNewStatus(notificationStatus);
     sendEvent.setEventId(sendEventId);
     sendEvent.setNotificationRequestId(SendNotificationStreamConsumeWFImplTest.NOTIFICATION_REQUEST_ID);
+    sendEvent.setElement(buildSendEventElement(category));
     return sendEvent;
+  }
+
+  private static TimelineElementV27DTO buildSendEventElement(TimelineElementCategoryV27DTO category) {
+    TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
+    timelineElement.setCategory(category);
+    return timelineElement;
   }
 
   private static SendStreamDTO buildSendStreamDTO(String sendStreamId) {
