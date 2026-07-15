@@ -32,7 +32,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
@@ -116,17 +115,13 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     String traceId = Utilities.getTraceId();
     Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCategoriesMap = new HashMap<>();
     for (ProgressResponseElementV28DTO streamEvent : streamEventBatch) {
-      notificationRequestIdToTimelineCategoriesMap.putIfAbsent(streamEvent.getNotificationRequestId(), new ArrayList<>());
       String lastEventId;
       try {
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
         publishSendTimelineEventActivity.publishSendTimelineEvent(streamEvent, organizationId, sendStreamId, traceId);
         if(lastEventId != null) {
           lastProcessedEventId = lastEventId;
-          Optional<TimelineElementCategoryV27DTO> timelineCategoryOptional = Optional.ofNullable(streamEvent.getElement().getCategory());
-          timelineCategoryOptional.ifPresent(tc ->
-            notificationRequestIdToTimelineCategoriesMap.get(streamEvent.getNotificationRequestId()).add(tc)
-          );
+          collectEventCategories(streamEvent, notificationRequestIdToTimelineCategoriesMap);
         }
       } catch (Exception e) {
         if(e instanceof ActivityFailure &&
@@ -144,16 +139,24 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         }
       }
     }
-    Map<String, List<TimelineElementCategoryV27DTO>> filteredNotificationRequestIdToTimelineCatogoriesMap =
-      notificationRequestIdToTimelineCategoriesMap.entrySet().stream()
-        .filter(e -> !e.getValue().isEmpty())
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    if(!filteredNotificationRequestIdToTimelineCatogoriesMap.isEmpty()) {
+    if(!notificationRequestIdToTimelineCategoriesMap.isEmpty()) {
       notifySendNotificationTimelineCategoryActivity.notifySendNotificationTimelineCategory(
-        filteredNotificationRequestIdToTimelineCatogoriesMap
+        notificationRequestIdToTimelineCategoriesMap
       );
     }
     return lastProcessedEventId;
+  }
+
+  private void collectEventCategories(ProgressResponseElementV28DTO streamEvent, Map<String, List<TimelineElementCategoryV27DTO>> eventCategoriesMap) {
+    TimelineElementCategoryV27DTO eventCategory = streamEvent.getElement().getCategory();
+    if(eventCategory != null) {
+      List<TimelineElementCategoryV27DTO> notificationEvents =
+        eventCategoriesMap.computeIfAbsent(
+          streamEvent.getNotificationRequestId(),
+          k -> new ArrayList<>()
+        );
+      notificationEvents.add(eventCategory);
+    }
   }
 
   private boolean commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
