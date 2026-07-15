@@ -32,6 +32,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
@@ -143,7 +144,15 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         }
       }
     }
-    notifySendNotificationTimelineCategoryActivity.notifySendNotificationTimelineCategory(notificationRequestIdToTimelineCategoriesMap);
+    Map<String, List<TimelineElementCategoryV27DTO>> filteredNotificationRequestIdToTimelineCatogoriesMap =
+      notificationRequestIdToTimelineCategoriesMap.entrySet().stream()
+        .filter(e -> !e.getValue().isEmpty())
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    if(!filteredNotificationRequestIdToTimelineCatogoriesMap.isEmpty()) {
+      notifySendNotificationTimelineCategoryActivity.notifySendNotificationTimelineCategory(
+        filteredNotificationRequestIdToTimelineCatogoriesMap
+      );
+    }
     return lastProcessedEventId;
   }
 
