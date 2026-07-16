@@ -5,13 +5,12 @@ import io.temporal.failure.ApplicationFailure;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationTimelineCategoryActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatusV26DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
@@ -24,6 +23,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -34,15 +34,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationStreamConsumeWFImplTest {
 
   public static final long ORGANIZATION_ID = 1L;
-  public static final String NOTIFICATION_REQUEST_ID = "notificationRequestId";
+  public static final String NOTIFICATION_REQUEST_ID_1 = "notificationRequestId1";
+  public static final String NOTIFICATION_REQUEST_ID_2 = "notificationRequestId2";
   public static final String INVALID_SEND_STREAM_ID = "invalidSendStreamId";
   public static final String SEND_STREAM_ID = "sendStreamId";
 
@@ -60,6 +61,8 @@ class SendNotificationStreamConsumeWFImplTest {
   private StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivityMock;
   @Mock
   private StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivityMock;
+  @Mock
+  private NotifySendNotificationTimelineCategoryActivity notifySendNotificationTimelineCategoryActivityMock;
 
   private SendNotificationStreamConsumeWFImpl wf;
 
@@ -69,16 +72,17 @@ class SendNotificationStreamConsumeWFImplTest {
     SendNotificationProcessWfConfig wfSendProcessConfigMock = Mockito.mock(SendNotificationProcessWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
-    Mockito.when(wfConfigMock.buildGetSendStreamActivityStub()).thenReturn(getSendStreamActivityMock);
-    Mockito.when(wfConfigMock.buildGetSendNotificationEventsFromStreamActivityStub()).thenReturn(getSendNotificationEventsFromStreamActivityMock);
-    Mockito.when(wfConfigMock.buildUpdateLastProcessedStreamEventIdActivityStub()).thenReturn(updateLastProcessedStreamEventIdActivityMock);
-    Mockito.when(wfConfigMock.buildPublishSendTimelineEventActivityStub()).thenReturn(publishSendTimelineEventActivityMock);
-    Mockito.when(wfConfigMock.buildStartDeleteSendNotificationFileActivityStub()).thenReturn(startDeleteSendNotificationFileActivityMock);
-    Mockito.when(wfConfigMock.buildStartDeleteSendLegalFactFileActivityStub()).thenReturn(startDeleteSendLegalFactFileActivityMock);
+    when(wfConfigMock.buildGetSendStreamActivityStub()).thenReturn(getSendStreamActivityMock);
+    when(wfConfigMock.buildGetSendNotificationEventsFromStreamActivityStub()).thenReturn(getSendNotificationEventsFromStreamActivityMock);
+    when(wfConfigMock.buildUpdateLastProcessedStreamEventIdActivityStub()).thenReturn(updateLastProcessedStreamEventIdActivityMock);
+    when(wfConfigMock.buildPublishSendTimelineEventActivityStub()).thenReturn(publishSendTimelineEventActivityMock);
+    when(wfConfigMock.buildStartDeleteSendNotificationFileActivityStub()).thenReturn(startDeleteSendNotificationFileActivityMock);
+    when(wfConfigMock.buildStartDeleteSendLegalFactFileActivityStub()).thenReturn(startDeleteSendLegalFactFileActivityMock);
+    when(wfConfigMock.buildNotifySendNotificationTimelineCategoryActivityStub()).thenReturn(notifySendNotificationTimelineCategoryActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(SendNotificationStreamWfConfig.class)).thenReturn(wfConfigMock);
+    when(applicationContextMock.getBean(SendNotificationStreamWfConfig.class)).thenReturn(wfConfigMock);
 
-    Mockito.when(applicationContextMock.getBean(SendNotificationProcessWfConfig.class)).thenReturn(wfSendProcessConfigMock);
+    when(applicationContextMock.getBean(SendNotificationProcessWfConfig.class)).thenReturn(wfSendProcessConfigMock);
 
     wf = new SendNotificationStreamConsumeWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -91,57 +95,53 @@ class SendNotificationStreamConsumeWFImplTest {
       getSendStreamActivityMock,
       getSendNotificationEventsFromStreamActivityMock,
       sendEventStreamProcessingServiceMock,
-      updateLastProcessedStreamEventIdActivityMock
+      updateLastProcessedStreamEventIdActivityMock,
+      publishSendTimelineEventActivityMock,
+      notifySendNotificationTimelineCategoryActivityMock
     );
   }
 
   @Test
   void givenInvalidSendStreamIdWhenReadSendStreamThenStreamNotFound() {
     //GIVEN
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(INVALID_SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(INVALID_SEND_STREAM_ID))
       .thenReturn(null); //for not entering do-while loop
 
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
-        .then(invocation -> null);
+    //WHEN
+    IllegalStateBusinessException workflowInternalErrorException =
+      Assertions.assertThrows(IllegalStateBusinessException.class, () -> wf.readSendStream(INVALID_SEND_STREAM_ID));
 
-      //WHEN
-      IllegalStateBusinessException workflowInternalErrorException =
-        Assertions.assertThrows(IllegalStateBusinessException.class, () -> wf.readSendStream(INVALID_SEND_STREAM_ID));
-
-      //THEN
-      Mockito.verify(getSendStreamActivityMock).fetchSendStream(INVALID_SEND_STREAM_ID);
-      Assertions.assertEquals("SEND_STATUS_ERROR", workflowInternalErrorException.getCode());
-      Assertions.assertEquals(
-        "Workflow terminated during starting of readSendStream for sendStreamId %s with ERROR: cannot found SEND stream.".formatted(INVALID_SEND_STREAM_ID),
-        workflowInternalErrorException.getMessage()
-      );
-    }
-
+    //THEN
+    verify(getSendStreamActivityMock).fetchSendStream(INVALID_SEND_STREAM_ID);
+    Assertions.assertEquals("SEND_STATUS_ERROR", workflowInternalErrorException.getCode());
+    Assertions.assertEquals(
+      "Workflow terminated during starting of readSendStream for sendStreamId %s with ERROR: cannot found SEND stream.".formatted(INVALID_SEND_STREAM_ID),
+      workflowInternalErrorException.getMessage()
+    );
   }
 
   @Test
   void givenErrorInFetchSendNotificationEventsFromStreamWhenReadSendStreamThenStreamNotFound() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(INVALID_SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(INVALID_SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
     Mockito.doThrow(new RuntimeException())
       .when(getSendNotificationEventsFromStreamActivityMock)
-      .fetchSendNotificationEventsFromStream(ORGANIZATION_ID, INVALID_SEND_STREAM_ID);
+      .fetchSendNotificationEventsFromStream(ORGANIZATION_ID, SEND_STREAM_ID);
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
 
       //WHEN
-      wf.readSendStream(INVALID_SEND_STREAM_ID);
+      wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(INVALID_SEND_STREAM_ID);
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
     }
 
   }
@@ -149,18 +149,18 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenGeneralExceptionInProcessSendStreamEventWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.VIEWED);
     List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
@@ -172,6 +172,15 @@ class SendNotificationStreamConsumeWFImplTest {
         Mockito.isA(ProgressResponseElementV28DTO.class)
       );
 
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineErrorEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
+
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
@@ -180,8 +189,8 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
           sendEvent1.getEventId()
@@ -193,7 +202,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenSendStreamSkippedEventExceptionInProcessSendStreamEventWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -203,25 +212,34 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent2
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
     ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
-    Mockito.when(activityFailureMock.getCause())
+    when(activityFailureMock.getCause())
         .thenReturn(ApplicationFailure.newNonRetryableFailure("error", SendStreamSkippedEventException.class.getName()));
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.isA(ProgressResponseElementV28DTO.class),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -231,8 +249,8 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
           sendEvent2.getEventId()
@@ -244,7 +262,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenGeneralNotRetryableActivityFailureInProcessSendStreamEventWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -254,25 +272,43 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent2
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
     ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
-    Mockito.when(activityFailureMock.getCause())
+    when(activityFailureMock.getCause())
       .thenReturn(ApplicationFailure.newNonRetryableFailure("error", NotRetryableActivityException.class.getName()));
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineErrorEvent(
+        Mockito.eq(sendEvent2),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -282,8 +318,8 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
           sendEvent2.getEventId()
@@ -295,7 +331,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenGeneralRetryableActivityFailureInProcessSendStreamEventWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -305,25 +341,43 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent2
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
     ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
-    Mockito.when(activityFailureMock.getCause())
+    when(activityFailureMock.getCause())
       .thenReturn(ApplicationFailure.newFailure("error", RetryableActivityException.class.getName()));
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineErrorEvent(
+        Mockito.eq(sendEvent2),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -333,8 +387,8 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
           sendEvent2.getEventId()
@@ -346,7 +400,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenRetryableActivityFailureInProcessSendStreamEventWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -356,25 +410,43 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent2
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
     ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
-    Mockito.when(activityFailureMock.getCause())
+    when(activityFailureMock.getCause())
       .thenReturn(ApplicationFailure.newFailureWithCause("error", NotRetryableActivityException.class.getName(), null));
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineErrorEvent(
+        Mockito.eq(sendEvent2),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -384,8 +456,8 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
           sendEvent2.getEventId()
@@ -397,7 +469,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenActivityFailureWithCauseNotAnApplicationFailureInProcessSendStreamEventWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -407,25 +479,43 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent2
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
     ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
-    Mockito.when(activityFailureMock.getCause())
+    when(activityFailureMock.getCause())
       .thenReturn(new RuntimeException());
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenThrow(activityFailureMock);
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineErrorEvent(
+        Mockito.eq(sendEvent2),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -435,8 +525,8 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
           sendEvent2.getEventId()
@@ -448,7 +538,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenValidSendStreamIdEventWhenReadSendStreamThenContinueAsNew() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -458,21 +548,30 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent2
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId())
       .thenReturn(sendEvent2.getEventId());
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.isA(ProgressResponseElementV28DTO.class),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -482,8 +581,8 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
           sendEvent2.getEventId()
@@ -496,7 +595,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenValidSendStreamIdWithAcceptedEventWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -506,21 +605,30 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent2
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId())
       .thenReturn(sendEvent2.getEventId());
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.isA(ProgressResponseElementV28DTO.class),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -530,8 +638,8 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(
           SEND_STREAM_ID,
           sendEvent2.getEventId()
@@ -543,14 +651,14 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenValidSendStreamIdWithEmptyStreamEventsWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
@@ -564,7 +672,7 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
     }
 
   }
@@ -572,7 +680,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenGenericErrorInCallIsStreamStillOpenWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -580,22 +688,31 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent1
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenThrow(new RuntimeException("Error"))
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
-    ).thenReturn(streamEvents);
+    ).thenReturn(streamEvents)
+    .thenReturn(Collections.emptyList());
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
 
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -605,9 +722,9 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(3))
+      verify(getSendStreamActivityMock, times(3))
         .fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(SEND_STREAM_ID, sendEvent1.getEventId());
     }
 
@@ -616,7 +733,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenNotFoundExceptionInCallIsStreamStillOpenWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -624,20 +741,29 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent1
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -654,9 +780,9 @@ class SendNotificationStreamConsumeWFImplTest {
       );
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2))
+      verify(getSendStreamActivityMock, times(2))
         .fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(SEND_STREAM_ID, sendEvent1.getEventId());
     }
 
@@ -665,31 +791,21 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenRepeatOneHundredTimesWhenReadSendStreamThenContinueAsNew() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
-
-    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
-    List<ProgressResponseElementV28DTO> streamEvents = List.of(
-      sendEvent1
-    );
 
     SendStreamDTO[] oneHundredStreams = new SendStreamDTO[100];
     Arrays.fill(oneHundredStreams, streamDTO);
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO, oneHundredStreams)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
-    ).thenReturn(streamEvents);
-
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
-      Mockito.eq(SEND_STREAM_ID),
-      Mockito.isA(ProgressResponseElementV28DTO.class)
-    )).thenReturn(sendEvent1.getEventId());
+    ).thenReturn(Collections.emptyList());
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -699,11 +815,14 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(102))
+      verify(getSendStreamActivityMock, times(102))
         .fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
-        .updateLastProcessedStreamEventId(SEND_STREAM_ID, sendEvent1.getEventId());
-      workflowMock.verify(() -> Workflow.continueAsNew(streamDTO.getStreamId()), Mockito.times(2));
+      verify(updateLastProcessedStreamEventIdActivityMock, times(0))
+        .updateLastProcessedStreamEventId(
+          Mockito.eq(SEND_STREAM_ID),
+          Mockito.anyString()
+        );
+      workflowMock.verify(() -> Workflow.continueAsNew(streamDTO.getStreamId()));
     }
 
   }
@@ -711,7 +830,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenValidSendStreamIdWithDifferentEventIdWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -719,20 +838,29 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent1
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
         Mockito.isA(ProgressResponseElementV28DTO.class)
       )).thenReturn(sendEvent1.getEventId());
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -742,9 +870,9 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2))
+      verify(getSendStreamActivityMock, times(2))
         .fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(SEND_STREAM_ID, sendEvent1.getEventId());
     }
 
@@ -753,7 +881,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenValidSendStreamIdWithSameEventIdWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("lastSendEventId", NotificationStatusV26DTO.ACCEPTED);
@@ -761,20 +889,29 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent1
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -784,9 +921,9 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2))
+      verify(getSendStreamActivityMock, times(2))
         .fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock, Mockito.times(0))
+      verify(updateLastProcessedStreamEventIdActivityMock, times(0))
         .updateLastProcessedStreamEventId(SEND_STREAM_ID, sendEvent1.getEventId());
     }
 
@@ -795,7 +932,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenValidSendStreamIdWithNullEventIdWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent(null, NotificationStatusV26DTO.ACCEPTED);
@@ -803,20 +940,29 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent1
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -826,9 +972,9 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2))
+      verify(getSendStreamActivityMock, times(2))
         .fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock, Mockito.times(0))
+      verify(updateLastProcessedStreamEventIdActivityMock, times(0))
         .updateLastProcessedStreamEventId(SEND_STREAM_ID, sendEvent1.getEventId());
     }
 
@@ -837,7 +983,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Test
   void givenUpdateLastProcessedStreamEventIdThrowsErrorWhenReadSendStreamThenOK() {
     //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO(SEND_STREAM_ID);
+    SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
 
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NotificationStatusV26DTO.ACCEPTED);
@@ -845,20 +991,29 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent1
     );
 
-    Mockito.when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.when(
+    when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
         ORGANIZATION_ID, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
-    Mockito.when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
       Mockito.eq(SEND_STREAM_ID),
       Mockito.isA(ProgressResponseElementV28DTO.class)
     )).thenReturn(sendEvent1.getEventId());
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.eq(sendEvent1),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
 
     Mockito.doThrow(new RuntimeException("Error"))
       .when(updateLastProcessedStreamEventIdActivityMock)
@@ -875,25 +1030,115 @@ class SendNotificationStreamConsumeWFImplTest {
       wf.readSendStream(SEND_STREAM_ID);
 
       //THEN
-      Mockito.verify(getSendStreamActivityMock, Mockito.times(2))
+      verify(getSendStreamActivityMock, times(2))
         .fetchSendStream(SEND_STREAM_ID);
-      Mockito.verify(updateLastProcessedStreamEventIdActivityMock)
+      verify(updateLastProcessedStreamEventIdActivityMock)
         .updateLastProcessedStreamEventId(SEND_STREAM_ID, sendEvent1.getEventId());
     }
 
   }
 
+  @Test
+  void givenExpectedNotificationRequestIdToTimelineCategoriesMapWhenReadSendStreamThenNotifyCategories() {
+    //GIVEN
+    SendStreamDTO streamDTO = buildSendStreamDTO();
+    streamDTO.setLastEventId("lastSendEventId");
+
+    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NOTIFICATION_REQUEST_ID_1, NotificationStatusV26DTO.ACCEPTED, TimelineElementCategoryV27DTO.REQUEST_ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NOTIFICATION_REQUEST_ID_1, NotificationStatusV26DTO.DELIVERING, TimelineElementCategoryV27DTO.SEND_ANALOG_PROGRESS);
+    ProgressResponseElementV28DTO sendEvent3 = buildSendEvent("sendEventId3", NOTIFICATION_REQUEST_ID_2, NotificationStatusV26DTO.ACCEPTED, TimelineElementCategoryV27DTO.REQUEST_ACCEPTED);
+    ProgressResponseElementV28DTO sendEvent4 = buildSendEvent("sendEventId4", NOTIFICATION_REQUEST_ID_2, NotificationStatusV26DTO.DELIVERING, TimelineElementCategoryV27DTO.ANALOG_FAILURE_WORKFLOW);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
+      sendEvent1,
+      sendEvent2,
+      sendEvent3,
+      sendEvent4
+    );
+
+    Map<String, List<TimelineElementCategoryV27DTO>> expectedNotificationRequestIdToTimelineCategoriesMap = new HashMap<>();
+    expectedNotificationRequestIdToTimelineCategoriesMap.put(NOTIFICATION_REQUEST_ID_1, List.of(TimelineElementCategoryV27DTO.REQUEST_ACCEPTED, TimelineElementCategoryV27DTO.SEND_ANALOG_PROGRESS));
+    expectedNotificationRequestIdToTimelineCategoriesMap.put(NOTIFICATION_REQUEST_ID_2, List.of(TimelineElementCategoryV27DTO.REQUEST_ACCEPTED, TimelineElementCategoryV27DTO.ANALOG_FAILURE_WORKFLOW));
+
+    ArgumentCaptor<Map<String, List<TimelineElementCategoryV27DTO>>> notificationRequestIdToTimelineCategoriesMapCaptor = ArgumentCaptor.captor();
+
+    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+      .thenReturn(streamDTO)
+      .thenReturn(null); //for breaking from do-while loop
+
+    when(
+      getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
+        ORGANIZATION_ID, SEND_STREAM_ID
+      )
+    ).thenReturn(streamEvents);
+
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isA(ProgressResponseElementV28DTO.class)
+      )).thenReturn(sendEvent1.getEventId())
+      .thenReturn(sendEvent2.getEventId())
+      .thenReturn(sendEvent3.getEventId())
+      .thenReturn(sendEvent4.getEventId());
+
+    Mockito.doNothing()
+      .when(publishSendTimelineEventActivityMock)
+      .publishSendTimelineEvent(
+        Mockito.isA(ProgressResponseElementV28DTO.class),
+        Mockito.eq(ORGANIZATION_ID),
+        Mockito.eq(SEND_STREAM_ID),
+        Mockito.isNull()
+      );
+
+    Mockito.doNothing()
+      .when(notifySendNotificationTimelineCategoryActivityMock)
+      .notifySendNotificationTimelineCategory(
+        notificationRequestIdToTimelineCategoriesMapCaptor.capture()
+      );
+
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+        .then(invocation -> null);
+
+      //WHEN
+      wf.readSendStream(SEND_STREAM_ID);
+
+      //THEN
+      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+      verify(updateLastProcessedStreamEventIdActivityMock)
+        .updateLastProcessedStreamEventId(
+          SEND_STREAM_ID,
+          sendEvent4.getEventId()
+        );
+      Assertions.assertEquals(
+        expectedNotificationRequestIdToTimelineCategoriesMap,
+        notificationRequestIdToTimelineCategoriesMapCaptor.getValue()
+      );
+      workflowMock.verify(() -> Workflow.continueAsNew(streamDTO.getStreamId()));
+    }
+
+  }
+
   private static ProgressResponseElementV28DTO buildSendEvent(String sendEventId, NotificationStatusV26DTO notificationStatus) {
+    return buildSendEvent(sendEventId, NOTIFICATION_REQUEST_ID_1, notificationStatus, null);
+  }
+
+  private static ProgressResponseElementV28DTO buildSendEvent(String sendEventId, String notificationRequestId, NotificationStatusV26DTO notificationStatus, TimelineElementCategoryV27DTO category) {
     ProgressResponseElementV28DTO sendEvent = new ProgressResponseElementV28DTO();
     sendEvent.setNewStatus(notificationStatus);
     sendEvent.setEventId(sendEventId);
-    sendEvent.setNotificationRequestId(SendNotificationStreamConsumeWFImplTest.NOTIFICATION_REQUEST_ID);
+    sendEvent.setNotificationRequestId(notificationRequestId);
+    sendEvent.setElement(buildSendEventElement(category));
     return sendEvent;
   }
 
-  private static SendStreamDTO buildSendStreamDTO(String sendStreamId) {
+  private static TimelineElementV27DTO buildSendEventElement(TimelineElementCategoryV27DTO category) {
+    TimelineElementV27DTO timelineElement = new TimelineElementV27DTO();
+    timelineElement.setCategory(category);
+    return timelineElement;
+  }
+
+  private static SendStreamDTO buildSendStreamDTO() {
     SendStreamDTO streamDTO = new SendStreamDTO();
-    streamDTO.setStreamId(sendStreamId);
+    streamDTO.setStreamId(SEND_STREAM_ID);
     streamDTO.setOrganizationId(ORGANIZATION_ID);
     return streamDTO;
   }
