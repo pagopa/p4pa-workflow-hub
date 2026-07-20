@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationTimelineCategoryActivity;
+//import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationTimelineCategoryActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
@@ -69,7 +69,7 @@ public class SendNotificationStreamWfConfig extends BaseWfConfig {
         TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM_CONSUME_LOCAL,this));
   }
 
-  public NotifySendNotificationTimelineCategoryActivity buildNotifySendNotificationTimelineCategoryActivityStub() {
-    return Workflow.newActivityStub(NotifySendNotificationTimelineCategoryActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
-  }
+//  public NotifySendNotificationTimelineCategoryActivity buildNotifySendNotificationTimelineCategoryActivityStub() {
+//    return Workflow.newActivityStub(NotifySendNotificationTimelineCategoryActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+//  }
 }
