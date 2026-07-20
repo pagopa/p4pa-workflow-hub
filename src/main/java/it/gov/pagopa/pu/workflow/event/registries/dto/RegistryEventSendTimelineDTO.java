@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,5 +42,7 @@ public class RegistryEventSendTimelineDTO {
   private Integer recipientIndex;
   private String newStatus;
   private RegistryOutcome outcome;
+  private List<String> legalFactIds;
+  private OffsetDateTime eventTimestamp;
   private String body;
 }
