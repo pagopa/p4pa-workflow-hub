@@ -61,8 +61,8 @@ class SendNotificationStreamConsumeWFImplTest {
   private StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivityMock;
   @Mock
   private StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivityMock;
-  @Mock
-  private NotifySendNotificationTimelineCategoryActivity notifySendNotificationTimelineCategoryActivityMock;
+//  @Mock
+//  private NotifySendNotificationTimelineCategoryActivity notifySendNotificationTimelineCategoryActivityMock;
 
   private SendNotificationStreamConsumeWFImpl wf;
 
@@ -78,7 +78,7 @@ class SendNotificationStreamConsumeWFImplTest {
     when(wfConfigMock.buildPublishSendTimelineEventActivityStub()).thenReturn(publishSendTimelineEventActivityMock);
     when(wfConfigMock.buildStartDeleteSendNotificationFileActivityStub()).thenReturn(startDeleteSendNotificationFileActivityMock);
     when(wfConfigMock.buildStartDeleteSendLegalFactFileActivityStub()).thenReturn(startDeleteSendLegalFactFileActivityMock);
-    when(wfConfigMock.buildNotifySendNotificationTimelineCategoryActivityStub()).thenReturn(notifySendNotificationTimelineCategoryActivityMock);
+//    when(wfConfigMock.buildNotifySendNotificationTimelineCategoryActivityStub()).thenReturn(notifySendNotificationTimelineCategoryActivityMock);
 
     when(applicationContextMock.getBean(SendNotificationStreamWfConfig.class)).thenReturn(wfConfigMock);
 
@@ -96,8 +96,8 @@ class SendNotificationStreamConsumeWFImplTest {
       getSendNotificationEventsFromStreamActivityMock,
       sendEventStreamProcessingServiceMock,
       updateLastProcessedStreamEventIdActivityMock,
-      publishSendTimelineEventActivityMock,
-      notifySendNotificationTimelineCategoryActivityMock
+      publishSendTimelineEventActivityMock
+//      notifySendNotificationTimelineCategoryActivityMock
     );
   }
 
@@ -1038,84 +1038,84 @@ class SendNotificationStreamConsumeWFImplTest {
 
   }
 
-  @Test
-  void givenExpectedNotificationRequestIdToTimelineCategoriesMapWhenReadSendStreamThenNotifyCategories() {
-    //GIVEN
-    SendStreamDTO streamDTO = buildSendStreamDTO();
-    streamDTO.setLastEventId("lastSendEventId");
-
-    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NOTIFICATION_REQUEST_ID_1, NotificationStatusV26DTO.ACCEPTED, TimelineElementCategoryV27DTO.REQUEST_ACCEPTED);
-    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NOTIFICATION_REQUEST_ID_1, NotificationStatusV26DTO.DELIVERING, TimelineElementCategoryV27DTO.SEND_ANALOG_PROGRESS);
-    ProgressResponseElementV28DTO sendEvent3 = buildSendEvent("sendEventId3", NOTIFICATION_REQUEST_ID_2, NotificationStatusV26DTO.ACCEPTED, TimelineElementCategoryV27DTO.REQUEST_ACCEPTED);
-    ProgressResponseElementV28DTO sendEvent4 = buildSendEvent("sendEventId4", NOTIFICATION_REQUEST_ID_2, NotificationStatusV26DTO.DELIVERING, TimelineElementCategoryV27DTO.ANALOG_FAILURE_WORKFLOW);
-    List<ProgressResponseElementV28DTO> streamEvents = List.of(
-      sendEvent1,
-      sendEvent2,
-      sendEvent3,
-      sendEvent4
-    );
-
-    Map<String, List<TimelineElementCategoryV27DTO>> expectedNotificationRequestIdToTimelineCategoriesMap = new HashMap<>();
-    expectedNotificationRequestIdToTimelineCategoriesMap.put(NOTIFICATION_REQUEST_ID_1, List.of(TimelineElementCategoryV27DTO.REQUEST_ACCEPTED, TimelineElementCategoryV27DTO.SEND_ANALOG_PROGRESS));
-    expectedNotificationRequestIdToTimelineCategoriesMap.put(NOTIFICATION_REQUEST_ID_2, List.of(TimelineElementCategoryV27DTO.REQUEST_ACCEPTED, TimelineElementCategoryV27DTO.ANALOG_FAILURE_WORKFLOW));
-
-    ArgumentCaptor<Map<String, List<TimelineElementCategoryV27DTO>>> notificationRequestIdToTimelineCategoriesMapCaptor = ArgumentCaptor.captor();
-
-    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
-      .thenReturn(streamDTO)
-      .thenReturn(null); //for breaking from do-while loop
-
-    when(
-      getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
-        ORGANIZATION_ID, SEND_STREAM_ID
-      )
-    ).thenReturn(streamEvents);
-
-    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
-        Mockito.eq(SEND_STREAM_ID),
-        Mockito.isA(ProgressResponseElementV28DTO.class)
-      )).thenReturn(sendEvent1.getEventId())
-      .thenReturn(sendEvent2.getEventId())
-      .thenReturn(sendEvent3.getEventId())
-      .thenReturn(sendEvent4.getEventId());
-
-    Mockito.doNothing()
-      .when(publishSendTimelineEventActivityMock)
-      .publishSendTimelineEvent(
-        Mockito.isA(ProgressResponseElementV28DTO.class),
-        Mockito.eq(ORGANIZATION_ID),
-        Mockito.eq(SEND_STREAM_ID),
-        Mockito.isNull()
-      );
-
-    Mockito.doNothing()
-      .when(notifySendNotificationTimelineCategoryActivityMock)
-      .notifySendNotificationTimelineCategory(
-        notificationRequestIdToTimelineCategoriesMapCaptor.capture()
-      );
-
-    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
-      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
-        .then(invocation -> null);
-
-      //WHEN
-      wf.readSendStream(SEND_STREAM_ID);
-
-      //THEN
-      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
-      verify(updateLastProcessedStreamEventIdActivityMock)
-        .updateLastProcessedStreamEventId(
-          SEND_STREAM_ID,
-          sendEvent4.getEventId()
-        );
-      Assertions.assertEquals(
-        expectedNotificationRequestIdToTimelineCategoriesMap,
-        notificationRequestIdToTimelineCategoriesMapCaptor.getValue()
-      );
-      workflowMock.verify(() -> Workflow.continueAsNew(streamDTO.getStreamId()));
-    }
-
-  }
+//  @Test
+//  void givenExpectedNotificationRequestIdToTimelineCategoriesMapWhenReadSendStreamThenNotifyCategories() {
+//    //GIVEN
+//    SendStreamDTO streamDTO = buildSendStreamDTO();
+//    streamDTO.setLastEventId("lastSendEventId");
+//
+//    ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NOTIFICATION_REQUEST_ID_1, NotificationStatusV26DTO.ACCEPTED, TimelineElementCategoryV27DTO.REQUEST_ACCEPTED);
+//    ProgressResponseElementV28DTO sendEvent2 = buildSendEvent("sendEventId2", NOTIFICATION_REQUEST_ID_1, NotificationStatusV26DTO.DELIVERING, TimelineElementCategoryV27DTO.SEND_ANALOG_PROGRESS);
+//    ProgressResponseElementV28DTO sendEvent3 = buildSendEvent("sendEventId3", NOTIFICATION_REQUEST_ID_2, NotificationStatusV26DTO.ACCEPTED, TimelineElementCategoryV27DTO.REQUEST_ACCEPTED);
+//    ProgressResponseElementV28DTO sendEvent4 = buildSendEvent("sendEventId4", NOTIFICATION_REQUEST_ID_2, NotificationStatusV26DTO.DELIVERING, TimelineElementCategoryV27DTO.ANALOG_FAILURE_WORKFLOW);
+//    List<ProgressResponseElementV28DTO> streamEvents = List.of(
+//      sendEvent1,
+//      sendEvent2,
+//      sendEvent3,
+//      sendEvent4
+//    );
+//
+//    Map<String, List<TimelineElementCategoryV27DTO>> expectedNotificationRequestIdToTimelineCategoriesMap = new HashMap<>();
+//    expectedNotificationRequestIdToTimelineCategoriesMap.put(NOTIFICATION_REQUEST_ID_1, List.of(TimelineElementCategoryV27DTO.REQUEST_ACCEPTED, TimelineElementCategoryV27DTO.SEND_ANALOG_PROGRESS));
+//    expectedNotificationRequestIdToTimelineCategoriesMap.put(NOTIFICATION_REQUEST_ID_2, List.of(TimelineElementCategoryV27DTO.REQUEST_ACCEPTED, TimelineElementCategoryV27DTO.ANALOG_FAILURE_WORKFLOW));
+//
+//    ArgumentCaptor<Map<String, List<TimelineElementCategoryV27DTO>>> notificationRequestIdToTimelineCategoriesMapCaptor = ArgumentCaptor.captor();
+//
+//    when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
+//      .thenReturn(streamDTO)
+//      .thenReturn(null); //for breaking from do-while loop
+//
+//    when(
+//      getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
+//        ORGANIZATION_ID, SEND_STREAM_ID
+//      )
+//    ).thenReturn(streamEvents);
+//
+//    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+//        Mockito.eq(SEND_STREAM_ID),
+//        Mockito.isA(ProgressResponseElementV28DTO.class)
+//      )).thenReturn(sendEvent1.getEventId())
+//      .thenReturn(sendEvent2.getEventId())
+//      .thenReturn(sendEvent3.getEventId())
+//      .thenReturn(sendEvent4.getEventId());
+//
+//    Mockito.doNothing()
+//      .when(publishSendTimelineEventActivityMock)
+//      .publishSendTimelineEvent(
+//        Mockito.isA(ProgressResponseElementV28DTO.class),
+//        Mockito.eq(ORGANIZATION_ID),
+//        Mockito.eq(SEND_STREAM_ID),
+//        Mockito.isNull()
+//      );
+//
+//    Mockito.doNothing()
+//      .when(notifySendNotificationTimelineCategoryActivityMock)
+//      .notifySendNotificationTimelineCategory(
+//        notificationRequestIdToTimelineCategoriesMapCaptor.capture()
+//      );
+//
+//    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+//      workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
+//        .then(invocation -> null);
+//
+//      //WHEN
+//      wf.readSendStream(SEND_STREAM_ID);
+//
+//      //THEN
+//      verify(getSendStreamActivityMock, times(2)).fetchSendStream(SEND_STREAM_ID);
+//      verify(updateLastProcessedStreamEventIdActivityMock)
+//        .updateLastProcessedStreamEventId(
+//          SEND_STREAM_ID,
+//          sendEvent4.getEventId()
+//        );
+//      Assertions.assertEquals(
+//        expectedNotificationRequestIdToTimelineCategoriesMap,
+//        notificationRequestIdToTimelineCategoriesMapCaptor.getValue()
+//      );
+//      workflowMock.verify(() -> Workflow.continueAsNew(streamDTO.getStreamId()));
+//    }
+//
+//  }
 
   private static ProgressResponseElementV28DTO buildSendEvent(String sendEventId, NotificationStatusV26DTO notificationStatus) {
     return buildSendEvent(sendEventId, NOTIFICATION_REQUEST_ID_1, notificationStatus, null);

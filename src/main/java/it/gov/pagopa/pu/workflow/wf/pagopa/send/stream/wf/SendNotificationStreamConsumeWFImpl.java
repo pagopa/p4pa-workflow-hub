@@ -47,7 +47,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private SendEventStreamProcessingService sendEventStreamProcessingService;
   private UpdateLastProcessedStreamEventIdActivity updateLastProcessedStreamEventIdActivity;
   private PublishSendTimelineEventActivity publishSendTimelineEventActivity;
-  private NotifySendNotificationTimelineCategoryActivity notifySendNotificationTimelineCategoryActivity;
+//  private NotifySendNotificationTimelineCategoryActivity notifySendNotificationTimelineCategoryActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -74,7 +74,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     );
     updateLastProcessedStreamEventIdActivity = wfConfig.buildUpdateLastProcessedStreamEventIdActivityStub();
     publishSendTimelineEventActivity = wfConfig.buildPublishSendTimelineEventActivityStub();
-    notifySendNotificationTimelineCategoryActivity = wfConfig.buildNotifySendNotificationTimelineCategoryActivityStub();
+//    notifySendNotificationTimelineCategoryActivity = wfConfig.buildNotifySendNotificationTimelineCategoryActivityStub();
   }
 
   @Override
@@ -140,9 +140,9 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       }
     }
     if(!notificationRequestIdToTimelineCategoriesMap.isEmpty()) {
-      notifySendNotificationTimelineCategoryActivity.notifySendNotificationTimelineCategory(
-        notificationRequestIdToTimelineCategoriesMap
-      );
+//      notifySendNotificationTimelineCategoryActivity.notifySendNotificationTimelineCategory(
+//        notificationRequestIdToTimelineCategoriesMap
+//      );
     }
     return lastProcessedEventId;
   }
