@@ -6,7 +6,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationTimelineCategoryActivity;
+//import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationTimelineCategoryActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
@@ -139,11 +139,11 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         }
       }
     }
-    if(!notificationRequestIdToTimelineCategoriesMap.isEmpty()) {
+//    if(!notificationRequestIdToTimelineCategoriesMap.isEmpty()) {
 //      notifySendNotificationTimelineCategoryActivity.notifySendNotificationTimelineCategory(
 //        notificationRequestIdToTimelineCategoriesMap
 //      );
-    }
+//    }
     return lastProcessedEventId;
   }
 
