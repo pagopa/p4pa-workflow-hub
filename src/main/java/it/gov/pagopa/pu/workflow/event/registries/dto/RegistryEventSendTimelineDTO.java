@@ -41,8 +41,8 @@ public class RegistryEventSendTimelineDTO {
   private String iun;
   private Integer recipientIndex;
   private String newStatus;
-  private RegistryOutcome outcome;
-  private List<String> legalFactIds;
   private OffsetDateTime eventTimestamp;
+  private List<String> legalFactIds;
+  private RegistryOutcome outcome;
   private String body;
 }

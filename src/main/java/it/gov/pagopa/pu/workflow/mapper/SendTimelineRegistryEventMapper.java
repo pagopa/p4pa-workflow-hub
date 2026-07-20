@@ -78,13 +78,13 @@ public class SendTimelineRegistryEventMapper {
       .iun(progressResponseElementV28DTO.getIun())
       .recipientIndex(extractRecipientIndex(progressResponseElementV28DTO))
       .newStatus(Optional.ofNullable(progressResponseElementV28DTO.getNewStatus()).map(NotificationStatusV26DTO::name).orElse(null))
-      .outcome(outcome)
       .eventTimestamp(progressResponseElementV28DTO.getElement().getEventTimestamp())
       .legalFactIds(
         Optional.ofNullable(progressResponseElementV28DTO.getElement().getLegalFactsIds())
           .map(this::extractPolishedLegalFactIds)
           .orElse(null)
       )
+      .outcome(outcome)
       .body(
         serializeObjectToJson(
           progressResponseElementV28DTO.getElement(),
