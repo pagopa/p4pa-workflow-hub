@@ -24,8 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SendEventStreamProcessingServiceImplTest {
@@ -102,7 +101,7 @@ class SendEventStreamProcessingServiceImplTest {
         Mockito.isA(DebtPositionSendNotificationDTO.class),
         Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
       );
-    verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -144,7 +143,7 @@ class SendEventStreamProcessingServiceImplTest {
         Mockito.isA(DebtPositionSendNotificationDTO.class),
         Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null))
       );
-    verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -188,7 +187,7 @@ class SendEventStreamProcessingServiceImplTest {
         Mockito.isA(DebtPositionSendNotificationDTO.class),
         Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null))
       );
-    verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -285,7 +284,7 @@ class SendEventStreamProcessingServiceImplTest {
     //THEN
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
-    verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -361,7 +360,7 @@ class SendEventStreamProcessingServiceImplTest {
     //THEN
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
-    verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -391,7 +390,7 @@ class SendEventStreamProcessingServiceImplTest {
     //THEN
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
-    verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
