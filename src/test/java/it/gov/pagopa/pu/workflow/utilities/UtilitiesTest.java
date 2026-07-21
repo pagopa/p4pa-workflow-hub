@@ -3,6 +3,8 @@ package it.gov.pagopa.pu.workflow.utilities;
 import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactsIdV20DTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
 import java.time.*;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -226,5 +229,33 @@ public class UtilitiesTest {
     assertTrue(Utilities.extractIudsFromDescription(str2).isEmpty());
     assertTrue(Utilities.extractIudsFromDescription(str3).isEmpty());
     assertTrue(Utilities.extractIudsFromDescription(str4).isEmpty());
+  }
+
+  @Test
+  void whenExtractPolishedLegalFactIdThenReturnPolishedId() {
+    //GIVEN
+    String polishedLegalFactId = "legaFactId";
+    LegalFactsIdV20DTO legalFactsIdV20DTO = new LegalFactsIdV20DTO(
+      Constants.LEGAL_FACT_ID_PREFIX.concat(polishedLegalFactId),
+      LegalFactCategoryDTO.SENDER_ACK.getValue()
+    );
+    //WHEN
+    String actualResult = Utilities.extractPolishedLegalFactId(legalFactsIdV20DTO);
+    //THEN
+    Assertions.assertEquals(polishedLegalFactId, actualResult);
+  }
+
+  @Test
+  void whenExtractPolishedLegalFactIdsThenReturnPolishedIds() {
+    //GIVEN
+    List<String> polishedLegalFactIds = List.of("legaFactId1", "legaFactId2");
+    List<LegalFactsIdV20DTO> legalFactsIdV20DTOs = polishedLegalFactIds.stream()
+      .map(Constants.LEGAL_FACT_ID_PREFIX::concat)
+      .map(lfId -> new LegalFactsIdV20DTO(lfId, LegalFactCategoryDTO.SENDER_ACK.getValue()))
+      .toList();
+    //WHEN
+    List<String> actualResult = Utilities.extractPolishedLegalFactIds(legalFactsIdV20DTOs);
+    //THEN
+    Assertions.assertEquals(polishedLegalFactIds, actualResult);
   }
 }

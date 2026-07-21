@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.utilities;
 import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
+import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactsIdV20DTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.mapstruct.Named;
 import org.slf4j.MDC;
@@ -14,9 +15,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static it.gov.pagopa.pu.workflow.utilities.Constants.LEGAL_FACT_ID_PREFIX;
 
 @Component
 public class Utilities {
@@ -98,5 +102,15 @@ public class Utilities {
     }
 
     return iuds;
+  }
+
+  public static List<String> extractPolishedLegalFactIds(List<LegalFactsIdV20DTO> legalFactIds) {
+    return legalFactIds.stream()
+      .map(Utilities::extractPolishedLegalFactId)
+      .toList();
+  }
+
+  public static String extractPolishedLegalFactId(LegalFactsIdV20DTO legalFactId) {
+    return legalFactId.getKey().replace(LEGAL_FACT_ID_PREFIX, "");
   }
 }
