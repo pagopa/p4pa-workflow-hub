@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.mapper;
 
-import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactsIdV20DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementDetailsV27DTO;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import tools.jackson.databind.json.JsonMapper;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryEventSubType;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
@@ -12,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
-
-import static it.gov.pagopa.pu.workflow.utilities.Constants.LEGAL_FACT_ID_PREFIX;
 
 @Slf4j
 @Service
@@ -81,7 +78,7 @@ public class SendTimelineRegistryEventMapper {
       .eventTimestamp(progressResponseElementV28DTO.getElement().getEventTimestamp())
       .legalFactIds(
         Optional.ofNullable(progressResponseElementV28DTO.getElement().getLegalFactsIds())
-          .map(this::extractPolishedLegalFactIds)
+          .map(Utilities::extractPolishedLegalFactIds)
           .orElse(null)
       )
       .outcome(outcome)
@@ -93,12 +90,6 @@ public class SendTimelineRegistryEventMapper {
         )
       )
       .build();
-  }
-
-  private List<String> extractPolishedLegalFactIds(List<LegalFactsIdV20DTO> legalFactIds) {
-    return legalFactIds.stream()
-        .map(lf -> lf.getKey().replace(LEGAL_FACT_ID_PREFIX, ""))
-        .toList();
   }
 
   private static Integer extractRecipientIndex(ProgressResponseElementV28DTO progressResponseElementV28DTO) {
