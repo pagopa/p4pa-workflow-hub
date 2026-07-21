@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class SendEventStreamProcessingServiceImplTest {
 
@@ -76,10 +78,10 @@ class SendEventStreamProcessingServiceImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.SENDING);
 
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -94,12 +96,12 @@ class SendEventStreamProcessingServiceImplTest {
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
-    Mockito.verify(publishSendNotificationPaymentEventActivityMock)
+    verify(publishSendNotificationPaymentEventActivityMock)
       .publishSendNotificationEvent(
         Mockito.isA(DebtPositionSendNotificationDTO.class),
         Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null))
       );
-    Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -118,10 +120,10 @@ class SendEventStreamProcessingServiceImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
 
-    Mockito.when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+    when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -136,12 +138,12 @@ class SendEventStreamProcessingServiceImplTest {
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
-    Mockito.verify(publishSendNotificationPaymentEventActivityMock)
+    verify(publishSendNotificationPaymentEventActivityMock)
       .publishSendNotificationErrorEvent(
         Mockito.isA(DebtPositionSendNotificationDTO.class),
         Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null))
       );
-    Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -160,15 +162,14 @@ class SendEventStreamProcessingServiceImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
 
-    Mockito.when(sendNotificationDateRetrieveActivityMock.sendNotificationDateRetrieve(
+    when(sendNotificationDateRetrieveActivityMock.sendNotificationDateRetrieve(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
     Mockito.doNothing().when(startDeleteSendNotificationFileActivityMock).startDeleteSendNotificationExpiredFiles(sendNotificationDTO.getSendNotificationId());
-    Mockito.doNothing().when(startDeleteSendLegalFactFileActivityMock).startDeleteSendLegalFactExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
     //WHEN
     String actualResult =
@@ -181,18 +182,18 @@ class SendEventStreamProcessingServiceImplTest {
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
-    Mockito.verify(publishSendNotificationPaymentEventActivityMock)
+    verify(publishSendNotificationPaymentEventActivityMock)
       .publishSendNotificationEvent(
         Mockito.isA(DebtPositionSendNotificationDTO.class),
         Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null))
       );
-    Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
         Mockito.isA(String.class)
       );
-    Mockito.verify(updateSendNotificationStatusActivityMock)
+    verify(updateSendNotificationStatusActivityMock)
       .updateSendNotificationStatus(NOTIFICATION_REQUEST_ID, NotificationStatus.DELIVERED);
   }
 
@@ -207,7 +208,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -221,7 +222,7 @@ class SendEventStreamProcessingServiceImplTest {
     // THEN
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
 
-    Mockito.verify(updateSendNotificationStatusActivityMock)
+    verify(updateSendNotificationStatusActivityMock)
       .updateSendNotificationStatus(NOTIFICATION_REQUEST_ID, expectedDomainStatus);
 
     Mockito.verifyNoInteractions(sendNotificationDateRetrieveActivityMock);
@@ -241,7 +242,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.DELIVERED);
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -251,7 +252,7 @@ class SendEventStreamProcessingServiceImplTest {
     // THEN
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
 
-    Mockito.verify(updateSendNotificationStatusActivityMock)
+    verify(updateSendNotificationStatusActivityMock)
       .updateSendNotificationStatus(NOTIFICATION_REQUEST_ID, expectedDomainStatus);
 
     Mockito.verifyNoInteractions(sendNotificationDateRetrieveActivityMock);
@@ -269,7 +270,7 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
 
@@ -283,7 +284,7 @@ class SendEventStreamProcessingServiceImplTest {
     //THEN
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
-    Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -313,9 +314,11 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.DELIVERED);
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
+
+    Mockito.doNothing().when(startDeleteSendLegalFactFileActivityMock).startDeleteSendLegalFactExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
     //WHEN
     String actualResult =
@@ -327,7 +330,7 @@ class SendEventStreamProcessingServiceImplTest {
     //THEN
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
-    Mockito.verify(fetchSendLegalFactActivityMock)
+    verify(fetchSendLegalFactActivityMock)
       .downloadAndArchiveSendLegalFact(
         sendEvent.getNotificationRequestId(),
         LegalFactCategoryDTO.valueOf(legalFactsId.getCategory()),
@@ -343,9 +346,9 @@ class SendEventStreamProcessingServiceImplTest {
       null
     );
 
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
-    )).thenReturn(null);
+    )).thenReturn(buildSendNotification());
 
     //WHEN
     String actualResult =
@@ -357,7 +360,7 @@ class SendEventStreamProcessingServiceImplTest {
     //THEN
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
-    Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
@@ -373,9 +376,9 @@ class SendEventStreamProcessingServiceImplTest {
       null
     );
 
-    Mockito.when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
-    )).thenReturn(null);
+    )).thenReturn(buildSendNotification());
 
     //WHEN
     String actualResult =
@@ -387,7 +390,7 @@ class SendEventStreamProcessingServiceImplTest {
     //THEN
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
-    Mockito.verify(fetchSendLegalFactActivityMock, Mockito.times(0))
+    verify(fetchSendLegalFactActivityMock, times(0))
       .downloadAndArchiveSendLegalFact(
         Mockito.isA(String.class),
         Mockito.isA(LegalFactCategoryDTO.class),
