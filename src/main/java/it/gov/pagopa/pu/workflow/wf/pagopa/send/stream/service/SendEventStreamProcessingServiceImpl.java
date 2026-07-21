@@ -7,13 +7,12 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV2
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.mapper.SendNotification2DebtPositionSendNotificationsMapper;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendLegalFactFileActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivity;
 import lombok.extern.slf4j.Slf4j;
-
-import static it.gov.pagopa.pu.workflow.utilities.Constants.LEGAL_FACT_ID_PREFIX;
 
 @Slf4j
 public class SendEventStreamProcessingServiceImpl implements SendEventStreamProcessingService {
@@ -126,7 +125,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         fetchSendLegalFactActivity.downloadAndArchiveSendLegalFact(
           streamEvent.getNotificationRequestId(),
           LegalFactCategoryDTO.valueOf(lf.getCategory()),
-          lf.getKey().replace(LEGAL_FACT_ID_PREFIX, "")
+          Utilities.extractPolishedLegalFactId(lf)
         )
       );
   }
