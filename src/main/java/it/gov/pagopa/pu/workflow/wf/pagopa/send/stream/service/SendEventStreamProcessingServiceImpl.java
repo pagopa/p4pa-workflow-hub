@@ -48,14 +48,14 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
 
   @Override
   public String processSendStreamEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
-    String eventiId = processNotificationEvent(sendStreamId, streamEvent);
-    downloadAndArchiveNotificationLegalFact(streamEvent);
-    return eventiId;
-  }
-
-  private String processNotificationEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
     SendNotificationDTO sendNotification = this.getSendNotificationByNotificationRequestIdActivity
       .getSendNotificationByNotificationRequestId(streamEvent.getNotificationRequestId());
+    String eventId = processNotificationEvent(sendStreamId, streamEvent, sendNotification);
+    downloadAndArchiveNotificationLegalFact(streamEvent, sendNotification.getSendNotificationId());
+    return eventId;
+  }
+
+  private String processNotificationEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent, SendNotificationDTO sendNotification) {
     if(streamEvent.getNewStatus()!=null && sendNotification.getStatus().getValue().equals(streamEvent.getNewStatus().getValue())) {
       return streamEvent.getEventId();
     }
@@ -76,7 +76,6 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERED);
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
         startDeleteSendNotificationFileActivity.startDeleteSendNotificationExpiredFiles(sendNotification.getSendNotificationId());
-        startDeleteSendLegalFactFileActivity.startDeleteSendLegalFactExpiredFiles(sendNotification.getSendNotificationId());
         yield streamEvent.getEventId();
       }
       case UNREACHABLE -> {
@@ -116,18 +115,20 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       );
   }
 
-  private void downloadAndArchiveNotificationLegalFact(ProgressResponseElementV28DTO streamEvent) {
+  private void downloadAndArchiveNotificationLegalFact(ProgressResponseElementV28DTO streamEvent, String sendNotificationId) {
     if(streamEvent.getElement().getLegalFactsIds() == null || streamEvent.getElement().getLegalFactsIds().isEmpty()) {
       return;
     }
     streamEvent.getElement()
       .getLegalFactsIds()
-      .forEach(lf ->
-        fetchSendLegalFactActivity.downloadAndArchiveSendLegalFact(
-          streamEvent.getNotificationRequestId(),
-          LegalFactCategoryDTO.valueOf(lf.getCategory()),
-          lf.getKey().replace(LEGAL_FACT_ID_PREFIX, "")
-        )
+      .forEach(lf -> {
+          fetchSendLegalFactActivity.downloadAndArchiveSendLegalFact(
+            streamEvent.getNotificationRequestId(),
+            LegalFactCategoryDTO.valueOf(lf.getCategory()),
+            lf.getKey().replace(LEGAL_FACT_ID_PREFIX, "")
+          );
+          startDeleteSendLegalFactFileActivity.startDeleteSendLegalFactExpiredFiles(sendNotificationId);
+        }
       );
   }
 
