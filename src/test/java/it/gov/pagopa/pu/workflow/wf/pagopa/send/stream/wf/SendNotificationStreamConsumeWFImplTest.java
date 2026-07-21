@@ -3,10 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationTimelineCategoryActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.*;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
@@ -62,7 +59,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Mock
   private StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivityMock;
   @Mock
-  private NotifySendNotificationTimelineCategoryActivity notifySendNotificationTimelineCategoryActivityMock;
+  private NotifySendNotificationStreamEventsActivity notifySendNotificationStreamEventsActivityMock;
 
   private SendNotificationStreamConsumeWFImpl wf;
 
@@ -78,7 +75,7 @@ class SendNotificationStreamConsumeWFImplTest {
     when(wfConfigMock.buildPublishSendTimelineEventActivityStub()).thenReturn(publishSendTimelineEventActivityMock);
     when(wfConfigMock.buildStartDeleteSendNotificationFileActivityStub()).thenReturn(startDeleteSendNotificationFileActivityMock);
     when(wfConfigMock.buildStartDeleteSendLegalFactFileActivityStub()).thenReturn(startDeleteSendLegalFactFileActivityMock);
-    when(wfConfigMock.buildNotifySendNotificationTimelineCategoryActivityStub()).thenReturn(notifySendNotificationTimelineCategoryActivityMock);
+    when(wfConfigMock.buildNotifySendNotificationStreamEventsActivityStub()).thenReturn(notifySendNotificationStreamEventsActivityMock);
 
     when(applicationContextMock.getBean(SendNotificationStreamWfConfig.class)).thenReturn(wfConfigMock);
 
@@ -97,7 +94,7 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEventStreamProcessingServiceMock,
       updateLastProcessedStreamEventIdActivityMock,
       publishSendTimelineEventActivityMock,
-      notifySendNotificationTimelineCategoryActivityMock
+      notifySendNotificationStreamEventsActivityMock
     );
   }
 
@@ -1039,7 +1036,7 @@ class SendNotificationStreamConsumeWFImplTest {
   }
 
   @Test
-  void givenExpectedNotificationRequestIdToTimelineCategoriesMapWhenReadSendStreamThenNotifyCategories() {
+  void givenExpectedNotificationRequestIdToTimelineCategoriesMapWhenReadSendStreamThenNotifyStreamEvents() {
     //GIVEN
     SendStreamDTO streamDTO = buildSendStreamDTO();
     streamDTO.setLastEventId("lastSendEventId");
@@ -1055,11 +1052,22 @@ class SendNotificationStreamConsumeWFImplTest {
       sendEvent4
     );
 
-    Map<String, List<TimelineElementCategoryV27DTO>> expectedNotificationRequestIdToTimelineCategoriesMap = new HashMap<>();
-    expectedNotificationRequestIdToTimelineCategoriesMap.put(NOTIFICATION_REQUEST_ID_1, List.of(TimelineElementCategoryV27DTO.REQUEST_ACCEPTED, TimelineElementCategoryV27DTO.SEND_ANALOG_PROGRESS));
-    expectedNotificationRequestIdToTimelineCategoriesMap.put(NOTIFICATION_REQUEST_ID_2, List.of(TimelineElementCategoryV27DTO.REQUEST_ACCEPTED, TimelineElementCategoryV27DTO.ANALOG_FAILURE_WORKFLOW));
+    Map<String, List<StreamEventSummaryDTO>> expectedNotificationRequestIdToStreamEventsMap = new HashMap<>();
+    expectedNotificationRequestIdToStreamEventsMap.put(
+      NOTIFICATION_REQUEST_ID_1, List.of(
+        new StreamEventSummaryDTO(sendEvent1.getNewStatus(), sendEvent1.getElement().getCategory()),
+        new StreamEventSummaryDTO(sendEvent2.getNewStatus(), sendEvent2.getElement().getCategory())
+      )
+    );
 
-    ArgumentCaptor<Map<String, List<TimelineElementCategoryV27DTO>>> notificationRequestIdToTimelineCategoriesMapCaptor = ArgumentCaptor.captor();
+    expectedNotificationRequestIdToStreamEventsMap.put(
+      NOTIFICATION_REQUEST_ID_2, List.of(
+        new StreamEventSummaryDTO(sendEvent3.getNewStatus(), sendEvent3.getElement().getCategory()),
+        new StreamEventSummaryDTO(sendEvent4.getNewStatus(), sendEvent4.getElement().getCategory())
+      )
+    );
+
+    ArgumentCaptor<Map<String, List<StreamEventSummaryDTO>>> notificationRequestIdToStreamEventsMapCaptor = ArgumentCaptor.captor();
 
     when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
@@ -1089,9 +1097,9 @@ class SendNotificationStreamConsumeWFImplTest {
       );
 
     Mockito.doNothing()
-      .when(notifySendNotificationTimelineCategoryActivityMock)
-      .notifySendNotificationTimelineCategory(
-        notificationRequestIdToTimelineCategoriesMapCaptor.capture()
+      .when(notifySendNotificationStreamEventsActivityMock)
+      .notifySendNotificationStreamEvents(
+        notificationRequestIdToStreamEventsMapCaptor.capture()
       );
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
@@ -1109,8 +1117,8 @@ class SendNotificationStreamConsumeWFImplTest {
           sendEvent4.getEventId()
         );
       Assertions.assertEquals(
-        expectedNotificationRequestIdToTimelineCategoriesMap,
-        notificationRequestIdToTimelineCategoriesMapCaptor.getValue()
+        expectedNotificationRequestIdToStreamEventsMap,
+        notificationRequestIdToStreamEventsMapCaptor.getValue()
       );
       workflowMock.verify(() -> Workflow.continueAsNew(streamDTO.getStreamId()));
     }

@@ -4,14 +4,9 @@ import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationTimelineCategoryActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.*;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
@@ -47,7 +42,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private SendEventStreamProcessingService sendEventStreamProcessingService;
   private UpdateLastProcessedStreamEventIdActivity updateLastProcessedStreamEventIdActivity;
   private PublishSendTimelineEventActivity publishSendTimelineEventActivity;
-  private NotifySendNotificationTimelineCategoryActivity notifySendNotificationTimelineCategoryActivity;
+  private NotifySendNotificationStreamEventsActivity notifySendNotificationStreamEventsActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -74,7 +69,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     );
     updateLastProcessedStreamEventIdActivity = wfConfig.buildUpdateLastProcessedStreamEventIdActivityStub();
     publishSendTimelineEventActivity = wfConfig.buildPublishSendTimelineEventActivityStub();
-    notifySendNotificationTimelineCategoryActivity = wfConfig.buildNotifySendNotificationTimelineCategoryActivityStub();
+    notifySendNotificationStreamEventsActivity = wfConfig.buildNotifySendNotificationStreamEventsActivityStub();
   }
 
   @Override
@@ -113,7 +108,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
 
   private String processingStreamEvents(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEventBatch, String lastProcessedEventId) {
     String traceId = Utilities.getTraceId();
-    Map<String, List<TimelineElementCategoryV27DTO>> notificationRequestIdToTimelineCategoriesMap = new HashMap<>();
+    Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap = new HashMap<>();
     for (ProgressResponseElementV28DTO streamEvent : streamEventBatch) {
       String lastEventId;
       try {
@@ -121,7 +116,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         publishSendTimelineEventActivity.publishSendTimelineEvent(streamEvent, organizationId, sendStreamId, traceId);
         if(lastEventId != null) {
           lastProcessedEventId = lastEventId;
-          collectEventCategories(streamEvent, notificationRequestIdToTimelineCategoriesMap);
+          collectStreamEventSummaries(streamEvent, notificationRequestIdToStreamEventsMap);
         }
       } catch (Exception e) {
         if(e instanceof ActivityFailure &&
@@ -139,23 +134,25 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
         }
       }
     }
-    if(!notificationRequestIdToTimelineCategoriesMap.isEmpty()) {
-      notifySendNotificationTimelineCategoryActivity.notifySendNotificationTimelineCategory(
-        notificationRequestIdToTimelineCategoriesMap
+    if(!notificationRequestIdToStreamEventsMap.isEmpty()) {
+      notifySendNotificationStreamEventsActivity.notifySendNotificationStreamEvents(
+        notificationRequestIdToStreamEventsMap
       );
     }
     return lastProcessedEventId;
   }
 
-  private void collectEventCategories(ProgressResponseElementV28DTO streamEvent, Map<String, List<TimelineElementCategoryV27DTO>> eventCategoriesMap) {
+  private void collectStreamEventSummaries(ProgressResponseElementV28DTO streamEvent,  Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap) {
     TimelineElementCategoryV27DTO eventCategory = streamEvent.getElement().getCategory();
-    if(eventCategory != null) {
-      List<TimelineElementCategoryV27DTO> notificationEvents =
-        eventCategoriesMap.computeIfAbsent(
+    NotificationStatusV26DTO newNotificationStatus = streamEvent.getNewStatus();
+    if(eventCategory != null && newNotificationStatus != null) {
+      StreamEventSummaryDTO eventSummaryDTO = new StreamEventSummaryDTO(newNotificationStatus, eventCategory);
+      List<StreamEventSummaryDTO> notificationEvents =
+        notificationRequestIdToStreamEventsMap.computeIfAbsent(
           streamEvent.getNotificationRequestId(),
           k -> new ArrayList<>()
         );
-      notificationEvents.add(eventCategory);
+      notificationEvents.add(eventSummaryDTO);
     }
   }
 
