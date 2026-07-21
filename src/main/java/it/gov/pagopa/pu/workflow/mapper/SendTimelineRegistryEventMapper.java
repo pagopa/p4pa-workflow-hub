@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.mapper;
 
 import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementDetailsV27DTO;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import tools.jackson.databind.json.JsonMapper;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryEventSubType;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
@@ -74,6 +75,12 @@ public class SendTimelineRegistryEventMapper {
       .iun(progressResponseElementV28DTO.getIun())
       .recipientIndex(extractRecipientIndex(progressResponseElementV28DTO))
       .newStatus(Optional.ofNullable(progressResponseElementV28DTO.getNewStatus()).map(NotificationStatusV26DTO::name).orElse(null))
+      .eventTimestamp(progressResponseElementV28DTO.getElement().getEventTimestamp())
+      .legalFactIds(
+        Optional.ofNullable(progressResponseElementV28DTO.getElement().getLegalFactsIds())
+          .map(Utilities::extractPolishedLegalFactIds)
+          .orElse(null)
+      )
       .outcome(outcome)
       .body(
         serializeObjectToJson(
