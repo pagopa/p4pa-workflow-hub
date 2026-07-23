@@ -45,8 +45,9 @@ public class TemporalWFImplementationCustomizer implements TemporalOptionsCustom
           .build()
       );
 
-    if (baseWfConfig.getHeartbeatTimeoutInSeconds() != null) {
-      builder.setHeartbeatTimeout(Duration.ofSeconds(baseWfConfig.getHeartbeatTimeoutInSeconds()));
+    Integer heartbeatTimeoutInSeconds = baseWfConfig.getHeartbeatTimeoutInSeconds();
+    if (heartbeatTimeoutInSeconds != null) {
+      builder.setHeartbeatTimeout(Duration.ofSeconds(heartbeatTimeoutInSeconds));
     }
 
     return builder.build();
