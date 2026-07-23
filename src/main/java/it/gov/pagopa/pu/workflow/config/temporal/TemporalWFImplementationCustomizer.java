@@ -33,7 +33,7 @@ public class TemporalWFImplementationCustomizer implements TemporalOptionsCustom
   }
 
   public static ActivityOptions baseWfConfig2ActivityOptions(String taskQueue, BaseWfConfig baseWfConfig) {
-    return ActivityOptions.newBuilder()
+    ActivityOptions.Builder builder = ActivityOptions.newBuilder()
       .setStartToCloseTimeout(Duration.ofSeconds(baseWfConfig.getStartToCloseTimeoutInSeconds()))
       .setTaskQueue(taskQueue)
       .setRetryOptions(
@@ -42,7 +42,13 @@ public class TemporalWFImplementationCustomizer implements TemporalOptionsCustom
           .setBackoffCoefficient(baseWfConfig.getRetryBackoffCoefficient())
           .setDoNotRetry(IllegalArgumentException.class.getName(), NotRetryableActivityException.class.getName())
           .setMaximumAttempts(baseWfConfig.getRetryMaximumAttempts())
-          .build())
-      .build();
+          .build()
+      );
+
+    if (baseWfConfig.getHeartbeatTimeoutInSeconds() != null) {
+      builder.setHeartbeatTimeout(Duration.ofSeconds(baseWfConfig.getHeartbeatTimeoutInSeconds()));
+    }
+
+    return builder.build();
   }
 }

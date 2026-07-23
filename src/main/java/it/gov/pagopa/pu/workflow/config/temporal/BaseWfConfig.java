@@ -13,4 +13,5 @@ public class BaseWfConfig {
   protected int retryInitialIntervalInMillis;
   protected double retryBackoffCoefficient;
   protected int retryMaximumAttempts;
+  protected Integer heartbeatTimeoutInSeconds;
 }
