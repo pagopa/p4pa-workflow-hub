@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity;
 
+import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.delete.DeleteSendNotificationFileWFClient;
@@ -21,6 +22,10 @@ public class StartDeleteSendNotificationFileActivityImpl implements StartDeleteS
   @Override
   public void startDeleteSendNotificationExpiredFiles(String sendNotificationId) {
     log.info("startDeleteSendNotificationExpiredFiles - sendNotificationId: {}", sendNotificationId);
-    deleteSendNotificationFileWFClient.startDeleteSendNotificationExpiredFiles(sendNotificationId);
+    try{
+      deleteSendNotificationFileWFClient.startDeleteSendNotificationExpiredFiles(sendNotificationId);
+    } catch (WorkflowExecutionAlreadyStarted e) {
+      log.info("deleteSendNotificationFileWF already running for sendNotification having Id {}", sendNotificationId);
+    }
   }
 }
