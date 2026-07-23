@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-class MassiveDebtPositionWFConfigTest {
-  private final MassiveDebtPositionWFConfig config = new MassiveDebtPositionWFConfig();
+class MassiveIbanUpdateWFConfigTest {
+  private final MassiveIbanUpdateWFConfig config = new MassiveIbanUpdateWFConfig();
 
   private final Map<Class<?>, Class<?>> localActivityInterface2Impl = Map.of(ScheduleToSyncMassiveIbanUpdateWFActivity.class, ScheduleToSyncMassiveIbanUpdateWFActivityImpl.class);
 

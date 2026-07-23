@@ -421,14 +421,14 @@ workflow:
     retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  # massive debt position
-  massive-debt-position:
-    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:10800}" # 3 hours
-    retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
-    schedule-minutes-massive-iban-update-to-sync: "\${SCHEDULE-MINUTES-MASSIVE-IBAN-UPDATE-TO-SYNC:5}"
-    heartbeat-timeout-in-seconds: "\${HEARTBEAT-TIMEOUT-IN-SECONDS-MASSIVE-IBAN-UPDATE:900}"
+  # massive iban update
+  massive-iban-update:
+    start-to-close-timeout-in-seconds: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:10800}" # 3 hours
+    heartbeat-timeout-in-seconds: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_HEARTBEAT_TIMEOUT_IN_SECONDS:900}"
+    retry-initial-interval-in-millis: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+    schedule-minutes-massive-iban-update-to-sync: "\${MASSIVE_IBAN_UPDATE_TO_SYNC_CONFIG_SCHEDULE_MINUTES:5}"
 
   # ingestion flow
   base-ingestion-flow:

@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class BaseWfConfig {
   protected int startToCloseTimeoutInSeconds;
+  protected Integer heartbeatTimeoutInSeconds;
   protected int retryInitialIntervalInMillis;
   protected double retryBackoffCoefficient;
   protected int retryMaximumAttempts;
-  protected Integer heartbeatTimeoutInSeconds;
 }

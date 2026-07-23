@@ -19,7 +19,7 @@ public class ScheduleToSyncMassiveIbanUpdateWFActivityImpl implements ScheduleTo
 
   public ScheduleToSyncMassiveIbanUpdateWFActivityImpl(
     MassiveDebtPositionWFClient massiveDebtPositionWFClient,
-    @Value("${workflow.massive-debt-position.schedule-minutes-massive-iban-update-to-sync}") int scheduleMinutes
+    @Value("${workflow.massive-iban-update.schedule-minutes-massive-iban-update-to-sync}") int scheduleMinutes
   ) {
     this.massiveDebtPositionWFClient = massiveDebtPositionWFClient;
     this.scheduleDuration = Duration.ofMinutes(scheduleMinutes);
