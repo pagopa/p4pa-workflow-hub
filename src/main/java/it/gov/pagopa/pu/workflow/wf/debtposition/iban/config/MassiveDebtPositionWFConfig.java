@@ -9,7 +9,6 @@ import it.gov.pagopa.pu.workflow.wf.debtposition.iban.activity.ScheduleToSyncMas
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 @ConfigurationProperties(prefix = "workflow.massive-debt-position")
 public class MassiveDebtPositionWFConfig extends BaseWfConfig {
