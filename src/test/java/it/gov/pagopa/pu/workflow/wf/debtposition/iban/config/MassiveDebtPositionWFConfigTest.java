@@ -15,6 +15,7 @@ class MassiveDebtPositionWFConfigTest {
 
   @Test
   void testTaskQueueAlignment() throws InvocationTargetException, IllegalAccessException {
+    config.setHeartbeatTimeoutInSeconds(300);
     TemporalTestUtils.verifyActivityStubConfiguration(config, localActivityInterface2Impl);
   }
 }
