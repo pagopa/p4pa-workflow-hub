@@ -63,6 +63,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       case ACCEPTED -> {
         sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
+        startDeleteSendNotificationFileActivity.startDeleteSendNotificationExpiredFiles(sendNotification.getSendNotificationId());
         yield streamEvent.getEventId();
       }
       case REFUSED -> {
@@ -74,7 +75,6 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         sendNotification = this.sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(streamEvent.getNotificationRequestId());
         this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERED);
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
-        startDeleteSendNotificationFileActivity.startDeleteSendNotificationExpiredFiles(sendNotification.getSendNotificationId());
         yield streamEvent.getEventId();
       }
       case UNREACHABLE -> {

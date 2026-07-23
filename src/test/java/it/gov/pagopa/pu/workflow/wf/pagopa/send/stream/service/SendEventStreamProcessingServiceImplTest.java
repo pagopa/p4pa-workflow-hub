@@ -84,6 +84,7 @@ class SendEventStreamProcessingServiceImplTest {
     when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
+    Mockito.doNothing().when(startDeleteSendNotificationFileActivityMock).startDeleteSendNotificationExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
     //WHEN
     String actualResult =
@@ -168,8 +169,6 @@ class SendEventStreamProcessingServiceImplTest {
     when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
-
-    Mockito.doNothing().when(startDeleteSendNotificationFileActivityMock).startDeleteSendNotificationExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
     //WHEN
     String actualResult =
