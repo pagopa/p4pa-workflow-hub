@@ -4,7 +4,7 @@ import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.debtposition.iban.MassiveIbanUpdateActivity;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.debtposition.iban.config.MassiveDebtPositionWFConfig;
+import it.gov.pagopa.pu.workflow.wf.debtposition.iban.config.MassiveIbanUpdateWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -25,7 +25,7 @@ public class MassiveIbanUpdateToSyncWFImpl implements MassiveIbanUpdateToSyncWF,
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    MassiveDebtPositionWFConfig wfConfig = applicationContext.getBean(MassiveDebtPositionWFConfig.class);
+    MassiveIbanUpdateWFConfig wfConfig = applicationContext.getBean(MassiveIbanUpdateWFConfig.class);
 
     massiveIbanUpdateActivity = wfConfig.buildMassiveIbanUpdateActivityStub();
   }
