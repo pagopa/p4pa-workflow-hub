@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyTreasuryActivity;
+import it.gov.pagopa.payhub.activities.activity.classifications.DuplicatePaymentReportingCheckActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsReportingImplicitReceiptHandlerActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
@@ -35,7 +36,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
   private ClearClassifyTreasuryActivity clearClassifyTreasuryActivity;
   private IufClassificationActivity iufClassificationActivity;
   private PaymentsReportingImplicitReceiptHandlerActivity paymentsReportingImplicitReceiptHandlerActivity;
-
+  private DuplicatePaymentReportingCheckActivity duplicatePaymentReportingCheckActivity;
   private StartTransferClassificationActivity startTransferClassificationActivity;
 
   private final Queue<IufClassificationActivityResult> toNotify = new ConcurrentLinkedQueue<>();
@@ -55,7 +56,7 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
     clearClassifyTreasuryActivity = wfConfig.buildClearClassifyTreasuryActivityStub();
     iufClassificationActivity = wfConfig.buildIufClassificationActivityStub();
     paymentsReportingImplicitReceiptHandlerActivity = wfConfig.buildPaymentsReportingImplicitReceiptHandlerActivityStub();
-
+    duplicatePaymentReportingCheckActivity = wfConfig.buildDuplicatePaymentReportingCheckActivityStub();
     startTransferClassificationActivity = wfConfig.buildStartTransferClassificationActivityStub();
 
   }
@@ -112,6 +113,12 @@ public class IufClassificationWFImpl implements IufClassificationWF, Application
         .transferIndex(transfer.getTransferIndex())
         .build());
     }
+
+    transfer2ClassifyDTOList.forEach(transfer2ClassifyDTO ->
+      duplicatePaymentReportingCheckActivity.duplicatePaymentsCheck(
+        signalDTO.getOrganizationId(),
+        transfer2ClassifyDTO)
+    );
 
     toNotify.add(IufClassificationActivityResult.builder()
       .organizationId(signalDTO.getOrganizationId())

@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.classification.iuf.wfclassification;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyIufActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.ClearClassifyTreasuryActivity;
+import it.gov.pagopa.payhub.activities.activity.classifications.DuplicatePaymentReportingCheckActivity;
 import it.gov.pagopa.payhub.activities.activity.classifications.IufClassificationActivity;
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.PaymentsReportingImplicitReceiptHandlerActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.IufClassificationActivityResult;
@@ -40,6 +41,8 @@ class IufClassificationWFTest {
   private StartTransferClassificationActivity startTransferClassificationActivityMock;
   @Mock
   private PaymentsReportingImplicitReceiptHandlerActivity paymentsReportingImplicitReceiptHandlerActivityMock;
+  @Mock
+  private DuplicatePaymentReportingCheckActivity duplicatePaymentReportingCheckActivityMock;
 
   private IufClassificationWFImpl wf;
 
@@ -64,6 +67,9 @@ class IufClassificationWFTest {
     Mockito.when(iufClassificationWfConfigMock.buildPaymentsReportingImplicitReceiptHandlerActivityStub())
       .thenReturn(paymentsReportingImplicitReceiptHandlerActivityMock);
 
+    Mockito.when(iufClassificationWfConfigMock.buildDuplicatePaymentReportingCheckActivityStub())
+        .thenReturn(duplicatePaymentReportingCheckActivityMock);
+
     Mockito.when(applicationContextMock.getBean(IufClassificationWfConfig.class))
       .thenReturn(iufClassificationWfConfigMock);
 
@@ -79,7 +85,8 @@ class IufClassificationWFTest {
       clearClassifyTreasuryActivityMock,
       iufClassificationActivityMock,
       startTransferClassificationActivityMock,
-      paymentsReportingImplicitReceiptHandlerActivityMock
+      paymentsReportingImplicitReceiptHandlerActivityMock,
+      duplicatePaymentReportingCheckActivityMock
     );
   }
 
@@ -146,6 +153,11 @@ class IufClassificationWFTest {
     if (PAYMENT_OUTCOME_CODES_FOR_DUMMY_RECEIPT.contains(paymentOutcomeCode)) {
       Mockito.doNothing().when(paymentsReportingImplicitReceiptHandlerActivityMock).handleImplicitReceipt(signalDTO.getTransfers().getFirst());
     }
+
+    Transfer2ClassifyDTO transfer2ClassifyDTO = Transfer2ClassifyDTO.builder()
+      .iur(iur).iuv(iuv).transferIndex(1).build();
+
+    Mockito.doNothing().when(duplicatePaymentReportingCheckActivityMock).duplicatePaymentsCheck(1L, transfer2ClassifyDTO);
     // When
     wf.notifyPaymentsReporting(signalDTO);
   }
