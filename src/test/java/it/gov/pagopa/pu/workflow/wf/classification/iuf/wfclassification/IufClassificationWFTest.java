@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class IufClassificationWFTest {
   private static final List<String> PAYMENT_OUTCOME_CODES_FOR_DUMMY_RECEIPT = List.of("8", "9");
@@ -52,25 +54,25 @@ class IufClassificationWFTest {
     IufClassificationWfConfig iufClassificationWfConfigMock = Mockito.mock(IufClassificationWfConfig.class);
     ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
 
-    Mockito.when(iufClassificationWfConfigMock.buildClearClassifyIufActivityStub())
+    when(iufClassificationWfConfigMock.buildClearClassifyIufActivityStub())
       .thenReturn(clearClassifyIufActivityMock);
 
-    Mockito.when(iufClassificationWfConfigMock.buildClearClassifyTreasuryActivityStub())
+    when(iufClassificationWfConfigMock.buildClearClassifyTreasuryActivityStub())
       .thenReturn(clearClassifyTreasuryActivityMock);
 
-    Mockito.when(iufClassificationWfConfigMock.buildIufClassificationActivityStub())
+    when(iufClassificationWfConfigMock.buildIufClassificationActivityStub())
       .thenReturn(iufClassificationActivityMock);
 
-    Mockito.when(iufClassificationWfConfigMock.buildStartTransferClassificationActivityStub())
+    when(iufClassificationWfConfigMock.buildStartTransferClassificationActivityStub())
       .thenReturn(startTransferClassificationActivityMock);
 
-    Mockito.when(iufClassificationWfConfigMock.buildPaymentsReportingImplicitReceiptHandlerActivityStub())
+    when(iufClassificationWfConfigMock.buildPaymentsReportingImplicitReceiptHandlerActivityStub())
       .thenReturn(paymentsReportingImplicitReceiptHandlerActivityMock);
 
-    Mockito.when(iufClassificationWfConfigMock.buildDuplicatePaymentReportingCheckActivityStub())
+    when(iufClassificationWfConfigMock.buildDuplicatePaymentReportingCheckActivityStub())
         .thenReturn(duplicatePaymentReportingCheckActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(IufClassificationWfConfig.class))
+    when(applicationContextMock.getBean(IufClassificationWfConfig.class))
       .thenReturn(iufClassificationWfConfigMock);
 
     wf = new IufClassificationWFImpl();
@@ -120,8 +122,8 @@ class IufClassificationWFTest {
       IufClassificationNotifyTreasurySignalDTO.builder()
         .organizationId(1L).treasuryId(treasuryId).iuf(iuf).build();
 
-    Mockito.when(clearClassifyTreasuryActivityMock.deleteClassificationByTreasuryId(1L, treasuryId)).thenReturn(1);
-    Mockito.when(iufClassificationActivityMock.classifyIuf(1L, treasuryId, iuf)).thenReturn(
+    when(clearClassifyTreasuryActivityMock.deleteClassificationByTreasuryId(1L, treasuryId)).thenReturn(1);
+    when(iufClassificationActivityMock.classifyIuf(1L, treasuryId, iuf)).thenReturn(
       IufClassificationActivityResult.builder()
         .organizationId(1L)
         .transfers2classify(Collections.singletonList(
@@ -148,7 +150,7 @@ class IufClassificationWFTest {
         .build()))
       .build();
 
-    Mockito.when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1);
+    when(clearClassifyIufActivityMock.deleteClassificationByIuf(1L, iuf)).thenReturn(1);
 
     if (PAYMENT_OUTCOME_CODES_FOR_DUMMY_RECEIPT.contains(paymentOutcomeCode)) {
       Mockito.doNothing().when(paymentsReportingImplicitReceiptHandlerActivityMock).handleImplicitReceipt(signalDTO.getTransfers().getFirst());
