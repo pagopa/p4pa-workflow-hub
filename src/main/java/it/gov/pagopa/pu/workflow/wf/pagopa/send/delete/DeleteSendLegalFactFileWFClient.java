@@ -24,7 +24,7 @@ public class DeleteSendLegalFactFileWFClient {
 
   public WorkflowCreatedDTO startDeleteSendLegalFactExpiredFiles(String sendNotificationId) {
     log.debug("Starting delete send expired legal facts process having id {}", sendNotificationId);
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
     String workflowId = generateWorkflowId(sendNotificationId, DeleteSendLegalFactFileWF.class);
 
     DeleteSendLegalFactFileWF workflow = workflowService.buildWorkflowStubToStartNew(

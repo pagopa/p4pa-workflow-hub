@@ -17,7 +17,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 
 @Slf4j
-@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY)
+@WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY)
 public class DeleteSendLegalFactFileWFImpl implements DeleteSendLegalFactFileWF, ApplicationContextAware {
   private DeleteSendLegalFactFileActivity deleteSendLegalFactFileActivity;
 
