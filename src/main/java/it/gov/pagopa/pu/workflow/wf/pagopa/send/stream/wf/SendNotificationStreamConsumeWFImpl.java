@@ -18,6 +18,8 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config.SendNotificationSt
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service.SendEventStreamProcessingService;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service.SendEventStreamProcessingServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -31,6 +33,7 @@ import java.util.*;
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
 public class SendNotificationStreamConsumeWFImpl implements SendNotificationStreamConsumeWF, ApplicationContextAware {
+  private static final Logger SKIPPED_EVENT_LOGGER = LoggerFactory.getLogger("SEND_NOTIFICATION_STREAM_LOG.SKIPPED_EVENT");
 
   private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
   private static final int WAITING_SECONDS_NEXT_POLL = 5 * 60;
@@ -124,7 +127,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
           af.isNonRetryable() &&
           SendStreamSkippedEventException.class.getName().equals(af.getType())
         ) {
-          log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
+          SKIPPED_EVENT_LOGGER.error("Stream event processing skipped for streamId {} event id {}, for error: {}", sendStreamId, streamEvent.getEventId(), e.getMessage());
           lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
         } else {
           log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()));
