@@ -61,7 +61,7 @@ repositories {
 val springDocOpenApiVersion = "3.0.3"
 val openApiToolsVersion = "0.2.10"
 val kafkaAppender = "0.2.0-RC2"
-val lz4JavaVersion = "1.11.0"
+val lz4JavaVersion = "1.11.1"
 val springWolfAsyncApiVersion = "1.21.0"
 val springWolfUiAsyncApiVersion = "1.21.0"
 val micrometerVersion = "1.7.0"
