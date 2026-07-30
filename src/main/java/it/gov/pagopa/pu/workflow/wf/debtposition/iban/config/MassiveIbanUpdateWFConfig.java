@@ -10,12 +10,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "workflow.massive-debt-position")
-public class MassiveDebtPositionWFConfig extends BaseWfConfig {
-
- public MassiveIbanUpdateActivity buildMassiveIbanUpdateActivityStub() {
-   return Workflow.newActivityStub(MassiveIbanUpdateActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
- }
+@ConfigurationProperties(prefix = "workflow.massive-iban-update")
+public class MassiveIbanUpdateWFConfig extends BaseWfConfig {
+  public MassiveIbanUpdateActivity buildMassiveIbanUpdateActivityStub() {
+    return Workflow.newActivityStub(MassiveIbanUpdateActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
 
   public ScheduleToSyncMassiveIbanUpdateWFActivity buildScheduleToSyncMassiveIbanUpdateWFActivityStub() {
     return Workflow.newActivityStub(ScheduleToSyncMassiveIbanUpdateWFActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(

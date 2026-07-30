@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.Map;
 
 public class TemporalTestUtils {
@@ -147,8 +148,14 @@ public class TemporalTestUtils {
 
           Object stub = method.invoke(config);
 
+          ActivityOptions capturedOptions = activityOptionsCaptor.getValue();
+
           Assertions.assertSame(expectedStub, stub);
-          Assertions.assertEquals(expectedTaskQueue, activityOptionsCaptor.getValue().getTaskQueue());
+          Assertions.assertEquals(expectedTaskQueue, capturedOptions.getTaskQueue());
+          Assertions.assertEquals(
+            config.getHeartbeatTimeoutInSeconds() != null ? Duration.ofSeconds(config.getHeartbeatTimeoutInSeconds()) : null,
+            capturedOptions.getHeartbeatTimeout()
+          );
         }
       }
     }

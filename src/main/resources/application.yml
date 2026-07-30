@@ -378,6 +378,7 @@ logging:
     PERFORMANCE_LOG.API_REQUEST: "\${LOG_LEVEL_PERFORMANCE_LOG_API_REQUEST:\${logging.level.PERFORMANCE_LOG}}"
     PERFORMANCE_LOG.REST_INVOKE: "\${LOG_LEVEL_PERFORMANCE_LOG_REST_INVOKE:\${logging.level.PERFORMANCE_LOG}}"
     PERFORMANCE_LOG.INCOMING_EVENT: "\${LOG_LEVEL_PERFORMANCE_LOG_INCOMING_EVENT:\${logging.level.PERFORMANCE_LOG}}"
+    SEND_NOTIFICATION_STREAM_SKIPPED_EVENT_LOG: "\${LOG_LEVEL_SEND_NOTIFICATION_STREAM_SKIPPED_EVENT:INFO}"
 
 temporal:
   timeouts:
@@ -421,13 +422,14 @@ workflow:
     retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
     retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
 
-  # massive debt position
-  massive-debt-position:
-    start-to-close-timeout-in-seconds: "\${DEBT_POSITION_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:\${workflow.default.startToCloseTimeoutInSeconds}}"
-    retry-initial-interval-in-millis: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
-    retry-backoff-coefficient: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
-    retry-maximum-attempts: "\${DEBT_POSITION_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
-    schedule-minutes-massive-iban-update-to-sync: "\${SCHEDULE-MINUTES-MASSIVE-IBAN-UPDATE-TO-SYNC:5}"
+  # massive iban update
+  massive-iban-update:
+    start-to-close-timeout-in-seconds: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_START_TO_CLOSE_TIMEOUT_IN_SECONDS:10800}" # 3 hours
+    heartbeat-timeout-in-seconds: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_HEARTBEAT_TIMEOUT_IN_SECONDS:420}"
+    retry-initial-interval-in-millis: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_RETRY_INITIAL_INTERVAL_IN_MILLIS:\${workflow.default.retryInitialIntervalInMillis}}"
+    retry-backoff-coefficient: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_RETRY_BACKOFF_COEFFICIENT:\${workflow.default.retryBackoffCoefficient}}"
+    retry-maximum-attempts: "\${MASSIVE_IBAN_UPDATE_ACTIVITY_CONFIG_RETRY_MAXIMUM_ATTEMPTS:\${workflow.default.retryMaximumAttempts}}"
+    schedule-minutes-massive-iban-update-to-sync: "\${MASSIVE_IBAN_UPDATE_TO_SYNC_CONFIG_SCHEDULE_MINUTES:5}"
 
   # ingestion flow
   base-ingestion-flow:

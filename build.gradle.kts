@@ -72,7 +72,7 @@ val temporalVersion = "1.35.0"
 val protobufJavaVersion = "4.35.1"
 val grpcBomVersion = "1.82.0"
 val guavaVersion = "33.6.0-jre"
-val postgresJdbcVersion = "42.7.11"
+val postgresJdbcVersion = "42.7.12"
 val podamVersion = "8.0.2.RELEASE"
 val caffeineVersion = "3.2.4"
 val commonsLang3Version = "3.20.0"
@@ -80,7 +80,7 @@ val commonsLang3Version = "3.20.0"
 // Downgrading in order to handle List of enums in SpringDataRest exposed queries (see https://github.com/spring-projects/spring-data-commons/issues/3502)
 val hibernateCoreVersion = "7.1.18.Final"
 
-val p4paActivitiesVersion = "1.202.1"
+val p4paActivitiesVersion = "1.202.8"
 
 val springCloudDepsVersion = "2025.1.2"
 

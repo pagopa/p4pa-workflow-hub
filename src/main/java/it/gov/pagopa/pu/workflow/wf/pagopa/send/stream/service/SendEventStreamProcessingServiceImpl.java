@@ -7,13 +7,12 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV2
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.activity.PublishSendNotificationPaymentEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.mapper.SendNotification2DebtPositionSendNotificationsMapper;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendLegalFactFileActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivity;
 import lombok.extern.slf4j.Slf4j;
-
-import static it.gov.pagopa.pu.workflow.utilities.Constants.LEGAL_FACT_ID_PREFIX;
 
 @Slf4j
 public class SendEventStreamProcessingServiceImpl implements SendEventStreamProcessingService {
@@ -48,14 +47,14 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
 
   @Override
   public String processSendStreamEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
-    String eventiId = processNotificationEvent(sendStreamId, streamEvent);
-    downloadAndArchiveNotificationLegalFact(streamEvent);
-    return eventiId;
-  }
-
-  private String processNotificationEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
     SendNotificationDTO sendNotification = this.getSendNotificationByNotificationRequestIdActivity
       .getSendNotificationByNotificationRequestId(streamEvent.getNotificationRequestId());
+    String eventId = processNotificationEvent(sendStreamId, streamEvent, sendNotification);
+    downloadAndArchiveNotificationLegalFact(streamEvent, sendNotification.getSendNotificationId());
+    return eventId;
+  }
+
+  private String processNotificationEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent, SendNotificationDTO sendNotification) {
     if(streamEvent.getNewStatus()!=null && sendNotification.getStatus().getValue().equals(streamEvent.getNewStatus().getValue())) {
       return streamEvent.getEventId();
     }
@@ -64,6 +63,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       case ACCEPTED -> {
         sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
         this.publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_CREATED, null));
+        startDeleteSendNotificationFileActivity.startDeleteSendNotificationExpiredFiles(sendNotification.getSendNotificationId());
         yield streamEvent.getEventId();
       }
       case REFUSED -> {
@@ -75,8 +75,6 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
         sendNotification = this.sendNotificationDateRetrieveActivity.sendNotificationDateRetrieve(streamEvent.getNotificationRequestId());
         this.updateSendNotificationStatusActivity.updateSendNotificationStatus(streamEvent.getNotificationRequestId(), NotificationStatus.DELIVERED);
         publishSendEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_DATE, null));
-        startDeleteSendNotificationFileActivity.startDeleteSendNotificationExpiredFiles(sendNotification.getSendNotificationId());
-        startDeleteSendLegalFactFileActivity.startDeleteSendLegalFactExpiredFiles(sendNotification.getSendNotificationId());
         yield streamEvent.getEventId();
       }
       case UNREACHABLE -> {
@@ -116,19 +114,21 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       );
   }
 
-  private void downloadAndArchiveNotificationLegalFact(ProgressResponseElementV28DTO streamEvent) {
+  private void downloadAndArchiveNotificationLegalFact(ProgressResponseElementV28DTO streamEvent, String sendNotificationId) {
     if(streamEvent.getElement().getLegalFactsIds() == null || streamEvent.getElement().getLegalFactsIds().isEmpty()) {
       return;
     }
     streamEvent.getElement()
       .getLegalFactsIds()
-      .forEach(lf ->
+      .forEach(lf -> {
         fetchSendLegalFactActivity.downloadAndArchiveSendLegalFact(
           streamEvent.getNotificationRequestId(),
           LegalFactCategoryDTO.valueOf(lf.getCategory()),
-          lf.getKey().replace(LEGAL_FACT_ID_PREFIX, "")
-        )
-      );
+          Utilities.extractPolishedLegalFactId(lf)
+        );
+        startDeleteSendLegalFactFileActivity.startDeleteSendLegalFactExpiredFiles(sendNotificationId);
+      }
+    );
   }
 
 }

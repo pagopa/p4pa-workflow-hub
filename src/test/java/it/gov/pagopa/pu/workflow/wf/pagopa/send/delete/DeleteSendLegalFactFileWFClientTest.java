@@ -44,7 +44,7 @@ class DeleteSendLegalFactFileWFClientTest {
   void whenStartDeleteSendLegalFactExpiredFilesThenOk() {
     // Given
     String sendNotificationId = "sendNotificationId";
-    String taskQueue = TaskQueueConstants.TASK_QUEUE_LOW_PRIORITY;
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("DeleteSendLegalFactFileWF-"+sendNotificationId, "RUNID");
 
     Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(DeleteSendLegalFactFileWF.class, taskQueue, expectedResult.getWorkflowId()))
