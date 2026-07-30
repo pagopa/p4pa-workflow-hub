@@ -87,17 +87,18 @@ See [application.yml](src/main/resources/application.yml) for each configurable 
 | SERVER_PORT | Application server listening port | 8080    |
 
 #### ✏️ Logging
-| ENV                                      | DESCRIPTION                                                                                                                                               | DEFAULT |
-|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| LOG_LEVEL_ROOT                           | Base level                                                                                                                                                | INFO    |
-| LOG_LEVEL_PAGOPA                         | Base level of custom classes                                                                                                                              | INFO    |
-| LOG_LEVEL_SPRING                         | Level applied to Spring framework                                                                                                                         | INFO    |
-| LOG_LEVEL_SPRING_BOOT_AVAILABILITY       | To print availability events                                                                                                                              | DEBUG   |
-| LOGGING_LEVEL_API_REQUEST_EXCEPTION      | Level applied to APIs exception                                                                                                                           | INFO    |
-| LOG_LEVEL_PERFORMANCE_LOG                | Level applied to [PerformanceLog](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Logging.pdf)                 | INFO    |
-| LOG_LEVEL_PERFORMANCE_LOG_API_REQUEST    | Level applied to [API Performance Log](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Logging.pdf)            | INFO    |
-| LOG_LEVEL_PERFORMANCE_LOG_REST_INVOKE    | Level applied to [REST invoke Performance Log](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Logging.pdf)    | INFO    |
-| LOG_LEVEL_PERFORMANCE_LOG_INCOMING_EVENT | Level applied to [Incoming event Performance Log](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Logging.pdf) | INFO    |
+| ENV                                              | DESCRIPTION                                                                                                                                               | DEFAULT |
+|--------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| LOG_LEVEL_ROOT                                   | Base level                                                                                                                                                | INFO    |
+| LOG_LEVEL_PAGOPA                                 | Base level of custom classes                                                                                                                              | INFO    |
+| LOG_LEVEL_SPRING                                 | Level applied to Spring framework                                                                                                                         | INFO    |
+| LOG_LEVEL_SPRING_BOOT_AVAILABILITY               | To print availability events                                                                                                                              | DEBUG   |
+| LOGGING_LEVEL_API_REQUEST_EXCEPTION              | Level applied to APIs exception                                                                                                                           | INFO    |
+| LOG_LEVEL_PERFORMANCE_LOG                        | Level applied to [PerformanceLog](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Logging.pdf)                 | INFO    |
+| LOG_LEVEL_PERFORMANCE_LOG_API_REQUEST            | Level applied to [API Performance Log](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Logging.pdf)            | INFO    |
+| LOG_LEVEL_PERFORMANCE_LOG_REST_INVOKE            | Level applied to [REST invoke Performance Log](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Logging.pdf)    | INFO    |
+| LOG_LEVEL_PERFORMANCE_LOG_INCOMING_EVENT         | Level applied to [Incoming event Performance Log](https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/reference/technical-docs/Logging.pdf) | INFO    |
+| LOG_LEVEL_SEND_NOTIFICATION_STREAM_SKIPPED_EVENT | Level applied to SEND notification stream skipped events                                                                                                  | INFO    |
 
 #### 🔁 Integrations
 
