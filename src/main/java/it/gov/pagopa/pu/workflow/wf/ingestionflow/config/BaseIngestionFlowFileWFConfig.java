@@ -5,6 +5,8 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.UpdateIngestionFlo
 import it.gov.pagopa.payhub.activities.activity.ingestionflow.email.SendEmailIngestionFlowActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.activity.NotifyIngestionActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,5 +20,11 @@ public class BaseIngestionFlowFileWFConfig extends BaseWfConfig {
 
   public SendEmailIngestionFlowActivity buildSendEmailIngestionFlowActivityStub() {
     return Workflow.newActivityStub(SendEmailIngestionFlowActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public NotifyIngestionActivity buildNotifyIngestionActivityStub() {
+    return Workflow.newActivityStub(NotifyIngestionActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+      TaskQueueConstants.TASK_QUEUE_IMPORT_MEDIUM_PRIORITY_LOCAL,
+      this));
   }
 }
