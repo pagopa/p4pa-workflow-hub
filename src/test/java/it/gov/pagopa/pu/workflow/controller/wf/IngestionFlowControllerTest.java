@@ -1,11 +1,11 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.wf.ingestionflowfile.IngestionFlowFileStarterService;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.treasury.opi.TreasuryOpiIngestionWFClient;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,9 +33,10 @@ class IngestionFlowControllerTest {
 
   @MockitoBean
   private IngestionFlowFileStarterService serviceMock;
-
   @MockitoBean
   private TreasuryOpiIngestionWFClient treasuryOpiIngestionWFClientMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenIngestThenInvokeService() throws Exception {
@@ -45,7 +47,7 @@ class IngestionFlowControllerTest {
 
     WorkflowCreatedDTO workflowCreatedDTO = WorkflowCreatedDTO.builder().workflowId(workflowId).runId(runId).build();
 
-    Mockito.when(serviceMock.ingest(ingestionFileId, flowFileType)).thenReturn(workflowCreatedDTO);
+    when(serviceMock.ingest(ingestionFileId, flowFileType)).thenReturn(workflowCreatedDTO);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/workflow/ingestion-flow/{ingestionFileId}", ingestionFileId)
         .param("ingestionFlowFileType", flowFileType.name())

@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile;
 import it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -19,18 +20,23 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ExportFileControllerImpl.class)
 @AutoConfigureMockMvc(addFilters = false)
 class ExportFileControllerImplTest {
+
   @Autowired
   private MockMvc mockMvc;
   @Autowired
   private JsonMapper jsonMapper;
+
   @MockitoBean
   private ExportFileService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void givenExportFileIdWhenExpireExportFileThenOk() throws Exception {
@@ -41,7 +47,7 @@ class ExportFileControllerImplTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(serviceMock.expireExportFile(exportFileId))
+    when(serviceMock.expireExportFile(exportFileId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -70,7 +76,7 @@ class ExportFileControllerImplTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(serviceMock.exportFile(exportFileId, exportFileType))
+    when(serviceMock.exportFile(exportFileId, exportFileType))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {

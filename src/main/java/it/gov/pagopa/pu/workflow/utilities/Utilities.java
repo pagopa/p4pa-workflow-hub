@@ -6,7 +6,6 @@ import io.temporal.failure.ApplicationFailure;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactsIdV20DTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.mapstruct.Named;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -64,10 +63,6 @@ public class Utilities {
   @Named("offsetDateTimeToLocalDateTime")
   public static LocalDateTime offsetDateTimeToLocalDateTime(OffsetDateTime offsetDateTime) {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
-  }
-
-  public static String getTraceId() {
-    return MDC.get("traceId");
   }
 
   public static OffsetDateTime protobufTimestamp2OffsetDateTime(Timestamp ts) {

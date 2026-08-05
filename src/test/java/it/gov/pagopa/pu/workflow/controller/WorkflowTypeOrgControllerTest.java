@@ -1,10 +1,10 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;
 import it.gov.pagopa.pu.workflow.service.WorkflowTypeOrgSaveService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,6 +30,8 @@ class WorkflowTypeOrgControllerTest {
 
   @MockitoBean
   private WorkflowTypeOrgSaveService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void givenSaveWorkflowTypeOrgThenInvokeService() throws Exception {
@@ -43,7 +46,7 @@ class WorkflowTypeOrgControllerTest {
     mergedConfig.setIoMessages(new FineWfExecutionConfig.IONotificationFineWfMessages());
     saved.setDefaultExecutionConfig(mergedConfig);
 
-    Mockito.when(serviceMock.save(entity))
+    when(serviceMock.save(entity))
       .thenReturn(saved);
 
     MvcResult result = mockMvc.perform(

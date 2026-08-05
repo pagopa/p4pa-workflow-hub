@@ -110,7 +110,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   }
 
   private String processingStreamEvents(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEventBatch, String lastProcessedEventId) {
-    String traceId = Utilities.getTraceId();
+    String traceId = it.gov.pagopa.payhub.activities.util.Utilities.getTraceId();
     Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap = new HashMap<>();
     for (ProgressResponseElementV28DTO streamEvent : streamEventBatch) {
       String lastEventId;

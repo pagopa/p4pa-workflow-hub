@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.config;
 
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

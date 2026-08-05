@@ -1,9 +1,9 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.paymentsreporting.OrganizationPaymentsReportingPagoPaFetchWFClient;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,6 +24,8 @@ class PagoPaFetchControllerTest {
 
   @MockitoBean
   private OrganizationPaymentsReportingPagoPaFetchWFClient serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenFetchOrganizationPaymentsReportingThenOk() throws Exception {
@@ -30,7 +33,7 @@ class PagoPaFetchControllerTest {
     String workflowId = "workflow-1";
     String runId = "runId";
 
-    Mockito.when(serviceMock.retrieve(organizationId))
+    when(serviceMock.retrieve(organizationId))
       .thenReturn(new WorkflowCreatedDTO(workflowId, runId));
 
     mockMvc.perform(

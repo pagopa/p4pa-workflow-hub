@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.wf.send.SendNotificationService;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +33,8 @@ class SendNotificationControllerTest {
 
   @MockitoBean
   private SendNotificationService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void givenSendNotificationIdWhenSendNotificationProcessThenOk() throws Exception {
@@ -43,7 +47,7 @@ class SendNotificationControllerTest {
       .runId(runId)
       .build();
 
-    Mockito.when(serviceMock.sendNotificationProcess(sendNotificationId))
+    when(serviceMock.sendNotificationProcess(sendNotificationId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -71,7 +75,7 @@ class SendNotificationControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(serviceMock.sendNotificationStreamConsume(sendStreamId))
+    when(serviceMock.sendNotificationStreamConsume(sendStreamId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {

@@ -1,10 +1,10 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.ScheduleInfoDTO;
 import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,6 +30,8 @@ class ScheduleControllerTest {
 
   @MockitoBean
   private WorkflowScheduleService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenGetScheduleInfoThenOk() throws Exception {
@@ -37,7 +40,7 @@ class ScheduleControllerTest {
       .scheduleId(scheduleId)
       .build();
 
-    Mockito.when(serviceMock.getScheduleInfo(scheduleId))
+    when(serviceMock.getScheduleInfo(scheduleId))
       .thenReturn(expectedResult);
 
     MvcResult result = mockMvc.perform(

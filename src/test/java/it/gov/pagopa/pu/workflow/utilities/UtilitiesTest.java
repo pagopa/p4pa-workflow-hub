@@ -21,6 +21,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class UtilitiesTest {
 
+  public static void setTraceId(String traceId) {
+    setTraceId(traceId, null);
+  }
+  public static void setTraceId(String traceId, String spanId) {
+    MDC.put("traceId", traceId);
+    MDC.put("spanId", spanId);
+  }
+  public static void clearTraceIdContext(){
+    MDC.clear();
+  }
+
   @Test
   void whenGenerateWorkflowIdThenOk(){
     String workflowId = Utilities.generateWorkflowId(1L, Utilities.class);
@@ -140,27 +151,6 @@ public class UtilitiesTest {
     String workflowId = Utilities.generateWorkflowId("00000020f51bb4362eee2a4d", Utilities.class);
 
     assertEquals("Utilities-00000020f51bb4362eee2a4d", workflowId);
-  }
-
-  @Test
-  void testGetTraceId(){
-    // Given
-    String expectedResult = "TRACEID";
-    setTraceId(expectedResult);
-
-    // When
-    String result = Utilities.getTraceId();
-
-    // Then
-    Assertions.assertSame(expectedResult, result);
-    clearTraceIdContext();
-  }
-
-  public static void setTraceId(String traceId) {
-    MDC.put("traceId", traceId);
-  }
-  public static void clearTraceIdContext(){
-    MDC.clear();
   }
 
   @Test

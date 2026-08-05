@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.wf.send.campaign.SendCampaignService;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
@@ -33,6 +34,8 @@ class SendCampaignControllerImplTest {
 
   @MockitoBean
   private SendCampaignService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenAlignSendCampaignCountersThenOk() throws Exception {

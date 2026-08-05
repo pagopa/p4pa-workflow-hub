@@ -1,11 +1,11 @@
 package it.gov.pagopa.pu.workflow.controller;
 
+import io.micrometer.tracing.Tracer;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowStatusDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowCompletionService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,9 +32,10 @@ class WorkflowControllerTest {
 
   @MockitoBean
   private WorkflowService serviceMock;
-
   @MockitoBean
   private WorkflowCompletionService workflowCompletionServiceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenGetWorkflowStatusThenOk() throws Exception {
@@ -42,7 +45,7 @@ class WorkflowControllerTest {
       .status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED)
       .build();
 
-    Mockito.when(serviceMock.getWorkflowStatus(workflowId))
+    when(serviceMock.getWorkflowStatus(workflowId))
       .thenReturn(workflowStatusDTO);
 
     MvcResult result = mockMvc.perform(
@@ -62,7 +65,7 @@ class WorkflowControllerTest {
     String workflowId = "workflow-1";
 
     WorkflowStatusDTO expectedResult = WorkflowStatusDTO.builder().status(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED).build();
-    Mockito.when(workflowCompletionServiceMock.waitTerminationStatus(workflowId, 2, 1))
+    when(workflowCompletionServiceMock.waitTerminationStatus(workflowId, 2, 1))
       .thenReturn(expectedResult);
 
     MvcResult result = mockMvc.perform(
@@ -89,7 +92,7 @@ class WorkflowControllerTest {
       .andExpect(status().isOk())
       .andReturn();
 
-    Mockito.verify(serviceMock, Mockito.times(1)).cancelWorkflow(workflowId);
+    verify(serviceMock).cancelWorkflow(workflowId);
 
     assertEquals("", result.getResponse().getContentAsString());
   }

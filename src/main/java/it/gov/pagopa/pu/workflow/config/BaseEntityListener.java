@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.config;
 
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.model.BaseEntity;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
