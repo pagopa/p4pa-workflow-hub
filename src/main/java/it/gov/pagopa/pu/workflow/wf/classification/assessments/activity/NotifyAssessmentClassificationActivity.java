@@ -6,8 +6,8 @@ import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
 import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
 
 @ActivityInterface
-public interface NotifyPaymentAssessmentsActivity {
+public interface NotifyAssessmentClassificationActivity {
 
   @ActivityMethod
-  void notifyPaymentAssessmentsEvent(AssessmentEventDTO assessmentsEventDTO, DataEventRequestDTO dataEventRequest);
+  void notifyAssessmentClassificationEvent(AssessmentEventDTO assessmentsEventDTO, DataEventRequestDTO dataEventRequest);
 }

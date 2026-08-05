@@ -13,26 +13,26 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
-class NotifyPaymentAssessmentsActivityImplTest {
+class NotifyAssessmentClassificationActivityImplTest {
 
   @Mock
   private DataEventsProducerService dataEventsProducerServiceMock;
 
-  private NotifyPaymentAssessmentsActivity notifyPaymentAssessmentsActivity;
+  private NotifyAssessmentClassificationActivity notifyAssessmentClassificationActivity;
 
   @BeforeEach
   void setUp() {
-    notifyPaymentAssessmentsActivity = new NotifyPaymentAssessmentsActivityImpl(dataEventsProducerServiceMock);
+    notifyAssessmentClassificationActivity = new NotifyAssessmentClassificationActivityImpl(dataEventsProducerServiceMock);
   }
 
   @Test
-  void whenNotifyPaymentAssessmentsEventThenOk() {
+  void whenNotifyAssessmentClassificationEventThenOk() {
     //given
     AssessmentEventDTO assessmentsEventDTO = new AssessmentEventDTO();
     DataEventRequestDTO dataEventRequestDTO = new DataEventRequestDTO();
 
     doNothing().when(dataEventsProducerServiceMock).notifyPaymentAssessmentsEvent(assessmentsEventDTO, dataEventRequestDTO);
     //then
-    assertDoesNotThrow(() -> notifyPaymentAssessmentsActivity.notifyPaymentAssessmentsEvent(assessmentsEventDTO, dataEventRequestDTO));
+    assertDoesNotThrow(() -> notifyAssessmentClassificationActivity.notifyAssessmentClassificationEvent(assessmentsEventDTO, dataEventRequestDTO));
   }
 }

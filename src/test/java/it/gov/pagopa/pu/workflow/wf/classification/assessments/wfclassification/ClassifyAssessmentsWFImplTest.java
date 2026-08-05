@@ -4,7 +4,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.NotifyPaymentAssessmentsActivity;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.NotifyAssessmentClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.config.ClassifyAssessmentsWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +28,7 @@ class ClassifyAssessmentsWFImplTest {
   @Mock
   private AssessmentsClassificationActivity assessmentsClassificationActivityMock;
   @Mock
-  private NotifyPaymentAssessmentsActivity notifyPaymentAssessmentsActivityMock;
+  private NotifyAssessmentClassificationActivity notifyAssessmentClassificationActivityMock;
 
   private ClassifyAssessmentsWFImpl wf;
 
@@ -41,8 +41,8 @@ class ClassifyAssessmentsWFImplTest {
       .thenReturn(classifyAssessmentsWfConfig);
     when(classifyAssessmentsWfConfig.buildAssessmentsClassificationActivityStub())
       .thenReturn(assessmentsClassificationActivityMock);
-    when(classifyAssessmentsWfConfig.buildNotifyPaymentAssessmentsActivityStub())
-      .thenReturn(notifyPaymentAssessmentsActivityMock);
+    when(classifyAssessmentsWfConfig.buildNotifyAssessmentClassificationActivityStub())
+      .thenReturn(notifyAssessmentClassificationActivityMock);
 
     wf = new ClassifyAssessmentsWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -52,7 +52,7 @@ class ClassifyAssessmentsWFImplTest {
   void verifyNoMoreInteractions(){
     Mockito.verifyNoMoreInteractions(
       assessmentsClassificationActivityMock,
-      notifyPaymentAssessmentsActivityMock
+      notifyAssessmentClassificationActivityMock
     );
   }
 
@@ -80,8 +80,8 @@ class ClassifyAssessmentsWFImplTest {
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv1", "iud1"));
       verify(assessmentsClassificationActivityMock)
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv2", "iud2"));
-      verify(notifyPaymentAssessmentsActivityMock, times(3))
-        .notifyPaymentAssessmentsEvent(any(), any());
+      verify(notifyAssessmentClassificationActivityMock, times(3))
+        .notifyAssessmentClassificationEvent(any(), any());
     }
   }
 

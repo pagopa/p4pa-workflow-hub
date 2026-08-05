@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.classification.assessments.config;
 
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.NotifyPaymentAssessmentsActivity;
-import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.NotifyPaymentAssessmentsActivityImpl;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.NotifyAssessmentClassificationActivity;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.NotifyAssessmentClassificationActivityImpl;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +13,7 @@ class ClassifyAssessmentsWfConfigTest {
   private final ClassifyAssessmentsWfConfig config = new ClassifyAssessmentsWfConfig();
 
   private final Map<Class<?>, Class<?>> localActivityInterface2Impl = Map.of(
-    NotifyPaymentAssessmentsActivity.class, NotifyPaymentAssessmentsActivityImpl.class
+    NotifyAssessmentClassificationActivity.class, NotifyAssessmentClassificationActivityImpl.class
   );
 
   @Test

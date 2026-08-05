@@ -11,16 +11,16 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @ActivityImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_CLASSIFICATION_MEDIUM_PRIORITY_LOCAL)
-public class NotifyPaymentAssessmentsActivityImpl implements NotifyPaymentAssessmentsActivity {
+public class NotifyAssessmentClassificationActivityImpl implements NotifyAssessmentClassificationActivity {
   private final DataEventsProducerService dataEventsProducerService;
 
-  public NotifyPaymentAssessmentsActivityImpl(DataEventsProducerService dataEventsProducerService) {
+  public NotifyAssessmentClassificationActivityImpl(DataEventsProducerService dataEventsProducerService) {
     this.dataEventsProducerService = dataEventsProducerService;
   }
 
   @Override
-  public void notifyPaymentAssessmentsEvent(AssessmentEventDTO assessmentsEventDTO, DataEventRequestDTO dataEventRequest) {
-    log.info("notifyPaymentAssessmentsEvent - organizationId: {}, iuv: {}, iud: {}", assessmentsEventDTO.getOrganizationId(), assessmentsEventDTO.getIuv(), assessmentsEventDTO.getIud());
+  public void notifyAssessmentClassificationEvent(AssessmentEventDTO assessmentsEventDTO, DataEventRequestDTO dataEventRequest) {
+    log.info("notifyAssessmentClassificationEvent - organizationId: {}, iuv: {}, iud: {}", assessmentsEventDTO.getOrganizationId(), assessmentsEventDTO.getIuv(), assessmentsEventDTO.getIud());
     dataEventsProducerService.notifyPaymentAssessmentsEvent(assessmentsEventDTO, dataEventRequest);
   }
 }
