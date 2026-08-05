@@ -4,7 +4,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassificationSemanticKeyDTO;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.NotifyAssessmentClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.config.ClassifyAssessmentsWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
 import org.junit.jupiter.api.AfterEach;
@@ -20,8 +20,7 @@ import org.springframework.context.ApplicationContext;
 import java.util.function.Supplier;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ClassifyAssessmentsWFImplTest {
@@ -29,21 +28,21 @@ class ClassifyAssessmentsWFImplTest {
   @Mock
   private AssessmentsClassificationActivity assessmentsClassificationActivityMock;
   @Mock
-  private DataEventsProducerService dataEventsProducerServiceMock;
+  private NotifyAssessmentClassificationActivity notifyAssessmentClassificationActivityMock;
 
   private ClassifyAssessmentsWFImpl wf;
 
   @BeforeEach
   void setUp() {
-    ClassifyAssessmentsWfConfig classifyAssessmentsWfConfig = Mockito.mock(ClassifyAssessmentsWfConfig.class);
-    ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+    ClassifyAssessmentsWfConfig classifyAssessmentsWfConfig = mock(ClassifyAssessmentsWfConfig.class);
+    ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
     when(applicationContextMock.getBean(ClassifyAssessmentsWfConfig.class))
       .thenReturn(classifyAssessmentsWfConfig);
     when(classifyAssessmentsWfConfig.buildAssessmentsClassificationActivityStub())
       .thenReturn(assessmentsClassificationActivityMock);
-    Mockito.when(applicationContextMock.getBean(DataEventsProducerService.class))
-      .thenReturn(dataEventsProducerServiceMock);
+    when(classifyAssessmentsWfConfig.buildNotifyAssessmentClassificationActivityStub())
+      .thenReturn(notifyAssessmentClassificationActivityMock);
 
     wf = new ClassifyAssessmentsWFImpl();
     wf.setApplicationContext(applicationContextMock);
@@ -53,7 +52,7 @@ class ClassifyAssessmentsWFImplTest {
   void verifyNoMoreInteractions(){
     Mockito.verifyNoMoreInteractions(
       assessmentsClassificationActivityMock,
-      dataEventsProducerServiceMock
+      notifyAssessmentClassificationActivityMock
     );
   }
 
@@ -75,14 +74,14 @@ class ClassifyAssessmentsWFImplTest {
 
       workflowMock.verify(() -> Workflow.await(Mockito.argThat(Supplier::get)));
 
-      Mockito.verify(assessmentsClassificationActivityMock)
+      verify(assessmentsClassificationActivityMock)
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(1L, "iuv1", "iud1"));
-      Mockito.verify(assessmentsClassificationActivityMock)
+      verify(assessmentsClassificationActivityMock)
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv1", "iud1"));
-      Mockito.verify(assessmentsClassificationActivityMock)
+      verify(assessmentsClassificationActivityMock)
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv2", "iud2"));
-      Mockito.verify(dataEventsProducerServiceMock, times(3))
-        .notifyPaymentAssessmentsEvent(any(), any());
+      verify(notifyAssessmentClassificationActivityMock, times(3))
+        .notifyAssessmentClassificationEvent(any(), any());
     }
   }
 
@@ -99,11 +98,11 @@ class ClassifyAssessmentsWFImplTest {
 
       workflowMock.verify(() -> Workflow.await(Mockito.argThat(Supplier::get)));
 
-      Mockito.verify(assessmentsClassificationActivityMock)
+      verify(assessmentsClassificationActivityMock)
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(1L, "iuv1", "iud1"));
-      Mockito.verify(assessmentsClassificationActivityMock)
+      verify(assessmentsClassificationActivityMock)
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv1", "iud1"));
-      Mockito.verify(assessmentsClassificationActivityMock)
+      verify(assessmentsClassificationActivityMock)
         .classifyAssessment(new AssessmentsClassificationSemanticKeyDTO(2L, "iuv2", "iud2"));
     }
   }

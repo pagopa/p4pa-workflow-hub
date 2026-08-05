@@ -7,6 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.exportflow.email.SendEmailExport
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.NotifyExportActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,12 @@ public class ExportFileWFConfig extends BaseWfConfig {
 
   public ScheduleExportFileExpirationActivity buildScheduleExportFileExpirationActivityStub() {
     return Workflow.newActivityStub(ScheduleExportFileExpirationActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
+      TaskQueueConstants.TASK_QUEUE_EXPORT_MEDIUM_PRIORITY_LOCAL,
+      this));
+  }
+
+  public NotifyExportActivity buildNotifyExportActivityStub() {
+    return Workflow.newActivityStub(NotifyExportActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(
       TaskQueueConstants.TASK_QUEUE_EXPORT_MEDIUM_PRIORITY_LOCAL,
       this));
   }

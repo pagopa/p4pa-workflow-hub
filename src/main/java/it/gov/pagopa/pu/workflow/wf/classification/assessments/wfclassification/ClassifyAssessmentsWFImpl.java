@@ -7,9 +7,9 @@ import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentsClassification
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.enums.DataEventType;
 import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowServiceImpl;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.NotifyAssessmentClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.config.ClassifyAssessmentsWfConfig;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.dto.ClassifyAssessmentStartSignalDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, ApplicationContextAware {
 
   private AssessmentsClassificationActivity assessmentsClassificationActivity;
-  private DataEventsProducerService dataEventsProducerService;
+  private NotifyAssessmentClassificationActivity notifyAssessmentClassificationActivity;
 
   private final Collection<AssessmentsClassificationSemanticKeyDTO> toClassify = new ConcurrentLinkedQueue<>();
 
@@ -39,7 +39,7 @@ public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, Applica
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     ClassifyAssessmentsWfConfig wfConfig = applicationContext.getBean(ClassifyAssessmentsWfConfig.class);
     assessmentsClassificationActivity = wfConfig.buildAssessmentsClassificationActivityStub();
-    dataEventsProducerService = applicationContext.getBean(DataEventsProducerService.class);
+    notifyAssessmentClassificationActivity = wfConfig.buildNotifyAssessmentClassificationActivityStub();
   }
 
   @Override
@@ -55,7 +55,7 @@ public class ClassifyAssessmentsWFImpl implements ClassifyAssessmentsWF, Applica
         if (assessmentEventDTO == null) {
           log.info("Ingestion to classify Assessment with semantic key {} is completed with no event sent", item);
         } else {
-          dataEventsProducerService.notifyPaymentAssessmentsEvent(
+          notifyAssessmentClassificationActivity.notifyAssessmentClassificationEvent(
             assessmentEventDTO,
             DataEventRequestDTO.builder()
             .dataEventType(DataEventType.ASSESSMENTS_CLASSIFICATION)
