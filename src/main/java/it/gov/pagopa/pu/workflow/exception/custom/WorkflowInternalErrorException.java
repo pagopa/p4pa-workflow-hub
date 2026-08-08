@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.exception.custom;
 
-import it.gov.pagopa.payhub.activities.exception.BaseBusinessException;
+import it.gov.pagopa.payhub.activities.exception.common.BaseBusinessException;
 
 import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
 
