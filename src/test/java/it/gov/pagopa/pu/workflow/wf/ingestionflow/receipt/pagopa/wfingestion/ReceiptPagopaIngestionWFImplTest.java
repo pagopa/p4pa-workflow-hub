@@ -7,7 +7,7 @@ import it.gov.pagopa.payhub.activities.activity.ingestionflow.receipt.ReceiptPag
 import it.gov.pagopa.payhub.activities.dto.ingestion.IngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.dto.ingestion.receipt.ReceiptPagopaIngestionFlowFileResult;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
-import it.gov.pagopa.pu.debtposition.dto.generated.ReceiptWithAdditionalNodeDataDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptWithAdditionalNodeDataDTO;
 import it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFileStatus;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.receipt.pagopa.config.ReceiptPagopaIngestionWfConfig;
@@ -20,7 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ReceiptPagopaIngestionWFImplTest {
@@ -41,22 +41,22 @@ class ReceiptPagopaIngestionWFImplTest {
     ReceiptPagopaIngestionWfConfig receiptPagopaIngestionWfConfigMock = mock(ReceiptPagopaIngestionWfConfig.class);
     ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
-    Mockito.doReturn(baseIngestionFlowFileWFConfigMock)
+    doReturn(baseIngestionFlowFileWFConfigMock)
       .when(applicationContextMock)
       .getBean(BaseIngestionFlowFileWFConfig.class);
 
-    Mockito.doReturn(receiptPagopaIngestionWfConfigMock)
+    doReturn(receiptPagopaIngestionWfConfigMock)
       .when(applicationContextMock)
       .getBean(ReceiptPagopaIngestionWfConfig.class);
 
-    Mockito.when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaIngestionActivityStub())
+    when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaIngestionActivityStub())
       .thenReturn(receiptPagopaIngestionActivityMock);
-    Mockito.when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaNotifySilActivityStub())
+    when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaNotifySilActivityStub())
       .thenReturn(receiptPagopaNotifySilActivityMock);
-    Mockito.when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaSendEmailActivityStub())
+    when(receiptPagopaIngestionWfConfigMock.buildReceiptPagopaSendEmailActivityStub())
       .thenReturn(receiptPagopaSendEmailActivityMock);
 
-    Mockito.when(baseIngestionFlowFileWFConfigMock.buildUpdateIngestionFlowStatusActivityStub())
+    when(baseIngestionFlowFileWFConfigMock.buildUpdateIngestionFlowStatusActivityStub())
       .thenReturn(updateIngestionFlowStatusActivityMock);
 
     wf = new ReceiptPagopaIngestionWFImpl();
@@ -71,19 +71,19 @@ class ReceiptPagopaIngestionWFImplTest {
 
     ReceiptPagopaIngestionFlowFileResult result = new ReceiptPagopaIngestionFlowFileResult(receiptDTO);
 
-    Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId)).thenReturn(result);
+    when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId)).thenReturn(result);
     Mockito.doNothing().when(receiptPagopaNotifySilActivityMock).notifyReceiptToSil(receiptDTO);
     // When
     Assertions.assertDoesNotThrow(() -> wf.ingest(ingestionFlowFileId));
 
     // Then
-    Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
+    verify(updateIngestionFlowStatusActivityMock, times(1))
       .updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
+    verify(updateIngestionFlowStatusActivityMock, times(1))
       .updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, result);
-    Mockito.verify(receiptPagopaSendEmailActivityMock, Mockito.times(1))
+    verify(receiptPagopaSendEmailActivityMock, times(1))
       .sendReceiptHandledEmail(receiptDTO);
-    Mockito.verify(receiptPagopaNotifySilActivityMock, Mockito.times(1))
+    verify(receiptPagopaNotifySilActivityMock, times(1))
       .notifyReceiptToSil(receiptDTO);
   }
 
@@ -92,7 +92,7 @@ class ReceiptPagopaIngestionWFImplTest {
     // Given
     long ingestionFlowFileId = 1L;
 
-    Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId))
+    when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId))
       .thenThrow(new NotRetryableActivityException("DUMMY"));
 
     IngestionFlowFileResult ingestionFlowFileResult = IngestionFlowFileResult.builder()
@@ -103,9 +103,9 @@ class ReceiptPagopaIngestionWFImplTest {
     wf.ingest(ingestionFlowFileId);
 
     // Then
-    Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
+    verify(updateIngestionFlowStatusActivityMock, times(1))
       .updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
+    verify(updateIngestionFlowStatusActivityMock, times(1))
       .updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.ERROR, ingestionFlowFileResult);
     Mockito.verifyNoInteractions(receiptPagopaNotifySilActivityMock, receiptPagopaSendEmailActivityMock);
   }
@@ -118,22 +118,22 @@ class ReceiptPagopaIngestionWFImplTest {
 
     ReceiptPagopaIngestionFlowFileResult result = new ReceiptPagopaIngestionFlowFileResult(receiptDTO);
 
-    Mockito.when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId)).thenReturn(result);
+    when(receiptPagopaIngestionActivityMock.processFile(ingestionFlowFileId)).thenReturn(result);
 
-    Mockito.doThrow(new NotRetryableActivityException("DUMMY")).when(receiptPagopaNotifySilActivityMock)
+    doThrow(new NotRetryableActivityException("DUMMY")).when(receiptPagopaNotifySilActivityMock)
       .notifyReceiptToSil(receiptDTO);
 
     // When
     Assertions.assertDoesNotThrow(() -> wf.ingest(ingestionFlowFileId));
 
     // Then
-    Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
+    verify(updateIngestionFlowStatusActivityMock, times(1))
       .updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.UPLOADED, IngestionFlowFileStatus.PROCESSING, null);
-    Mockito.verify(updateIngestionFlowStatusActivityMock, Mockito.times(1))
+    verify(updateIngestionFlowStatusActivityMock, times(1))
       .updateIngestionFlowFileStatus(ingestionFlowFileId, IngestionFlowFileStatus.PROCESSING, IngestionFlowFileStatus.COMPLETED, result);
-    Mockito.verify(receiptPagopaSendEmailActivityMock, Mockito.times(1))
+    verify(receiptPagopaSendEmailActivityMock, times(1))
       .sendReceiptHandledEmail(receiptDTO);
-    Mockito.verify(receiptPagopaNotifySilActivityMock, Mockito.times(1))
+    verify(receiptPagopaNotifySilActivityMock, times(1))
       .notifyReceiptToSil(receiptDTO);
   }
 }

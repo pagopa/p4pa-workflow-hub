@@ -5,8 +5,8 @@ import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.HandleFineDebtPositionResult;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionStatus;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
@@ -26,8 +26,7 @@ import org.springframework.context.ApplicationContext;
 
 import static it.gov.pagopa.pu.workflow.utils.TestUtils.OFFSET_DATE_TIME;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeFineWFTest {
@@ -45,22 +44,22 @@ class SynchronizeFineWFTest {
 
   @BeforeEach
   void init() {
-    DebtPositionFineWfConfig configMock = Mockito.mock(DebtPositionFineWfConfig.class);
-    ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+    DebtPositionFineWfConfig configMock = mock(DebtPositionFineWfConfig.class);
+    ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
-    Mockito.when(configMock.buildDebtPositionSynchronizeFineActivityStub())
+    when(configMock.buildDebtPositionSynchronizeFineActivityStub())
       .thenReturn(debtPositionSynchronizeFineActivityMock);
 
-    Mockito.when(configMock.buildInvokeSyncDebtPositionActivityStub())
+    when(configMock.buildInvokeSyncDebtPositionActivityStub())
       .thenReturn(invokeSyncDebtPositionActivityMock);
 
-    Mockito.when(configMock.buildCancelReductionExpirationScheduleActivityStub())
+    when(configMock.buildCancelReductionExpirationScheduleActivityStub())
       .thenReturn(cancelReductionExpirationScheduleActivityMock);
 
-    Mockito.when(configMock.buildScheduleReductionExpirationActivityStub())
+    when(configMock.buildScheduleReductionExpirationActivityStub())
       .thenReturn(scheduleReductionExpirationActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(DebtPositionFineWfConfig.class))
+    when(applicationContextMock.getBean(DebtPositionFineWfConfig.class))
       .thenReturn(configMock);
 
     wf = new SynchronizeFineWFImpl();
@@ -90,11 +89,11 @@ class SynchronizeFineWFTest {
     fineWfExecutionConfig.setIoMessages(fineWfMessages);
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO();
 
-    Mockito.when(debtPositionSynchronizeFineActivityMock.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig))
+    when(debtPositionSynchronizeFineActivityMock.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig))
       .thenReturn(new HandleFineDebtPositionResult(debtPositionDTO, OFFSET_DATE_TIME, false));
 
 
-    Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
+    when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
       .thenReturn(expectedResult);
 
     // When
@@ -117,10 +116,10 @@ class SynchronizeFineWFTest {
     fineWfExecutionConfig.setIoMessages(fineWfMessages);
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO();
 
-    Mockito.when(debtPositionSynchronizeFineActivityMock.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig))
+    when(debtPositionSynchronizeFineActivityMock.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig))
       .thenReturn(new HandleFineDebtPositionResult(debtPositionDTO, OFFSET_DATE_TIME, false));
 
-    Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
+    when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
       .thenReturn(expectedResult);
 
     // When
@@ -143,7 +142,7 @@ class SynchronizeFineWFTest {
 
     HandleFineDebtPositionResult result = new HandleFineDebtPositionResult(debtPositionDTO, OFFSET_DATE_TIME, true);
 
-    Mockito.when(debtPositionSynchronizeFineActivityMock.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig))
+    when(debtPositionSynchronizeFineActivityMock.handleFineDebtPosition(debtPositionDTO, false, fineWfExecutionConfig))
       .thenReturn(result);
 
     try (
@@ -151,7 +150,7 @@ class SynchronizeFineWFTest {
       mapperMock.when(() -> FineWfExecutionConfigMapper.mapNotifiedInstallment(fineWfExecutionConfig, debtPositionDTO))
         .thenReturn(wfExecutionConfig);
 
-      Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
+      when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, paymentEventRequest, false, wfExecutionConfig))
         .thenReturn(expectedResult);
 
       // When

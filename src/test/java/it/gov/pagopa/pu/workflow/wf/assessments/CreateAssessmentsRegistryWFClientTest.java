@@ -1,8 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.assessments;
 
-import static org.mockito.Mockito.verify;
-
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
@@ -17,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateAssessmentsRegistryWFClientTest {
@@ -49,7 +50,7 @@ class CreateAssessmentsRegistryWFClientTest {
     DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
     debtPositionDTO.setDebtPositionId(1L);
 
-    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(CreateAssessmentsRegistryWF.class, taskQueue, expectedResult.getWorkflowId()))
+    when(workflowServiceMock.buildWorkflowStubToStartNew(CreateAssessmentsRegistryWF.class, taskQueue, expectedResult.getWorkflowId()))
       .thenReturn(wfMock);
 
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, debtPositionDTO, null);

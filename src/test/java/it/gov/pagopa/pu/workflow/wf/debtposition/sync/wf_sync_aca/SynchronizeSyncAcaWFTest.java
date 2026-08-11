@@ -2,8 +2,8 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca;
 
 import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.aca.SynchronizeInstallmentAcaActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncStatusUpdateRequestDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncStatusUpdateRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWFTest;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
@@ -13,6 +13,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeSyncAcaWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncAcaWF> {
@@ -29,7 +32,7 @@ class SynchronizeSyncAcaWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncAc
   @Override
   protected SynchronizeSyncAcaWF configureMockAndCreateWf(ApplicationContext applicationContextMock) {
     SynchronizeDebtPositionWfConfig wfConfigMock = applicationContextMock.getBean(SynchronizeDebtPositionWfConfig.class);
-    Mockito.when(wfConfigMock.buildSynchronizeInstallmentAcaActivity())
+    when(wfConfigMock.buildSynchronizeInstallmentAcaActivity())
       .thenReturn(synchronizeInstallmentAcaActivityMock);
 
     SynchronizeSyncAcaWFImpl wf = new SynchronizeSyncAcaWFImpl();
@@ -47,7 +50,7 @@ class SynchronizeSyncAcaWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncAc
 
   @Override
   protected void configureIUDSyncKo(DebtPositionDTO debtPosition, String iud, Throwable expectedException) {
-    Mockito.doThrow(expectedException)
+    doThrow(expectedException)
       .when(synchronizeInstallmentAcaActivityMock)
       .synchronizeInstallmentAca(
         Mockito.same(debtPosition), Mockito.eq(iud)

@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.complete;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -17,6 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionCompleteChangeSyncServiceTest {
@@ -54,7 +57,7 @@ class DebtPositionCompleteChangeSyncServiceTest {
     String accessToken = "accessToken";
 
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("WFID", "RUNID");
-    Mockito.when(genericWfSyncService.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest), Mockito.eq(false), Mockito.same(wfExecutionConfig), Mockito.same(accessToken)))
+    when(genericWfSyncService.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest), Mockito.eq(false), Mockito.same(wfExecutionConfig), Mockito.same(accessToken)))
       .thenReturn(expectedResult);
 
     // When
@@ -69,11 +72,11 @@ class DebtPositionCompleteChangeSyncServiceTest {
     // Given
     DebtPositionDTO debtPositionDTO = new DebtPositionDTO();
     PaymentEventRequestDTO paymentEventRequest = new PaymentEventRequestDTO(PaymentEventType.DP_CREATED, "EVENTDESCRIPTION");
-    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(false, false, Mockito.mock(WfExecutionConfig.class));
+    WfExecutionParameters wfExecutionParameters = new WfExecutionParameters(false, false, mock(WfExecutionConfig.class));
     String accessToken = "accessToken";
 
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("WFID", "RUNID");
-    Mockito.when(customWfSyncService.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionParameters)))
+    when(customWfSyncService.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionParameters)))
       .thenReturn(expectedResult);
 
     // When

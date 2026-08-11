@@ -63,7 +63,7 @@ val openApiToolsVersion = "0.2.10"
 val httpClientVersion = "5.6.1"
 val httpCoreVersion = "5.4.2"
 val kafkaAppender = "0.2.0-RC2"
-val lz4JavaVersion = "1.11.0"
+val lz4JavaVersion = "1.11.1"
 val springWolfAsyncApiVersion = "1.21.0"
 val springWolfUiAsyncApiVersion = "1.21.0"
 val micrometerVersion = "1.7.0"
@@ -256,7 +256,7 @@ openApiGenerate {
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
   typeMappings.set(
     mapOf(
-      "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+      "DebtPositionDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO",
       "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum",
       "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
       "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
@@ -299,7 +299,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   generatorName.set("java")
   remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-registries.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
-  apiPackage.set("it.gov.pagopa.pu.registries.controller.generated")
+  invokerPackage.set("it.gov.pagopa.pu.registries.generated")
+  apiPackage.set("it.gov.pagopa.pu.registries.client.generated")
   modelPackage.set("it.gov.pagopa.pu.registries.dto.generated")
   configOptions.set(
     mapOf(

@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.workflow.connector.organization.service.OrganizationService;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -25,6 +25,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentsConsumerTest {
@@ -72,22 +75,22 @@ class PaymentsConsumerTest {
       .eventDescription("receiptId:2")
       .build();
 
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
+    when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
       Optional.of(organization));
 
     // When
     paymentsConsumer.accept(paymentEventDTO);
 
     // Then
-    Mockito.verify(wfClientMock)
+    verify(wfClientMock)
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud1", "iuv1", "iur1", Collections.singletonList(1)));
-    Mockito.verify(wfClientMock)
+    verify(wfClientMock)
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud3", "iuv3", "iur2", Collections.singletonList(1)));
-    Mockito.verify(wfClientMock)
+    verify(wfClientMock)
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud5", "iuv5", "iur1",  Collections.singletonList(1)));
-    Mockito.verify(createAssessmentsWFClientMock)
+    verify(createAssessmentsWFClientMock)
       .createAssessments(2L);
-    Mockito.verify(createAssessmentsRegistryWFClientMock)
+    verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
   }
 
@@ -112,19 +115,19 @@ class PaymentsConsumerTest {
       .eventDescription("receiptId:2")
       .build();
 
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
+    when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
       Optional.of(organization));
 
     paymentsConsumer.accept(paymentEventDTO);
 
-    Mockito.verify(wfClientMock)
+    verify(wfClientMock)
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud1", "iuv1", "iur1", Collections.singletonList(1)));
-    Mockito.verify(wfClientMock)
+    verify(wfClientMock)
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud3", "iuv3", "iur2", Collections.singletonList(1)));
-    Mockito.verify(createAssessmentsWFClientMock)
+    verify(createAssessmentsWFClientMock)
       .createAssessments(2L);
 
-    Mockito.verify(createAssessmentsRegistryWFClientMock)
+    verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1"));
   }
 
@@ -143,22 +146,22 @@ class PaymentsConsumerTest {
       .eventDescription("receiptId:undefined")
       .build();
 
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
+    when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1")).thenReturn(
       Optional.of(organization));
 
     // When
     paymentsConsumer.accept(paymentEventDTO);
 
     // Then
-    Mockito.verify(wfClientMock)
+    verify(wfClientMock)
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud1", "iuv1", "iur1",  Collections.singletonList(1)));
-    Mockito.verify(wfClientMock)
+    verify(wfClientMock)
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud3", "iuv3", "iur2",  Collections.singletonList(1)));
-    Mockito.verify(wfClientMock)
+    verify(wfClientMock)
       .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(1L, "iud5", "iuv5", "iur1",  Collections.singletonList(1)));
-    Mockito.verify(createAssessmentsWFClientMock)
+    verify(createAssessmentsWFClientMock)
       .createAssessments(1L);
-    Mockito.verify(createAssessmentsRegistryWFClientMock)
+    verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
   }
 
@@ -208,7 +211,7 @@ class PaymentsConsumerTest {
     paymentsConsumer.accept(paymentEventDTO);
 
     // Then
-    Mockito.verify(createAssessmentsRegistryWFClientMock)
+    verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO,
         Utilities.extractIudsFromDescription(eventDescription).stream().toList() );
   }
@@ -224,7 +227,7 @@ class PaymentsConsumerTest {
       .eventDescription("receiptId:2")
       .build();
 
-    Mockito.when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1"))
+    when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1"))
       .thenReturn(Optional.empty());
 
     // When
@@ -232,8 +235,8 @@ class PaymentsConsumerTest {
 
     // Then
     Mockito.verifyNoInteractions(wfClientMock);
-    Mockito.verify(createAssessmentsWFClientMock).createAssessments(2L);
-    Mockito.verify(createAssessmentsRegistryWFClientMock)
+    verify(createAssessmentsWFClientMock).createAssessments(2L);
+    verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
   }
 
