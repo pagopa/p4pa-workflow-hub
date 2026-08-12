@@ -3,9 +3,13 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.*;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationStreamEventsActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
@@ -28,12 +32,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Duration;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationStreamConsumeWFImplTest {
@@ -65,9 +70,9 @@ class SendNotificationStreamConsumeWFImplTest {
 
   @BeforeEach
   void setUp() {
-    SendNotificationStreamWfConfig wfConfigMock = Mockito.mock(SendNotificationStreamWfConfig.class);
-    SendNotificationProcessWfConfig wfSendProcessConfigMock = Mockito.mock(SendNotificationProcessWfConfig.class);
-    ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+    SendNotificationStreamWfConfig wfConfigMock = mock(SendNotificationStreamWfConfig.class);
+    SendNotificationProcessWfConfig wfSendProcessConfigMock = mock(SendNotificationProcessWfConfig.class);
+    ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
     when(wfConfigMock.buildGetSendStreamActivityStub()).thenReturn(getSendStreamActivityMock);
     when(wfConfigMock.buildGetSendNotificationEventsFromStreamActivityStub()).thenReturn(getSendNotificationEventsFromStreamActivityMock);
@@ -126,7 +131,7 @@ class SendNotificationStreamConsumeWFImplTest {
       .thenReturn(streamDTO)
       .thenReturn(null); //for breaking from do-while loop
 
-    Mockito.doThrow(new RuntimeException())
+    doThrow(new RuntimeException())
       .when(getSendNotificationEventsFromStreamActivityMock)
       .fetchSendNotificationEventsFromStream(ORGANIZATION_ID, SEND_STREAM_ID);
 
@@ -163,7 +168,7 @@ class SendNotificationStreamConsumeWFImplTest {
       )
     ).thenReturn(streamEvents);
 
-    Mockito.doThrow(new RuntimeException())
+    doThrow(new RuntimeException())
       .when(sendEventStreamProcessingServiceMock).processSendStreamEvent(
         Mockito.eq(SEND_STREAM_ID),
         Mockito.isA(ProgressResponseElementV28DTO.class)
@@ -219,7 +224,7 @@ class SendNotificationStreamConsumeWFImplTest {
       )
     ).thenReturn(streamEvents);
 
-    ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
+    ActivityFailure activityFailureMock = mock(ActivityFailure.class);
     when(activityFailureMock.getCause())
         .thenReturn(ApplicationFailure.newNonRetryableFailure("error", SendStreamSkippedEventException.class.getName()));
 
@@ -279,7 +284,7 @@ class SendNotificationStreamConsumeWFImplTest {
       )
     ).thenReturn(streamEvents);
 
-    ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
+    ActivityFailure activityFailureMock = mock(ActivityFailure.class);
     when(activityFailureMock.getCause())
       .thenReturn(ApplicationFailure.newNonRetryableFailure("error", NotRetryableActivityException.class.getName()));
 
@@ -348,7 +353,7 @@ class SendNotificationStreamConsumeWFImplTest {
       )
     ).thenReturn(streamEvents);
 
-    ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
+    ActivityFailure activityFailureMock = mock(ActivityFailure.class);
     when(activityFailureMock.getCause())
       .thenReturn(ApplicationFailure.newFailure("error", RetryableActivityException.class.getName()));
 
@@ -417,7 +422,7 @@ class SendNotificationStreamConsumeWFImplTest {
       )
     ).thenReturn(streamEvents);
 
-    ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
+    ActivityFailure activityFailureMock = mock(ActivityFailure.class);
     when(activityFailureMock.getCause())
       .thenReturn(ApplicationFailure.newFailureWithCause("error", NotRetryableActivityException.class.getName(), null));
 
@@ -486,7 +491,7 @@ class SendNotificationStreamConsumeWFImplTest {
       )
     ).thenReturn(streamEvents);
 
-    ActivityFailure activityFailureMock = Mockito.mock(ActivityFailure.class);
+    ActivityFailure activityFailureMock = mock(ActivityFailure.class);
     when(activityFailureMock.getCause())
       .thenReturn(new RuntimeException());
 
@@ -740,7 +745,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
-      .thenThrow(HttpClientErrorException.create(HttpStatus.NOT_FOUND, "NotFound", null, null, null));
+      .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
 
     when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
@@ -772,7 +777,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
       Assertions.assertEquals("SEND_STATUS_ERROR", actualException.getCode());
       Assertions.assertEquals(
-        "Workflow terminated during isStreamStillOpened for sendStreamId " + SEND_STREAM_ID + " with ERROR: 404 NotFound",
+        "Workflow terminated during isStreamStillOpened for sendStreamId " + SEND_STREAM_ID + " with ERROR: ERRORMESSAGE",
         actualException.getMessage()
       );
 
@@ -1012,7 +1017,7 @@ class SendNotificationStreamConsumeWFImplTest {
         Mockito.isNull()
       );
 
-    Mockito.doThrow(new RuntimeException("Error"))
+    doThrow(new RuntimeException("Error"))
       .when(updateLastProcessedStreamEventIdActivityMock)
       .updateLastProcessedStreamEventId(
         Mockito.eq(SEND_STREAM_ID),

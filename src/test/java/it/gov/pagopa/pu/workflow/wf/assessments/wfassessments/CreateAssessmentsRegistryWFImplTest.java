@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsRegistryCreationActivity;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.wf.assessments.config.CreateAssessmentsRegistryWFConfig;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;

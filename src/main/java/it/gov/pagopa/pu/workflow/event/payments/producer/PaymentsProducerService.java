@@ -1,7 +1,8 @@
 package it.gov.pagopa.pu.workflow.event.payments.producer;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.dto.PaymentEventDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.dto.DebtPositionSendNotificationDTO;
@@ -58,7 +59,7 @@ public class PaymentsProducerService {
           .eventId(eventId)
           .traceId(MDC.get("traceId"))
           .eventType(paymentEventRequest.getPaymentEventType())
-          .eventDateTime(OffsetDateTime.now())
+          .eventDateTime(OffsetDateTime.now(Utilities.ZONEID))
           .payload(payload)
           .eventDescription(paymentEventRequest.getEventDescription())
           .build())

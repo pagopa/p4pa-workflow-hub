@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.service.wf.debtposition.sync.config;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.InvalidWfExecutionConfigException;
 import it.gov.pagopa.pu.workflow.model.DebtPositionWorkflowType;
 import it.gov.pagopa.pu.workflow.model.WorkflowTypeOrg;

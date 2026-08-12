@@ -1,9 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper;
 
 import it.gov.pagopa.payhub.activities.util.IoNotificationPlaceholderUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionType;
 
 
 import java.util.HashMap;

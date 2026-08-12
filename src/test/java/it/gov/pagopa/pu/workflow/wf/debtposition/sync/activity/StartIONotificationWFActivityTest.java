@@ -2,9 +2,9 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.SyncDpIONotificationWFClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class StartIONotificationWFActivityTest {
@@ -50,7 +51,7 @@ class StartIONotificationWFActivityTest {
     activity.startIONotificationWF(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
 
     // Then
-    Mockito.verify(clientMock)
+    verify(clientMock)
       .sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
   }
 }

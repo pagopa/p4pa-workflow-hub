@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.event.payments.consumer;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.*;
+import it.gov.pagopa.pu.debtpositions.dto.generated.*;
 import it.gov.pagopa.pu.organization.dto.generated.Organization;
 import it.gov.pagopa.pu.workflow.connector.organization.service.OrganizationService;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;

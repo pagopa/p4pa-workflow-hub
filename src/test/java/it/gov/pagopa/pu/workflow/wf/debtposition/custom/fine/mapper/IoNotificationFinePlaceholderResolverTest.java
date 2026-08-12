@@ -1,14 +1,15 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.mapper;
 
 import it.gov.pagopa.payhub.activities.util.IoNotificationPlaceholderUtils;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.PaymentOptionType;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.PaymentOptionType;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -26,7 +27,7 @@ class IoNotificationFinePlaceholderResolverTest {
   @Test
   void whenApplyFinePlaceholderThenOk() {
     // Given
-    LocalDate notificationDateRidotto = LocalDate.of(2024, 4, 1);
+    LocalDate notificationDateRidotto = LocalDate.of(2024, Month.APRIL, 1);
     LocalDate dueDateRidotto = notificationDateRidotto.plusDays(5);
     LocalDate dueDateIntero = notificationDateRidotto.plusDays(60);
 
@@ -81,7 +82,7 @@ class IoNotificationFinePlaceholderResolverTest {
     single.setNav("navIntero");
     single.setAmountCents(200L);
     single.setNotificationDate(OffsetDateTime.parse("2024-04-01T10:00:00Z"));
-    single.setDueDate(LocalDate.of(2024, 5, 31));
+    single.setDueDate(LocalDate.of(2024, Month.MAY, 31));
 
     PaymentOptionDTO poSingle = new PaymentOptionDTO();
     poSingle.setPaymentOptionType(PaymentOptionType.SINGLE_INSTALLMENT);
@@ -116,7 +117,7 @@ class IoNotificationFinePlaceholderResolverTest {
     reduced.setNav("navRidotto");
     reduced.setAmountCents(100L);
     reduced.setNotificationDate(OffsetDateTime.parse("2024-04-01T10:00:00Z"));
-    reduced.setDueDate(LocalDate.of(2024, 4, 6));
+    reduced.setDueDate(LocalDate.of(2024, Month.APRIL, 6));
 
     PaymentOptionDTO poReduced = new PaymentOptionDTO();
     poReduced.setPaymentOptionType(PaymentOptionType.REDUCED_SINGLE_INSTALLMENT);

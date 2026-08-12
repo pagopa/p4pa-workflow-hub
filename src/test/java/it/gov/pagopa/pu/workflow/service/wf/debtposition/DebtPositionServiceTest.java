@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.service.wf.debtposition;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -67,7 +67,7 @@ class DebtPositionServiceTest {
       .runId("RUNID")
       .build();
 
-    Mockito.when(debtPositionSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionParameters), Mockito.same(accessToken)))
+    when(debtPositionSyncServiceMock.invokeWorkflow(Mockito.same(debtPosition), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionParameters), Mockito.same(accessToken)))
       .thenReturn(expectedResult);
 
     // When
@@ -90,7 +90,7 @@ class DebtPositionServiceTest {
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("workflow-1", "runId");
     DebtPositionDTO debtPositionDTO = buildDebtPositionDTO();
 
-    Mockito.when(clientMockSetup.apply(debtPositionDTO)).thenReturn(expectedResult);
+    when(clientMockSetup.apply(debtPositionDTO)).thenReturn(expectedResult);
 
     // given
     WorkflowCreatedDTO result = serviceMethod.apply(debtPositionDTO);

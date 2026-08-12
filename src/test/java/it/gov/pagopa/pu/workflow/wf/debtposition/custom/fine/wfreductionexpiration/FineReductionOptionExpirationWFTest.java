@@ -4,7 +4,7 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.custom.fine.DebtPos
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.FineWfExecutionConfig;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.activity.InvokeSyncDebtPositionActivity;
 import it.gov.pagopa.pu.workflow.wf.debtposition.custom.fine.config.DebtPositionFineWfConfig;
@@ -22,6 +22,8 @@ import org.springframework.context.ApplicationContext;
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FineReductionOptionExpirationWFTest {
@@ -35,16 +37,16 @@ class FineReductionOptionExpirationWFTest {
 
   @BeforeEach
   void init() {
-    DebtPositionFineWfConfig configMock = Mockito.mock(DebtPositionFineWfConfig.class);
-    ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+    DebtPositionFineWfConfig configMock = mock(DebtPositionFineWfConfig.class);
+    ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
-    Mockito.when(configMock.buildDebtPositionFineReductionOptionExpirationActivityStub())
+    when(configMock.buildDebtPositionFineReductionOptionExpirationActivityStub())
       .thenReturn(debtPositionFineReductionOptionExpirationActivityMock);
 
-    Mockito.when(configMock.buildInvokeSyncDebtPositionActivityStub())
+    when(configMock.buildInvokeSyncDebtPositionActivityStub())
       .thenReturn(invokeSyncDebtPositionActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(DebtPositionFineWfConfig.class))
+    when(applicationContextMock.getBean(DebtPositionFineWfConfig.class))
       .thenReturn(configMock);
 
     wf = new FineReductionOptionExpirationWFImpl();
@@ -72,7 +74,7 @@ class FineReductionOptionExpirationWFTest {
     FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
     fineWfExecutionConfig.setIoMessages(fineWfMessages);
 
-    Mockito.when(debtPositionFineReductionOptionExpirationActivityMock.handleFineReductionExpiration(debtPositionId))
+    when(debtPositionFineReductionOptionExpirationActivityMock.handleFineReductionExpiration(debtPositionId))
       .thenReturn(debtPositionDTO);
 
     try (
@@ -80,7 +82,7 @@ class FineReductionOptionExpirationWFTest {
       mapperMock.when(() -> FineWfExecutionConfigMapper.mapReductionExpired(fineWfExecutionConfig, debtPositionDTO))
         .thenReturn(wfExecutionConfig);
 
-      Mockito.when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, null, false, wfExecutionConfig))
+      when(invokeSyncDebtPositionActivityMock.synchronizeDPSync(debtPositionDTO, null, false, wfExecutionConfig))
         .thenReturn(expectedResult);
 
       // When
@@ -100,7 +102,7 @@ class FineReductionOptionExpirationWFTest {
     FineWfExecutionConfig fineWfExecutionConfig = new FineWfExecutionConfig();
     fineWfExecutionConfig.setIoMessages(fineWfMessages);
 
-    Mockito.when(debtPositionFineReductionOptionExpirationActivityMock.handleFineReductionExpiration(debtPositionId))
+    when(debtPositionFineReductionOptionExpirationActivityMock.handleFineReductionExpiration(debtPositionId))
       .thenReturn(null);
 
     // When

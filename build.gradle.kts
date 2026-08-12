@@ -60,8 +60,10 @@ repositories {
 
 val springDocOpenApiVersion = "3.0.3"
 val openApiToolsVersion = "0.2.10"
+val httpClientVersion = "5.6.1"
+val httpCoreVersion = "5.4.2"
 val kafkaAppender = "0.2.0-RC2"
-val lz4JavaVersion = "1.11.0"
+val lz4JavaVersion = "1.11.1"
 val springWolfAsyncApiVersion = "1.21.0"
 val springWolfUiAsyncApiVersion = "1.21.0"
 val micrometerVersion = "1.7.0"
@@ -72,7 +74,7 @@ val temporalVersion = "1.35.0"
 val protobufJavaVersion = "4.35.1"
 val grpcBomVersion = "1.82.0"
 val guavaVersion = "33.6.0-jre"
-val postgresJdbcVersion = "42.7.12"
+val postgresJdbcVersion = "42.7.13"
 val podamVersion = "8.0.2.RELEASE"
 val caffeineVersion = "3.2.4"
 val commonsLang3Version = "3.20.0"
@@ -80,7 +82,7 @@ val commonsLang3Version = "3.20.0"
 // Downgrading in order to handle List of enums in SpringDataRest exposed queries (see https://github.com/spring-projects/spring-data-commons/issues/3502)
 val hibernateCoreVersion = "7.1.18.Final"
 
-val p4paActivitiesVersion = "1.203.1"
+val p4paActivitiesVersion = "1.203.2"
 
 val springCloudDepsVersion = "2025.1.2"
 
@@ -135,6 +137,8 @@ dependencies {
     exclude(group = "com.google.protobuf", module = "protobuf-java-util")
     exclude(group = "com.google.guava", module = "guava")
   }
+  implementation("org.apache.httpcomponents.client5:httpclient5:${httpClientVersion}")
+  implementation("org.apache.httpcomponents.core5:httpcore5:${httpCoreVersion}")
   // Temporal
   implementation("io.temporal:temporal-spring-boot-starter:$temporalVersion") {
     exclude(group = "com.google.protobuf", module = "protobuf-java")
@@ -252,7 +256,7 @@ openApiGenerate {
   modelPackage.set("it.gov.pagopa.pu.workflow.dto.generated")
   typeMappings.set(
     mapOf(
-      "DebtPositionDTO" to "it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO",
+      "DebtPositionDTO" to "it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO",
       "IngestionFlowFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.IngestionFlowFile.IngestionFlowFileTypeEnum",
       "ExportFileType" to "it.gov.pagopa.pu.processexecutions.dto.generated.ExportFile.ExportFileTypeEnum",
       "WfExecutionConfig" to "it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.WfExecutionConfig",
@@ -295,7 +299,8 @@ tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("ope
   generatorName.set("java")
   remoteInputSpec.set("https://raw.githubusercontent.com/pagopa/p4pa-doc/refs/heads/main/openapi/$targetEnv/internal/p4pa-registries.generated.openapi.json")
   outputDir.set("$projectDir/build/generated")
-  apiPackage.set("it.gov.pagopa.pu.registries.controller.generated")
+  invokerPackage.set("it.gov.pagopa.pu.registries.generated")
+  apiPackage.set("it.gov.pagopa.pu.registries.client.generated")
   modelPackage.set("it.gov.pagopa.pu.registries.dto.generated")
   configOptions.set(
     mapOf(
