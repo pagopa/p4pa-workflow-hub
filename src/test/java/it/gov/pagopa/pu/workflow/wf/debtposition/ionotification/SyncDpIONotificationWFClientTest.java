@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.ionotification;
 
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentStatus;
 import it.gov.pagopa.pu.debtpositions.dto.generated.SyncCompleteDTO;
@@ -65,7 +66,7 @@ class SyncDpIONotificationWFClientTest {
     String fixedDateTime = "2026-01-21T16:30:00";
     LocalDateTime fixedNow = LocalDateTime.parse(fixedDateTime);
     try (MockedStatic<LocalDateTime> mockedDateTime = Mockito.mockStatic(LocalDateTime.class)) {
-      mockedDateTime.when(LocalDateTime::now).thenReturn(fixedNow);
+      mockedDateTime.when(() -> LocalDateTime.now(Utilities.ZONEID)).thenReturn(fixedNow);
 
       String expectedWorkflowId = String.format("SyncDpIONotificationWF-%s-%s",
         debtPositionDTO.getDebtPositionId(), fixedDateTime);
