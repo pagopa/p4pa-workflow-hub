@@ -42,7 +42,7 @@ licenseReport {
   outputDir = "$projectDir/dependency-licenses"
   filters = arrayOf(SpdxLicenseBundleNormalizer())
 }
-tasks.classes {
+tasks.dependencies {
   finalizedBy(tasks.generateLicenseReport)
 }
 
@@ -60,8 +60,8 @@ repositories {
 
 val springDocOpenApiVersion = "3.0.3"
 val openApiToolsVersion = "0.2.10"
-val httpClientVersion = "5.6.1"
-val httpCoreVersion = "5.4.2"
+val httpClientVersion = "5.6.4"
+val httpCoreVersion = "5.4.3"
 val kafkaAppender = "0.2.0-RC2"
 val lz4JavaVersion = "1.11.1"
 val springWolfAsyncApiVersion = "1.21.0"
@@ -82,7 +82,7 @@ val commonsLang3Version = "3.20.0"
 // Downgrading in order to handle List of enums in SpringDataRest exposed queries (see https://github.com/spring-projects/spring-data-commons/issues/3502)
 val hibernateCoreVersion = "7.1.18.Final"
 
-val p4paActivitiesVersion = "1.203.3"
+val p4paActivitiesVersion = "1.203.4"
 
 val springCloudDepsVersion = "2025.1.2"
 
