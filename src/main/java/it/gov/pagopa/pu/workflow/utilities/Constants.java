@@ -17,6 +17,4 @@ public class Constants {
   public static final String LEGAL_FACT_ID_PREFIX = "safestorage://";
 
   public static final String UNKNOWN_STATION_ID = "UNKNOWN";
-
-  public static final String ON_DEMAND_WORKFLOW_SUFFIX = "ON-DEMAND";
 }
