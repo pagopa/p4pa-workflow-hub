@@ -38,21 +38,21 @@ public class AlignCountersAllCampaignsWFImpl implements AlignCountersAllCampaign
     log.info("Start alignCountersForAllActiveCampaigns workflow, starting from campaign with id {}", idOfLatestAlignedCampaign);
 
     OffsetDateTime newFullRecalculationDate = Utilities.getWorkflowDeterministicOffsetDateTime();
-    List<String> campaignIds = fetchSendCampaignsActivity.fetchSendCampaignIds();
-    int indexOfLatestAlignedCampaign = idOfLatestAlignedCampaign != null ? campaignIds.indexOf(idOfLatestAlignedCampaign) : -1;
-    ListIterator<String> campaignIterator = campaignIds.listIterator(indexOfLatestAlignedCampaign + 1);
+    List<String> allCampaignIds = fetchSendCampaignsActivity.fetchSendCampaignIds();
+    int indexOfLatestAlignedCampaign = idOfLatestAlignedCampaign != null ? allCampaignIds.indexOf(idOfLatestAlignedCampaign) : -1;
+    ListIterator<String> allCampaignIterator = allCampaignIds.listIterator(indexOfLatestAlignedCampaign + 1);
     int activityCounter = 0;
-    while (campaignIterator.hasNext() && activityCounter < THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW) {
+    while (allCampaignIterator.hasNext() && activityCounter < THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW) {
       try {
-        alignSendCampaignActivity.alignSendCampaign(campaignIterator.next(), newFullRecalculationDate);
+        alignSendCampaignActivity.alignSendCampaign(allCampaignIterator.next(), newFullRecalculationDate);
       } catch (Exception e) {
-        log.warn("Something went wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), Utilities.getWorkflowExceptionMessage(e));
+        log.warn("Something went wrong during counters alignment for send campaign with id {}; error message: {}", allCampaignIds.get(allCampaignIterator.previousIndex()), Utilities.getWorkflowExceptionMessage(e));
       } finally {
         activityCounter++;
       }
     }
-    if(campaignIterator.hasNext()) { //if there are more campaigns to be aligned, start a new workflow run
-      Workflow.continueAsNew(campaignIterator.previous()); //start new workflow run from id of latest aligned campaign
+    if(allCampaignIterator.hasNext()) { //if there are more campaigns to be aligned, start a new workflow run
+      Workflow.continueAsNew(allCampaignIterator.previous()); //start new workflow run from id of latest aligned campaign
     }
   }
 

@@ -46,21 +46,21 @@ public class AlignCountersUpdatedCampaignsWFImpl implements AlignCountersUpdated
     if(lastFullRecalculationDate == null) {
       lastFullRecalculationDate = fetchSendCampaignsLastFullRecalculationDateActivity.fetchSendCampaignsLastFullRecalculationDate();
     }
-    List<String> campaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
-    int indexOfLatestAlignedCampaign = idOfLatestAlignedCampaign != null ? campaignIds.indexOf(idOfLatestAlignedCampaign) : -1;
-    ListIterator<String> campaignIterator = campaignIds.listIterator(indexOfLatestAlignedCampaign + 1);
+    List<String> updatedCampaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
+    int indexOfLatestAlignedCampaign = idOfLatestAlignedCampaign != null ? updatedCampaignIds.indexOf(idOfLatestAlignedCampaign) : -1;
+    ListIterator<String> updatedCampaignIterator = updatedCampaignIds.listIterator(indexOfLatestAlignedCampaign + 1);
     int activityCounter = 0;
-    while (campaignIterator.hasNext() && activityCounter < THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW) {
+    while (updatedCampaignIterator.hasNext() && activityCounter < THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW) {
       try {
-        alignSendCampaignActivity.alignSendCampaign(campaignIterator.next(), newFullRecalculationDate);
+        alignSendCampaignActivity.alignSendCampaign(updatedCampaignIterator.next(), newFullRecalculationDate);
       } catch (Exception e) {
-        log.warn("Something went wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), Utilities.getWorkflowExceptionMessage(e));
+        log.warn("Something went wrong during counters alignment for send campaign with id {}; error message: {}", updatedCampaignIds.get(updatedCampaignIterator.previousIndex()), Utilities.getWorkflowExceptionMessage(e));
       } finally {
         activityCounter++;
       }
     }
-    if(campaignIterator.hasNext()) { //if there are more campaigns to be aligned, start a new workflow run
-      Workflow.continueAsNew(lastFullRecalculationDate, newFullRecalculationDate, campaignIterator.previous()); //start new workflow run from id of latest aligned campaign, same lastFullRecalculationDate fix the campaignIds list
+    if(updatedCampaignIterator.hasNext()) { //if there are more campaigns to be aligned, start a new workflow run
+      Workflow.continueAsNew(lastFullRecalculationDate, newFullRecalculationDate, updatedCampaignIterator.previous()); //start new workflow run from id of latest aligned campaign, same lastFullRecalculationDate fix the campaignIds list
     }
   }
 }
