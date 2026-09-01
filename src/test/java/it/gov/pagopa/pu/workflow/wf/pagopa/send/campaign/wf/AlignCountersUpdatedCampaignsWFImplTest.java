@@ -6,7 +6,6 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.FetchS
 import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.FetchUpdatedSendCampaignsActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.config.SendCampaignWfConfig;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,6 +69,7 @@ class AlignCountersUpdatedCampaignsWFImplTest {
     //WHEN
     wf.alignCountersForUpdatedCampaigns(null, null, null);
     //THEN
+    verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
     verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
     verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
     verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
@@ -77,15 +77,19 @@ class AlignCountersUpdatedCampaignsWFImplTest {
   }
 
   @Test
-  void givenNoPreviousAlignmentWhenAlignCountersForUpdatedCampaignsThenThrowException() {
+  void givenNoPreviousAlignmentWhenAlignCountersForUpdatedCampaignsThenSkipAll() {
     //GIVEN
     when(fetchSendCampaignsLastFullRecalculationDateActivityMock.fetchSendCampaignsLastFullRecalculationDate())
       .thenReturn(null);
     //WHEN
-    Assertions.assertThrows(
-      IllegalStateException.class,
-      () -> wf.alignCountersForUpdatedCampaigns(null, null, null)
-    );
+    wf.alignCountersForUpdatedCampaigns(null, null, null);
+    //THEN
+    verify(fetchSendCampaignsLastFullRecalculationDateActivityMock).fetchSendCampaignsLastFullRecalculationDate();
+    verify(fetchUpdatedSendCampaignsActivityMock, times(0)).fetchIdsForUpdatedSendCampaigns(Mockito.any(OffsetDateTime.class));
+    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
+    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
+    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
+    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
   }
 
   @Test
@@ -99,6 +103,7 @@ class AlignCountersUpdatedCampaignsWFImplTest {
     wf.alignCountersForUpdatedCampaigns(lastFullRecalculationDate, newFullRecalculationDate, "1");
     //THEN
     verify(fetchSendCampaignsLastFullRecalculationDateActivityMock, times(0)).fetchSendCampaignsLastFullRecalculationDate();
+    verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
     verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign("0", newFullRecalculationDate);
     verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign("1", newFullRecalculationDate);
     verify(alignSendCampaignActivityMock).alignSendCampaign("2", newFullRecalculationDate);
@@ -151,6 +156,7 @@ class AlignCountersUpdatedCampaignsWFImplTest {
     //WHEN
     wf.alignCountersForUpdatedCampaigns(null, null, null);
     //THEN
+    verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
     verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.isA(OffsetDateTime.class));
     verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.isA(OffsetDateTime.class));
     verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.isA(OffsetDateTime.class));

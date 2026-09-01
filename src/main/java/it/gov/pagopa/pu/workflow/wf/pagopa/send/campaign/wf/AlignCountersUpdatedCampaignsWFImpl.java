@@ -44,8 +44,10 @@ public class AlignCountersUpdatedCampaignsWFImpl implements AlignCountersUpdated
     }
     if(lastFullRecalculationDate == null) {
       lastFullRecalculationDate = fetchSendCampaignsLastFullRecalculationDateActivity.fetchSendCampaignsLastFullRecalculationDate();
-      if(lastFullRecalculationDate == null)
-        throw new IllegalStateException("Cannot run AlignCountersUpdatedCampaignsWF because campaigns have never be aligned before (run AlignCountersAllCampaignsWF before)");
+      if(lastFullRecalculationDate == null) {
+        log.warn("Cannot run AlignCountersUpdatedCampaignsWF because campaigns have never be aligned before (run AlignCountersAllCampaignsWF before)");
+        return;
+      }
     }
     List<String> campaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
     int indexOfLatestAlignedCampaign = idOfLatestAlignedCampaign != null ? campaignIds.indexOf(idOfLatestAlignedCampaign) : -1;
