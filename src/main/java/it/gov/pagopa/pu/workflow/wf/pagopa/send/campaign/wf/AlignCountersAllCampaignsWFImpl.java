@@ -11,6 +11,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -18,7 +19,7 @@ import static it.gov.pagopa.pu.workflow.utilities.Constants.THRESHOLD_TEMPORAL_E
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY)
-public class AlignSendCampaignCountersWFImpl implements AlignSendCampaignCountersWF, ApplicationContextAware {
+public class AlignCountersAllCampaignsWFImpl implements AlignCountersAllCampaignsWF, ApplicationContextAware {
 
   private FetchSendCampaignsActivity fetchSendCampaignsActivity;
   private AlignSendCampaignActivity alignSendCampaignActivity;
@@ -41,14 +42,14 @@ public class AlignSendCampaignCountersWFImpl implements AlignSendCampaignCounter
     int activityCounter = 0;
     while (campaignIterator.hasNext() && activityCounter < THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW) {
       try {
-        alignSendCampaignActivity.alignSendCampaign(campaignIterator.next());
+        alignSendCampaignActivity.alignSendCampaign(campaignIterator.next(), OffsetDateTime.now(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID));
       } catch (Exception e) {
         log.warn("Something when wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), e.getMessage());
       } finally {
         activityCounter++;
       }
     }
-    if(campaignIterator.hasNext()) { //if there are more campaign to be aligned, start a new workflow run
+    if(campaignIterator.hasNext()) { //if there are more campaigns to be aligned, start a new workflow run
       Workflow.continueAsNew(campaignIterator.previous()); //start new workflow run from id of latest aligned campaign
     }
   }

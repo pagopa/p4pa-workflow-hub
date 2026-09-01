@@ -38,7 +38,7 @@ class SendCampaignControllerImplTest {
   private Tracer tracerMock;
 
   @Test
-  void whenAlignSendCampaignCountersThenOk() throws Exception {
+  void whenAlignActiveSendCampaignCountersThenOk() throws Exception {
     //GIVEN
     String workflowId = "workflow-1";
     String accessToken = "ACCESSTOKEN";
@@ -46,7 +46,7 @@ class SendCampaignControllerImplTest {
       .workflowId(workflowId)
       .build();
 
-    when(serviceMock.alignSendCampaignCounters())
+    when(serviceMock.alignActiveSendCampaignCounters())
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -54,7 +54,35 @@ class SendCampaignControllerImplTest {
         .thenReturn(accessToken);
 
       //WHEN
-      MvcResult result = mockMvc.perform(get("/workflowhub/workflow/send-campaign/align-counters"))
+      MvcResult result = mockMvc.perform(get("/workflowhub/workflow/send-campaign/active/align-counters"))
+        .andExpect(status().isOk())
+        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+        .andReturn();
+      //THEN
+      WorkflowCreatedDTO resultResponse =
+        jsonMapper.readValue(result.getResponse().getContentAsString(), WorkflowCreatedDTO.class);
+      assertEquals(expected, resultResponse);
+    }
+  }
+
+  @Test
+  void whenAlignUpdatedSendCampaignCountersThenOk() throws Exception {
+    //GIVEN
+    String workflowId = "workflow-1";
+    String accessToken = "ACCESSTOKEN";
+    WorkflowCreatedDTO expected = WorkflowCreatedDTO.builder()
+      .workflowId(workflowId)
+      .build();
+
+    when(serviceMock.alignUpdatedSendCampaignCounters())
+      .thenReturn(expected);
+
+    try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
+      securityUtilsMockedStatic.when(SecurityUtils::getAccessToken)
+        .thenReturn(accessToken);
+
+      //WHEN
+      MvcResult result = mockMvc.perform(get("/workflowhub/workflow/send-campaign/updated/align-counters"))
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();

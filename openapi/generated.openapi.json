@@ -1835,11 +1835,43 @@
         } ]
       }
     },
-    "/workflowhub/workflow/send-campaign/align-counters" : {
+    "/workflowhub/workflow/send-campaign/updated/align-counters" : {
+      "get" : {
+        "tags" : [ "SendCampaign" ],
+        "description" : "Start counter alignment for updated send campaign.",
+        "operationId" : "alignUpdatedSendCampaignCounters",
+        "responses" : {
+          "201" : {
+            "description" : "Align send campaign counter workflow created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workflowhub/workflow/send-campaign/active/align-counters" : {
       "get" : {
         "tags" : [ "SendCampaign" ],
         "description" : "Start send campaign counter alignment.",
-        "operationId" : "alignSendCampaignCounters",
+        "operationId" : "alignActiveSendCampaignCounters",
         "responses" : {
           "201" : {
             "description" : "Align send campaign counter workflow created successfully",

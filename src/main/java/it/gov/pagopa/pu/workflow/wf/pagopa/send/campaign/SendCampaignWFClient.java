@@ -5,7 +5,8 @@ import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignSendCampaignCountersWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignCountersAllCampaignsWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignCountersUpdatedCampaignsWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,16 +26,29 @@ public class SendCampaignWFClient {
     this.workflowClientService = workflowClientService;
   }
 
-  public WorkflowCreatedDTO startAlignSendCampaignCounters() {
+  public WorkflowCreatedDTO startAlignActiveSendCampaignCounters() {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
     String uuid = UUID.randomUUID().toString();
-    String workflowId = generateWorkflowId(uuid, AlignSendCampaignCountersWF.class);
+    String workflowId = generateWorkflowId(uuid, AlignCountersAllCampaignsWF.class);
 
-    AlignSendCampaignCountersWF workflow = workflowService.buildWorkflowStubToStartNew(
-      AlignSendCampaignCountersWF.class,
+    AlignCountersAllCampaignsWF workflow = workflowService.buildWorkflowStubToStartNew(
+      AlignCountersAllCampaignsWF.class,
       taskQueue,
       workflowId
     );
     return workflowClientService.start(workflow::alignCountersForAllActiveCampaigns, null); //for starting we do not pass any campaignId
+  }
+
+  public WorkflowCreatedDTO startAlignUpdatedSendCampaignCounters() {
+    String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
+    String uuid = UUID.randomUUID().toString();
+    String workflowId = generateWorkflowId(uuid, AlignCountersUpdatedCampaignsWF.class);
+
+    AlignCountersUpdatedCampaignsWF workflow = workflowService.buildWorkflowStubToStartNew(
+      AlignCountersUpdatedCampaignsWF.class,
+      taskQueue,
+      workflowId
+    );
+    return workflowClientService.start(workflow::alignCountersForUpdatedCampaigns, null, null, null); //for starting we do not pass any parameter
   }
 }
