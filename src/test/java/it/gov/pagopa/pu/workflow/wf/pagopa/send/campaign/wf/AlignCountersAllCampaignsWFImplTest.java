@@ -58,13 +58,17 @@ class AlignCountersAllCampaignsWFImplTest {
     //GIVEN
     when(fetchSendCampaignsActivityMock.fetchSendCampaignIds())
       .thenReturn(List.of("0","1","2","3"));
-    //WHEN
-    wf.alignCountersForAllActiveCampaigns(null);
-    //THEN
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> System.currentTimeMillis());
+      //WHEN
+      wf.alignCountersForAllActiveCampaigns(null);
+      //THEN
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
+    }
   }
 
   @Test
@@ -72,11 +76,15 @@ class AlignCountersAllCampaignsWFImplTest {
     //GIVEN
     when(fetchSendCampaignsActivityMock.fetchSendCampaignIds())
       .thenReturn(List.of("0","1","2","3"));
-    //WHEN
-    wf.alignCountersForAllActiveCampaigns("1");
-    //THEN
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> System.currentTimeMillis());
+      //WHEN
+      wf.alignCountersForAllActiveCampaigns("1");
+      //THEN
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
+    }
   }
 
   @Test
@@ -92,6 +100,8 @@ class AlignCountersAllCampaignsWFImplTest {
       .when(alignSendCampaignActivityMock).alignSendCampaign(Mockito.argThat(campaignIdList::contains), Mockito.any(OffsetDateTime.class));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> System.currentTimeMillis());
       //WHEN
       wf.alignCountersForAllActiveCampaigns(null);
       //THEN
@@ -110,12 +120,16 @@ class AlignCountersAllCampaignsWFImplTest {
     doThrow(new RuntimeException("error"))
       .when(alignSendCampaignActivityMock)
       .alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
-    //WHEN
-    wf.alignCountersForAllActiveCampaigns(null);
-    //THEN
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> System.currentTimeMillis());
+      //WHEN
+      wf.alignCountersForAllActiveCampaigns(null);
+      //THEN
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
+    }
   }
 }

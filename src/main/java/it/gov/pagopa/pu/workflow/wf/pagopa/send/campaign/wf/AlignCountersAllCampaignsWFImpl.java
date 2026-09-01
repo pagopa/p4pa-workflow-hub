@@ -5,6 +5,7 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.AlignSendCampaignActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.FetchSendCampaignsActivity;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.config.SendCampaignWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -36,15 +37,16 @@ public class AlignCountersAllCampaignsWFImpl implements AlignCountersAllCampaign
   public void alignCountersForAllActiveCampaigns(String idOfLatestAlignedCampaign) {
     log.info("Start alignCountersForAllActiveCampaigns workflow, starting from campaign with id {}", idOfLatestAlignedCampaign);
 
+    OffsetDateTime newFullRecalculationDate = Utilities.getWorkflowDeterministicOffsetDateTime();
     List<String> campaignIds = fetchSendCampaignsActivity.fetchSendCampaignIds();
     int indexOfLatestAlignedCampaign = idOfLatestAlignedCampaign != null ? campaignIds.indexOf(idOfLatestAlignedCampaign) : -1;
     ListIterator<String> campaignIterator = campaignIds.listIterator(indexOfLatestAlignedCampaign + 1);
     int activityCounter = 0;
     while (campaignIterator.hasNext() && activityCounter < THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW) {
       try {
-        alignSendCampaignActivity.alignSendCampaign(campaignIterator.next(), OffsetDateTime.now(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID));
+        alignSendCampaignActivity.alignSendCampaign(campaignIterator.next(), newFullRecalculationDate);
       } catch (Exception e) {
-        log.warn("Something when wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), e.getMessage());
+        log.warn("Something went wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), Utilities.getWorkflowExceptionMessage(e));
       } finally {
         activityCounter++;
       }

@@ -145,8 +145,8 @@ spring:
             poller-behavior-autoscaling:
               enabled: true
               initial-concurrent-task-pollers: "\${WF_SEND_MEDIUM_PRIORITY_MIN_POLLER_SIZE:1}"
-              min-concurrent-task-pollers: "\${WF_SEND_MEDIUM_MIN_POLLER_SIZE:1}"
-              max-concurrent-task-pollers: "\${WF_SEND_MEDIUM_MAX_POLLER_SIZE:3}"
+              min-concurrent-task-pollers: "\${WF_SEND_MEDIUM_PRIORITY__MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_MEDIUM_PRIORITY_MAX_POLLER_SIZE:3}"
       - task-queue: SendNotificationProcessWF
         capacity:
           workflow-task-pollers-configuration:

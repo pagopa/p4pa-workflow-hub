@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.utilities;
 import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactsIdV20DTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.mapstruct.Named;
@@ -107,5 +108,12 @@ public class Utilities {
 
   public static String extractPolishedLegalFactId(LegalFactsIdV20DTO legalFactId) {
     return legalFactId.getKey().replace(LEGAL_FACT_ID_PREFIX, "");
+  }
+
+  public static OffsetDateTime getWorkflowDeterministicOffsetDateTime() {
+    return OffsetDateTime.ofInstant(
+      Instant.ofEpochSecond(Workflow.currentTimeMillis()),
+      it.gov.pagopa.payhub.activities.util.Utilities.ZONEID
+    );
   }
 }

@@ -66,30 +66,18 @@ class AlignCountersUpdatedCampaignsWFImplTest {
       .thenReturn(lastFullRecalculationDate);
     when(fetchUpdatedSendCampaignsActivityMock.fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate))
       .thenReturn(List.of("0","1","2","3"));
-    //WHEN
-    wf.alignCountersForUpdatedCampaigns(null, null, null);
-    //THEN
-    verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
-  }
-
-  @Test
-  void givenNoPreviousAlignmentWhenAlignCountersForUpdatedCampaignsThenSkipAll() {
-    //GIVEN
-    when(fetchSendCampaignsLastFullRecalculationDateActivityMock.fetchSendCampaignsLastFullRecalculationDate())
-      .thenReturn(null);
-    //WHEN
-    wf.alignCountersForUpdatedCampaigns(null, null, null);
-    //THEN
-    verify(fetchSendCampaignsLastFullRecalculationDateActivityMock).fetchSendCampaignsLastFullRecalculationDate();
-    verify(fetchUpdatedSendCampaignsActivityMock, times(0)).fetchIdsForUpdatedSendCampaigns(Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> System.currentTimeMillis());
+      //WHEN
+      wf.alignCountersForUpdatedCampaigns(null, null, null);
+      //THEN
+      verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.any(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.any(OffsetDateTime.class));
+    }
   }
 
   @Test
@@ -99,15 +87,19 @@ class AlignCountersUpdatedCampaignsWFImplTest {
     OffsetDateTime newFullRecalculationDate = OffsetDateTime.now(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID);
     when(fetchUpdatedSendCampaignsActivityMock.fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate))
       .thenReturn(List.of("0","1","2","3"));
-    //WHEN
-    wf.alignCountersForUpdatedCampaigns(lastFullRecalculationDate, newFullRecalculationDate, "1");
-    //THEN
-    verify(fetchSendCampaignsLastFullRecalculationDateActivityMock, times(0)).fetchSendCampaignsLastFullRecalculationDate();
-    verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
-    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign("0", newFullRecalculationDate);
-    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign("1", newFullRecalculationDate);
-    verify(alignSendCampaignActivityMock).alignSendCampaign("2", newFullRecalculationDate);
-    verify(alignSendCampaignActivityMock).alignSendCampaign("3", newFullRecalculationDate);
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> System.currentTimeMillis());
+      //WHEN
+      wf.alignCountersForUpdatedCampaigns(lastFullRecalculationDate, newFullRecalculationDate, "1");
+      //THEN
+      verify(fetchSendCampaignsLastFullRecalculationDateActivityMock, times(0)).fetchSendCampaignsLastFullRecalculationDate();
+      verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
+      verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign("0", newFullRecalculationDate);
+      verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign("1", newFullRecalculationDate);
+      verify(alignSendCampaignActivityMock).alignSendCampaign("2", newFullRecalculationDate);
+      verify(alignSendCampaignActivityMock).alignSendCampaign("3", newFullRecalculationDate);
+    }
   }
 
   @Test
@@ -126,6 +118,8 @@ class AlignCountersUpdatedCampaignsWFImplTest {
       .when(alignSendCampaignActivityMock).alignSendCampaign(Mockito.argThat(campaignIdList::contains), Mockito.any(OffsetDateTime.class));
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> System.currentTimeMillis());
       //WHEN
       wf.alignCountersForUpdatedCampaigns(null, null, null);
       //THEN
@@ -153,13 +147,17 @@ class AlignCountersUpdatedCampaignsWFImplTest {
     doThrow(new RuntimeException("error"))
       .when(alignSendCampaignActivityMock)
       .alignSendCampaign(Mockito.eq("2"), Mockito.isA(OffsetDateTime.class));
-    //WHEN
-    wf.alignCountersForUpdatedCampaigns(null, null, null);
-    //THEN
-    verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.isA(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.isA(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.isA(OffsetDateTime.class));
-    verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.isA(OffsetDateTime.class));
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> System.currentTimeMillis());
+      //WHEN
+      wf.alignCountersForUpdatedCampaigns(null, null, null);
+      //THEN
+      verify(fetchUpdatedSendCampaignsActivityMock).fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("0"), Mockito.isA(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("1"), Mockito.isA(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("2"), Mockito.isA(OffsetDateTime.class));
+      verify(alignSendCampaignActivityMock).alignSendCampaign(Mockito.eq("3"), Mockito.isA(OffsetDateTime.class));
+    }
   }
 }

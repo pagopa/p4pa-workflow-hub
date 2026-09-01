@@ -54,7 +54,7 @@ class SendCampaignControllerImplTest {
         .thenReturn(accessToken);
 
       //WHEN
-      MvcResult result = mockMvc.perform(get("/workflowhub/workflow/send-campaign/active/align-counters"))
+      MvcResult result = mockMvc.perform(get("/workflowhub/workflow/send-campaign/align-counters/all-campaigns"))
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();
@@ -82,7 +82,7 @@ class SendCampaignControllerImplTest {
         .thenReturn(accessToken);
 
       //WHEN
-      MvcResult result = mockMvc.perform(get("/workflowhub/workflow/send-campaign/updated/align-counters"))
+      MvcResult result = mockMvc.perform(get("/workflowhub/workflow/send-campaign/align-counters/updated-campaigns"))
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
         .andReturn();

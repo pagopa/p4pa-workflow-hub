@@ -10,8 +10,7 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignCountersUpdated
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
+import static it.gov.pagopa.pu.workflow.utilities.Constants.ON_DEMAND_WORKFLOW_SUFFIX;
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Slf4j
@@ -28,8 +27,7 @@ public class SendCampaignWFClient {
 
   public WorkflowCreatedDTO startAlignActiveSendCampaignCounters() {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
-    String uuid = UUID.randomUUID().toString();
-    String workflowId = generateWorkflowId(uuid, AlignCountersAllCampaignsWF.class);
+    String workflowId = generateWorkflowId(ON_DEMAND_WORKFLOW_SUFFIX, AlignCountersAllCampaignsWF.class);
 
     AlignCountersAllCampaignsWF workflow = workflowService.buildWorkflowStubToStartNew(
       AlignCountersAllCampaignsWF.class,
@@ -41,8 +39,7 @@ public class SendCampaignWFClient {
 
   public WorkflowCreatedDTO startAlignUpdatedSendCampaignCounters() {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
-    String uuid = UUID.randomUUID().toString();
-    String workflowId = generateWorkflowId(uuid, AlignCountersUpdatedCampaignsWF.class);
+    String workflowId = generateWorkflowId(ON_DEMAND_WORKFLOW_SUFFIX, AlignCountersUpdatedCampaignsWF.class);
 
     AlignCountersUpdatedCampaignsWF workflow = workflowService.buildWorkflowStubToStartNew(
       AlignCountersUpdatedCampaignsWF.class,

@@ -6,6 +6,7 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.AlignS
 import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.FetchSendCampaignsLastFullRecalculationDateActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.campaign.FetchUpdatedSendCampaignsActivity;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.config.SendCampaignWfConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -40,14 +41,10 @@ public class AlignCountersUpdatedCampaignsWFImpl implements AlignCountersUpdated
     log.info("Start alignCountersForUpdatedCampaigns workflow");
 
     if(newFullRecalculationDate == null) {
-      newFullRecalculationDate = OffsetDateTime.now(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID);
+      newFullRecalculationDate = Utilities.getWorkflowDeterministicOffsetDateTime();
     }
     if(lastFullRecalculationDate == null) {
       lastFullRecalculationDate = fetchSendCampaignsLastFullRecalculationDateActivity.fetchSendCampaignsLastFullRecalculationDate();
-      if(lastFullRecalculationDate == null) {
-        log.warn("Cannot run AlignCountersUpdatedCampaignsWF because campaigns have never be aligned before (run AlignCountersAllCampaignsWF before)");
-        return;
-      }
     }
     List<String> campaignIds = fetchUpdatedSendCampaignsActivity.fetchIdsForUpdatedSendCampaigns(lastFullRecalculationDate);
     int indexOfLatestAlignedCampaign = idOfLatestAlignedCampaign != null ? campaignIds.indexOf(idOfLatestAlignedCampaign) : -1;
@@ -57,7 +54,7 @@ public class AlignCountersUpdatedCampaignsWFImpl implements AlignCountersUpdated
       try {
         alignSendCampaignActivity.alignSendCampaign(campaignIterator.next(), newFullRecalculationDate);
       } catch (Exception e) {
-        log.warn("Something when wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), e.getMessage());
+        log.warn("Something went wrong during counters alignment for send campaign with id {}; error message: {}", campaignIds.get(campaignIterator.previousIndex()), Utilities.getWorkflowExceptionMessage(e));
       } finally {
         activityCounter++;
       }
