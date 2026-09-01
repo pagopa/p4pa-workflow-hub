@@ -80,7 +80,7 @@ class AlignCountersAllCampaignsWFImplTest {
   }
 
   @Test
-  void givenMoreThenThresholdWhenAlignCountersForActiveCampaignsThenContinueAsNew() {
+  void givenMoreThenThresholdWhenAlignCountersForAllActiveCampaignsThenContinueAsNew() {
     //GIVEN
     List<String> campaignIdList =
       IntStream.rangeClosed(1, THRESHOLD_TEMPORAL_EVENTS_BEFORE_CONTINUE_AS_NEW + 1)
