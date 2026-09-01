@@ -54,7 +54,7 @@ class AlignCountersAllCampaignsWFImplTest {
   }
 
   @Test
-  void givenNoIdOfLatestAlignedCampaignWhenAlignCountersForAllActiveCampaignsThenAlign() {
+  void givenNoIdOfLatestAlignedCampaignWhenAlignCountersForAllActiveCampaignsThenAlignAll() {
     //GIVEN
     when(fetchSendCampaignsActivityMock.fetchSendCampaignIds())
       .thenReturn(List.of("0","1","2","3"));
