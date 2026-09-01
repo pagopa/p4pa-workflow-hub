@@ -98,9 +98,9 @@ class AlignCountersUpdatedCampaignsWFImplTest {
     //WHEN
     wf.alignCountersForUpdatedCampaigns(lastFullRecalculationDate, newFullRecalculationDate, "1");
     //THEN
-    verify(fetchSendCampaignsLastFullRecalculationDateActivityMock, Mockito.times(0)).fetchSendCampaignsLastFullRecalculationDate();
-    verify(alignSendCampaignActivityMock, Mockito.times(0)).alignSendCampaign("0", newFullRecalculationDate);
-    verify(alignSendCampaignActivityMock, Mockito.times(0)).alignSendCampaign("1", newFullRecalculationDate);
+    verify(fetchSendCampaignsLastFullRecalculationDateActivityMock, times(0)).fetchSendCampaignsLastFullRecalculationDate();
+    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign("0", newFullRecalculationDate);
+    verify(alignSendCampaignActivityMock, times(0)).alignSendCampaign("1", newFullRecalculationDate);
     verify(alignSendCampaignActivityMock).alignSendCampaign("2", newFullRecalculationDate);
     verify(alignSendCampaignActivityMock).alignSendCampaign("3", newFullRecalculationDate);
   }
