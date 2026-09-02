@@ -260,7 +260,7 @@ public class UtilitiesTest {
       .toOffsetDateTime();
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(Workflow::currentTimeMillis)
-        .then(invocation -> expectedWorkflowDeterministicOffsetDateTime.toInstant().getEpochSecond());
+        .then(invocation -> expectedWorkflowDeterministicOffsetDateTime.toInstant().toEpochMilli());
       //WHEN
       OffsetDateTime actualWorkflowDeterministicOffsetDateTime = Utilities.getWorkflowDeterministicOffsetDateTime();
       //THEN

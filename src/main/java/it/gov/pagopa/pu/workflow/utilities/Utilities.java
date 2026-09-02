@@ -112,7 +112,7 @@ public class Utilities {
 
   public static OffsetDateTime getWorkflowDeterministicOffsetDateTime() {
     return OffsetDateTime.ofInstant(
-      Instant.ofEpochSecond(Workflow.currentTimeMillis()),
+      Instant.ofEpochMilli(Workflow.currentTimeMillis()),
       it.gov.pagopa.payhub.activities.util.Utilities.ZONEID
     );
   }
