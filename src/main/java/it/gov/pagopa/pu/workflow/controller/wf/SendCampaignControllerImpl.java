@@ -19,9 +19,16 @@ public class SendCampaignControllerImpl implements SendCampaignApi {
   }
 
   @Override
-  public ResponseEntity<WorkflowCreatedDTO> alignSendCampaignCounters() {
-    log.info("Starting send campaign counters alignment process");
-    WorkflowCreatedDTO workflowCreatedDTO = service.alignSendCampaignCounters();
+  public ResponseEntity<WorkflowCreatedDTO> alignAllSendCampaignCounters() {
+    log.info("Starting active send campaign counters alignment process");
+    WorkflowCreatedDTO workflowCreatedDTO = service.alignActiveSendCampaignCounters();
+    return new ResponseEntity<>(workflowCreatedDTO, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<WorkflowCreatedDTO> alignUpdatedSendCampaignCounters() {
+    log.info("Starting updated send campaign counters alignment process");
+    WorkflowCreatedDTO workflowCreatedDTO = service.alignUpdatedSendCampaignCounters();
     return new ResponseEntity<>(workflowCreatedDTO, HttpStatus.OK);
   }
 }

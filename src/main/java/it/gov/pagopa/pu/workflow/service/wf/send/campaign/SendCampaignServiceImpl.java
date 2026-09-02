@@ -16,8 +16,13 @@ public class SendCampaignServiceImpl implements SendCampaignService {
   }
 
   @Override
-  public WorkflowCreatedDTO alignSendCampaignCounters() {
-    return sendCampaignWFClient.startAlignSendCampaignCounters();
+  public WorkflowCreatedDTO alignActiveSendCampaignCounters() {
+    return sendCampaignWFClient.startAlignActiveSendCampaignCounters();
+  }
+
+  @Override
+  public WorkflowCreatedDTO alignUpdatedSendCampaignCounters() {
+    return sendCampaignWFClient.startAlignUpdatedSendCampaignCounters();
   }
 
 }
