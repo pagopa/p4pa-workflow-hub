@@ -35,18 +35,36 @@ class SendCampaignServiceImplTest {
   }
 
   @Test
-  void whenAlignSendCampaignCountersThenOk() {
+  void whenAlignActiveSendCampaignCountersThenOk() {
     // Given
     WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
       .workflowId("WFID")
       .runId("RUNID")
       .build();
 
-    when(sendCampaignWFClientMock.startAlignSendCampaignCounters())
+    when(sendCampaignWFClientMock.startAlignActiveSendCampaignCounters())
       .thenReturn(expectedResult);
 
     // When
-    WorkflowCreatedDTO result = sendCampaignService.alignSendCampaignCounters();
+    WorkflowCreatedDTO result = sendCampaignService.alignActiveSendCampaignCounters();
+
+    // Then
+    Assertions.assertEquals(expectedResult, result);
+  }
+
+  @Test
+  void whenAlignUpdatedSendCampaignCountersThenOk() {
+    // Given
+    WorkflowCreatedDTO expectedResult = WorkflowCreatedDTO.builder()
+      .workflowId("WFID")
+      .runId("RUNID")
+      .build();
+
+    when(sendCampaignWFClientMock.startAlignUpdatedSendCampaignCounters())
+      .thenReturn(expectedResult);
+
+    // When
+    WorkflowCreatedDTO result = sendCampaignService.alignUpdatedSendCampaignCounters();
 
     // Then
     Assertions.assertEquals(expectedResult, result);
