@@ -1,15 +1,12 @@
 package it.gov.pagopa.pu.workflow.event.dataevents.producer;
 
 import it.gov.pagopa.payhub.activities.dto.assessments.AssessmentEventDTO;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.workflow.dto.ExportDataDTO;
 import it.gov.pagopa.pu.workflow.dto.IngestionDataDTO;
 import it.gov.pagopa.pu.workflow.enums.DataEventType;
 import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventDTO;
 import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import java.time.OffsetDateTime;
-import java.util.UUID;
-import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +15,10 @@ import org.springframework.integration.support.MessageBuilder;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+import java.util.function.Supplier;
 
 @Component
 public class DataEventsProducerService {
@@ -64,7 +65,7 @@ public class DataEventsProducerService {
           .eventId(eventId)
           .traceId(Utilities.getTraceId())
           .eventType(dataEventRequest.getDataEventType())
-          .eventDateTime(OffsetDateTime.now())
+          .eventDateTime(OffsetDateTime.now(Utilities.ZONEID))
           .payload(payload)
           .eventDescription(dataEventRequest.getEventDescription())
           .build())

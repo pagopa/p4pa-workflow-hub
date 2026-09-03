@@ -23,18 +23,22 @@ import java.util.*;
 @Slf4j
 public class TestUtils {
 
-  private TestUtils() {
-  }
+  private TestUtils() {}
 
   static {
     clearDefaultTimezone();
+    clearLocale();
   }
 
   public static void clearDefaultTimezone() {
     TimeZone.setDefault(Utilities.DEFAULT_TIMEZONE);
   }
 
-  public static final LocalDate DATE = LocalDate.of(2024, 5, 15);
+  public static void clearLocale() {
+    Locale.setDefault(Locale.ITALY);
+  }
+
+  public static final LocalDate DATE = LocalDate.of(2024, Month.MAY, 15);
   public static final LocalDateTime DATETIME = LocalDateTime.of(DATE, LocalTime.of(10, 30, 0));
   public static final OffsetDateTime OFFSET_DATE_TIME = DATETIME.atZone(ZoneId.systemDefault()).toOffsetDateTime();
 

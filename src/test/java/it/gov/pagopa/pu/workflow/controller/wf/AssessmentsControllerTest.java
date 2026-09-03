@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +33,8 @@ class AssessmentsControllerTest {
 
   @MockitoBean
   private CreateAssessmentsWFClient createAssessmentsWFClientMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenCreateAssessmentsProcessThenOk() throws Exception {
@@ -43,7 +47,7 @@ class AssessmentsControllerTest {
       .runId(runId)
       .build();
 
-    Mockito.when(createAssessmentsWFClientMock.createAssessments(receiptId))
+    when(createAssessmentsWFClientMock.createAssessments(receiptId))
       .thenReturn(expected);
 
     try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {

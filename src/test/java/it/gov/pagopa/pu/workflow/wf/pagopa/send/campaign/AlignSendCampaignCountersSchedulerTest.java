@@ -5,8 +5,8 @@ import it.gov.pagopa.pu.workflow.enums.ScheduleEnum;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowScheduleService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignSendCampaignCountersWF;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignSendCampaignCountersWFImpl;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignCountersUpdatedCampaignsWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.campaign.wf.AlignCountersUpdatedCampaignsWFImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class AlignSendCampaignCountersSchedulerTest {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_MEDIUM_PRIORITY;
     when(workflowScheduleServiceMock.schedule(
         ScheduleEnum.ALIGN_SEND_CAMPAIGN_COUNTERS,
-        AlignSendCampaignCountersWF.class,
+        AlignCountersUpdatedCampaignsWF.class,
         taskQueue,
         cronExpression,
         new Object[1]
@@ -52,6 +52,6 @@ class AlignSendCampaignCountersSchedulerTest {
     // Then
     Assertions.assertSame(expectedResult, result);
 
-    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, AlignSendCampaignCountersWFImpl.class);
+    TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, AlignCountersUpdatedCampaignsWFImpl.class);
   }
 }

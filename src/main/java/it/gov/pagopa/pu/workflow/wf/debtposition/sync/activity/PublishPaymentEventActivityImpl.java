@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;

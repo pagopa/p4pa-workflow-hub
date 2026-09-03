@@ -1,6 +1,6 @@
 package it.gov.pagopa.pu.workflow.exception.custom;
 
-import it.gov.pagopa.payhub.activities.exception.BaseBusinessException;
+import it.gov.pagopa.payhub.activities.exception.common.BaseBusinessException;
 
 /**
  * A custom exception that represents an invalid or missing execution config related to workflows and extends {@link RuntimeException}.

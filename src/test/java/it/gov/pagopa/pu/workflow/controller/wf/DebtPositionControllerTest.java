@@ -1,10 +1,11 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,6 +45,8 @@ class DebtPositionControllerTest {
 
   @MockitoBean
   private DebtPositionService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenSyncDebtPositionThenOk() throws Exception {
@@ -61,7 +65,7 @@ class DebtPositionControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(serviceMock.syncDebtPosition(debtPositionRequestDTO, paymentEventRequest, new WfExecutionParameters(true, false, executionConfig), accessToken))
+    when(serviceMock.syncDebtPosition(debtPositionRequestDTO, paymentEventRequest, new WfExecutionParameters(true, false, executionConfig), accessToken))
       .thenReturn(expected);
 
     try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -95,7 +99,7 @@ class DebtPositionControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(serviceMock.syncDebtPosition(debtPositionRequestDTO, null, new WfExecutionParameters(false, false, null), accessToken))
+    when(serviceMock.syncDebtPosition(debtPositionRequestDTO, null, new WfExecutionParameters(false, false, null), accessToken))
       .thenReturn(expected);
 
     try(MockedStatic<SecurityUtils> securityUtilsMockedStatic = Mockito.mockStatic(SecurityUtils.class)) {
@@ -124,7 +128,7 @@ class DebtPositionControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(serviceMock.checkDpExpiration(debtPositionId)).thenReturn(expected);
+    when(serviceMock.checkDpExpiration(debtPositionId)).thenReturn(expected);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/workflow/debt-position/{debtPositionId}/check-expiration", debtPositionId)
         .contentType(MediaType.APPLICATION_JSON))
@@ -150,7 +154,7 @@ class DebtPositionControllerTest {
       .workflowId(workflowId)
       .build();
 
-    Mockito.when(serviceMock.massiveIbanUpdate(orgId, requestDTO)).thenReturn(expected);
+    when(serviceMock.massiveIbanUpdate(orgId, requestDTO)).thenReturn(expected);
 
     MvcResult result = mockMvc.perform(post("/workflowhub/workflow/debt-position/{orgId}/massive-iban-update", orgId)
         .contentType(MediaType.APPLICATION_JSON)

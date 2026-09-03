@@ -4,8 +4,8 @@ import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.classifications.TransferClassificationActivity;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferClassifyDTO;
 import it.gov.pagopa.payhub.activities.dto.classifications.TransferSemanticKeyDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentNoPII;
-import it.gov.pagopa.pu.debtposition.dto.generated.Transfer;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentNoPII;
+import it.gov.pagopa.pu.debtpositions.dto.generated.Transfer;
 import it.gov.pagopa.pu.workflow.utils.TestUtils;
 import it.gov.pagopa.pu.workflow.wf.classification.assessments.activity.StartAssessmentClassificationActivity;
 import it.gov.pagopa.pu.workflow.wf.classification.transfer.config.TransferClassificationWfConfig;
@@ -19,11 +19,11 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
-
-import java.util.function.Supplier;
 import uk.co.jemos.podam.api.PodamFactory;
 
-import static org.mockito.Mockito.when;
+import java.util.function.Supplier;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransferClassificationWFImplTest {
@@ -39,8 +39,8 @@ class TransferClassificationWFImplTest {
 
   @BeforeEach
   void setUp() {
-    TransferClassificationWfConfig transferClassificationWfConfig = Mockito.mock(TransferClassificationWfConfig.class);
-    ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+    TransferClassificationWfConfig transferClassificationWfConfig = mock(TransferClassificationWfConfig.class);
+    ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
     when(applicationContextMock.getBean(TransferClassificationWfConfig.class))
       .thenReturn(transferClassificationWfConfig);
@@ -77,17 +77,17 @@ class TransferClassificationWFImplTest {
       .transfer(transfer).build();
     try(MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(Workflow::isEveryHandlerFinished).thenReturn(true);
-      Mockito.when(transferClassificationActivityMock.classifyTransfer(semanticKeyDTO)).thenReturn(expectedResult);
+      when(transferClassificationActivityMock.classifyTransfer(semanticKeyDTO)).thenReturn(expectedResult);
       wf.classify();
 
       workflowMock.verify(() -> Workflow.await(Mockito.argThat(Supplier::get)));
 
-      Mockito.verify(transferClassificationActivityMock).classifyTransfer(semanticKeyDTO);
-      Mockito.verify(transferClassificationActivityMock)
+      verify(transferClassificationActivityMock).classifyTransfer(semanticKeyDTO);
+      verify(transferClassificationActivityMock)
         .classifyTransfer(new TransferSemanticKeyDTO(2L, "iuv1", "iur1", 1));
-      Mockito.verify(transferClassificationActivityMock)
+      verify(transferClassificationActivityMock)
         .classifyTransfer(new TransferSemanticKeyDTO(2L, "iuv2", "iur2", 2));
-      Mockito.verify(startAssessmentClassificationActivityMock)
+      verify(startAssessmentClassificationActivityMock)
         .signalAssessmentClassificationWithStart(1L, "IUV", "IUD");
     }
   }
@@ -106,13 +106,13 @@ class TransferClassificationWFImplTest {
 
     try(MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(Workflow::isEveryHandlerFinished).thenReturn(true);
-      Mockito.when(transferClassificationActivityMock.classifyTransfer(semanticKeyDTO)).thenReturn(expectedResult);
+      when(transferClassificationActivityMock.classifyTransfer(semanticKeyDTO)).thenReturn(expectedResult);
       wf.classify();
 
       workflowMock.verify(() -> Workflow.await(Mockito.argThat(Supplier::get)));
 
-      Mockito.verify(transferClassificationActivityMock).classifyTransfer(semanticKeyDTO);
-      Mockito.verify(startAssessmentClassificationActivityMock, Mockito.never())
+      verify(transferClassificationActivityMock).classifyTransfer(semanticKeyDTO);
+      verify(startAssessmentClassificationActivityMock, never())
         .signalAssessmentClassificationWithStart(Mockito.anyLong(), Mockito.anyString(), Mockito.anyString());
     }
   }

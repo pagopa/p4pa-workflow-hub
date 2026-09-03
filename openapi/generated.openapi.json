@@ -1835,14 +1835,46 @@
         } ]
       }
     },
-    "/workflowhub/workflow/send-campaign/align-counters" : {
+    "/workflowhub/workflow/send-campaign/align-counters/updated-campaigns" : {
+      "get" : {
+        "tags" : [ "SendCampaign" ],
+        "description" : "Start counter alignment for updated send campaign.",
+        "operationId" : "alignUpdatedSendCampaignCounters",
+        "responses" : {
+          "201" : {
+            "description" : "Align updated send campaign counter workflow created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowCreatedDTO"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/WorkflowErrorDTO"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/workflowhub/workflow/send-campaign/align-counters/all-campaigns" : {
       "get" : {
         "tags" : [ "SendCampaign" ],
         "description" : "Start send campaign counter alignment.",
-        "operationId" : "alignSendCampaignCounters",
+        "operationId" : "alignAllSendCampaignCounters",
         "responses" : {
           "201" : {
-            "description" : "Align send campaign counter workflow created successfully",
+            "description" : "Align active send campaign counter workflow created successfully",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -2098,17 +2130,6 @@
           }
         }
       },
-      "WfExecutionConfig" : {
-        "type" : "object",
-        "properties" : {
-          "workflowTypeName" : {
-            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
-          }
-        },
-        "discriminator" : {
-          "propertyName" : "workflowTypeName"
-        }
-      },
       "PageMetadata" : {
         "type" : "object",
         "properties" : {
@@ -2128,6 +2149,17 @@
             "type" : "integer",
             "format" : "int64"
           }
+        }
+      },
+      "WfExecutionConfig" : {
+        "type" : "object",
+        "properties" : {
+          "workflowTypeName" : {
+            "$ref" : "#/components/schemas/DebtPositionSyncWfName"
+          }
+        },
+        "discriminator" : {
+          "propertyName" : "workflowTypeName"
         }
       },
       "WorkflowTypeOrg" : {
@@ -2276,12 +2308,26 @@
             "type" : "string",
             "nullable" : true
           }
-        },
-        "nullable" : true
+        }
       },
       "CategoryEnum" : {
         "type" : "string",
         "enum" : [ "WORKFLOW_INGESTION_FLOW_FILE_NOT_SUPPORTED", "WORKFLOW_FORBIDDEN", "WORKFLOW_UNAUTHORIZED", "WORKFLOW_CONFLICT", "WORKFLOW_NOT_FOUND", "WORKFLOW_BAD_REQUEST", "WORKFLOW_GENERIC_ERROR", "WORKFLOW_INVALID_SYNC_DP_WF_EXECUTION_CONFIG", "WORKFLOW_REQUEST_TIMEOUT", "WORKFLOW_TOO_MANY_REQUESTS" ]
+      },
+      "ErrorFieldDTO" : {
+        "required" : [ "error", "field", "message" ],
+        "type" : "object",
+        "properties" : {
+          "field" : {
+            "type" : "string"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
       },
       "WorkflowErrorDTO" : {
         "required" : [ "category", "code", "message" ],
@@ -2295,6 +2341,12 @@
           },
           "message" : {
             "type" : "string"
+          },
+          "fields" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ErrorFieldDTO"
+            }
           },
           "traceId" : {
             "type" : "string",
@@ -2596,8 +2648,7 @@
             "type" : "string",
             "nullable" : true
           }
-        },
-        "nullable" : true
+        }
       },
       "PaymentOptionDTO" : {
         "required" : [ "installments", "paymentOptionType", "totalAmountCents" ],
@@ -2906,6 +2957,28 @@
           }
         }
       },
+      "PagedModelWorkflowTypeOrg" : {
+        "type" : "object",
+        "properties" : {
+          "_embedded" : {
+            "type" : "object",
+            "properties" : {
+              "workflowTypeOrgs" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
+                }
+              }
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/Links"
+          },
+          "page" : {
+            "$ref" : "#/components/schemas/PageMetadata"
+          }
+        }
+      },
       "WorkflowType" : {
         "required" : [ "defaultExecutionConfig", "description" ],
         "type" : "object",
@@ -3008,28 +3081,6 @@
                 "type" : "array",
                 "items" : {
                   "$ref" : "#/components/schemas/DebtPositionWorkflowType"
-                }
-              }
-            }
-          },
-          "_links" : {
-            "$ref" : "#/components/schemas/Links"
-          },
-          "page" : {
-            "$ref" : "#/components/schemas/PageMetadata"
-          }
-        }
-      },
-      "PagedModelWorkflowTypeOrg" : {
-        "type" : "object",
-        "properties" : {
-          "_embedded" : {
-            "type" : "object",
-            "properties" : {
-              "workflowTypeOrgs" : {
-                "type" : "array",
-                "items" : {
-                  "$ref" : "#/components/schemas/WorkflowTypeOrg"
                 }
               }
             }

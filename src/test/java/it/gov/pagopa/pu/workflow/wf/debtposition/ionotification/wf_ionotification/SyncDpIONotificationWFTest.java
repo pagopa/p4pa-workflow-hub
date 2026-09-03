@@ -4,9 +4,9 @@ import it.gov.pagopa.payhub.activities.activity.debtposition.ionotification.IONo
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.wf.debtposition.ionotification.config.SyncDpIONotificationWFConfig;
@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SyncDpIONotificationWFTest {
@@ -39,15 +41,15 @@ class SyncDpIONotificationWFTest {
 
   @BeforeEach
   void init() {
-    SyncDpIONotificationWFConfig configMock = Mockito.mock(SyncDpIONotificationWFConfig.class);
-    ApplicationContext applicationContextMock = Mockito.mock(ApplicationContext.class);
+    SyncDpIONotificationWFConfig configMock = mock(SyncDpIONotificationWFConfig.class);
+    ApplicationContext applicationContextMock = mock(ApplicationContext.class);
 
-    Mockito.when(configMock.buildIoNotificationDebtPositionActivityStub())
+    when(configMock.buildIoNotificationDebtPositionActivityStub())
       .thenReturn(ioNotificationDebtPositionActivityMock);
-    Mockito.when(configMock.buildPublishPaymentEventActivityStub())
+    when(configMock.buildPublishPaymentEventActivityStub())
       .thenReturn(publishPaymentEventActivityMock);
 
-    Mockito.when(applicationContextMock.getBean(SyncDpIONotificationWFConfig.class))
+    when(applicationContextMock.getBean(SyncDpIONotificationWFConfig.class))
       .thenReturn(configMock);
 
     wf = new SyncDpIONotificationWFImpl();
@@ -78,7 +80,7 @@ class SyncDpIONotificationWFTest {
       .messages(List.of(new DebtPositionIoNotificationDTO.IoMessage()))
       .build();
 
-    Mockito.when(ioNotificationDebtPositionActivityMock.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage))
+    when(ioNotificationDebtPositionActivityMock.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage))
       .thenReturn(debtPositionIoNotificationDTO);
 
     Mockito.doNothing().when(publishPaymentEventActivityMock)
@@ -97,7 +99,7 @@ class SyncDpIONotificationWFTest {
     GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessage =
       new GenericWfExecutionConfig.IONotificationBaseOpsMessages(new IONotificationMessage("subject", "message"), null, null);
 
-    Mockito.when(ioNotificationDebtPositionActivityMock.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage))
+    when(ioNotificationDebtPositionActivityMock.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage))
       .thenReturn(null);
 
     // When & Then

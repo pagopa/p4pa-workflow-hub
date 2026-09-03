@@ -3,10 +3,10 @@ package it.gov.pagopa.pu.workflow.utilities;
 import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactsIdV20DTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.mapstruct.Named;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -66,10 +66,6 @@ public class Utilities {
     return offsetDateTime != null ? offsetDateTime.toLocalDateTime() : null;
   }
 
-  public static String getTraceId() {
-    return MDC.get("traceId");
-  }
-
   public static OffsetDateTime protobufTimestamp2OffsetDateTime(Timestamp ts) {
     if (ts.getSeconds() > 0) {
       return Instant.ofEpochSecond(ts.getSeconds(), ts.getNanos()).atZone(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID).toOffsetDateTime();
@@ -112,5 +108,12 @@ public class Utilities {
 
   public static String extractPolishedLegalFactId(LegalFactsIdV20DTO legalFactId) {
     return legalFactId.getKey().replace(LEGAL_FACT_ID_PREFIX, "");
+  }
+
+  public static OffsetDateTime getWorkflowDeterministicOffsetDateTime() {
+    return OffsetDateTime.ofInstant(
+      Instant.ofEpochMilli(Workflow.currentTimeMillis()),
+      it.gov.pagopa.payhub.activities.util.Utilities.ZONEID
+    );
   }
 }

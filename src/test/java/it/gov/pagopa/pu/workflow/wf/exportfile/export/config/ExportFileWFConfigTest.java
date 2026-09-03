@@ -1,6 +1,8 @@
 package it.gov.pagopa.pu.workflow.wf.exportfile.export.config;
 
 import it.gov.pagopa.pu.workflow.utils.TemporalTestUtils;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.NotifyExportActivity;
+import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.NotifyExportActivityImpl;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivity;
 import it.gov.pagopa.pu.workflow.wf.exportfile.export.activity.ScheduleExportFileExpirationActivityImpl;
 import org.junit.jupiter.api.Test;
@@ -13,7 +15,8 @@ class ExportFileWFConfigTest {
   private final ExportFileWFConfig config = new ExportFileWFConfig();
 
   private final Map<Class<?>, Class<?>> localActivityInterface2Impl = Map.of(
-    ScheduleExportFileExpirationActivity.class, ScheduleExportFileExpirationActivityImpl.class
+    ScheduleExportFileExpirationActivity.class, ScheduleExportFileExpirationActivityImpl.class,
+    NotifyExportActivity.class, NotifyExportActivityImpl.class
   );
 
   @Test

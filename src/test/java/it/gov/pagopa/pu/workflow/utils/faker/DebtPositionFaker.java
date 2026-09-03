@@ -1,8 +1,8 @@
 package it.gov.pagopa.pu.workflow.utils.faker;
 
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionOrigin;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionOrigin;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionStatus;
 
 import java.util.List;
 

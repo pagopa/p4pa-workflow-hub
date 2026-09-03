@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.assessments.wfassessments;
 
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.assessments.AssessmentsRegistryCreationActivity;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.assessments.config.CreateAssessmentsRegistryWFConfig;
 import java.util.List;

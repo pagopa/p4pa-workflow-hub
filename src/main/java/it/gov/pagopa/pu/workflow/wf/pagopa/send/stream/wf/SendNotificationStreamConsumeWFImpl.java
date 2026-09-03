@@ -4,7 +4,11 @@ import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.*;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationStreamEventsActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
+import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
@@ -24,11 +28,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
@@ -110,7 +116,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   }
 
   private String processingStreamEvents(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEventBatch, String lastProcessedEventId) {
-    String traceId = Utilities.getTraceId();
+    String traceId = it.gov.pagopa.payhub.activities.util.Utilities.getTraceId();
     Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap = new HashMap<>();
     for (ProgressResponseElementV28DTO streamEvent : streamEventBatch) {
       String lastEventId;
@@ -176,7 +182,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   private boolean isStreamStillOpened(String sendStreamId) {
     try {
       return getSendStreamActivity.fetchSendStream(sendStreamId) != null;
-    } catch (HttpClientErrorException.NotFound e) {
+    } catch (RestInvokeNotFoundException e) {
       log.error("STREAMS_NOT_FOUND] Cannot fetch stream: SEND stream non found for sendStreamId {}", sendStreamId);
       throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_SEND_STATUS_ERROR, "Workflow terminated during isStreamStillOpened for sendStreamId " + sendStreamId + " with ERROR: " + e.getMessage());
     } catch (Exception e) {

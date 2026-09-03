@@ -1,11 +1,11 @@
 package it.gov.pagopa.pu.workflow.controller.wf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.tracing.Tracer;
 import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.wf.debtposition.custom.fine.DebtPositionFineService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +33,8 @@ class DebtPositionFineControllerTest {
 
   @MockitoBean
   private DebtPositionFineService serviceMock;
+  @MockitoBean
+  private Tracer tracerMock;
 
   @Test
   void whenHandleFineReductionExpirationThenOk() throws Exception {
@@ -40,7 +43,7 @@ class DebtPositionFineControllerTest {
     String runId = "runId";
     WorkflowCreatedDTO expected = new WorkflowCreatedDTO(expectedWorkflowId, runId);
 
-    Mockito.when(serviceMock.expireFineReduction(debtPositionId))
+    when(serviceMock.expireFineReduction(debtPositionId))
       .thenReturn(expected);
 
     MvcResult result = mockMvc.perform(

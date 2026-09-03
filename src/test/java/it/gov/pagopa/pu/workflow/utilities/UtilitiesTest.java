@@ -3,12 +3,15 @@ package it.gov.pagopa.pu.workflow.utilities;
 import com.google.protobuf.Timestamp;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
+import io.temporal.workflow.Workflow;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactsIdV20DTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 
@@ -20,6 +23,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UtilitiesTest {
+
+  public static void setTraceId(String traceId) {
+    setTraceId(traceId, null);
+  }
+  public static void setTraceId(String traceId, String spanId) {
+    MDC.put("traceId", traceId);
+    MDC.put("spanId", spanId);
+  }
+  public static void clearTraceIdContext(){
+    MDC.clear();
+  }
 
   @Test
   void whenGenerateWorkflowIdThenOk(){
@@ -143,27 +157,6 @@ public class UtilitiesTest {
   }
 
   @Test
-  void testGetTraceId(){
-    // Given
-    String expectedResult = "TRACEID";
-    setTraceId(expectedResult);
-
-    // When
-    String result = Utilities.getTraceId();
-
-    // Then
-    Assertions.assertSame(expectedResult, result);
-    clearTraceIdContext();
-  }
-
-  public static void setTraceId(String traceId) {
-    MDC.put("traceId", traceId);
-  }
-  public static void clearTraceIdContext(){
-    MDC.clear();
-  }
-
-  @Test
   void givenEmptyTimeStampWhenProtobufTimestamp2OffsetDateTimeThenNull(){
     Assertions.assertNull(Utilities.protobufTimestamp2OffsetDateTime(Timestamp.getDefaultInstance()));
   }
@@ -257,5 +250,21 @@ public class UtilitiesTest {
     List<String> actualResult = Utilities.extractPolishedLegalFactIds(legalFactsIdV20DTOs);
     //THEN
     Assertions.assertEquals(polishedLegalFactIds, actualResult);
+  }
+
+  @Test
+  void getWorkflowDeterministicOffsetDateTime() {
+    //GIVEN
+    OffsetDateTime expectedWorkflowDeterministicOffsetDateTime = Instant.parse("2026-01-01T00:00:00.000Z")
+      .atZone(it.gov.pagopa.payhub.activities.util.Utilities.ZONEID)
+      .toOffsetDateTime();
+    try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
+      workflowMock.when(Workflow::currentTimeMillis)
+        .then(invocation -> expectedWorkflowDeterministicOffsetDateTime.toInstant().toEpochMilli());
+      //WHEN
+      OffsetDateTime actualWorkflowDeterministicOffsetDateTime = Utilities.getWorkflowDeterministicOffsetDateTime();
+      //THEN
+      Assertions.assertEquals(expectedWorkflowDeterministicOffsetDateTime, actualWorkflowDeterministicOffsetDateTime);
+    }
   }
 }

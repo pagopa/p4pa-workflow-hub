@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.service.wf.debtposition.sync;
 
 import it.gov.pagopa.payhub.activities.connector.workflowhub.dto.WfExecutionParameters;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -16,6 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DebtPositionSyncServiceTest {
@@ -56,7 +59,7 @@ class DebtPositionSyncServiceTest {
     String accessToken = "accessToken";
 
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("WFID", "RUNID");
-    Mockito.when(partialChangeSyncServiceMock.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest)))
+    when(partialChangeSyncServiceMock.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest)))
       .thenReturn(expectedResult);
 
     // When
@@ -65,7 +68,7 @@ class DebtPositionSyncServiceTest {
     // Then
     Assertions.assertSame(expectedResult, result);
 
-    Mockito.verify(wfConfigHandlerServiceMock)
+    verify(wfConfigHandlerServiceMock)
       .persistAndConfigure(Mockito.same(debtPositionDTO), Mockito.same(wfExecutionParameters));
   }
 
@@ -78,7 +81,7 @@ class DebtPositionSyncServiceTest {
     String accessToken = "accessToken";
 
     WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO("WFID", "RUNID");
-    Mockito.when(completeChangeSyncServiceMock.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionParameters), Mockito.same(accessToken)))
+    when(completeChangeSyncServiceMock.invokeWorkflow(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest), Mockito.same(wfExecutionParameters), Mockito.same(accessToken)))
       .thenReturn(expectedResult);
 
     // When
@@ -87,7 +90,7 @@ class DebtPositionSyncServiceTest {
     // Then
     Assertions.assertSame(expectedResult, result);
 
-    Mockito.verify(wfConfigHandlerServiceMock)
+    verify(wfConfigHandlerServiceMock)
       .persistAndConfigure(Mockito.same(debtPositionDTO), Mockito.same(wfExecutionParameters));
   }
 }

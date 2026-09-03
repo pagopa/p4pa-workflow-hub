@@ -8,8 +8,8 @@ import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomi
 import it.gov.pagopa.pu.workflow.dto.IngestionDataDTO;
 import it.gov.pagopa.pu.workflow.enums.DataEventType;
 import it.gov.pagopa.pu.workflow.event.dataevents.dto.DataEventRequestDTO;
-import it.gov.pagopa.pu.workflow.event.dataevents.producer.DataEventsProducerService;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.pu.workflow.wf.ingestionflow.activity.NotifyIngestionActivity;
 import it.gov.pagopa.pu.workflow.wf.ingestionflow.config.BaseIngestionFlowFileWFConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
   private Function<Long, T> ingestionFlowFileProcessorActivity;
   private SendEmailIngestionFlowActivity sendEmailIngestionFlowActivity;
   private UpdateIngestionFlowStatusActivity updateIngestionFlowStatusActivity;
-  private DataEventsProducerService dataEventsProducerService;
+  private NotifyIngestionActivity notifyIngestionActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -42,7 +42,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
 
     ingestionFlowFileProcessorActivity = buildActivityStubs(applicationContext);
 
-    dataEventsProducerService = applicationContext.getBean(DataEventsProducerService.class);
+    notifyIngestionActivity = wfConfig.buildNotifyIngestionActivityStub();
   }
 
   /** To be overridden by extended class in order to build further required activities */
@@ -132,7 +132,7 @@ public abstract class BaseIngestionFlowFileWFImpl<T extends IngestionFlowFileRes
 
   private void publishDataEvent(Long ingestionFlowFileId, IngestionFlowFileResult result, IngestionFlowFileStatus status) {
     if(result.getOrganizationId()!=null) {
-      dataEventsProducerService.notifyIngestionEvent(
+      notifyIngestionActivity.notifyIngestionEvent(
         IngestionDataDTO.builder()
           .ingestionFlowFileId(ingestionFlowFileId)
           .organizationId(result.getOrganizationId())

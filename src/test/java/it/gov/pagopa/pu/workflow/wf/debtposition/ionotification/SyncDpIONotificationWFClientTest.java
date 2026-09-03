@@ -2,9 +2,10 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.ionotification;
 
 import it.gov.pagopa.payhub.activities.dto.IONotificationMessage;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.InstallmentStatus;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
+import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.InstallmentStatus;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
@@ -26,6 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SyncDpIONotificationWFClientTest {
@@ -63,14 +66,14 @@ class SyncDpIONotificationWFClientTest {
     String fixedDateTime = "2026-01-21T16:30:00";
     LocalDateTime fixedNow = LocalDateTime.parse(fixedDateTime);
     try (MockedStatic<LocalDateTime> mockedDateTime = Mockito.mockStatic(LocalDateTime.class)) {
-      mockedDateTime.when(LocalDateTime::now).thenReturn(fixedNow);
+      mockedDateTime.when(() -> LocalDateTime.now(Utilities.ZONEID)).thenReturn(fixedNow);
 
       String expectedWorkflowId = String.format("SyncDpIONotificationWF-%s-%s",
         debtPositionDTO.getDebtPositionId(), fixedDateTime);
 
       WorkflowCreatedDTO expectedResult = new WorkflowCreatedDTO(expectedWorkflowId, "runId");
 
-      Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
+      when(workflowServiceMock.buildWorkflowStubToStartNew(
           SyncDpIONotificationWF.class,
           taskQueue,
           expectedResult.getWorkflowId()))
@@ -83,7 +86,7 @@ class SyncDpIONotificationWFClientTest {
       client.sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
 
       // Then
-      Mockito.verify(syncDpIONotificationWFMock).sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
+      verify(syncDpIONotificationWFMock).sendIoNotification(debtPositionDTO, iudSyncCompleteDTOMap, ioMessage);
 
       TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, SyncDpIONotificationWFImpl.class);
 

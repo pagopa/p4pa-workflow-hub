@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.common.kafka.config.tracing;
 
 import io.micrometer.observation.ObservationRegistry;
 import it.gov.pagopa.payhub.activities.performancelogger.PerformanceLogger;
-import it.gov.pagopa.pu.workflow.utilities.Utilities;
+import it.gov.pagopa.payhub.activities.util.Utilities;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.function.context.catalog.ObservationFunctionAroundWrapperExt;

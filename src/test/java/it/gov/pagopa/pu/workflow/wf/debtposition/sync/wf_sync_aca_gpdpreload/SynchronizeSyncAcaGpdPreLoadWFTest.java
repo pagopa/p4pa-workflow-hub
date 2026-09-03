@@ -3,8 +3,8 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync.wf_sync_aca_gpdpreload;
 import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.aca.SynchronizeInstallmentAcaActivity;
 import it.gov.pagopa.payhub.activities.activity.debtposition.synchronize.gpdpreload.SynchronizeInstallmentGpdPreLoadActivity;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncStatusUpdateRequestDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncStatusUpdateRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.BaseDPSynchronizeWFTest;
 import it.gov.pagopa.pu.workflow.wf.debtposition.sync.config.SynchronizeDebtPositionWfConfig;
@@ -16,6 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeSyncAcaGpdPreLoadWFTest extends BaseDPSynchronizeWFTest<SynchronizeSyncAcaGpdPreLoadWF> {
@@ -35,9 +38,9 @@ class SynchronizeSyncAcaGpdPreLoadWFTest extends BaseDPSynchronizeWFTest<Synchro
   @Override
   protected SynchronizeSyncAcaGpdPreLoadWF configureMockAndCreateWf(ApplicationContext applicationContextMock) {
     SynchronizeDebtPositionWfConfig wfConfigMock = applicationContextMock.getBean(SynchronizeDebtPositionWfConfig.class);
-    Mockito.when(wfConfigMock.buildSynchronizeInstallmentAcaActivity())
+    when(wfConfigMock.buildSynchronizeInstallmentAcaActivity())
       .thenReturn(synchronizeInstallmentAcaActivityMock);
-    Mockito.when(wfConfigMock.buildSynchronizeInstallmentGpdPreLoadActivity())
+    when(wfConfigMock.buildSynchronizeInstallmentGpdPreLoadActivity())
       .thenReturn(synchronizeInstallmentGpdPreLoadActivity);
 
     SynchronizeSyncAcaGpdPreLoadWFImpl wf = new SynchronizeSyncAcaGpdPreLoadWFImpl();
@@ -76,7 +79,7 @@ class SynchronizeSyncAcaGpdPreLoadWFTest extends BaseDPSynchronizeWFTest<Synchro
   @Override
   protected void configureIUDSyncKo(DebtPositionDTO debtPosition, String iud, Throwable expectedException) {
     if(FAIL_USE_CASE.BOTH.equals(failUseCase) || FAIL_USE_CASE.ACA.equals(failUseCase)) {
-      Mockito.doThrow(expectedException)
+      doThrow(expectedException)
         .when(synchronizeInstallmentAcaActivityMock)
         .synchronizeInstallmentAca(
           Mockito.same(debtPosition), Mockito.eq(iud)
@@ -86,7 +89,7 @@ class SynchronizeSyncAcaGpdPreLoadWFTest extends BaseDPSynchronizeWFTest<Synchro
     }
 
     if(FAIL_USE_CASE.BOTH.equals(failUseCase) || FAIL_USE_CASE.GPD_PRELOAD.equals(failUseCase)) {
-      Mockito.doThrow(expectedException)
+      doThrow(expectedException)
         .when(synchronizeInstallmentGpdPreLoadActivity)
         .synchronizeInstallmentGpdPreLoad(
           Mockito.same(debtPosition), Mockito.eq(iud)

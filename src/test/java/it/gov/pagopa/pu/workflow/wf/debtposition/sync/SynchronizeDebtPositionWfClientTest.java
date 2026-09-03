@@ -2,7 +2,7 @@ package it.gov.pagopa.pu.workflow.wf.debtposition.sync;
 
 import io.temporal.workflow.Functions;
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Map;
 
 import static it.gov.pagopa.pu.workflow.utils.faker.DebtPositionFaker.buildDebtPositionDTO;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SynchronizeDebtPositionWfClientTest {
@@ -125,10 +126,10 @@ class SynchronizeDebtPositionWfClientTest {
     GenericWfExecutionConfig genericWfExecutionConfig = new GenericWfExecutionConfig();
     genericWfExecutionConfig.setIoMessages(new GenericWfExecutionConfig.IONotificationBaseOpsMessages());
 
-    T wf = Mockito.mock(wfInterfaceClass);
+    T wf = mock(wfInterfaceClass);
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_RESERVED_SYNC;
-    Mockito.when(workflowServiceMock.buildWorkflowStubToStartNew(
+    when(workflowServiceMock.buildWorkflowStubToStartNew(
         wfInterfaceClass,
         taskQueue,
         expectedResult.getWorkflowId()))
@@ -141,7 +142,7 @@ class SynchronizeDebtPositionWfClientTest {
 
     // Then
     Assertions.assertEquals(expectedResult, result);
-    wfInvokeVerifier.apply(Mockito.verify(wf), debtPosition, paymentEventRequest, genericWfExecutionConfig);
+    wfInvokeVerifier.apply(verify(wf), debtPosition, paymentEventRequest, genericWfExecutionConfig);
 
     TemporalTestUtils.verifyWorkflowTaskQueueConfiguration(taskQueue, wfInterface2impl.get(wfInterfaceClass));
   }

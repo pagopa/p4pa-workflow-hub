@@ -3,7 +3,7 @@ package it.gov.pagopa.pu.workflow.event.payments.dto;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.config.json.JsonConfig;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import org.junit.jupiter.api.Assertions;

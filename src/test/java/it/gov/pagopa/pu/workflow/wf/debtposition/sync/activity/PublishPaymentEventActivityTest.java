@@ -1,7 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.sync.activity;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.DebtPositionIoNotificationDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.event.payments.producer.PaymentsProducerService;
@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PublishPaymentEventActivityTest {
@@ -41,7 +43,7 @@ class PublishPaymentEventActivityTest {
     activity.publishDebtPositionEvent(debtPositionDTO, paymentEventRequest);
 
     // Then
-    Mockito.verify(eventProduceServiceMock)
+    verify(eventProduceServiceMock)
       .notifyDebtPositionPaymentsEvent(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest));
   }
 
@@ -55,7 +57,7 @@ class PublishPaymentEventActivityTest {
     activity.publishDebtPositionErrorEvent(debtPositionDTO, paymentEventRequest);
 
     // Then
-    Mockito.verify(eventProduceServiceMock)
+    verify(eventProduceServiceMock)
       .notifyDebtPositionPaymentsEvent(Mockito.same(debtPositionDTO), Mockito.same(paymentEventRequest));
   }
 
@@ -69,7 +71,7 @@ class PublishPaymentEventActivityTest {
     activity.publishDebtPositionIoNotificationEvent(ioNotificationDTO, paymentEventRequest);
 
     // Then
-    Mockito.verify(eventProduceServiceMock)
+    verify(eventProduceServiceMock)
       .notifyDebtPositionIoEvent(Mockito.same(ioNotificationDTO), Mockito.same(paymentEventRequest));
   }
 }

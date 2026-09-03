@@ -1,8 +1,9 @@
 package it.gov.pagopa.pu.workflow.wf.debtposition.ionotification;
 
 import it.gov.pagopa.payhub.activities.dto.debtposition.syncwfconfig.GenericWfExecutionConfig;
-import it.gov.pagopa.pu.debtposition.dto.generated.DebtPositionDTO;
-import it.gov.pagopa.pu.debtposition.dto.generated.SyncCompleteDTO;
+import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
+import it.gov.pagopa.pu.debtpositions.dto.generated.SyncCompleteDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -31,7 +32,7 @@ public class SyncDpIONotificationWFClient {
   public void sendIoNotification(DebtPositionDTO debtPositionDTO, Map<String, SyncCompleteDTO> iudSyncCompleteDTOMap, GenericWfExecutionConfig.IONotificationBaseOpsMessages ioMessages) {
     log.info("Starting IO notification WF: {}", debtPositionDTO.getDebtPositionId());
     String taskQueue = TaskQueueConstants.TASK_QUEUE_DP_LOW_PRIORITY;
-    String dateTime = LocalDateTime.now().format(ISO_LOCAL_DATE_TIME);
+    String dateTime = LocalDateTime.now(Utilities.ZONEID).format(ISO_LOCAL_DATE_TIME);
     String workflowId = generateWorkflowId(String.format("%s-%s", debtPositionDTO.getDebtPositionId(), dateTime), SyncDpIONotificationWF.class);
 
     SyncDpIONotificationWF workflow = workflowService.buildWorkflowStubToStartNew(
