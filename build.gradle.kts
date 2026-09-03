@@ -86,6 +86,9 @@ val p4paActivitiesVersion = "1.205.1"
 
 val springCloudDepsVersion = "2025.1.3"
 
+// CVE Security dependencies
+val tomcatEmbedCoreVersion = "11.0.25"
+
 dependencyManagement {
   imports {
     mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudDepsVersion")
@@ -153,14 +156,10 @@ dependencies {
   implementation("com.google.guava:guava:$guavaVersion")
   implementation("io.opentelemetry:opentelemetry-opentracing-shim:$otelVersion")
 
-  compileOnly("org.projectlombok:lombok")
+  // CVE Security dependencies
+  implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatEmbedCoreVersion")
 
-  /**
-   * Mapstruct
-   * https://mapstruct.org/
-   * mapstruct dependencies must always be placed after the lombok dependency
-   * or the generated mappers will return an empty object
-   **/
+  compileOnly("org.projectlombok:lombok")
   annotationProcessor("org.projectlombok:lombok")
   annotationProcessor("org.mapstruct:mapstruct-processor:$mapStructVersion")
   testAnnotationProcessor("org.projectlombok:lombok")
