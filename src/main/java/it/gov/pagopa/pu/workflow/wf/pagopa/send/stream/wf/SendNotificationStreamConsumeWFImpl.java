@@ -1,29 +1,20 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf;
 
-import io.temporal.failure.ActivityFailure;
-import io.temporal.failure.ApplicationFailure;
 import io.temporal.spring.boot.WorkflowImpl;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
-import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationStreamEventsActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
+import it.gov.pagopa.pu.workflow.dto.SendStreamEventsProcessWFInputDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config.SendNotificationStreamWfConfig;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service.SendEventStreamProcessingService;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service.SendEventStreamProcessingServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -31,15 +22,11 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
 public class SendNotificationStreamConsumeWFImpl implements SendNotificationStreamConsumeWF, ApplicationContextAware {
-  private static final Logger SKIPPED_EVENT_LOGGER = LoggerFactory.getLogger("SEND_NOTIFICATION_STREAM_SKIPPED_EVENT_LOG");
 
   private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
   private static final int WAITING_SECONDS_NEXT_POLL = 5 * 60;
@@ -48,10 +35,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
 
   private GetSendStreamActivity getSendStreamActivity;
   private GetSendNotificationEventsFromStreamActivity getSendNotificationEventsFromStreamActivity;
-  private SendEventStreamProcessingService sendEventStreamProcessingService;
   private UpdateLastProcessedStreamEventIdActivity updateLastProcessedStreamEventIdActivity;
-  private PublishSendTimelineEventActivity publishSendTimelineEventActivity;
-  private NotifySendNotificationStreamEventsActivity notifySendNotificationStreamEventsActivity;
 
   /**
    * Temporal workflow will not allow to use injection in order to avoid <a href="https://docs.temporal.io/workflows#non-deterministic-change">non-deterministic changes</a> due to dynamic reconfiguration.<BR />
@@ -62,23 +46,10 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     SendNotificationStreamWfConfig wfConfig = applicationContext.getBean(SendNotificationStreamWfConfig.class);
-    SendNotificationProcessWfConfig wfNotificationProcessConfig = applicationContext.getBean(SendNotificationProcessWfConfig.class);
 
     getSendNotificationEventsFromStreamActivity = wfConfig.buildGetSendNotificationEventsFromStreamActivityStub();
     getSendStreamActivity = wfConfig.buildGetSendStreamActivityStub();
-    sendEventStreamProcessingService = new SendEventStreamProcessingServiceImpl(
-      wfConfig.buildUpdateSendNotificationStatusActivityStub(),
-      wfConfig.buildValidateSendNotificationStatusActivityStub(),
-      wfConfig.buildSendNotificationDateRetrieveActivityStub(),
-      wfNotificationProcessConfig.buildPublishSendNotificationPaymentEventActivityStub(),
-      wfConfig.buildFetchSendLegalFactActivityStub(),
-      wfConfig.buildStartDeleteSendNotificationFileActivityStub(),
-      wfConfig.buildStartDeleteSendLegalFactFileActivityStub(),
-      wfConfig.buildGetSendNotificationByNotificationRequestIdActivityStub()
-    );
     updateLastProcessedStreamEventIdActivity = wfConfig.buildUpdateLastProcessedStreamEventIdActivityStub();
-    publishSendTimelineEventActivity = wfConfig.buildPublishSendTimelineEventActivityStub();
-    notifySendNotificationStreamEventsActivity = wfConfig.buildNotifySendNotificationStreamEventsActivityStub();
   }
 
   @Override
@@ -91,7 +62,7 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
       throw new IllegalStateBusinessException(ErrorCodeConstants.ERROR_CODE_SEND_STATUS_ERROR, "Workflow terminated during starting of readSendStream for sendStreamId %s with ERROR: cannot found SEND stream.".formatted(sendStreamId));
     }
 
-    String lastProcessedEventId = sendStreamDTO.getLastEventId(); //start reading after latest processed event
+    String lastProcessedEventId = sendStreamDTO.getLastEventId();
     do {
       try {
         List<ProgressResponseElementV28DTO> streamEvents = this.getSendNotificationEventsFromStreamActivity.fetchSendNotificationEventsFromStream(
@@ -99,7 +70,13 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
           sendStreamId
         );
         if (!CollectionUtils.isEmpty(streamEvents)) {
-          lastProcessedEventId = processingStreamEvents(sendStreamDTO.getOrganizationId(), sendStreamId, streamEvents, lastProcessedEventId);
+          SendNotificationStreamConsumeChildWF sendNotificationStreamConsumeChildWF = Workflow.newChildWorkflowStub(SendNotificationStreamConsumeChildWF.class);
+          SendStreamEventsProcessWFInputDTO childWorkflowInput = SendStreamEventsProcessWFInputDTO.builder()
+            .organizationId(sendStreamDTO.getOrganizationId())
+            .sendStreamId(sendStreamId)
+            .streamEventBatch(streamEvents)
+            .build();
+          lastProcessedEventId = sendNotificationStreamConsumeChildWF.processingStreamEvents(childWorkflowInput);
         }
       } catch(Throwable t) {
         log.error("Something went wrong processing stream {}: {}",
@@ -113,56 +90,6 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     } while (isStreamStillOpened(sendStreamId));
 
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
-  }
-
-  private String processingStreamEvents(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEventBatch, String lastProcessedEventId) {
-    String traceId = it.gov.pagopa.payhub.activities.util.Utilities.getTraceId();
-    Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap = new HashMap<>();
-    for (ProgressResponseElementV28DTO streamEvent : streamEventBatch) {
-      String lastEventId;
-      try {
-        lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
-        publishSendTimelineEventActivity.publishSendTimelineEvent(streamEvent, organizationId, sendStreamId, traceId);
-        if(lastEventId != null) {
-          lastProcessedEventId = lastEventId;
-          collectStreamEventSummaries(streamEvent, notificationRequestIdToStreamEventsMap);
-        }
-      } catch (Exception e) {
-        if(e instanceof ActivityFailure &&
-          e.getCause() instanceof ApplicationFailure af &&
-          af.isNonRetryable() &&
-          SendStreamSkippedEventException.class.getName().equals(af.getType())
-        ) {
-          SKIPPED_EVENT_LOGGER.error("Stream event processing skipped for streamId {} event id {}, for error: {}", sendStreamId, streamEvent.getEventId(), e.getMessage());
-          lastProcessedEventId = streamEvent.getEventId(); //skip events for NotRetryableActivityException
-        } else {
-          log.error("Stream events processing blocked for streamId %s, for error: %s".formatted(sendStreamId, e.getMessage()));
-          publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, organizationId, sendStreamId, traceId);
-          lastProcessedEventId = streamEvent.getEventId(); //skip events sent to Dead Letter
-          break;
-        }
-      }
-    }
-    if(!notificationRequestIdToStreamEventsMap.isEmpty()) {
-      notifySendNotificationStreamEventsActivity.notifySendNotificationStreamEvents(
-        notificationRequestIdToStreamEventsMap
-      );
-    }
-    return lastProcessedEventId;
-  }
-
-  private void collectStreamEventSummaries(ProgressResponseElementV28DTO streamEvent,  Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap) {
-    TimelineElementCategoryV27DTO eventCategory = streamEvent.getElement().getCategory();
-    NotificationStatusV26DTO newNotificationStatus = streamEvent.getNewStatus();
-    if(eventCategory != null && newNotificationStatus != null) {
-      StreamEventSummaryDTO eventSummaryDTO = new StreamEventSummaryDTO(newNotificationStatus, eventCategory);
-      List<StreamEventSummaryDTO> notificationEvents =
-        notificationRequestIdToStreamEventsMap.computeIfAbsent(
-          streamEvent.getNotificationRequestId(),
-          k -> new ArrayList<>()
-        );
-      notificationEvents.add(eventSummaryDTO);
-    }
   }
 
   private boolean commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
