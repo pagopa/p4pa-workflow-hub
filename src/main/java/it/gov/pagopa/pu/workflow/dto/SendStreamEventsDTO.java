@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @Data
-public class SendStreamEventsProcessWFInputDTO implements Serializable {
+public class SendStreamEventsDTO implements Serializable {
   Long organizationId;
   String sendStreamId;
   List<ProgressResponseElementV28DTO> streamEventBatch;

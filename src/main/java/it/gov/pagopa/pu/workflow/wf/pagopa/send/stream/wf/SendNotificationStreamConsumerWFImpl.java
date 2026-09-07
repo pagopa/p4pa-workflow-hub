@@ -9,7 +9,7 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLa
 import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
-import it.gov.pagopa.pu.workflow.dto.SendStreamEventsProcessWFInputDTO;
+import it.gov.pagopa.pu.workflow.dto.SendStreamEventsDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
@@ -29,7 +29,7 @@ import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
-public class SendNotificationStreamConsumeWFImpl implements SendNotificationStreamConsumeWF, ApplicationContextAware {
+public class SendNotificationStreamConsumerWFImpl implements SendNotificationStreamConsumerWF, ApplicationContextAware {
 
   private static final int LOOP_EXECUTIONS_BEFORE_CLEAN_WF_HISTORY = 100;
   private static final int WAITING_SECONDS_NEXT_POLL = 5 * 60;
@@ -73,9 +73,9 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
           sendStreamId
         );
         if (!CollectionUtils.isEmpty(streamEvents)) {
-          SendNotificationStreamConsumeChildWF sendNotificationStreamConsumeChildWF = stubChildWorkflow(sendStreamId);
-          SendStreamEventsProcessWFInputDTO childWorkflowInput = buildChildWorkflowInput(sendStreamDTO.getOrganizationId(), sendStreamId, streamEvents);
-          lastProcessedEventId = sendNotificationStreamConsumeChildWF.processingStreamEvents(childWorkflowInput);
+          SendNotificationEventsConsumerWF sendNotificationEventsConsumerWF = stubChildWorkflow(sendStreamId);
+          SendStreamEventsDTO childWorkflowInput = buildChildWorkflowInput(sendStreamDTO.getOrganizationId(), sendStreamId, streamEvents);
+          lastProcessedEventId = sendNotificationEventsConsumerWF.processingStreamEvents(childWorkflowInput);
         }
       } catch(Throwable t) {
         log.error("Something went wrong processing stream {}: {}",
@@ -91,17 +91,17 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
   }
 
-  private SendNotificationStreamConsumeChildWF stubChildWorkflow(String sendStreamId) {
+  private SendNotificationEventsConsumerWF stubChildWorkflow(String sendStreamId) {
     ChildWorkflowOptions childWorkflowOptions = ChildWorkflowOptions.newBuilder()
-      .setWorkflowId(generateWorkflowId(sendStreamId, SendNotificationStreamConsumeChildWF.class))
+      .setWorkflowId(generateWorkflowId(sendStreamId, SendNotificationEventsConsumerWF.class))
       .build();
     return Workflow.newChildWorkflowStub(
-      SendNotificationStreamConsumeChildWF.class,
+      SendNotificationEventsConsumerWF.class,
       childWorkflowOptions);
   }
 
-  private SendStreamEventsProcessWFInputDTO buildChildWorkflowInput(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEvents) {
-    return SendStreamEventsProcessWFInputDTO.builder()
+  private SendStreamEventsDTO buildChildWorkflowInput(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEvents) {
+    return SendStreamEventsDTO.builder()
       .organizationId(organizationId)
       .sendStreamId(sendStreamId)
       .streamEventBatch(streamEvents)

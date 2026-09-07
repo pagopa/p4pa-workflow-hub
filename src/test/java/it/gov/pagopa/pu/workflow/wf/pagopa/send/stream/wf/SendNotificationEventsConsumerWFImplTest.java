@@ -7,7 +7,7 @@ import it.gov.pagopa.payhub.activities.exception.NotRetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.RetryableActivityException;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
-import it.gov.pagopa.pu.workflow.dto.SendStreamEventsProcessWFInputDTO;
+import it.gov.pagopa.pu.workflow.dto.SendStreamEventsDTO;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config.SendNotificationStreamWfConfig;
@@ -29,7 +29,7 @@ import java.util.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SendNotificationStreamConsumeChildWFImplTest {
+class SendNotificationEventsConsumerWFImplTest {
 
   public static final long ORGANIZATION_ID = 1L;
   public static final String NOTIFICATION_REQUEST_ID_1 = "notificationRequestId1";
@@ -43,7 +43,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
   @Mock
   private NotifySendNotificationStreamEventsActivity notifySendNotificationStreamEventsActivityMock;
 
-  private SendNotificationStreamConsumeChildWFImpl wf;
+  private SendNotificationEventsConsumerWFImpl wf;
 
   @BeforeEach
   void setUp() {
@@ -58,7 +58,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
 
     when(applicationContextMock.getBean(SendNotificationProcessWfConfig.class)).thenReturn(wfSendProcessConfigMock);
 
-    wf = new SendNotificationStreamConsumeChildWFImpl();
+    wf = new SendNotificationEventsConsumerWFImpl();
     wf.setApplicationContext(applicationContextMock);
     ReflectionTestUtils.setField(wf, "sendEventStreamProcessingService", sendEventStreamProcessingServiceMock);
   }
@@ -77,7 +77,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
     //GIVEN
     List<ProgressResponseElementV28DTO> streamEvents = new ArrayList<>();
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
@@ -98,7 +98,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
       sendEvent
     );
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
@@ -129,7 +129,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
       sendEvent
     );
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
@@ -174,7 +174,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
       sendEvent
     );
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
@@ -219,7 +219,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
       sendEvent
     );
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
@@ -264,7 +264,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
       sendEvent
     );
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
@@ -313,7 +313,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
       sendEvent4
     );
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
@@ -381,7 +381,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
     ProgressResponseElementV28DTO sendEvent = buildSendEvent("sendEventId", NotificationStatusV26DTO.DELIVERING);
     List<ProgressResponseElementV28DTO> streamEvents = Collections.nCopies(101, sendEvent);
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
@@ -424,7 +424,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
       sendEvent2
     );
 
-    SendStreamEventsProcessWFInputDTO wfInput = new SendStreamEventsProcessWFInputDTO(
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
       ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents

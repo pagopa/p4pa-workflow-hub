@@ -6,7 +6,7 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendN
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
-import it.gov.pagopa.pu.workflow.dto.SendStreamEventsProcessWFInputDTO;
+import it.gov.pagopa.pu.workflow.dto.SendStreamEventsDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.config.SendNotificationStreamWfConfig;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class SendNotificationStreamConsumeWFImplTest {
+class SendNotificationStreamConsumerWFImplTest {
 
   public static final long ORGANIZATION_ID = 1L;
   public static final String SEND_EVENT_ID = "sendEventId";
@@ -43,7 +43,7 @@ class SendNotificationStreamConsumeWFImplTest {
   @Mock
   private UpdateLastProcessedStreamEventIdActivity updateLastProcessedStreamEventIdActivityMock;
 
-  private SendNotificationStreamConsumeWFImpl wf;
+  private SendNotificationStreamConsumerWFImpl wf;
 
   @BeforeEach
   void setUp() {
@@ -56,7 +56,7 @@ class SendNotificationStreamConsumeWFImplTest {
 
     when(applicationContextMock.getBean(SendNotificationStreamWfConfig.class)).thenReturn(wfConfigMock);
 
-    wf = new SendNotificationStreamConsumeWFImpl();
+    wf = new SendNotificationStreamConsumerWFImpl();
     wf.setApplicationContext(applicationContextMock);
   }
 
@@ -163,11 +163,11 @@ class SendNotificationStreamConsumeWFImplTest {
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
-      SendNotificationStreamConsumeChildWF childWF = mock(SendNotificationStreamConsumeChildWFImpl.class);
-      when(childWF.processingStreamEvents(Mockito.any(SendStreamEventsProcessWFInputDTO.class)))
+      SendNotificationEventsConsumerWF childWF = mock(SendNotificationEventsConsumerWFImpl.class);
+      when(childWF.processingStreamEvents(Mockito.any(SendStreamEventsDTO.class)))
         .thenReturn(sendEvent1.getEventId());
       workflowMock.when(() -> Workflow.newChildWorkflowStub(
-          Mockito.eq(SendNotificationStreamConsumeChildWF.class),
+          Mockito.eq(SendNotificationEventsConsumerWF.class),
           Mockito.any(ChildWorkflowOptions.class)
       )).thenReturn(childWF);
       //WHEN

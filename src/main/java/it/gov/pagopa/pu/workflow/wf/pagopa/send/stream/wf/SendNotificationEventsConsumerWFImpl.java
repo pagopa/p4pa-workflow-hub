@@ -9,7 +9,7 @@ import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatusV26DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.StreamEventSummaryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
-import it.gov.pagopa.pu.workflow.dto.SendStreamEventsProcessWFInputDTO;
+import it.gov.pagopa.pu.workflow.dto.SendStreamEventsDTO;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
-public class SendNotificationStreamConsumeChildWFImpl implements SendNotificationStreamConsumeChildWF, ApplicationContextAware {
+public class SendNotificationEventsConsumerWFImpl implements SendNotificationEventsConsumerWF, ApplicationContextAware {
 
   private static final Logger SKIPPED_EVENT_LOGGER = LoggerFactory.getLogger("SEND_NOTIFICATION_STREAM_SKIPPED_EVENT_LOG");
 
@@ -63,13 +63,13 @@ public class SendNotificationStreamConsumeChildWFImpl implements SendNotificatio
   }
 
   @Override
-  public String processingStreamEvents(SendStreamEventsProcessWFInputDTO sendStreamEventsProcessWFInputDTO) {
+  public String processingStreamEvents(SendStreamEventsDTO sendStreamEventsDTO) {
     String traceId = it.gov.pagopa.payhub.activities.util.Utilities.getTraceId();
-    String sendStreamId = sendStreamEventsProcessWFInputDTO.getSendStreamId();
-    Long organizationId = sendStreamEventsProcessWFInputDTO.getOrganizationId();
+    String sendStreamId = sendStreamEventsDTO.getSendStreamId();
+    Long organizationId = sendStreamEventsDTO.getOrganizationId();
     Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap = new HashMap<>();
     String lastProcessedEventId = null;
-    for (ProgressResponseElementV28DTO streamEvent : sendStreamEventsProcessWFInputDTO.getStreamEventBatch()) {
+    for (ProgressResponseElementV28DTO streamEvent : sendStreamEventsDTO.getStreamEventBatch()) {
       String lastEventId;
       try {
         lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
