@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf;
 
+import io.temporal.workflow.ChildWorkflowOptions;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
@@ -165,8 +166,10 @@ class SendNotificationStreamConsumeWFImplTest {
       SendNotificationStreamConsumeChildWF childWF = mock(SendNotificationStreamConsumeChildWFImpl.class);
       when(childWF.processingStreamEvents(Mockito.any(SendStreamEventsProcessWFInputDTO.class)))
         .thenReturn(sendEvent1.getEventId());
-      workflowMock.when(() -> Workflow.newChildWorkflowStub(SendNotificationStreamConsumeChildWF.class))
-        .thenReturn(childWF);
+      workflowMock.when(() -> Workflow.newChildWorkflowStub(
+          Mockito.eq(SendNotificationStreamConsumeChildWF.class),
+          Mockito.any(ChildWorkflowOptions.class)
+      )).thenReturn(childWF);
       //WHEN
       wf.readSendStream(SEND_STREAM_ID);
       //THEN

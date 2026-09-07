@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf;
 
 import io.temporal.spring.boot.WorkflowImpl;
+import io.temporal.workflow.ChildWorkflowOptions;
 import io.temporal.workflow.Workflow;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendNotificationEventsFromStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
@@ -23,6 +24,8 @@ import org.springframework.util.CollectionUtils;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM)
@@ -70,7 +73,12 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
           sendStreamId
         );
         if (!CollectionUtils.isEmpty(streamEvents)) {
-          SendNotificationStreamConsumeChildWF sendNotificationStreamConsumeChildWF = Workflow.newChildWorkflowStub(SendNotificationStreamConsumeChildWF.class);
+          ChildWorkflowOptions childWorkflowOptions = ChildWorkflowOptions.newBuilder()
+            .setWorkflowId(generateWorkflowId(sendStreamId, SendNotificationStreamConsumeChildWF.class))
+            .build();
+          SendNotificationStreamConsumeChildWF sendNotificationStreamConsumeChildWF = Workflow.newChildWorkflowStub(
+            SendNotificationStreamConsumeChildWF.class,
+            childWorkflowOptions);
           SendStreamEventsProcessWFInputDTO childWorkflowInput = SendStreamEventsProcessWFInputDTO.builder()
             .organizationId(sendStreamDTO.getOrganizationId())
             .sendStreamId(sendStreamId)
