@@ -73,17 +73,8 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
           sendStreamId
         );
         if (!CollectionUtils.isEmpty(streamEvents)) {
-          ChildWorkflowOptions childWorkflowOptions = ChildWorkflowOptions.newBuilder()
-            .setWorkflowId(generateWorkflowId(sendStreamId, SendNotificationStreamConsumeChildWF.class))
-            .build();
-          SendNotificationStreamConsumeChildWF sendNotificationStreamConsumeChildWF = Workflow.newChildWorkflowStub(
-            SendNotificationStreamConsumeChildWF.class,
-            childWorkflowOptions);
-          SendStreamEventsProcessWFInputDTO childWorkflowInput = SendStreamEventsProcessWFInputDTO.builder()
-            .organizationId(sendStreamDTO.getOrganizationId())
-            .sendStreamId(sendStreamId)
-            .streamEventBatch(streamEvents)
-            .build();
+          SendNotificationStreamConsumeChildWF sendNotificationStreamConsumeChildWF = stubChildWorkflow(sendStreamId);
+          SendStreamEventsProcessWFInputDTO childWorkflowInput = buildChildWorkflowInput(sendStreamDTO.getOrganizationId(), sendStreamId, streamEvents);
           lastProcessedEventId = sendNotificationStreamConsumeChildWF.processingStreamEvents(childWorkflowInput);
         }
       } catch(Throwable t) {
@@ -98,6 +89,23 @@ public class SendNotificationStreamConsumeWFImpl implements SendNotificationStre
     } while (isStreamStillOpened(sendStreamId));
 
     log.info("Stopped readSendStream Workflow for sendStreamId {}, because SEND stream has been closed.", sendStreamId);
+  }
+
+  private SendNotificationStreamConsumeChildWF stubChildWorkflow(String sendStreamId) {
+    ChildWorkflowOptions childWorkflowOptions = ChildWorkflowOptions.newBuilder()
+      .setWorkflowId(generateWorkflowId(sendStreamId, SendNotificationStreamConsumeChildWF.class))
+      .build();
+    return Workflow.newChildWorkflowStub(
+      SendNotificationStreamConsumeChildWF.class,
+      childWorkflowOptions);
+  }
+
+  private SendStreamEventsProcessWFInputDTO buildChildWorkflowInput(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEvents) {
+    return SendStreamEventsProcessWFInputDTO.builder()
+      .organizationId(organizationId)
+      .sendStreamId(sendStreamId)
+      .streamEventBatch(streamEvents)
+      .build();
   }
 
   private boolean commitLastProcessedEventId(SendStreamDTO sendStreamDTO, String lastProcessedEventId) {
