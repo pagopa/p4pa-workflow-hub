@@ -91,7 +91,6 @@ public class SendNotificationStreamConsumeChildWFImpl implements SendNotificatio
           log.error("Stream event processing skipped for streamId %s, event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, organizationId, sendStreamId, traceId);
           lastProcessedEventId = streamEvent.getEventId(); //skipped event sent to Dead Letter
-          break;
         }
       }
       if(++loopExecutionCount >= LOOP_EXECUTIONS_BEFORE_CLOSE_CHILD_WF) {

@@ -162,7 +162,7 @@ class SendNotificationStreamConsumeWFImplTest {
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
-      SendNotificationStreamConsumeChildWF childWF = Mockito.mock(SendNotificationStreamConsumeChildWFImpl.class);
+      SendNotificationStreamConsumeChildWF childWF = mock(SendNotificationStreamConsumeChildWFImpl.class);
       when(childWF.processingStreamEvents(Mockito.any(SendStreamEventsProcessWFInputDTO.class)))
         .thenReturn(sendEvent1.getEventId());
       workflowMock.when(() -> Workflow.newChildWorkflowStub(SendNotificationStreamConsumeChildWF.class))

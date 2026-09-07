@@ -158,7 +158,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
     //THEN
     Assertions.assertNotNull(lastProcessedEventId);
     Assertions.assertEquals(sendEvent.getEventId(), lastProcessedEventId);
-    Mockito.verify(publishSendTimelineEventActivityMock, times(1)).publishSendTimelineErrorEvent(
+    verify(publishSendTimelineEventActivityMock, times(1)).publishSendTimelineErrorEvent(
       Mockito.isA(ProgressResponseElementV28DTO.class),
       Mockito.eq(ORGANIZATION_ID),
       Mockito.eq(SEND_STREAM_ID),
@@ -203,7 +203,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
     //THEN
     Assertions.assertNotNull(lastProcessedEventId);
     Assertions.assertEquals(sendEvent.getEventId(), lastProcessedEventId);
-    Mockito.verify(publishSendTimelineEventActivityMock, times(1)).publishSendTimelineErrorEvent(
+    verify(publishSendTimelineEventActivityMock, times(1)).publishSendTimelineErrorEvent(
       Mockito.isA(ProgressResponseElementV28DTO.class),
       Mockito.eq(ORGANIZATION_ID),
       Mockito.eq(SEND_STREAM_ID),
@@ -248,7 +248,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
     //THEN
     Assertions.assertNotNull(lastProcessedEventId);
     Assertions.assertEquals(sendEvent.getEventId(), lastProcessedEventId);
-    Mockito.verify(publishSendTimelineEventActivityMock, times(1)).publishSendTimelineErrorEvent(
+    verify(publishSendTimelineEventActivityMock, times(1)).publishSendTimelineErrorEvent(
       Mockito.isA(ProgressResponseElementV28DTO.class),
       Mockito.eq(ORGANIZATION_ID),
       Mockito.eq(SEND_STREAM_ID),
@@ -291,7 +291,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
     //THEN
     Assertions.assertNotNull(lastProcessedEventId);
     Assertions.assertEquals(sendEvent.getEventId(), lastProcessedEventId);
-    Mockito.verify(publishSendTimelineEventActivityMock, times(1)).publishSendTimelineErrorEvent(
+    verify(publishSendTimelineEventActivityMock, times(1)).publishSendTimelineErrorEvent(
       Mockito.isA(ProgressResponseElementV28DTO.class),
       Mockito.eq(ORGANIZATION_ID),
       Mockito.eq(SEND_STREAM_ID),
@@ -362,7 +362,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
     //THEN
     Assertions.assertNotNull(lastProcessedEventId);
     Assertions.assertEquals(sendEvent4.getEventId(), lastProcessedEventId);
-    Mockito.verify(publishSendTimelineEventActivityMock, times(4))
+    verify(publishSendTimelineEventActivityMock, times(4))
       .publishSendTimelineEvent(
         Mockito.isA(ProgressResponseElementV28DTO.class),
         Mockito.eq(ORGANIZATION_ID),
@@ -405,7 +405,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
 
     //THEN
     Assertions.assertNull(lastProcessedEventId);
-    Mockito.verify(publishSendTimelineEventActivityMock, times(100))
+    verify(publishSendTimelineEventActivityMock, times(100))
       .publishSendTimelineEvent(
         Mockito.isA(ProgressResponseElementV28DTO.class),
         Mockito.eq(ORGANIZATION_ID),
@@ -450,7 +450,7 @@ class SendNotificationStreamConsumeChildWFImplTest {
     //THEN
     Assertions.assertNotNull(lastProcessedEventId);
     Assertions.assertEquals(sendEvent2.getEventId(), lastProcessedEventId);
-    Mockito.verify(publishSendTimelineEventActivityMock, times(2))
+    verify(publishSendTimelineEventActivityMock, times(2))
       .publishSendTimelineEvent(
         Mockito.isA(ProgressResponseElementV28DTO.class),
         Mockito.eq(ORGANIZATION_ID),
