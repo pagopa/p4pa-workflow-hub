@@ -282,7 +282,7 @@ Ensure the following tools are installed on your machine:
 
 ### 🐳 Build & run through Docker
 ```sh
-docker build -t <APP_NAME> .
+docker build -t <APP_NAME> --build-arg GITHUB_TOKEN=$GITHUB_TOKEN .
 docker run --env-file <ENV_FILE> <APP_NAME>
 ```
 
