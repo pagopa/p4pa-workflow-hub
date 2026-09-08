@@ -115,7 +115,8 @@ FROM dependencies AS build
 COPY --chown=${APP_USER}:${APP_GROUP} src src/
 
 ARG GITHUB_TOKEN
-ENV GITHUB_TOKEN=$GITHUB_TOKEN
+ARG GIT_AUTH_TOKEN
+ENV GITHUB_TOKEN=${GITHUB_TOKEN:-${GIT_AUTH_TOKEN}}
 
 # Build application
 RUN gradle bootJar --no-daemon
