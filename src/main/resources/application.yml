@@ -155,7 +155,7 @@ spring:
               initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_NOTIFICATION_MAX_POLLER_SIZE:3}"
-      - task-queue: SendNotificationStreamConsumeWF
+      - task-queue: SendNotificationStreamConsumerWF
         capacity:
           workflow-task-pollers-configuration:
             poller-behavior-autoscaling:
@@ -171,6 +171,14 @@ spring:
               initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_PUBLISH_PAYMENT_EVENT_LOCAL_MAX_POLLER_SIZE:5}"
+      - task-queue: SendNotificationStreamConsumerWF_LOCAL
+        capacity:
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MAX_POLLER_SIZE:5}"
       # assessments
       - task-queue: AssessmentCreationWF
         capacity:
@@ -196,14 +204,6 @@ spring:
               initial-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_ASSESSMENTS_CLASSIFICATION_MAX_POLLER_SIZE:5}"
-      - task-queue: SendNotificationStreamConsumeWF_LOCAL
-        capacity:
-          activity-task-pollers-configuration:
-            poller-behavior-autoscaling:
-              enabled: true
-              initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_CONSUME_LOCAL_MIN_POLLER_SIZE:1}"
-              min-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_CONSUME_LOCAL_MIN_POLLER_SIZE:1}"
-              max-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_CONSUME_LOCAL_MAX_POLLER_SIZE:5}"
   cloud:
     function:
       definition: paymentsConsumer;paymentsProducer;dataEventsProducer;registriesProducer

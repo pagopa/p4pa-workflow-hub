@@ -4,7 +4,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowClientService;
 import it.gov.pagopa.pu.workflow.service.temporal.WorkflowService;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf.SendNotificationStreamConsumeWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf.SendNotificationStreamConsumerWF;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +22,12 @@ public class SendNotificationStreamWFClient {
     this.workflowClientService = workflowClientService;
   }
 
-  public WorkflowCreatedDTO startSendNotificationStreamConsume(String sendStreamId) {
+  public WorkflowCreatedDTO startSendNotificationStreamConsumer(String sendStreamId) {
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_STREAM;
-    String workflowId = generateWorkflowId(sendStreamId, SendNotificationStreamConsumeWF.class);
+    String workflowId = generateWorkflowId(sendStreamId, SendNotificationStreamConsumerWF.class);
 
-    SendNotificationStreamConsumeWF workflow = workflowService.buildWorkflowStubToStartNew(
-      SendNotificationStreamConsumeWF.class,
+    SendNotificationStreamConsumerWF workflow = workflowService.buildWorkflowStubToStartNew(
+      SendNotificationStreamConsumerWF.class,
       taskQueue,
       workflowId
     );

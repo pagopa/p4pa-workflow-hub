@@ -12,10 +12,10 @@ import io.temporal.workflow.WorkflowMethod;
  * <p>
  * The process is designed to handle notification events from SEND stream.
  * </p>
- * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/2626388056/Notifica+SEND+New>Confluence page</a>
+ * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/2626388056/Notifica+SEND+New#SendNotificationStreamConsumerWF-Parent-workflow>Confluence page</a>
  * */
 @WorkflowInterface
-public interface SendNotificationStreamConsumeWF {
+public interface SendNotificationStreamConsumerWF {
   /**
    * Workflow method to handle notification events from stream.
    *

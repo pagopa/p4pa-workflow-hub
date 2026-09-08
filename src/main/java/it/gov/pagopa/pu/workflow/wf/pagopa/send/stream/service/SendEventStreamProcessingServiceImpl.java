@@ -29,7 +29,8 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
 
   @SuppressWarnings("java:S107")
   public SendEventStreamProcessingServiceImpl(
-    UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity, ValidateSendNotificationStatusActivity validateSendNotificationStatusActivity,
+    UpdateSendNotificationStatusActivity updateSendNotificationStatusActivity,
+    ValidateSendNotificationStatusActivity validateSendNotificationStatusActivity,
     SendNotificationDateRetrieveActivity sendNotificationDateRetrieveActivity,
     PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity,
     FetchSendLegalFactActivity fetchSendLegalFactActivity,
