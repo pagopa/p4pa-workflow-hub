@@ -77,9 +77,9 @@ public class SendNotificationStreamConsumerWFImpl implements SendNotificationStr
           SendStreamEventsDTO childWorkflowInput = buildChildWorkflowInput(sendStreamDTO.getOrganizationId(), sendStreamId, streamEvents);
           lastProcessedEventId = sendNotificationEventsConsumerWF.processingStreamEvents(childWorkflowInput);
         }
-      } catch(Throwable t) {
+      } catch(Exception e) {
         log.error("Something went wrong processing stream {}: {}",
-          sendStreamId, Utilities.getWorkflowExceptionMessage(t));
+          sendStreamId, Utilities.getWorkflowExceptionMessage(e));
       }
       boolean hasCommitedAnEvent = this.commitLastProcessedEventId(sendStreamDTO, lastProcessedEventId);
       if(hasCommitedAnEvent) {
