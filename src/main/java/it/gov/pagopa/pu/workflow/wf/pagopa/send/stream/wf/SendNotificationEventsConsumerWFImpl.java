@@ -85,8 +85,11 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
           af.isNonRetryable() &&
           SendStreamSkippedEventException.class.getName().equals(af.getType())
         ) {
-          SKIPPED_EVENT_LOGGER.error("Stream event processing skipped for streamId {} event id {}, for error: {}", sendStreamId, streamEvent.getEventId(), e.getMessage());
+          log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           lastProcessedEventId = streamEvent.getEventId(); //skip event for NotRetryableActivityException
+        } else if (e instanceof SendStreamSkippedEventException) {
+          SKIPPED_EVENT_LOGGER.error("Stream event processing skipped for streamId {} event id {}, for error: {}", sendStreamId, streamEvent.getEventId(), e.getMessage());
+          lastProcessedEventId = streamEvent.getEventId();
         } else {
           log.error("Stream event processing skipped for streamId %s, event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, organizationId, sendStreamId, traceId);
