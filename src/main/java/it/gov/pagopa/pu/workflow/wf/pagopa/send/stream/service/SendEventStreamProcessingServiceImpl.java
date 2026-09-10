@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service;
 
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
@@ -48,8 +49,15 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
 
   @Override
   public String processSendStreamEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
+    String notificationRequestId = streamEvent.getNotificationRequestId();
+
     SendNotificationDTO sendNotification = this.getSendNotificationByNotificationRequestIdActivity
-      .getSendNotificationByNotificationRequestId(streamEvent.getNotificationRequestId());
+      .getSendNotificationByNotificationRequestId(notificationRequestId);
+
+    if (sendNotification == null) {
+      throw new SendStreamSkippedEventException("Notification for notificationRequestId %s not found".formatted(notificationRequestId));
+    }
+
     String eventId = processNotificationEvent(sendStreamId, streamEvent, sendNotification);
     downloadAndArchiveNotificationLegalFact(streamEvent, sendNotification.getSendNotificationId());
     return eventId;
