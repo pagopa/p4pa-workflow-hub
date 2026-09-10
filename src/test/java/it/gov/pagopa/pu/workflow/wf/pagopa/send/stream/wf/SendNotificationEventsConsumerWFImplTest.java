@@ -91,7 +91,7 @@ class SendNotificationEventsConsumerWFImplTest {
   }
 
   @Test
-  void givenSendStreamSkippedEventExceptionEventWhenProcessingStreamEventsThenReturnEventId() {
+  void givenActivityFailureWithSendStreamSkippedEventExceptionWhenProcessingStreamEventsThenReturnEventId() {
     //GIVEN
     ProgressResponseElementV28DTO sendEvent = buildSendEvent("sendEventId", NotificationStatusV26DTO.DELIVERED);
     List<ProgressResponseElementV28DTO> streamEvents = List.of(
@@ -117,6 +117,35 @@ class SendNotificationEventsConsumerWFImplTest {
     String lastProcessedEventId = wf.processingStreamEvents(wfInput);
 
     //THEN
+    Assertions.assertNotNull(lastProcessedEventId);
+    Assertions.assertEquals(sendEvent.getEventId(), lastProcessedEventId);
+  }
+
+  @Test
+  void givenSendStreamSkippedEventExceptionWhenProcessingStreamEventsThenReturnEventId() {
+    // GIVEN
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent("sendEventId", NotificationStatusV26DTO.DELIVERED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
+      sendEvent
+    );
+
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
+      ORGANIZATION_ID,
+      SEND_STREAM_ID,
+      streamEvents
+    );
+
+    SendStreamSkippedEventException skippedEventException = new SendStreamSkippedEventException("error");
+
+    when(sendEventStreamProcessingServiceMock.processSendStreamEvent(
+      Mockito.eq(SEND_STREAM_ID),
+      Mockito.isA(ProgressResponseElementV28DTO.class)
+    )).thenThrow(skippedEventException);
+
+    // WHEN
+    String lastProcessedEventId = wf.processingStreamEvents(wfInput);
+
+    // THEN
     Assertions.assertNotNull(lastProcessedEventId);
     Assertions.assertEquals(sendEvent.getEventId(), lastProcessedEventId);
   }
