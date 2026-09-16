@@ -1,5 +1,6 @@
 package it.gov.pagopa.pu.workflow.mapper;
 
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementDetailsV27DTO;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import tools.jackson.databind.json.JsonMapper;
@@ -30,26 +31,28 @@ public class SendTimelineRegistryEventMapper {
 
   public RegistryEventSendTimelineDTO mapSuccess(
     ProgressResponseElementV28DTO progressResponseElementV28DTO,
-    Long organizationId,
+    SendNotificationDTO sendNotificationDTO,
     String streamId,
     String workflowId,
     String traceId) {
-    return map(progressResponseElementV28DTO, organizationId, streamId, workflowId, traceId, RegistryOutcome.OK);
+    return map(progressResponseElementV28DTO, sendNotificationDTO.getOrganizationId(), streamId, sendNotificationDTO.getCampaignId(), sendNotificationDTO.getSendNotificationId(), workflowId, traceId, RegistryOutcome.OK);
   }
 
   public RegistryEventSendTimelineDTO mapError(
     ProgressResponseElementV28DTO progressResponseElementV28DTO,
-    Long organizationId,
+    SendNotificationDTO sendNotificationDTO,
     String streamId,
     String workflowId,
     String traceId) {
-    return map(progressResponseElementV28DTO, organizationId, streamId, workflowId, traceId, RegistryOutcome.KO);
+    return map(progressResponseElementV28DTO, sendNotificationDTO.getOrganizationId(), streamId, sendNotificationDTO.getCampaignId(), sendNotificationDTO.getSendNotificationId(), workflowId, traceId, RegistryOutcome.KO);
   }
 
   private RegistryEventSendTimelineDTO map(
     ProgressResponseElementV28DTO progressResponseElementV28DTO,
     Long organizationId,
     String streamId,
+    String campaignId,
+    String sendNotificationId,
     String workflowId,
     String traceId,
     RegistryOutcome outcome) {
@@ -69,8 +72,10 @@ public class SendTimelineRegistryEventMapper {
       .grantorId(workflowId)
       .organizationId(organizationId)
       .streamId(streamId)
+      .campaignId(campaignId)
       .eventId(progressResponseElementV28DTO.getEventId())
       .eventType(progressResponseElementV28DTO.getElement().getCategory())
+      .sendNotificationId(sendNotificationId)
       .notificationRequestId(progressResponseElementV28DTO.getNotificationRequestId())
       .iun(progressResponseElementV28DTO.getIun())
       .recipientIndex(extractRecipientIndex(progressResponseElementV28DTO))

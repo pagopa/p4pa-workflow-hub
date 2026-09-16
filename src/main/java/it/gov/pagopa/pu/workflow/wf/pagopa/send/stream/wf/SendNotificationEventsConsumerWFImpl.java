@@ -4,11 +4,9 @@ import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.spring.boot.WorkflowImpl;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.NotifySendNotificationStreamEventsActivity;
+import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.GetSendNotificationByNotificationRequestIdActivity;
 import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatusV26DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.StreamEventSummaryDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.SendStreamEventsDTO;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.create.config.SendNotificationProcessWfConfig;
@@ -42,12 +40,14 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
 
   private PublishSendTimelineEventActivity publishSendTimelineEventActivity;
   private NotifySendNotificationStreamEventsActivity notifySendNotificationStreamEventsActivity;
+  private GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivity;
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     SendNotificationStreamWfConfig wfConfig = applicationContext.getBean(SendNotificationStreamWfConfig.class);
     SendNotificationProcessWfConfig wfNotificationProcessConfig = applicationContext.getBean(SendNotificationProcessWfConfig.class);
 
+    getSendNotificationByNotificationRequestIdActivity = wfConfig.buildGetSendNotificationByNotificationRequestIdActivityStub();
     sendEventStreamProcessingService = new SendEventStreamProcessingServiceImpl(
       wfConfig.buildUpdateSendNotificationStatusActivityStub(),
       wfConfig.buildValidateSendNotificationStatusActivityStub(),
@@ -55,8 +55,7 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
       wfNotificationProcessConfig.buildPublishSendNotificationPaymentEventActivityStub(),
       wfConfig.buildFetchSendLegalFactActivityStub(),
       wfConfig.buildStartDeleteSendNotificationFileActivityStub(),
-      wfConfig.buildStartDeleteSendLegalFactFileActivityStub(),
-      wfConfig.buildGetSendNotificationByNotificationRequestIdActivityStub()
+      wfConfig.buildStartDeleteSendLegalFactFileActivityStub()
     );
     publishSendTimelineEventActivity = wfConfig.buildPublishSendTimelineEventActivityStub();
     notifySendNotificationStreamEventsActivity = wfConfig.buildNotifySendNotificationStreamEventsActivityStub();
@@ -66,18 +65,20 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
   public String processingStreamEvents(SendStreamEventsDTO sendStreamEventsDTO) {
     String traceId = it.gov.pagopa.payhub.activities.util.Utilities.getTraceId();
     String sendStreamId = sendStreamEventsDTO.getSendStreamId();
-    Long organizationId = sendStreamEventsDTO.getOrganizationId();
     Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap = new HashMap<>();
     String lastProcessedEventId = null;
     for (ProgressResponseElementV28DTO streamEvent : sendStreamEventsDTO.getStreamEventBatch()) {
-      String lastEventId;
+      SendNotificationDTO sendNotification = this.getSendNotificationByNotificationRequestIdActivity
+        .getSendNotificationByNotificationRequestId(streamEvent.getNotificationRequestId());
+      if (sendNotification == null) {
+        SKIPPED_EVENT_LOGGER.error("Stream event processing skipped for streamId {} event id {}; send notification not found for notificationRequestId: {}", sendStreamId, streamEvent.getEventId(), streamEvent.getNotificationRequestId());
+        lastProcessedEventId = streamEvent.getEventId();
+        continue;
+      }
       try {
-        lastEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent);
-        publishSendTimelineEventActivity.publishSendTimelineEvent(streamEvent, organizationId, sendStreamId, traceId);
-        if(lastEventId != null) {
-          lastProcessedEventId = lastEventId;
-          collectStreamEventSummaries(streamEvent, notificationRequestIdToStreamEventsMap);
-        }
+        lastProcessedEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent, sendNotification);
+        publishSendTimelineEventActivity.publishSendTimelineEvent(streamEvent, sendNotification, sendStreamId, traceId);
+        collectStreamEventSummaries(streamEvent, notificationRequestIdToStreamEventsMap);
       } catch (Exception e) {
         if(
           e instanceof ActivityFailure &&
@@ -87,12 +88,9 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
         ) {
           log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           lastProcessedEventId = streamEvent.getEventId(); //skip event for NotRetryableActivityException
-        } else if (e instanceof SendStreamSkippedEventException) {
-          SKIPPED_EVENT_LOGGER.error("Stream event processing skipped for streamId {} event id {}, for error: {}", sendStreamId, streamEvent.getEventId(), e.getMessage());
-          lastProcessedEventId = streamEvent.getEventId();
         } else {
           log.error("Stream event processing skipped for streamId %s, event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
-          publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, organizationId, sendStreamId, traceId);
+          publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, sendNotification, sendStreamId, traceId);
           lastProcessedEventId = streamEvent.getEventId(); //skipped event sent to Dead Letter
         }
       }

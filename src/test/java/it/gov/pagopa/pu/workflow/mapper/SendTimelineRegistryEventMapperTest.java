@@ -32,6 +32,8 @@ class SendTimelineRegistryEventMapperTest {
   private static final String STREAM_ID = "streamId";
   private static final String TRACE_ID = "traceId";
   private static final long ORGANIZATION_ID = 1L;
+  private static final String CAMPAIGN_ID = "campaignId";
+  private static final String SEND_NOTIFICATION_ID = "sendNotificationId";
   @Mock
   private JsonMapper jsonMapperMock;
 
@@ -69,6 +71,14 @@ class SendTimelineRegistryEventMapperTest {
     return timelineDetails;
   }
 
+  private SendNotificationDTO buildSendNotification() {
+    SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
+    sendNotificationDTO.setOrganizationId(ORGANIZATION_ID);
+    sendNotificationDTO.setCampaignId(CAMPAIGN_ID);
+    sendNotificationDTO.setSendNotificationId(SEND_NOTIFICATION_ID);
+    return sendNotificationDTO;
+  }
+
   private List<LegalFactsIdV20DTO> buildLegalFactsIds() {
     return List.of(
       LegalFactsIdV20DTO.builder()
@@ -84,6 +94,7 @@ class SendTimelineRegistryEventMapperTest {
     TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails();
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
+    SendNotificationDTO sendNotification = buildSendNotification();
 
     String expectedRegistryId = String.join(
       "-",
@@ -96,7 +107,7 @@ class SendTimelineRegistryEventMapperTest {
       .thenReturn("serialized");
 
     //WHEN
-    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, ORGANIZATION_ID, STREAM_ID, workflowId, TRACE_ID);
+    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, sendNotification, STREAM_ID, workflowId, TRACE_ID);
 
     //THEN
     Assertions.assertEquals(expectedRegistryId, registryEvent.getRegistryId());
@@ -110,8 +121,10 @@ class SendTimelineRegistryEventMapperTest {
 
     Assertions.assertEquals(ORGANIZATION_ID, registryEvent.getOrganizationId());
     Assertions.assertEquals(STREAM_ID, registryEvent.getStreamId());
+    Assertions.assertEquals(CAMPAIGN_ID, registryEvent.getCampaignId());
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
     Assertions.assertEquals(event.getElement().getCategory(), registryEvent.getEventType());
+    Assertions.assertEquals(SEND_NOTIFICATION_ID, registryEvent.getSendNotificationId());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
     Assertions.assertEquals(event.getIun(), registryEvent.getIun());
     Assertions.assertNotNull(event.getNewStatus());
@@ -131,6 +144,7 @@ class SendTimelineRegistryEventMapperTest {
     TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails();
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
+    SendNotificationDTO sendNotification = buildSendNotification();
 
     String expectedRegistryId = String.join(
       "-",
@@ -143,7 +157,7 @@ class SendTimelineRegistryEventMapperTest {
       .thenReturn("serialized");
 
     //WHEN
-    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapError(event, ORGANIZATION_ID, STREAM_ID, workflowId, TRACE_ID);
+    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapError(event, sendNotification, STREAM_ID, workflowId, TRACE_ID);
 
     //THEN
     Assertions.assertEquals(expectedRegistryId, registryEvent.getRegistryId());
@@ -157,8 +171,10 @@ class SendTimelineRegistryEventMapperTest {
 
     Assertions.assertEquals(ORGANIZATION_ID, registryEvent.getOrganizationId());
     Assertions.assertEquals(STREAM_ID, registryEvent.getStreamId());
+    Assertions.assertEquals(CAMPAIGN_ID, registryEvent.getCampaignId());
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
     Assertions.assertEquals(event.getElement().getCategory(), registryEvent.getEventType());
+    Assertions.assertEquals(SEND_NOTIFICATION_ID, registryEvent.getSendNotificationId());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
     Assertions.assertEquals(event.getIun(), registryEvent.getIun());
     Assertions.assertNotNull(event.getNewStatus());
@@ -177,6 +193,7 @@ class SendTimelineRegistryEventMapperTest {
     //GIVEN
     TimelineElementV27DTO timelineElement = buildTimelineElement(null);
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
+    SendNotificationDTO sendNotification = buildSendNotification();
 
     String expectedRegistryId = String.join(
       "-",
@@ -189,7 +206,7 @@ class SendTimelineRegistryEventMapperTest {
       .thenReturn("serialized");
 
     //WHEN
-    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, ORGANIZATION_ID, STREAM_ID, workflowId, TRACE_ID);
+    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, sendNotification, STREAM_ID, workflowId, TRACE_ID);
 
     //THEN
     Assertions.assertEquals(expectedRegistryId, registryEvent.getRegistryId());
@@ -203,8 +220,10 @@ class SendTimelineRegistryEventMapperTest {
 
     Assertions.assertEquals(ORGANIZATION_ID, registryEvent.getOrganizationId());
     Assertions.assertEquals(STREAM_ID, registryEvent.getStreamId());
+    Assertions.assertEquals(CAMPAIGN_ID, registryEvent.getCampaignId());
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
     Assertions.assertEquals(event.getElement().getCategory(), registryEvent.getEventType());
+    Assertions.assertEquals(SEND_NOTIFICATION_ID, registryEvent.getSendNotificationId());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
     Assertions.assertEquals(event.getIun(), registryEvent.getIun());
     Assertions.assertNotNull(event.getNewStatus());
@@ -225,6 +244,7 @@ class SendTimelineRegistryEventMapperTest {
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     timelineElement.setLegalFactsIds(buildLegalFactsIds());
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
+    SendNotificationDTO sendNotification = buildSendNotification();
 
     String expectedRegistryId = String.join(
       "-",
@@ -237,7 +257,7 @@ class SendTimelineRegistryEventMapperTest {
       .thenReturn("serialized");
 
     //WHEN
-    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, ORGANIZATION_ID, STREAM_ID, workflowId, TRACE_ID);
+    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, sendNotification, STREAM_ID, workflowId, TRACE_ID);
 
     //THEN
     Assertions.assertEquals(expectedRegistryId, registryEvent.getRegistryId());
@@ -251,8 +271,10 @@ class SendTimelineRegistryEventMapperTest {
 
     Assertions.assertEquals(ORGANIZATION_ID, registryEvent.getOrganizationId());
     Assertions.assertEquals(STREAM_ID, registryEvent.getStreamId());
+    Assertions.assertEquals(CAMPAIGN_ID, registryEvent.getCampaignId());
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
     Assertions.assertEquals(event.getElement().getCategory(), registryEvent.getEventType());
+    Assertions.assertEquals(SEND_NOTIFICATION_ID, registryEvent.getSendNotificationId());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
     Assertions.assertEquals(event.getIun(), registryEvent.getIun());
     Assertions.assertNotNull(event.getNewStatus());
@@ -272,6 +294,7 @@ class SendTimelineRegistryEventMapperTest {
     TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails();
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
+    SendNotificationDTO sendNotification = buildSendNotification();
 
     String expectedRegistryId = String.join(
       "-",
@@ -284,7 +307,7 @@ class SendTimelineRegistryEventMapperTest {
       .thenThrow(new RuntimeException());
 
     //WHEN
-    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, ORGANIZATION_ID, STREAM_ID, workflowId, TRACE_ID);
+    RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapSuccess(event, sendNotification, STREAM_ID, workflowId, TRACE_ID);
 
     //THEN
     Assertions.assertEquals(expectedRegistryId, registryEvent.getRegistryId());
@@ -298,8 +321,10 @@ class SendTimelineRegistryEventMapperTest {
 
     Assertions.assertEquals(ORGANIZATION_ID, registryEvent.getOrganizationId());
     Assertions.assertEquals(STREAM_ID, registryEvent.getStreamId());
+    Assertions.assertEquals(CAMPAIGN_ID, registryEvent.getCampaignId());
     Assertions.assertEquals(event.getEventId(), registryEvent.getEventId());
     Assertions.assertEquals(event.getElement().getCategory(), registryEvent.getEventType());
+    Assertions.assertEquals(SEND_NOTIFICATION_ID, registryEvent.getSendNotificationId());
     Assertions.assertEquals(event.getNotificationRequestId(), registryEvent.getNotificationRequestId());
     Assertions.assertEquals(event.getIun(), registryEvent.getIun());
     Assertions.assertNotNull(event.getNewStatus());
