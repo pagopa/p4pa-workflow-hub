@@ -35,7 +35,7 @@ public class SendTimelineRegistryEventMapper {
     String streamId,
     String workflowId,
     String traceId) {
-    return map(progressResponseElementV28DTO, sendNotificationDTO.getOrganizationId(), streamId, sendNotificationDTO.getCampaignId(), sendNotificationDTO.getSendNotificationId(), workflowId, traceId, RegistryOutcome.OK);
+    return map(progressResponseElementV28DTO, sendNotificationDTO, streamId, workflowId, traceId, RegistryOutcome.OK);
   }
 
   public RegistryEventSendTimelineDTO mapError(
@@ -44,15 +44,13 @@ public class SendTimelineRegistryEventMapper {
     String streamId,
     String workflowId,
     String traceId) {
-    return map(progressResponseElementV28DTO, sendNotificationDTO.getOrganizationId(), streamId, sendNotificationDTO.getCampaignId(), sendNotificationDTO.getSendNotificationId(), workflowId, traceId, RegistryOutcome.KO);
+    return map(progressResponseElementV28DTO, sendNotificationDTO, streamId, workflowId, traceId, RegistryOutcome.KO);
   }
 
   private RegistryEventSendTimelineDTO map(
     ProgressResponseElementV28DTO progressResponseElementV28DTO,
-    Long organizationId,
+    SendNotificationDTO sendNotificationDTO,
     String streamId,
-    String campaignId,
-    String sendNotificationId,
     String workflowId,
     String traceId,
     RegistryOutcome outcome) {
@@ -70,12 +68,12 @@ public class SendTimelineRegistryEventMapper {
       .eventSubType(RegistryEventSubType.RESP)
       .requestorId(REQUESTOR_ID)
       .grantorId(workflowId)
-      .organizationId(organizationId)
+      .organizationId(sendNotificationDTO.getOrganizationId())
       .streamId(streamId)
-      .campaignId(campaignId)
+      .campaignId(sendNotificationDTO.getCampaignId())
       .eventId(progressResponseElementV28DTO.getEventId())
       .eventType(progressResponseElementV28DTO.getElement().getCategory())
-      .sendNotificationId(sendNotificationId)
+      .sendNotificationId(sendNotificationDTO.getSendNotificationId())
       .notificationRequestId(progressResponseElementV28DTO.getNotificationRequestId())
       .iun(progressResponseElementV28DTO.getIun())
       .recipientIndex(extractRecipientIndex(progressResponseElementV28DTO))
