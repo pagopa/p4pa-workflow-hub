@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service;
 
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
+import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -395,6 +396,29 @@ class SendEventStreamProcessingServiceImplTest {
         Mockito.isA(LegalFactCategoryDTO.class),
         Mockito.isA(String.class)
       );
+  }
+
+  @Test
+  void givenNullSendNotificationWhenProcessSendStreamEventThenThrowException() {
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
+      null,
+      NotificationStatusV26DTO.ACCEPTED
+    );
+
+    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(null);
+
+    SendStreamSkippedEventException exception = Assertions.assertThrows(
+      SendStreamSkippedEventException.class,
+      () -> sendEventStreamProcessingService.processSendStreamEvent(
+        SEND_STREAM_ID,
+        sendEvent
+      )
+    );
+
+    String expectedMessage = String.format("Notification for notificationRequestId %s not found", NOTIFICATION_REQUEST_ID);
+    Assertions.assertEquals(expectedMessage, exception.getMessage());
   }
 
   private static SendNotificationDTO buildSendNotification() {

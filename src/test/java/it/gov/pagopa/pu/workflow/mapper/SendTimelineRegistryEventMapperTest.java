@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.event.registries.dto.RegistryEventSendTimelineDTO;
 import it.gov.pagopa.pu.workflow.utils.TestUtils;
-import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf.SendNotificationStreamConsumeWF;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.wf.SendNotificationStreamConsumerWF;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -90,7 +90,7 @@ class SendTimelineRegistryEventMapperTest {
       STREAM_ID,
       event.getEventId()
     );
-    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumeWF.class);
+    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumerWF.class);
 
     when(jsonMapperMock.writeValueAsString(timelineElement))
       .thenReturn("serialized");
@@ -137,7 +137,7 @@ class SendTimelineRegistryEventMapperTest {
       STREAM_ID,
       event.getEventId()
     );
-    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumeWF.class);
+    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumerWF.class);
 
     when(jsonMapperMock.writeValueAsString(timelineElement))
       .thenReturn("serialized");
@@ -183,7 +183,7 @@ class SendTimelineRegistryEventMapperTest {
       STREAM_ID,
       event.getEventId()
     );
-    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumeWF.class);
+    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumerWF.class);
 
     when(jsonMapperMock.writeValueAsString(Mockito.any()))
       .thenReturn("serialized");
@@ -231,7 +231,7 @@ class SendTimelineRegistryEventMapperTest {
       STREAM_ID,
       event.getEventId()
     );
-    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumeWF.class);
+    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumerWF.class);
 
     when(jsonMapperMock.writeValueAsString(timelineElement))
       .thenReturn("serialized");
@@ -278,7 +278,7 @@ class SendTimelineRegistryEventMapperTest {
       STREAM_ID,
       event.getEventId()
     );
-    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumeWF.class);
+    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumerWF.class);
 
     when(jsonMapperMock.writeValueAsString(Mockito.any()))
       .thenThrow(new RuntimeException());

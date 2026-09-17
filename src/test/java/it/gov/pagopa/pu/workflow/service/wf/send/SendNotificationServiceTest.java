@@ -68,7 +68,7 @@ class SendNotificationServiceTest {
       .runId("RUNID")
       .build();
 
-    Mockito.when(sendNotificationStreamWFClientMock.startSendNotificationStreamConsume(Mockito.same(sendStreamId)))
+    Mockito.when(sendNotificationStreamWFClientMock.startSendNotificationStreamConsumer(Mockito.same(sendStreamId)))
       .thenReturn(expectedResult);
 
     // When
