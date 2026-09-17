@@ -68,9 +68,10 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
     Map<String, List<StreamEventSummaryDTO>> notificationRequestIdToStreamEventsMap = new HashMap<>();
     String lastProcessedEventId = null;
     for (ProgressResponseElementV28DTO streamEvent : sendStreamEventsDTO.getStreamEventBatch()) {
-      SendNotificationDTO sendNotification = this.getSendNotificationByNotificationRequestIdActivity
-        .getSendNotificationByNotificationRequestId(streamEvent.getNotificationRequestId());
+      SendNotificationDTO sendNotification = null;
       try {
+        sendNotification = this.getSendNotificationByNotificationRequestIdActivity
+          .getSendNotificationByNotificationRequestId(streamEvent.getNotificationRequestId());
         if (sendNotification == null) {
           throw new SendStreamSkippedEventException("Notification for notificationRequestId %s not found".formatted(streamEvent.getNotificationRequestId()));
         }
@@ -91,8 +92,10 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
           lastProcessedEventId = streamEvent.getEventId();
         } else {
           log.error("Stream event processing skipped for streamId %s, event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
-          publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, sendNotification, sendStreamId, traceId);
-          lastProcessedEventId = streamEvent.getEventId(); //skipped event sent to Dead Letter
+          if(sendNotification != null) {
+            publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, sendNotification, sendStreamId, traceId); //skipped event sent to Dead Letter
+          }
+          lastProcessedEventId = streamEvent.getEventId();
         }
       }
       if(++loopExecutionCount >= LOOP_EXECUTIONS_BEFORE_CLOSE_CHILD_WF) {

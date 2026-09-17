@@ -357,6 +357,38 @@ class SendNotificationEventsConsumerWFImplTest {
   }
 
   @Test
+  void givenExceptionForFetchingNotificationWhenProcessingStreamEventsThenReturnEventId() {
+    //GIVEN
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent("sendEventId", NotificationStatusV26DTO.ACCEPTED);
+    List<ProgressResponseElementV28DTO> streamEvents = List.of(
+      sendEvent
+    );
+
+    SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
+      ORGANIZATION_ID,
+      SEND_STREAM_ID,
+      streamEvents
+    );
+
+    when(getSendNotificationByNotificationRequestIdActivityMock.getSendNotificationByNotificationRequestId(sendEvent.getNotificationRequestId()))
+      .thenThrow(new RuntimeException("error"));
+
+    //WHEN
+    String lastProcessedEventId = wf.processingStreamEvents(wfInput);
+
+    //THEN
+    Assertions.assertNotNull(lastProcessedEventId);
+    Assertions.assertEquals(sendEvent.getEventId(), lastProcessedEventId);
+    verify(publishSendTimelineEventActivityMock, times(0)).publishSendTimelineErrorEvent(
+      Mockito.isA(ProgressResponseElementV28DTO.class),
+      Mockito.isA(SendNotificationDTO.class),
+      Mockito.eq(SEND_STREAM_ID),
+      Mockito.isNull()
+    );
+  }
+
+
+  @Test
   void givenNoExceptionEventWhenProcessingStreamEventsThenNotifySendNotificationStreamEvents() {
     //GIVEN
     ProgressResponseElementV28DTO sendEvent1 = buildSendEvent("sendEventId1", NOTIFICATION_REQUEST_ID_1, NotificationStatusV26DTO.ACCEPTED, TimelineElementCategoryV27DTO.REQUEST_ACCEPTED);
