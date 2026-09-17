@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service;
 
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
@@ -82,16 +81,14 @@ class SendEventStreamProcessingServiceImplTest {
     when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(sendNotificationDTO);
     Mockito.doNothing().when(startDeleteSendNotificationFileActivityMock).startDeleteSendNotificationExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
     //WHEN
     String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
-        sendEvent
+        sendEvent,
+        sendNotificationDTO
       );
 
     //THEN
@@ -125,15 +122,13 @@ class SendEventStreamProcessingServiceImplTest {
     when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(sendNotificationDTO);
 
     //WHEN
     String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
-        sendEvent
+        sendEvent,
+        sendNotificationDTO
       );
 
     //THEN
@@ -167,15 +162,13 @@ class SendEventStreamProcessingServiceImplTest {
     when(sendNotificationDateRetrieveActivityMock.sendNotificationDateRetrieve(
       NOTIFICATION_REQUEST_ID
     )).thenReturn(sendNotificationDTO);
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(sendNotificationDTO);
 
     //WHEN
     String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
-        sendEvent
+        sendEvent,
+        sendNotificationDTO
       );
 
     //THEN
@@ -208,16 +201,13 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.ACCEPTED);
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(sendNotificationDTO);
 
     Mockito.doNothing().when(startDeleteSendNotificationFileActivityMock).startDeleteSendNotificationExpiredFiles(sendNotificationDTO.getSendNotificationId());
     Mockito.doNothing().when(startDeleteSendLegalFactFileActivityMock).startDeleteSendLegalFactExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
 
     // WHEN
-    String actualResult = sendEventStreamProcessingService.processSendStreamEvent(SEND_STREAM_ID, sendEvent);
+    String actualResult = sendEventStreamProcessingService.processSendStreamEvent(SEND_STREAM_ID, sendEvent, sendNotificationDTO);
 
     // THEN
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
@@ -242,12 +232,9 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.DELIVERED);
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(sendNotificationDTO);
 
     // WHEN
-    String actualResult = sendEventStreamProcessingService.processSendStreamEvent(SEND_STREAM_ID, sendEvent);
+    String actualResult = sendEventStreamProcessingService.processSendStreamEvent(SEND_STREAM_ID, sendEvent, sendNotificationDTO);
 
     // THEN
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
@@ -270,15 +257,13 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(sendNotificationDTO);
 
     //WHEN
     String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
-        sendEvent
+        sendEvent,
+        sendNotificationDTO
       );
 
     //THEN
@@ -314,9 +299,6 @@ class SendEventStreamProcessingServiceImplTest {
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.DELIVERED);
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(sendNotificationDTO);
 
     Mockito.doNothing().when(startDeleteSendLegalFactFileActivityMock).startDeleteSendLegalFactExpiredFiles(sendNotificationDTO.getSendNotificationId());
 
@@ -324,7 +306,8 @@ class SendEventStreamProcessingServiceImplTest {
     String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
-        sendEvent
+        sendEvent,
+        sendNotificationDTO
       );
 
     //THEN
@@ -346,15 +329,14 @@ class SendEventStreamProcessingServiceImplTest {
       null
     );
 
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(buildSendNotification());
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     //WHEN
     String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
-        sendEvent
+        sendEvent,
+        sendNotificationDTO
       );
 
     //THEN
@@ -376,15 +358,14 @@ class SendEventStreamProcessingServiceImplTest {
       null
     );
 
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(buildSendNotification());
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     //WHEN
     String actualResult =
       sendEventStreamProcessingService.processSendStreamEvent(
         SEND_STREAM_ID,
-        sendEvent
+        sendEvent,
+        sendNotificationDTO
       );
 
     //THEN
@@ -396,29 +377,6 @@ class SendEventStreamProcessingServiceImplTest {
         Mockito.isA(LegalFactCategoryDTO.class),
         Mockito.isA(String.class)
       );
-  }
-
-  @Test
-  void givenNullSendNotificationWhenProcessSendStreamEventThenThrowException() {
-    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
-      null,
-      NotificationStatusV26DTO.ACCEPTED
-    );
-
-    when(getSendNotificationByNotificationRequestIdActivity.getSendNotificationByNotificationRequestId(
-      NOTIFICATION_REQUEST_ID
-    )).thenReturn(null);
-
-    SendStreamSkippedEventException exception = Assertions.assertThrows(
-      SendStreamSkippedEventException.class,
-      () -> sendEventStreamProcessingService.processSendStreamEvent(
-        SEND_STREAM_ID,
-        sendEvent
-      )
-    );
-
-    String expectedMessage = String.format("Notification for notificationRequestId %s not found", NOTIFICATION_REQUEST_ID);
-    Assertions.assertEquals(expectedMessage, exception.getMessage());
   }
 
   private static SendNotificationDTO buildSendNotification() {
