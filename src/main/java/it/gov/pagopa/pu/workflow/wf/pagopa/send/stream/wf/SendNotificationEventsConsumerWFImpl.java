@@ -70,12 +70,10 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
     for (ProgressResponseElementV28DTO streamEvent : sendStreamEventsDTO.getStreamEventBatch()) {
       SendNotificationDTO sendNotification = this.getSendNotificationByNotificationRequestIdActivity
         .getSendNotificationByNotificationRequestId(streamEvent.getNotificationRequestId());
-      if (sendNotification == null) {
-        SKIPPED_EVENT_LOGGER.error("Stream event processing skipped for streamId {} event id {}; send notification not found for notificationRequestId: {}", sendStreamId, streamEvent.getEventId(), streamEvent.getNotificationRequestId());
-        lastProcessedEventId = streamEvent.getEventId();
-        continue;
-      }
       try {
+        if (sendNotification == null) {
+          throw new SendStreamSkippedEventException("Notification for notificationRequestId %s not found".formatted(streamEvent.getNotificationRequestId()));
+        }
         lastProcessedEventId = sendEventStreamProcessingService.processSendStreamEvent(sendStreamId, streamEvent, sendNotification);
         publishSendTimelineEventActivity.publishSendTimelineEvent(streamEvent, sendNotification, sendStreamId, traceId);
         collectStreamEventSummaries(streamEvent, notificationRequestIdToStreamEventsMap);
@@ -88,6 +86,9 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
         ) {
           log.error("Stream event processing skipped for streamId %s event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           lastProcessedEventId = streamEvent.getEventId(); //skip event for NotRetryableActivityException
+        } else if (e instanceof SendStreamSkippedEventException) {
+          SKIPPED_EVENT_LOGGER.error("Stream event processing skipped for streamId {} event id {}, for error: {}", sendStreamId, streamEvent.getEventId(), e.getMessage());
+          lastProcessedEventId = streamEvent.getEventId();
         } else {
           log.error("Stream event processing skipped for streamId %s, event id %s, for error: %s".formatted(sendStreamId, streamEvent.getEventId(), e.getMessage()));
           publishSendTimelineEventActivity.publishSendTimelineErrorEvent(streamEvent, sendNotification, sendStreamId, traceId);
