@@ -3,7 +3,9 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity;
 import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.activity.ActivityInfo;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementV27DTO;
 import it.gov.pagopa.pu.workflow.event.registries.dto.RegistryEventSendTimelineDTO;
 import it.gov.pagopa.pu.workflow.event.registries.producer.SendTimelineProducerService;
@@ -17,12 +19,16 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+
 @ExtendWith(MockitoExtension.class)
 class PublishSendTimelineEventActivityImplTest {
 
   public static final long ORGANIZATION_ID = 1L;
   public static final String WORKFLOW_ID = "workflowId";
   public static final String SEND_STREAM_ID = "sendStreamId";
+  public static final String CAMPAIGN_ID = "campaignId";
+  public static final String SEND_NOTIFICATION_ID = "sendNotificationId";
   public static final String TRACE_ID = "traceId";
 
   @Mock
@@ -46,7 +52,9 @@ class PublishSendTimelineEventActivityImplTest {
     ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
     event.setElement(new TimelineElementV27DTO());
     RegistryEventSendTimelineDTO registryEvent = new RegistryEventSendTimelineDTO();
-    Mockito.when(sendTimelineRegistryEventMapperMock.mapSuccess(event, ORGANIZATION_ID, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+
+    Mockito.when(sendTimelineRegistryEventMapperMock.mapSuccess(event, sendNotificationDTO, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
       .thenReturn(registryEvent);
     ActivityInfo activityInfo = Mockito.mock(ActivityInfo.class);
     Mockito.when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
@@ -56,7 +64,7 @@ class PublishSendTimelineEventActivityImplTest {
     try (MockedStatic<Activity> activityMock = Mockito.mockStatic(Activity.class)) {
       activityMock.when(Activity::getExecutionContext).thenReturn(activityExecutionContext);
       //WHEN
-      publishSendTimelineEventActivityImpl.publishSendTimelineEvent(event, ORGANIZATION_ID, SEND_STREAM_ID, TRACE_ID);
+      publishSendTimelineEventActivityImpl.publishSendTimelineEvent(event, sendNotificationDTO, SEND_STREAM_ID, TRACE_ID);
 
       //THEN
       Mockito.verify(sendTimelineProducerServiceMock)
@@ -75,7 +83,9 @@ class PublishSendTimelineEventActivityImplTest {
     ProgressResponseElementV28DTO event = new ProgressResponseElementV28DTO();
     event.setElement(new TimelineElementV27DTO());
     RegistryEventSendTimelineDTO registryEvent = new RegistryEventSendTimelineDTO();
-    Mockito.when(sendTimelineRegistryEventMapperMock.mapError(event, ORGANIZATION_ID, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+
+    Mockito.when(sendTimelineRegistryEventMapperMock.mapError(event, sendNotificationDTO, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
       .thenReturn(registryEvent);
     ActivityInfo activityInfo = Mockito.mock(ActivityInfo.class);
     Mockito.when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
@@ -85,7 +95,7 @@ class PublishSendTimelineEventActivityImplTest {
     try (MockedStatic<Activity> activityMock = Mockito.mockStatic(Activity.class)) {
       activityMock.when(Activity::getExecutionContext).thenReturn(activityExecutionContext);
       //WHEN
-      publishSendTimelineEventActivityImpl.publishSendTimelineErrorEvent(event, ORGANIZATION_ID, sendStreamId, traceId);
+      publishSendTimelineEventActivityImpl.publishSendTimelineErrorEvent(event, sendNotificationDTO, sendStreamId, traceId);
 
       //THEN
       Mockito.verify(sendTimelineProducerServiceMock)
@@ -95,4 +105,15 @@ class PublishSendTimelineEventActivityImplTest {
               );
     }
   }
+
+  private SendNotificationDTO buildSendNotification() {
+    return SendNotificationDTO.builder()
+      .organizationId(ORGANIZATION_ID)
+      .campaignId(CAMPAIGN_ID)
+      .sendNotificationId(SEND_NOTIFICATION_ID)
+      .status(NotificationStatus.SENDING)
+      .payments(new ArrayList<>())
+      .build();
+  }
+
 }

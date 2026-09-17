@@ -3,6 +3,7 @@ package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity;
 import io.temporal.activity.Activity;
 import io.temporal.spring.boot.ActivityImpl;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 import it.gov.pagopa.pu.workflow.event.registries.dto.RegistryEventSendTimelineDTO;
 import it.gov.pagopa.pu.workflow.event.registries.producer.SendTimelineProducerService;
 import it.gov.pagopa.pu.workflow.mapper.SendTimelineRegistryEventMapper;
@@ -28,20 +29,20 @@ public class PublishSendTimelineEventActivityImpl implements PublishSendTimeline
   }
 
   @Override
-  public void publishSendTimelineEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, Long organizationId, String sendStreamId, String traceId) {
+  public void publishSendTimelineEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, SendNotificationDTO sendNotificationDTO, String sendStreamId, String traceId) {
     log.info("Publishing SendNotification timeline event {} (IUN {}) for notificationRequest: {}", sendTimelineEventDTO.getElement().getCategory(), sendTimelineEventDTO.getIun(), sendTimelineEventDTO.getNotificationRequestId());
     String workflowId = Activity.getExecutionContext().getInfo().getWorkflowId();
     RegistryEventSendTimelineDTO registryEventSendTimelineDTO =
-      sendTimelineRegistryEventMapper.mapSuccess(sendTimelineEventDTO, organizationId, sendStreamId, workflowId, traceId);
+      sendTimelineRegistryEventMapper.mapSuccess(sendTimelineEventDTO, sendNotificationDTO, sendStreamId, workflowId, traceId);
     sendTimelineProducerService.notifySendTimelineEvent(registryEventSendTimelineDTO, sendStreamId);
   }
 
   @Override
-  public void publishSendTimelineErrorEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, Long organizationId, String sendStreamId, String traceId) {
+  public void publishSendTimelineErrorEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, SendNotificationDTO sendNotificationDTO, String sendStreamId, String traceId) {
     log.info("Publishing SendNotification error for timeline event {} (IUN {}) for notificationRequest: {}", sendTimelineEventDTO.getElement().getCategory(), sendTimelineEventDTO.getIun(), sendTimelineEventDTO.getNotificationRequestId());
     String workflowId = Activity.getExecutionContext().getInfo().getWorkflowId();
     RegistryEventSendTimelineDTO registryEventSendTimelineDTO =
-      sendTimelineRegistryEventMapper.mapError(sendTimelineEventDTO, organizationId, sendStreamId, workflowId, traceId);
+      sendTimelineRegistryEventMapper.mapError(sendTimelineEventDTO, sendNotificationDTO, sendStreamId, workflowId, traceId);
     sendTimelineProducerService.notifySendTimelineEvent(registryEventSendTimelineDTO, sendStreamId);
   }
 }
