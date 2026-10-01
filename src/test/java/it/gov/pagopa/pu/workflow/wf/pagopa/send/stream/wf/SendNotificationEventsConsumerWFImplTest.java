@@ -38,6 +38,7 @@ class SendNotificationEventsConsumerWFImplTest {
   public static final String SEND_STREAM_ID = "sendStreamId";
   public static final String CAMPAIGN_ID = "campaignId";
   public static final String SEND_NOTIFICATION_ID = "sendNotificationId";
+  public static final String SUBJECT = "NOTIFICATION SUBJECT";
 
   @Mock
   private SendEventStreamProcessingService sendEventStreamProcessingServiceMock;
@@ -560,6 +561,7 @@ class SendNotificationEventsConsumerWFImplTest {
       .sendNotificationId(SEND_NOTIFICATION_ID)
       .status(NotificationStatus.SENDING)
       .payments(new ArrayList<>())
+      .subject(SUBJECT)
       .build();
   }
 

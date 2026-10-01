@@ -29,6 +29,7 @@ class PublishSendTimelineEventActivityImplTest {
   public static final String SEND_STREAM_ID = "sendStreamId";
   public static final String CAMPAIGN_ID = "campaignId";
   public static final String SEND_NOTIFICATION_ID = "sendNotificationId";
+  public static final String SUBJECT = "NOTIFICATION SUBJECT";
   public static final String TRACE_ID = "traceId";
 
   @Mock
@@ -113,6 +114,7 @@ class PublishSendTimelineEventActivityImplTest {
       .sendNotificationId(SEND_NOTIFICATION_ID)
       .status(NotificationStatus.SENDING)
       .payments(new ArrayList<>())
+      .subject(SUBJECT)
       .build();
   }
 
