@@ -33,16 +33,27 @@ public class RegistryEventSendTimelineDTO {
   @NotNull
   private String grantorId;
 
+  @NotNull
   private Long organizationId;
+  @NotNull
   private String streamId;
+  @NotNull
+  private String campaignId;
+  @NotNull
   private String eventId;
+  @NotNull
   private TimelineElementCategoryV27DTO eventType;
+  @NotNull
+  private String sendNotificationId;
+  @NotNull
   private String notificationRequestId;
   private String iun;
   private Integer recipientIndex;
   private String newStatus;
   private OffsetDateTime eventTimestamp;
   private List<String> legalFactIds;
+
+  @NotNull
   private RegistryOutcome outcome;
   private String body;
 }

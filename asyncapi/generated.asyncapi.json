@@ -1337,6 +1337,9 @@
           "body": {
             "type": "string"
           },
+          "campaignId": {
+            "type": "string"
+          },
           "dateTime": {
             "type": "string",
             "format": "date-time"
@@ -1395,6 +1398,9 @@
           "requestorId": {
             "type": "string"
           },
+          "sendNotificationId": {
+            "type": "string"
+          },
           "streamId": {
             "type": "string"
           },
@@ -1405,6 +1411,7 @@
         "examples": [
           {
             "body": "string",
+            "campaignId": "string",
             "dateTime": "2015-07-20T15:49:04-07:00",
             "eventId": "string",
             "eventSubType": "REQ",
@@ -1424,17 +1431,26 @@
             "registryOrigin": "string",
             "registryType": "string",
             "requestorId": "string",
+            "sendNotificationId": "string",
             "streamId": "string",
             "traceId": "string"
           }
         ],
         "required": [
+          "campaignId",
           "dateTime",
+          "eventId",
           "eventSubType",
+          "eventType",
           "grantorId",
+          "notificationRequestId",
+          "organizationId",
+          "outcome",
           "registryId",
           "registryType",
           "requestorId",
+          "sendNotificationId",
+          "streamId",
           "traceId"
         ]
       },

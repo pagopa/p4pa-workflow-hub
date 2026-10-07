@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service;
 
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
-import it.gov.pagopa.payhub.activities.exception.sendnotification.SendStreamSkippedEventException;
 import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
@@ -25,8 +24,6 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   private final FetchSendLegalFactActivity fetchSendLegalFactActivity;
   private final StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity;
   private final StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity;
-  private final GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivity;
-
 
   @SuppressWarnings("java:S107")
   public SendEventStreamProcessingServiceImpl(
@@ -36,7 +33,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
     PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity,
     FetchSendLegalFactActivity fetchSendLegalFactActivity,
     StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity,
-    StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity, GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivity) {
+    StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity) {
     this.updateSendNotificationStatusActivity = updateSendNotificationStatusActivity;
     this.validateSendNotificationStatusActivity = validateSendNotificationStatusActivity;
     this.sendNotificationDateRetrieveActivity = sendNotificationDateRetrieveActivity;
@@ -44,20 +41,10 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
     this.fetchSendLegalFactActivity = fetchSendLegalFactActivity;
     this.startDeleteSendNotificationFileActivity = startDeleteSendNotificationFileActivity;
     this.startDeleteSendLegalFactFileActivity = startDeleteSendLegalFactFileActivity;
-    this.getSendNotificationByNotificationRequestIdActivity = getSendNotificationByNotificationRequestIdActivity;
   }
 
   @Override
-  public String processSendStreamEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent) {
-    String notificationRequestId = streamEvent.getNotificationRequestId();
-
-    SendNotificationDTO sendNotification = this.getSendNotificationByNotificationRequestIdActivity
-      .getSendNotificationByNotificationRequestId(notificationRequestId);
-
-    if (sendNotification == null) {
-      throw new SendStreamSkippedEventException("Notification for notificationRequestId %s not found".formatted(notificationRequestId));
-    }
-
+  public String processSendStreamEvent(String sendStreamId, ProgressResponseElementV28DTO streamEvent, SendNotificationDTO sendNotification) {
     String eventId = processNotificationEvent(sendStreamId, streamEvent, sendNotification);
     downloadAndArchiveNotificationLegalFact(streamEvent, sendNotification.getSendNotificationId());
     return eventId;
