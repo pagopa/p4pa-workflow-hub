@@ -179,6 +179,14 @@ spring:
               initial-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MIN_POLLER_SIZE:1}"
               min-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MIN_POLLER_SIZE:1}"
               max-concurrent-task-pollers: "\${WF_SEND_RESERVED_STREAM_LOCAL_MAX_POLLER_SIZE:5}"
+      - task-queue: SendNotificationPaymentHandlerWF
+        capacity:
+          activity-task-pollers-configuration:
+            poller-behavior-autoscaling:
+              enabled: true
+              initial-concurrent-task-pollers: "\${WF_SEND_NOTIFICATION_PAYMENT_HANDLER_MIN_POLLER_SIZE:1}"
+              min-concurrent-task-pollers: "\${WF_SEND_NOTIFICATION_PAYMENT_HANDLER_MIN_POLLER_SIZE:1}"
+              max-concurrent-task-pollers: "\${WF_SEND_NOTIFICATION_PAYMENT_HANDLER_MAX_POLLER_SIZE:5}"
       # assessments
       - task-queue: AssessmentCreationWF
         capacity:
