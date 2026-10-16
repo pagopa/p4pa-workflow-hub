@@ -1,6 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.config;
 
 import io.temporal.workflow.Workflow;
+import it.gov.pagopa.payhub.activities.activity.debtposition.receipt.ReceiptRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.payments.NotifyPaymentActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
@@ -15,6 +16,10 @@ public class SendNotificationPaymentHandlerWFConfig extends BaseWfConfig {
 
   public NotifyPaymentActivity buildNotifyPaymentActivityStub() {
     return Workflow.newActivityStub(NotifyPaymentActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
+
+  public ReceiptRetrieverActivity  buildReceiptRetrieverActivityStub() {
+    return Workflow.newActivityStub(ReceiptRetrieverActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
   public PublishSendTimelineEventActivity buildPublishSendTimelineEventActivityStub() {

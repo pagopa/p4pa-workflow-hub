@@ -19,7 +19,10 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PublishSendTimelineEventActivityImplTest {
@@ -55,12 +58,12 @@ class PublishSendTimelineEventActivityImplTest {
     RegistryEventSendTimelineDTO registryEvent = new RegistryEventSendTimelineDTO();
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
-    Mockito.when(sendTimelineRegistryEventMapperMock.mapSuccess(event, sendNotificationDTO, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
+    when(sendTimelineRegistryEventMapperMock.mapSuccess(event, sendNotificationDTO, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
       .thenReturn(registryEvent);
-    ActivityInfo activityInfo = Mockito.mock(ActivityInfo.class);
-    Mockito.when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
-    ActivityExecutionContext activityExecutionContext = Mockito.mock(ActivityExecutionContext.class);
-    Mockito.when(activityExecutionContext.getInfo()).thenReturn(activityInfo);
+    ActivityInfo activityInfo = mock(ActivityInfo.class);
+    when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
+    ActivityExecutionContext activityExecutionContext = mock(ActivityExecutionContext.class);
+    when(activityExecutionContext.getInfo()).thenReturn(activityInfo);
 
     try (MockedStatic<Activity> activityMock = Mockito.mockStatic(Activity.class)) {
       activityMock.when(Activity::getExecutionContext).thenReturn(activityExecutionContext);
@@ -68,7 +71,7 @@ class PublishSendTimelineEventActivityImplTest {
       publishSendTimelineEventActivityImpl.publishSendTimelineEvent(event, sendNotificationDTO, SEND_STREAM_ID, TRACE_ID);
 
       //THEN
-      Mockito.verify(sendTimelineProducerServiceMock)
+      verify(sendTimelineProducerServiceMock)
         .notifySendTimelineEvent(
           registryEvent,
                 SEND_STREAM_ID
@@ -86,12 +89,12 @@ class PublishSendTimelineEventActivityImplTest {
     RegistryEventSendTimelineDTO registryEvent = new RegistryEventSendTimelineDTO();
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
-    Mockito.when(sendTimelineRegistryEventMapperMock.mapError(event, sendNotificationDTO, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
+    when(sendTimelineRegistryEventMapperMock.mapError(event, sendNotificationDTO, SEND_STREAM_ID, WORKFLOW_ID, TRACE_ID))
       .thenReturn(registryEvent);
-    ActivityInfo activityInfo = Mockito.mock(ActivityInfo.class);
-    Mockito.when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
-    ActivityExecutionContext activityExecutionContext = Mockito.mock(ActivityExecutionContext.class);
-    Mockito.when(activityExecutionContext.getInfo()).thenReturn(activityInfo);
+    ActivityInfo activityInfo = mock(ActivityInfo.class);
+    when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
+    ActivityExecutionContext activityExecutionContext = mock(ActivityExecutionContext.class);
+    when(activityExecutionContext.getInfo()).thenReturn(activityInfo);
 
     try (MockedStatic<Activity> activityMock = Mockito.mockStatic(Activity.class)) {
       activityMock.when(Activity::getExecutionContext).thenReturn(activityExecutionContext);
@@ -99,7 +102,7 @@ class PublishSendTimelineEventActivityImplTest {
       publishSendTimelineEventActivityImpl.publishSendTimelineErrorEvent(event, sendNotificationDTO, sendStreamId, traceId);
 
       //THEN
-      Mockito.verify(sendTimelineProducerServiceMock)
+      verify(sendTimelineProducerServiceMock)
               .notifySendTimelineEvent(
                       registryEvent,
                       sendStreamId
@@ -118,4 +121,34 @@ class PublishSendTimelineEventActivityImplTest {
       .build();
   }
 
+  @Test
+  void testPublishPaymentTimelineEvent() {
+    // GIVEN
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    OffsetDateTime paymentDate = OffsetDateTime.now();
+    String sendStreamId = String.valueOf(ORGANIZATION_ID);
+    RegistryEventSendTimelineDTO registryEvent = new RegistryEventSendTimelineDTO();
+
+    when(sendTimelineRegistryEventMapperMock.mapPayment(sendNotificationDTO, paymentDate, sendStreamId, WORKFLOW_ID, TRACE_ID))
+      .thenReturn(registryEvent);
+
+    ActivityInfo activityInfo = mock(ActivityInfo.class);
+    when(activityInfo.getWorkflowId()).thenReturn(WORKFLOW_ID);
+
+    ActivityExecutionContext activityExecutionContext = mock(ActivityExecutionContext.class);
+    when(activityExecutionContext.getInfo()).thenReturn(activityInfo);
+
+    try (MockedStatic<Activity> activityMock = mockStatic(Activity.class)) {
+      activityMock.when(Activity::getExecutionContext)
+        .thenReturn(activityExecutionContext);
+
+      // WHEN
+      publishSendTimelineEventActivityImpl.publishPaymentTimelineEvent(
+        sendNotificationDTO, paymentDate, TRACE_ID);
+
+      // THEN
+      verify(sendTimelineRegistryEventMapperMock).mapPayment(sendNotificationDTO, paymentDate, sendStreamId, WORKFLOW_ID, TRACE_ID);
+      verify(sendTimelineProducerServiceMock).notifySendTimelineEvent(registryEvent, sendStreamId);
+    }
+  }
 }

@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static it.gov.pagopa.pu.workflow.mapper.SendTimelineRegistryEventMapper.*;
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
@@ -336,5 +337,44 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(1, registryEvent.getRecipientIndex());
 
     TestUtils.checkNotNullFields(registryEvent, "body", "legalFactIds");
+  }
+
+  @Test
+  void testMapPayment() {
+    // GIVEN
+    SendNotificationDTO sendNotification = buildSendNotification();
+    sendNotification.setNotificationRequestId(NOTIFICATION_REQUEST_ID);
+    sendNotification.setIun(IUN);
+
+    OffsetDateTime paymentDate = OffsetDateTime.now();
+    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumerWF.class);
+
+    // WHEN
+    RegistryEventSendTimelineDTO registryEvent =
+      sendTimelineRegistryEventMapper.mapPayment(
+        sendNotification, paymentDate, STREAM_ID, workflowId, TRACE_ID);
+
+    // THEN
+    Assertions.assertNotNull(registryEvent.getRegistryId());
+    Assertions.assertEquals(registryEvent.getRegistryId(), UUID.fromString(registryEvent.getRegistryId()).toString());
+    Assertions.assertEquals(REGISTRY_ORIGIN, registryEvent.getRegistryOrigin());
+    Assertions.assertEquals(REGISTRY_SEND, registryEvent.getRegistryType());
+    Assertions.assertNotNull(registryEvent.getDateTime());
+    Assertions.assertEquals(TRACE_ID, registryEvent.getTraceId());
+    Assertions.assertEquals(RegistryEventSubType.RESP, registryEvent.getEventSubType());
+    Assertions.assertEquals(REQUESTOR_ID_PAYMENT, registryEvent.getRequestorId());
+    Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
+    Assertions.assertEquals(ORGANIZATION_ID, registryEvent.getOrganizationId());
+    Assertions.assertEquals(STREAM_ID, registryEvent.getStreamId());
+    Assertions.assertEquals(SEND_NOTIFICATION_ID, registryEvent.getEventId());
+    Assertions.assertEquals(TimelineElementCategoryV27DTO.PU_PAYMENT, registryEvent.getEventType());
+    Assertions.assertEquals(NOTIFICATION_REQUEST_ID, registryEvent.getNotificationRequestId());
+    Assertions.assertEquals(IUN, registryEvent.getIun());
+    Assertions.assertNull(registryEvent.getRecipientIndex());
+    Assertions.assertEquals(NotificationStatusV26DTO.PU_PAID.name(), registryEvent.getNewStatus());
+    Assertions.assertEquals(paymentDate, registryEvent.getEventTimestamp());
+    Assertions.assertNull(registryEvent.getLegalFactIds());
+    Assertions.assertEquals(RegistryOutcome.OK, registryEvent.getOutcome());
+    Assertions.assertNull(registryEvent.getBody());
   }
 }

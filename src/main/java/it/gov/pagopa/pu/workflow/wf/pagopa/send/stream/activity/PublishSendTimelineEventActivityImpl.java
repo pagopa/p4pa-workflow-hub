@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
+
 @Service
 @Lazy
 @Slf4j
@@ -43,6 +45,16 @@ public class PublishSendTimelineEventActivityImpl implements PublishSendTimeline
     String workflowId = Activity.getExecutionContext().getInfo().getWorkflowId();
     RegistryEventSendTimelineDTO registryEventSendTimelineDTO =
       sendTimelineRegistryEventMapper.mapError(sendTimelineEventDTO, sendNotificationDTO, sendStreamId, workflowId, traceId);
+    sendTimelineProducerService.notifySendTimelineEvent(registryEventSendTimelineDTO, sendStreamId);
+  }
+
+  @Override
+  public void publishPaymentTimelineEvent(SendNotificationDTO sendNotificationDTO, OffsetDateTime paymentDate, String traceId) {
+    log.info("Publishing PU_PAYMENT timeline event for sendNotificationId {}", sendNotificationDTO.getSendNotificationId());
+
+    String workflowId = Activity.getExecutionContext().getInfo().getWorkflowId();
+    String sendStreamId = String.valueOf(sendNotificationDTO.getOrganizationId());
+    RegistryEventSendTimelineDTO registryEventSendTimelineDTO = sendTimelineRegistryEventMapper.mapPayment(sendNotificationDTO, paymentDate, sendStreamId, workflowId, traceId);
     sendTimelineProducerService.notifySendTimelineEvent(registryEventSendTimelineDTO, sendStreamId);
   }
 }
