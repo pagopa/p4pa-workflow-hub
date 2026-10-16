@@ -5,6 +5,8 @@ import io.temporal.activity.ActivityMethod;
 import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 
+import java.time.OffsetDateTime;
+
 /** It will publish an event related to SEND timeline on Kafka */
 @ActivityInterface
 public interface PublishSendTimelineEventActivity {
@@ -12,4 +14,6 @@ public interface PublishSendTimelineEventActivity {
   void publishSendTimelineEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, SendNotificationDTO sendNotificationDTO, String sendStreamId, String traceId);
   @ActivityMethod
   void publishSendTimelineErrorEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, SendNotificationDTO sendNotificationDTO, String sendStreamId, String traceId);
+  @ActivityMethod
+  void publishPaymentTimelineEvent(SendNotificationDTO sendNotificationDTO, OffsetDateTime paymentDateTime, String traceId);
 }
