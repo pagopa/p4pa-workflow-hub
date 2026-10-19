@@ -1,11 +1,11 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.config;
 
 import io.temporal.workflow.Workflow;
-import it.gov.pagopa.payhub.activities.activity.debtposition.receipt.ReceiptRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.payments.NotifyPaymentActivity;
 import it.gov.pagopa.pu.workflow.config.temporal.BaseWfConfig;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.activity.ReceiptRetrieverActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ public class SendNotificationPaymentHandlerWFConfig extends BaseWfConfig {
     return Workflow.newActivityStub(NotifyPaymentActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 
-  public ReceiptRetrieverActivity  buildReceiptRetrieverActivityStub() {
+  public ReceiptRetrieverActivity buildReceiptRetrieverActivityStub() {
     return Workflow.newActivityStub(ReceiptRetrieverActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
 

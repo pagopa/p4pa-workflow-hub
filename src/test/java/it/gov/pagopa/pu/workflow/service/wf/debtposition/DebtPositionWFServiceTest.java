@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DebtPositionServiceTest {
+class DebtPositionWFServiceTest {
 
   @Mock
   private DebtPositionSyncService debtPositionSyncServiceMock;
@@ -38,7 +38,7 @@ class DebtPositionServiceTest {
   @Mock
   private WorkflowCompletionService wfCompletionMock;
 
-  private DebtPositionService service;
+  private DebtPositionWFService service;
 
   private static final Long ORG_ID = 1L;
   private static final String BASE_WF_ID = "MassiveIbanUpdateWF-" + ORG_ID;
@@ -46,7 +46,7 @@ class DebtPositionServiceTest {
 
   @BeforeEach
   void init(){
-    service = new DebtPositionServiceImpl(debtPositionSyncServiceMock, checkDebtPositionExpirationWfClientMock, massiveDPClientMock, wfCompletionMock);
+    service = new DebtPositionWFServiceImpl(debtPositionSyncServiceMock, checkDebtPositionExpirationWfClientMock, massiveDPClientMock, wfCompletionMock);
   }
 
   @AfterEach

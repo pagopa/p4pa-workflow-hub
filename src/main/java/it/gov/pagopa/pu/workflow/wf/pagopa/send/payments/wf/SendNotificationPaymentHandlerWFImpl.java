@@ -1,7 +1,6 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.wf;
 
 import io.temporal.spring.boot.WorkflowImpl;
-import it.gov.pagopa.payhub.activities.activity.debtposition.receipt.ReceiptRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.payments.NotifyPaymentActivity;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
@@ -9,6 +8,7 @@ import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.utilities.TaskQueueConstants;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.activity.ReceiptRetrieverActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.config.SendNotificationPaymentHandlerWFConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +58,7 @@ public class SendNotificationPaymentHandlerWFImpl implements SendNotificationPay
       log.info("Publishing PU_PAYMENT event for receiptId {}", receiptId);
 
       ReceiptDTO receipt = receiptRetrieverActivity.retrieveReceipt(receiptId);
+
       publishSendTimelineEventActivity.publishPaymentTimelineEvent(sendNotificationDTO, receipt.getPaymentDateTime(), traceId);
     }
 

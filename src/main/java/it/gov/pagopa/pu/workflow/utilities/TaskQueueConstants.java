@@ -41,6 +41,7 @@ public class TaskQueueConstants {
   public static final String TASK_QUEUE_SEND_RESERVED_PUBLISH_EVENT_LOCAL = "SendNotificationPublishEventSendWF_LOCAL";
   public static final String TASK_QUEUE_SEND_RESERVED_STREAM_CONSUME_LOCAL = "SendNotificationStreamConsumerWF_LOCAL";
   public static final String TASK_QUEUE_SEND_RESERVED_PAYMENT_HANDLER = "SendNotificationPaymentHandlerWF";
+  public static final String TASK_QUEUE_SEND_RESERVED_PAYMENT_HANDLER_LOCAL = "SendNotificationPaymentHandlerWF_LOCAL";
 //endregion
 
 //region Assessments domain

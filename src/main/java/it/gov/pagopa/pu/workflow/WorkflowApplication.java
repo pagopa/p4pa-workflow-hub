@@ -15,7 +15,8 @@ import java.util.TimeZone;
   scanBasePackages = {
     "it.gov.pagopa.pu.workflow",
     "it.gov.pagopa.payhub.activities.connector.auth",
-    "it.gov.pagopa.pu.common"
+    "it.gov.pagopa.pu.common",
+    "it.gov.pagopa.payhub.activities.connector.debtposition"
   })
 @Import({
   NotRetryableActivityExceptionHandlerAspect.class,

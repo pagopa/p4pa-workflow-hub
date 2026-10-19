@@ -1,11 +1,11 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.wf;
 
-import it.gov.pagopa.payhub.activities.activity.debtposition.receipt.ReceiptRetrieverActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.payments.NotifyPaymentActivity;
 import it.gov.pagopa.payhub.activities.util.Utilities;
 import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.activity.ReceiptRetrieverActivity;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.config.SendNotificationPaymentHandlerWFConfig;
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.PublishSendTimelineEventActivity;
 import org.junit.jupiter.api.AfterEach;

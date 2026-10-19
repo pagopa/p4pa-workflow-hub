@@ -6,7 +6,7 @@ import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.MassiveDebtPositionIbanUpdateRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
 
-public interface DebtPositionService {
+public interface DebtPositionWFService {
   WorkflowCreatedDTO syncDebtPosition(DebtPositionDTO debtPosition, PaymentEventRequestDTO paymentEventRequest, WfExecutionParameters wfExecutionParameters, String accessToken);
   WorkflowCreatedDTO checkDpExpiration(Long debtPositionId);
   WorkflowCreatedDTO massiveIbanUpdate(Long orgId, MassiveDebtPositionIbanUpdateRequestDTO massiveDebtPositionIbanUpdateRequestDTO);
