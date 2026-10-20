@@ -45,4 +45,13 @@ public class PublishSendTimelineEventActivityImpl implements PublishSendTimeline
       sendTimelineRegistryEventMapper.mapError(sendTimelineEventDTO, sendNotificationDTO, sendStreamId, workflowId, traceId);
     sendTimelineProducerService.notifySendTimelineEvent(registryEventSendTimelineDTO, sendStreamId);
   }
+
+  @Override
+  public void publishPaymentTimelineEvent(SendNotificationDTO sendNotificationDTO, Long receiptId) {
+    log.info("Publishing PU_PAYMENT timeline event for sendNotificationId {}", sendNotificationDTO.getSendNotificationId());
+
+    String workflowId = Activity.getExecutionContext().getInfo().getWorkflowId();
+    RegistryEventSendTimelineDTO registryEventSendTimelineDTO = sendTimelineRegistryEventMapper.mapPayment(sendNotificationDTO, receiptId, workflowId);
+    sendTimelineProducerService.notifySendTimelineEvent(registryEventSendTimelineDTO, String.valueOf(sendNotificationDTO.getOrganizationId()));
+  }
 }

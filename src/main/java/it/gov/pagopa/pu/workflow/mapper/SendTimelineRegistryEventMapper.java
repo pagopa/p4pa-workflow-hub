@@ -1,19 +1,19 @@
 package it.gov.pagopa.pu.workflow.mapper;
 
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementDetailsV27DTO;
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import tools.jackson.databind.json.JsonMapper;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryEventSubType;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatusV26DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
 import it.gov.pagopa.pu.workflow.event.registries.dto.RegistryEventSendTimelineDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -22,11 +22,14 @@ public class SendTimelineRegistryEventMapper {
   public static final String REGISTRY_SEND = "REGISTRY_SEND";
   public static final String REGISTRY_ORIGIN = "workflow-hub";
   public static final String REQUESTOR_ID = "SEND";
+  public static final String REQUESTOR_ID_PAYMENT = "NodoDeiPagamentiSPC";
 
   private final JsonMapper jsonMapper;
+  private final ReceiptService receiptService;
 
-  public SendTimelineRegistryEventMapper(JsonMapper jsonMapper) {
+  public SendTimelineRegistryEventMapper(JsonMapper jsonMapper, ReceiptService receiptService) {
     this.jsonMapper = jsonMapper;
+    this.receiptService = receiptService;
   }
 
   public RegistryEventSendTimelineDTO mapSuccess(
@@ -111,4 +114,29 @@ public class SendTimelineRegistryEventMapper {
     }
   }
 
+  public RegistryEventSendTimelineDTO mapPayment(SendNotificationDTO sendNotificationDTO, Long receiptId, String workflowId) {
+    ReceiptDTO receipt = receiptService.getByReceiptId(receiptId);
+    return RegistryEventSendTimelineDTO.builder()
+      .registryId(UUID.randomUUID().toString())
+      .registryOrigin(REGISTRY_ORIGIN)
+      .registryType(REGISTRY_SEND)
+      .dateTime(OffsetDateTime.now())
+      .traceId(it.gov.pagopa.payhub.activities.util.Utilities.getTraceId())
+      .eventSubType(RegistryEventSubType.RESP)
+      .requestorId(REQUESTOR_ID_PAYMENT)
+      .grantorId(workflowId)
+      .organizationId(sendNotificationDTO.getOrganizationId())
+      .streamId(String.valueOf(sendNotificationDTO.getOrganizationId()))
+      .eventId(sendNotificationDTO.getSendNotificationId())
+      .eventType(TimelineElementCategoryV27DTO.PU_PAYMENT)
+      .notificationRequestId(sendNotificationDTO.getNotificationRequestId())
+      .iun(sendNotificationDTO.getIun())
+      .recipientIndex(null)
+      .newStatus(NotificationStatusV26DTO.PU_PAID.name())
+      .eventTimestamp(receipt.getPaymentDateTime())
+      .legalFactIds(null)
+      .outcome(RegistryOutcome.OK)
+      .body(null)
+      .build();
+  }
 }
