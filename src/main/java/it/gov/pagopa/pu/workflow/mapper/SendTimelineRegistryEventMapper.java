@@ -1,5 +1,7 @@
 package it.gov.pagopa.pu.workflow.mapper;
 
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
 import tools.jackson.databind.json.JsonMapper;
@@ -23,9 +25,11 @@ public class SendTimelineRegistryEventMapper {
   public static final String REQUESTOR_ID_PAYMENT = "NodoDeiPagamentiSPC";
 
   private final JsonMapper jsonMapper;
+  private final ReceiptService receiptService;
 
-  public SendTimelineRegistryEventMapper(JsonMapper jsonMapper) {
+  public SendTimelineRegistryEventMapper(JsonMapper jsonMapper, ReceiptService receiptService) {
     this.jsonMapper = jsonMapper;
+    this.receiptService = receiptService;
   }
 
   public RegistryEventSendTimelineDTO mapSuccess(
@@ -110,25 +114,26 @@ public class SendTimelineRegistryEventMapper {
     }
   }
 
-  public RegistryEventSendTimelineDTO mapPayment(SendNotificationDTO sendNotificationDTO, OffsetDateTime paymentDate, String sendStreamId, String workflowId, String traceId) {
+  public RegistryEventSendTimelineDTO mapPayment(SendNotificationDTO sendNotificationDTO, Long receiptId, String workflowId) {
+    ReceiptDTO receipt = receiptService.getByReceiptId(receiptId);
     return RegistryEventSendTimelineDTO.builder()
       .registryId(UUID.randomUUID().toString())
       .registryOrigin(REGISTRY_ORIGIN)
       .registryType(REGISTRY_SEND)
       .dateTime(OffsetDateTime.now())
-      .traceId(traceId)
+      .traceId(it.gov.pagopa.payhub.activities.util.Utilities.getTraceId())
       .eventSubType(RegistryEventSubType.RESP)
       .requestorId(REQUESTOR_ID_PAYMENT)
       .grantorId(workflowId)
       .organizationId(sendNotificationDTO.getOrganizationId())
-      .streamId(sendStreamId)
+      .streamId(String.valueOf(sendNotificationDTO.getOrganizationId()))
       .eventId(sendNotificationDTO.getSendNotificationId())
       .eventType(TimelineElementCategoryV27DTO.PU_PAYMENT)
       .notificationRequestId(sendNotificationDTO.getNotificationRequestId())
       .iun(sendNotificationDTO.getIun())
       .recipientIndex(null)
       .newStatus(NotificationStatusV26DTO.PU_PAID.name())
-      .eventTimestamp(paymentDate)
+      .eventTimestamp(receipt.getPaymentDateTime())
       .legalFactIds(null)
       .outcome(RegistryOutcome.OK)
       .body(null)

@@ -7,8 +7,8 @@ import it.gov.pagopa.pu.debtpositions.dto.generated.DebtPositionDTO;
 /**
  * Workflow interface for handling SEND notification payments.
  * <p>
- * This workflow coordinates activities to notify a payment, retrieve the related
- * receipt, and publish a SEND timeline event when the notification is paid.
+ * This workflow coordinates activities to notify a payment
+ * and publish a SEND timeline event when the notification is paid.
  * </p>
  * @see <a href=https://pagopa.atlassian.net/wiki/spaces/SPAC/pages/3401515261/Gestione+pagamento+notifica+SEND>Confluence page</a>
  * */
