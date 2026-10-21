@@ -173,7 +173,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-security-test")
   testImplementation("org.mockito:mockito-core")
   testImplementation("org.projectlombok:lombok")
-  testImplementation("io.temporal:temporal-testing")
+  testImplementation("io.temporal:temporal-testing:$temporalVersion")
   testImplementation("com.h2database:h2")
   testImplementation("uk.co.jemos.podam:podam:$podamVersion")
 }
