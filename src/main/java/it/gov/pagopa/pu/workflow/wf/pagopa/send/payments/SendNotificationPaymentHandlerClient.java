@@ -23,11 +23,11 @@ public class SendNotificationPaymentHandlerClient {
     this.workflowClientService = workflowClientService;
   }
 
-  public WorkflowCreatedDTO notifyPayment(String eventId, DebtPositionDTO debtPosition, Long receiptId) {
+  public WorkflowCreatedDTO notifyPayment(DebtPositionDTO debtPosition, Long receiptId) {
     log.debug("Starting notify payment for receiptId {}", receiptId);
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PAYMENT_HANDLER;
-    String workflowId = generateWorkflowId(eventId + "_" + receiptId, SendNotificationPaymentHandlerWF.class);
+    String workflowId = generateWorkflowId(receiptId, SendNotificationPaymentHandlerWF.class);
 
     SendNotificationPaymentHandlerWF wf = workflowService.buildWorkflowStubToStartNew(
       SendNotificationPaymentHandlerWF.class, taskQueue, workflowId);
