@@ -14,6 +14,7 @@ import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClien
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.SendNotificationPaymentHandlerClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,8 @@ class PaymentsConsumerTest {
   @Mock
   private CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClientMock;
   @Mock
+  private SendNotificationPaymentHandlerClient sendNotificationPaymentHandlerClientMock;
+  @Mock
   private OrganizationService organizationServiceMock;
 
   private PaymentsConsumer paymentsConsumer;
@@ -48,6 +51,7 @@ class PaymentsConsumerTest {
     this.paymentsConsumer = new PaymentsConsumer(wfClientMock,
       createAssessmentsWFClientMock,
       createAssessmentsRegistryWFClientMock,
+      sendNotificationPaymentHandlerClientMock,
       organizationServiceMock);
   }
 
@@ -56,6 +60,7 @@ class PaymentsConsumerTest {
     Mockito.verifyNoMoreInteractions(wfClientMock,
       createAssessmentsWFClientMock,
       createAssessmentsRegistryWFClientMock,
+      sendNotificationPaymentHandlerClientMock,
       organizationServiceMock);
   }
 
@@ -92,6 +97,8 @@ class PaymentsConsumerTest {
       .createAssessments(2L);
     verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
+    verify(sendNotificationPaymentHandlerClientMock)
+      .notifyPayment(debtPositionDTO, 2L);
   }
 
   @Test
@@ -129,6 +136,8 @@ class PaymentsConsumerTest {
 
     verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1"));
+    verify(sendNotificationPaymentHandlerClientMock)
+      .notifyPayment(debtPositionDTO, 2L);
   }
 
   @Test
@@ -163,6 +172,8 @@ class PaymentsConsumerTest {
       .createAssessments(1L);
     verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
+    verify(sendNotificationPaymentHandlerClientMock)
+      .notifyPayment(debtPositionDTO, 1L);
   }
 
   @Test
@@ -238,6 +249,8 @@ class PaymentsConsumerTest {
     verify(createAssessmentsWFClientMock).createAssessments(2L);
     verify(createAssessmentsRegistryWFClientMock)
       .createAssessmentsRegistry(paymentEventDTO.getEventId(), debtPositionDTO, List.of("iud1", "iud3", "iud5"));
+    verify(sendNotificationPaymentHandlerClientMock)
+      .notifyPayment(debtPositionDTO, 2L);
   }
 
   private DebtPositionDTO buildPaidDebtPosition(Long receiptIdForPaid) {
@@ -280,5 +293,59 @@ class PaymentsConsumerTest {
         .build()
     ));
     return out;
+  }
+
+  @Test
+  void givenRtReceivedWithMultipleReceiptIdsWhenAcceptThenNotifyPaymentForEachReceipt() {
+    // Given
+    Organization organization = new Organization();
+    organization.setOrgFiscalCode("FC_ORG1");
+    organization.setOrganizationId(1L);
+
+    DebtPositionDTO debtPositionDTO = DebtPositionFaker.buildDebtPositionDTO();
+    debtPositionDTO.setPaymentOptions(List.of(
+      buildPaymentOption(List.of(
+        buildInstallment(InstallmentStatus.PAID, "iuv1", "iur1", "iud1", 2L),
+        buildInstallment(InstallmentStatus.PAID, "iuv2", "iur2", "iud2", 99L)
+      ))
+    ));
+
+    DebtPositionEventDTO paymentEventDTO = DebtPositionEventDTO.builder()
+      .eventId("EVENTID")
+      .payload(debtPositionDTO)
+      .eventType(PaymentEventType.RT_RECEIVED)
+      .eventDescription("receiptId:undefined")
+      .build();
+
+    when(organizationServiceMock.getOrganizationByFiscalCode("FC_ORG1"))
+      .thenReturn(Optional.of(organization));
+
+    // When
+    paymentsConsumer.accept(paymentEventDTO);
+
+    // Then
+    verify(wfClientMock)
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(
+        1L, "iud1", "iuv1", "iur1", Collections.singletonList(1)));
+
+    verify(wfClientMock)
+      .notifyReceipt(new IudClassificationNotifyReceiptSignalDTO(
+        1L, "iud2", "iuv2", "iur2", Collections.singletonList(1)));
+
+    verify(createAssessmentsWFClientMock).createAssessments(2L);
+    verify(createAssessmentsWFClientMock).createAssessments(99L);
+
+    verify(createAssessmentsRegistryWFClientMock)
+      .createAssessmentsRegistry(
+        paymentEventDTO.getEventId(),
+        debtPositionDTO,
+        List.of("iud1", "iud2")
+      );
+
+    verify(sendNotificationPaymentHandlerClientMock)
+      .notifyPayment(debtPositionDTO, 2L);
+
+    verify(sendNotificationPaymentHandlerClientMock)
+      .notifyPayment(debtPositionDTO, 99L);
   }
 }

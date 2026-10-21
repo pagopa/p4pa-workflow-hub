@@ -52,7 +52,6 @@ class SendNotificationPaymentHandlerClientTest {
   @Test
   void whenNotifyPaymentThenOk() {
     // Given
-    String eventId = "EVENT_ID";
     DebtPositionDTO debtPosition = new DebtPositionDTO();
     Long receiptId = 1L;
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PAYMENT_HANDLER;
@@ -64,7 +63,7 @@ class SendNotificationPaymentHandlerClientTest {
     TemporalTestUtils.configureWorkflowClientServiceMock(workflowClientServiceMock, expectedResult, debtPosition, receiptId);
 
     // When
-    WorkflowCreatedDTO result = client.notifyPayment(eventId, debtPosition, receiptId);
+    WorkflowCreatedDTO result = client.notifyPayment(debtPosition, receiptId);
 
     // Then
     assertEquals(expectedResult, result);
