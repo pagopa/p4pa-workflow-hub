@@ -27,7 +27,7 @@ public class SendNotificationPaymentHandlerClient {
     log.debug("Starting notify payment for receiptId {}", receiptId);
 
     String taskQueue = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PAYMENT_HANDLER;
-    String workflowId = generateWorkflowId(eventId, SendNotificationPaymentHandlerWF.class);
+    String workflowId = generateWorkflowId(eventId + "_" + receiptId, SendNotificationPaymentHandlerWF.class);
 
     SendNotificationPaymentHandlerWF wf = workflowService.buildWorkflowStubToStartNew(
       SendNotificationPaymentHandlerWF.class, taskQueue, workflowId);

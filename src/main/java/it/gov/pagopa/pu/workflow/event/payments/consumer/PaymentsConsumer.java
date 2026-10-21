@@ -12,6 +12,7 @@ import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClien
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.SendNotificationPaymentHandlerClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +31,20 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
   private final IudClassificationWFClient iudClassificationWFClient;
   private final CreateAssessmentsWFClient createAssessmentsWFClient;
   private final CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient;
+  private final SendNotificationPaymentHandlerClient sendNotificationPaymentHandlerClient;
   private final OrganizationService organizationService;
 
   public PaymentsConsumer(
     IudClassificationWFClient iudClassificationWFClient,
     CreateAssessmentsWFClient createAssessmentsWFClient,
     CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient,
+    SendNotificationPaymentHandlerClient sendNotificationPaymentHandlerClient,
     OrganizationService organizationService
   ) {
     this.iudClassificationWFClient = iudClassificationWFClient;
     this.createAssessmentsWFClient = createAssessmentsWFClient;
     this.createAssessmentsRegistryWFClient = createAssessmentsRegistryWFClient;
+    this.sendNotificationPaymentHandlerClient = sendNotificationPaymentHandlerClient;
     this.organizationService = organizationService;
   }
 
@@ -88,6 +92,9 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
 
         handleCreateAssessments(receiptIds);
         handleCreateAssessmentsRegistry(paymentEventDTO, debtPosition, receiptIds);
+
+        receiptIds.forEach(receiptId ->
+          sendNotificationPaymentHandlerClient.notifyPayment(paymentEventDTO.getEventId(), debtPosition, receiptId));
       } else {
         log.error("Unexpected payload related to RT_RECEIVED event: provided {} having payload type {}"
           , paymentEventDTO.getClass().getName(),
@@ -132,7 +139,7 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
     }
 
     if (receiptIds.isEmpty()) {
-      log.error("Cannot retrieve a receiptId related to the input event: " + event.getEventId());
+      log.error("Cannot retrieve a receiptId related to the input event: {}", event.getEventId());
     }
 
     return receiptIds;
