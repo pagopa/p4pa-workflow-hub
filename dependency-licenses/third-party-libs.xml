@@ -86,11 +86,6 @@
 <td><a href='https://opensource.org/licenses/BSD-2-Clause'>BSD-2-Clause</a></td>
 </tr>
 <tr>
-<td><a href='https://github.com/virtuald/curvesapi'>com.github.virtuald:curvesapi</a></td>
-<td>1.08</td>
-<td><a href='https://opensource.org/licenses/BSD-3-Clause'>BSD-3-Clause</a></td>
-</tr>
-<tr>
 <td><a href='http://source.android.com/'>com.google.android:annotations</a></td>
 <td>4.1.1.4</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
@@ -156,11 +151,6 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='http://opencsv.sf.net'>com.opencsv:opencsv</a></td>
-<td>5.12.0</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://square.github.io/okhttp/'>com.squareup.okhttp3:okhttp</a></td>
 <td>4.12.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
@@ -176,26 +166,6 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='https://www.eclipse.org'>com.sun.xml.bind:jaxb-core</a></td>
-<td>4.0.9</td>
-<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://www.eclipse.org'>com.sun.xml.bind:jaxb-impl</a></td>
-<td>4.0.9</td>
-<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://www.eclipse.org'>com.sun.xml.bind:jaxb-jxc</a></td>
-<td>4.0.9</td>
-<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://www.eclipse.org'>com.sun.xml.bind:jaxb-xjc</a></td>
-<td>4.0.9</td>
-<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://github.com/uber-java/tally'>com.uber.m3:tally-core</a></td>
 <td>0.13.0</td>
 <td><a href='https://opensource.org/licenses/mit'>MIT</a></td>
@@ -206,28 +176,13 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='https://github.com/brettwooldridge/SparseBitSet'>com.zaxxer:SparseBitSet</a></td>
-<td>1.3</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://commons.apache.org/proper/commons-beanutils'>commons-beanutils:commons-beanutils</a></td>
-<td>1.11.0</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://commons.apache.org/proper/commons-codec/'>commons-codec:commons-codec</a></td>
 <td>1.21.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='http://commons.apache.org/collections/'>commons-collections:commons-collections</a></td>
-<td>3.2.2</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://commons.apache.org/proper/commons-io/'>commons-io:commons-io</a></td>
-<td>2.21.0</td>
+<td>2.20.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -586,11 +541,6 @@
 <td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
 </tr>
 <tr>
-<td><a href='https://www.eclipse.org'>jakarta.mail:jakarta.mail-api</a></td>
-<td>2.1.5</td>
-<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://www.eclipse.org'>jakarta.persistence:jakarta.persistence-api</a></td>
 <td>3.2.0</td>
 <td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
@@ -636,11 +586,6 @@
 <td><a href='https://opensource.org/licenses/BSD-3-Clause'>BSD-3-Clause</a></td>
 </tr>
 <tr>
-<td><a href='https://commons.apache.org/proper/commons-collections/'>org.apache.commons:commons-collections4</a></td>
-<td>4.5.0</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://commons.apache.org/proper/commons-compress/'>org.apache.commons:commons-compress</a></td>
 <td>1.28.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
@@ -648,16 +593,6 @@
 <tr>
 <td><a href='https://commons.apache.org/proper/commons-lang/'>org.apache.commons:commons-lang3</a></td>
 <td>3.20.0</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='http://commons.apache.org/proper/commons-math/'>org.apache.commons:commons-math3</a></td>
-<td>3.6.1</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://commons.apache.org/proper/commons-text'>org.apache.commons:commons-text</a></td>
-<td>1.15.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -691,26 +626,6 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='https://poi.apache.org/'>org.apache.poi:poi</a></td>
-<td>5.5.1</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://poi.apache.org/'>org.apache.poi:poi-ooxml</a></td>
-<td>5.5.1</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://poi.apache.org/'>org.apache.poi:poi-ooxml-lite</a></td>
-<td>5.5.1</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='http://poi.apache.org/'>org.apache.poi:poi-ooxml-schemas</a></td>
-<td>4.1.2</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://tomcat.apache.org/'>org.apache.tomcat:tomcat-annotations-api</a></td>
 <td>11.0.24</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
@@ -728,11 +643,6 @@
 <tr>
 <td><a href='https://tomcat.apache.org/'>org.apache.tomcat.embed:tomcat-embed-websocket</a></td>
 <td>11.0.24</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://xmlbeans.apache.org/'>org.apache.xmlbeans:xmlbeans</a></td>
-<td>5.3.0</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
@@ -759,16 +669,6 @@
 <td>org.codehaus.mojo:animal-sniffer-annotations</td>
 <td>1.27</td>
 <td><a href='https://opensource.org/licenses/mit'>MIT</a></td>
-</tr>
-<tr>
-<td><a href='https://www.eclipse.org'>org.eclipse.angus:angus-activation</a></td>
-<td>2.0.3</td>
-<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://www.eclipse.org'>org.eclipse.angus:angus-mail</a></td>
-<td>2.0.5</td>
-<td><a href='https://openjdk.java.net/legal/gplv2+ce.html'>GPL-2.0-only WITH Classpath-exception-2.0</a></td>
 </tr>
 <tr>
 <td><a href='https://www.eclipse.org'>org.glassfish.jaxb:jaxb-runtime</a></td>
@@ -824,11 +724,6 @@
 <td><a href='https://kotlinlang.org/'>org.jetbrains.kotlin:kotlin-stdlib-jdk8</a></td>
 <td>2.3.21</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://jsoup.org/'>org.jsoup:jsoup</a></td>
-<td>1.23.2</td>
-<td><a href='https://opensource.org/licenses/mit'>MIT</a></td>
 </tr>
 <tr>
 <td><a href='https://jspecify.dev/docs/start-here'>org.jspecify:jspecify</a></td>
@@ -1046,11 +941,6 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-mail</a></td>
-<td>4.1.1</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-micrometer-metrics</a></td>
 <td>4.1.1</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
@@ -1116,11 +1006,6 @@
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
 <tr>
-<td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-starter-aspectj</a></td>
-<td>4.1.1</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
 <td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-starter-cache</a></td>
 <td>4.1.1</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
@@ -1152,11 +1037,6 @@
 </tr>
 <tr>
 <td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-starter-logging</a></td>
-<td>4.1.1</td>
-<td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
-</tr>
-<tr>
-<td><a href='https://spring.io/projects/spring-boot'>org.springframework.boot:spring-boot-starter-mail</a></td>
 <td>4.1.1</td>
 <td><a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache-2.0</a></td>
 </tr>
