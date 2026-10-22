@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import  it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
 
-import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @WorkflowImpl(taskQueues = TaskQueueConstants.TASK_QUEUE_SEND_RESERVED_PAYMENT_HANDLER)
@@ -47,7 +47,7 @@ public class SendNotificationPaymentHandlerWFImpl implements SendNotificationPay
       return;
     }
 
-    if (isLastHistoryPaid(sendNotificationDTO)) {
+    if (hasPaidHistoryEvent(sendNotificationDTO)) {
       log.info("Publishing PU_PAYMENT event for receiptId {}", receiptId);
       publishSendTimelineEventActivity.publishPaymentTimelineEvent(sendNotificationDTO, receiptId);
     }
@@ -55,16 +55,16 @@ public class SendNotificationPaymentHandlerWFImpl implements SendNotificationPay
     log.info("Payment notification for receiptId {} completed", receiptId);
   }
 
-  private boolean isLastHistoryPaid(SendNotificationDTO dto) {
+  private boolean hasPaidHistoryEvent(SendNotificationDTO dto) {
     if (dto == null || dto.getHistory() == null || dto.getHistory().isEmpty()) {
       return false;
     }
 
-    List<StreamEventSummaryDTO> history = dto.getHistory();
-    StreamEventSummaryDTO last = history.getLast();
-
-    return last != null
-      && last.getNewNotificationStatus() == NotificationStatusV26DTO.PU_PAID
-      && last.getTimelineElementCategory() == TimelineElementCategoryV27DTO.PU_PAYMENT;
+    return dto.getHistory().stream()
+      .filter(Objects::nonNull)
+      .anyMatch(event ->
+        event.getNewNotificationStatus() == NotificationStatusV26DTO.PU_PAID
+          && event.getTimelineElementCategory() == TimelineElementCategoryV27DTO.PU_PAYMENT
+      );
   }
 }

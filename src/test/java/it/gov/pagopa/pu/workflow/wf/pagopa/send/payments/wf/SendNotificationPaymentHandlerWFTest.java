@@ -106,7 +106,7 @@ class SendNotificationPaymentHandlerWFTest {
   }
 
   @Test
-  void whenLastHistoryElementIsNullThenSkip() {
+  void whenHistoryContainsOnlyNullThenSkip() {
     // Given
     SendNotificationDTO sendNotificationDTO = new SendNotificationDTO();
     sendNotificationDTO.setHistory(Collections.singletonList(null));
@@ -116,7 +116,7 @@ class SendNotificationPaymentHandlerWFTest {
   }
 
   @Test
-  void whenLastHistoryStatusIsNotPaidThenSkip() {
+  void whenHistoryDoesNotContainPaidStatusThenSkip() {
     // Given
     NotificationStatusV26DTO otherStatus =
       Arrays.stream(NotificationStatusV26DTO.values())
@@ -132,7 +132,7 @@ class SendNotificationPaymentHandlerWFTest {
   }
 
   @Test
-  void whenLastHistoryCategoryIsNotPaymentThenSkip() {
+  void whenHistoryDoesNotContainPaymentCategoryThenSkip() {
     // Given
     TimelineElementCategoryV27DTO otherCategory =
       Arrays.stream(TimelineElementCategoryV27DTO.values())
@@ -148,19 +148,26 @@ class SendNotificationPaymentHandlerWFTest {
   }
 
   @Test
-  void whenPreviousHistoryIsPaidButLastIsNotThenSkip() {
+  void whenPreviousHistoryIsPaidButLastIsNotThenPublishTimelineEvent() {
     // Given
     StreamEventSummaryDTO paidEvent = buildPaidEvent();
-
     StreamEventSummaryDTO lastEvent = new StreamEventSummaryDTO(null, TimelineElementCategoryV27DTO.PU_PAYMENT);
+
     SendNotificationDTO sendNotificationDTO = buildSendNotificationDTO(List.of(paidEvent, lastEvent));
 
-    // When & Then
-    verifySkippedPublication(sendNotificationDTO);
+    when(notifyPaymentActivityMock.notifyPayment(debtPosition, receiptId))
+      .thenReturn(sendNotificationDTO);
+
+    // When
+    workflow.notifyPayment(debtPosition, receiptId);
+
+    // Then
+    verify(notifyPaymentActivityMock).notifyPayment(debtPosition, receiptId);
+    verify(publishSendTimelineEventActivityMock).publishPaymentTimelineEvent(sendNotificationDTO, receiptId);
   }
 
   @Test
-  void whenLastHistoryIsPaidThenPublishTimelineEvent() {
+  void whenHistoryContainsPaidEventThenPublishTimelineEvent() {
     // Given
     SendNotificationDTO sendNotificationDTO = buildSendNotificationDTO(List.of(new StreamEventSummaryDTO(), buildPaidEvent()));
 
