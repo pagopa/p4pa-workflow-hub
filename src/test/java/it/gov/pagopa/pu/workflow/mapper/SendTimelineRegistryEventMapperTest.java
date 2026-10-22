@@ -396,7 +396,8 @@ class SendTimelineRegistryEventMapperTest {
       Assertions.assertEquals(paymentDate, registryEvent.getEventTimestamp());
       Assertions.assertNull(registryEvent.getLegalFactIds());
       Assertions.assertEquals(RegistryOutcome.OK, registryEvent.getOutcome());
-      Assertions.assertNull(registryEvent.getBody());
+      Assertions.assertEquals("INTERNAL_EVENT", registryEvent.getBody());
+      Assertions.assertEquals(sendNotification.getSendNotificationId(), registryEvent.getSendNotificationId());
 
       verify(receiptServiceMock).getByReceiptId(receiptId);
     }
