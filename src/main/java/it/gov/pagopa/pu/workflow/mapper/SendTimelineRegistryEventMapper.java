@@ -129,6 +129,7 @@ public class SendTimelineRegistryEventMapper {
       .streamId(String.valueOf(sendNotificationDTO.getOrganizationId()))
       .eventId(sendNotificationDTO.getSendNotificationId())
       .eventType(TimelineElementCategoryV27DTO.PU_PAYMENT)
+      .sendNotificationId(sendNotificationDTO.getSendNotificationId())
       .notificationRequestId(sendNotificationDTO.getNotificationRequestId())
       .iun(sendNotificationDTO.getIun())
       .recipientIndex(null)
@@ -136,7 +137,7 @@ public class SendTimelineRegistryEventMapper {
       .eventTimestamp(receipt.getPaymentDateTime())
       .legalFactIds(null)
       .outcome(RegistryOutcome.OK)
-      .body(null)
+      .body("INTERNAL_EVENT") // The body cannot be null because it will be encrypted and a null value will cause a NullPointerException
       .build();
   }
 }
