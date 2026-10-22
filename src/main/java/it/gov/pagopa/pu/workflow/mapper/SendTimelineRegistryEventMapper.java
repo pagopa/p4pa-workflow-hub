@@ -129,6 +129,7 @@ public class SendTimelineRegistryEventMapper {
       .streamId(String.valueOf(sendNotificationDTO.getOrganizationId()))
       .eventId(sendNotificationDTO.getSendNotificationId())
       .eventType(TimelineElementCategoryV27DTO.PU_PAYMENT)
+      .sendNotificationId(sendNotificationDTO.getSendNotificationId())
       .notificationRequestId(sendNotificationDTO.getNotificationRequestId())
       .iun(sendNotificationDTO.getIun())
       .recipientIndex(null)
