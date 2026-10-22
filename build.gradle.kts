@@ -65,7 +65,8 @@ val kafkaAppender = "0.2.0-RC2"
 val lz4JavaVersion = "1.12.0"
 val springWolfAsyncApiVersion = "1.21.0"
 val springWolfUiAsyncApiVersion = "1.21.0"
-val micrometerVersion = "1.7.1"
+val micrometerOtelBridgeVersion = "1.7.1"
+val micrometerPrometheusVersion = "1.17.1"
 val otelVersion = "1.65.0"
 val bouncycastleVersion = "1.86"
 val mapStructVersion = "1.6.3"
@@ -117,8 +118,8 @@ dependencies {
   }
   implementation("at.yawk.lz4:lz4-java:$lz4JavaVersion")
   implementation("org.springframework.boot:spring-boot-starter-actuator")
-  implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerVersion")
-  implementation("io.micrometer:micrometer-registry-prometheus")
+  implementation("io.micrometer:micrometer-tracing-bridge-otel:$micrometerOtelBridgeVersion")
+  implementation("io.micrometer:micrometer-registry-prometheus:$micrometerPrometheusVersion")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion") {
     exclude(group = "org.apache.commons", module = "commons-lang3")
   }
