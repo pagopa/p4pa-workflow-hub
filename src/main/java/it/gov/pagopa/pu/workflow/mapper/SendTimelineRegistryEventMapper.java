@@ -136,7 +136,7 @@ public class SendTimelineRegistryEventMapper {
       .eventTimestamp(receipt.getPaymentDateTime())
       .legalFactIds(null)
       .outcome(RegistryOutcome.OK)
-      .body(null)
+      .body("INTERNAL_EVENT") // The body cannot be null because it will be encrypted and a null value will cause a NullPointerException
       .build();
   }
 }
