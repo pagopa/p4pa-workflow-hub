@@ -58,7 +58,16 @@ public class CommonExceptionHandler {
 
   @ExceptionHandler({DataIntegrityViolationException.class})
   public ResponseEntity<WorkflowErrorDTO> handleDataIntegrityViolationException(RuntimeException ex, HttpServletRequest request){
-    return handleException(ex, request, HttpStatus.CONFLICT, WorkflowErrorDTO.CategoryEnum.WORKFLOW_CONFLICT);
+    ExceptionMessageTranscoded transcoded = buildReturnedMessage(ex);
+    HttpStatus status = HttpStatus.CONFLICT;
+    WorkflowErrorDTO.CategoryEnum errorEnum = WorkflowErrorDTO.CategoryEnum.WORKFLOW_CONFLICT;
+
+    if (transcoded.getCode() != null && transcoded.getCode().equals(WorkflowErrorDTO.CategoryEnum.WORKFLOW_BAD_REQUEST.getValue())) {
+      status = HttpStatus.BAD_REQUEST;
+      errorEnum = WorkflowErrorDTO.CategoryEnum.WORKFLOW_BAD_REQUEST;
+    }
+
+    return handleException(ex, request, status, errorEnum);
   }
 
   @ExceptionHandler({CannotAcquireLockException.class})
