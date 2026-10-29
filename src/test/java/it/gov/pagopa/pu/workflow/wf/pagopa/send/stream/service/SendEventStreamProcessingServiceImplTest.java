@@ -161,6 +161,98 @@ class SendEventStreamProcessingServiceImplTest {
   }
 
   @Test
+  void givenRefusedEventWhenWithNullRefusalReasonsProcessSendStreamEventThenOk() {
+    //GIVEN
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
+      null,
+      NotificationStatusV26DTO.REFUSED
+    );
+    TimelineElementDetailsV27DTO timelineElementDetails = new TimelineElementDetailsV27DTO();
+    sendEvent.getElement().setDetails(timelineElementDetails);
+
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
+
+    when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
+
+    //WHEN
+    String actualResult =
+      sendEventStreamProcessingService.processSendStreamEvent(
+        SEND_STREAM_ID,
+        sendEvent,
+        sendNotificationDTO
+      );
+
+    //THEN
+    Assertions.assertNotNull(actualResult);
+    Assertions.assertEquals(EVENT_ID, actualResult);
+    Assertions.assertEquals(sendEvent.getEventId(), actualResult);
+    verify(updateNotificationRefusalReasonsActivityMock, never())
+      .updateNotificationRefusalReasons(
+        anyString(),
+        anyList()
+      );
+    verify(publishSendNotificationPaymentEventActivityMock)
+      .publishSendNotificationErrorEvent(
+        Mockito.isA(DebtPositionSendNotificationDTO.class),
+        Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null))
+      );
+    verify(fetchSendLegalFactActivityMock, times(0))
+      .downloadAndArchiveSendLegalFact(
+        Mockito.isA(String.class),
+        Mockito.isA(LegalFactCategoryDTO.class),
+        Mockito.isA(String.class)
+      );
+  }
+
+  @Test
+  void givenRefusedEventWithNullElementDetailsWhenProcessSendStreamEventThenOk() {
+    //GIVEN
+    ProgressResponseElementV28DTO sendEvent = buildSendEvent(
+      null,
+      NotificationStatusV26DTO.REFUSED
+    );
+
+    SendNotificationDTO sendNotificationDTO = buildSendNotification();
+    sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
+
+    when(validateSendNotificationStatusActivityMock.validateSendNotificationStatus(
+      NOTIFICATION_REQUEST_ID
+    )).thenReturn(sendNotificationDTO);
+
+    //WHEN
+    String actualResult =
+      sendEventStreamProcessingService.processSendStreamEvent(
+        SEND_STREAM_ID,
+        sendEvent,
+        sendNotificationDTO
+      );
+
+    //THEN
+    Assertions.assertNotNull(actualResult);
+    Assertions.assertEquals(EVENT_ID, actualResult);
+    Assertions.assertEquals(sendEvent.getEventId(), actualResult);
+    verify(updateNotificationRefusalReasonsActivityMock, never())
+      .updateNotificationRefusalReasons(
+        anyString(),
+        anyList()
+      );
+    verify(publishSendNotificationPaymentEventActivityMock)
+      .publishSendNotificationErrorEvent(
+        Mockito.isA(DebtPositionSendNotificationDTO.class),
+        Mockito.eq(new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null))
+      );
+    verify(fetchSendLegalFactActivityMock, times(0))
+      .downloadAndArchiveSendLegalFact(
+        Mockito.isA(String.class),
+        Mockito.isA(LegalFactCategoryDTO.class),
+        Mockito.isA(String.class)
+      );
+  }
+
+  @Test
   void givenDeliveredEventWhenProcessSendStreamEventThenOk() {
     //GIVEN
     ProgressResponseElementV28DTO sendEvent = buildSendEvent(

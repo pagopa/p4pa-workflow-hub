@@ -1,10 +1,7 @@
 package it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.service;
 
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.processing.*;
-import it.gov.pagopa.pu.sendnotification.dto.generated.LegalFactCategoryDTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatus;
-import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
-import it.gov.pagopa.pu.sendnotification.dto.generated.SendNotificationDTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.*;
 import it.gov.pagopa.pu.workflow.dto.PaymentEventRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.utilities.Utilities;
@@ -68,7 +65,10 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       }
       case REFUSED -> {
         sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
-        this.updateNotificationRefusalReasonsActivity.updateNotificationRefusalReasons(streamEvent.getNotificationRequestId(), streamEvent.getElement().getDetails() != null ? streamEvent.getElement().getDetails().getRefusalReasons() : Collections.emptyList());
+        TimelineElementDetailsV27DTO elementDetails = streamEvent.getElement().getDetails();
+        if(elementDetails != null && elementDetails.getRefusalReasons() != null) {
+          this.updateNotificationRefusalReasonsActivity.updateNotificationRefusalReasons(streamEvent.getNotificationRequestId(), elementDetails.getRefusalReasons());
+        }
         this.publishSendErrorEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null));
         yield streamEvent.getEventId();
       }
