@@ -48,7 +48,9 @@ class SendEventStreamProcessingServiceImplTest {
   @Mock
   private StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivityMock;
   @Mock
-  private GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivity;
+  private GetSendNotificationByNotificationRequestIdActivity getSendNotificationByNotificationRequestIdActivityMock;
+  @Mock
+  private UpdateNotificationRefusalReasonsActivity updateNotificationRefusalReasonsActivityMock;
 
   @InjectMocks
   private SendEventStreamProcessingServiceImpl sendEventStreamProcessingService;
@@ -63,7 +65,8 @@ class SendEventStreamProcessingServiceImplTest {
       fetchSendLegalFactActivityMock,
       startDeleteSendNotificationFileActivityMock,
       startDeleteSendLegalFactFileActivityMock,
-      getSendNotificationByNotificationRequestIdActivity
+      getSendNotificationByNotificationRequestIdActivityMock,
+      updateNotificationRefusalReasonsActivityMock
     );
   }
 
@@ -115,6 +118,10 @@ class SendEventStreamProcessingServiceImplTest {
       null,
       NotificationStatusV26DTO.REFUSED
     );
+    TimelineElementDetailsV27DTO timelineElementDetails = new TimelineElementDetailsV27DTO();
+    List<NotificationRefusedErrorV27DTO> refusalReasons = List.of(new NotificationRefusedErrorV27DTO());
+    timelineElementDetails.setRefusalReasons(refusalReasons);
+    sendEvent.getElement().setDetails(timelineElementDetails);
 
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
     sendNotificationDTO.setStatus(NotificationStatus.IN_VALIDATION);
@@ -135,6 +142,11 @@ class SendEventStreamProcessingServiceImplTest {
     Assertions.assertNotNull(actualResult);
     Assertions.assertEquals(EVENT_ID, actualResult);
     Assertions.assertEquals(sendEvent.getEventId(), actualResult);
+    verify(updateNotificationRefusalReasonsActivityMock)
+      .updateNotificationRefusalReasons(
+        sendEvent.getNotificationRequestId(),
+        refusalReasons
+      );
     verify(publishSendNotificationPaymentEventActivityMock)
       .publishSendNotificationErrorEvent(
         Mockito.isA(DebtPositionSendNotificationDTO.class),

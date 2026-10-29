@@ -62,7 +62,8 @@ public class SendNotificationEventsConsumerWFImpl implements SendNotificationEve
       wfNotificationProcessConfig.buildPublishSendNotificationPaymentEventActivityStub(),
       wfConfig.buildFetchSendLegalFactActivityStub(),
       wfConfig.buildStartDeleteSendNotificationFileActivityStub(),
-      wfConfig.buildStartDeleteSendLegalFactFileActivityStub()
+      wfConfig.buildStartDeleteSendLegalFactFileActivityStub(),
+      wfConfig.buildUpdateNotificationRefusalReasonsActivityStub()
     );
     publishSendTimelineEventActivity = wfConfig.buildPublishSendTimelineEventActivityStub();
     notifySendNotificationStreamEventsActivity = wfConfig.buildNotifySendNotificationStreamEventsActivityStub();

@@ -14,6 +14,8 @@ import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendL
 import it.gov.pagopa.pu.workflow.wf.pagopa.send.stream.activity.StartDeleteSendNotificationFileActivity;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
+
 @Slf4j
 public class SendEventStreamProcessingServiceImpl implements SendEventStreamProcessingService {
 
@@ -24,6 +26,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
   private final FetchSendLegalFactActivity fetchSendLegalFactActivity;
   private final StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity;
   private final StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity;
+  private final UpdateNotificationRefusalReasonsActivity updateNotificationRefusalReasonsActivity;
 
   @SuppressWarnings("java:S107")
   public SendEventStreamProcessingServiceImpl(
@@ -33,7 +36,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
     PublishSendNotificationPaymentEventActivity publishSendNotificationPaymentEventActivity,
     FetchSendLegalFactActivity fetchSendLegalFactActivity,
     StartDeleteSendNotificationFileActivity startDeleteSendNotificationFileActivity,
-    StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity) {
+    StartDeleteSendLegalFactFileActivity startDeleteSendLegalFactFileActivity, UpdateNotificationRefusalReasonsActivity updateNotificationRefusalReasonsActivity) {
     this.updateSendNotificationStatusActivity = updateSendNotificationStatusActivity;
     this.validateSendNotificationStatusActivity = validateSendNotificationStatusActivity;
     this.sendNotificationDateRetrieveActivity = sendNotificationDateRetrieveActivity;
@@ -41,6 +44,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
     this.fetchSendLegalFactActivity = fetchSendLegalFactActivity;
     this.startDeleteSendNotificationFileActivity = startDeleteSendNotificationFileActivity;
     this.startDeleteSendLegalFactFileActivity = startDeleteSendLegalFactFileActivity;
+    this.updateNotificationRefusalReasonsActivity = updateNotificationRefusalReasonsActivity;
   }
 
   @Override
@@ -64,6 +68,7 @@ public class SendEventStreamProcessingServiceImpl implements SendEventStreamProc
       }
       case REFUSED -> {
         sendNotification = this.validateSendNotificationStatusActivity.validateSendNotificationStatus(streamEvent.getNotificationRequestId());
+        this.updateNotificationRefusalReasonsActivity.updateNotificationRefusalReasons(streamEvent.getNotificationRequestId(), streamEvent.getElement().getDetails() != null ? streamEvent.getElement().getDetails().getRefusalReasons() : Collections.emptyList());
         this.publishSendErrorEvent(sendNotification, new PaymentEventRequestDTO(PaymentEventType.SEND_NOTIFICATION_ERROR, null));
         yield streamEvent.getEventId();
       }

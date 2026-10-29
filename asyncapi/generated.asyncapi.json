@@ -1,5 +1,5 @@
 {
-  "asyncapi": "3.0.0",
+  "asyncapi": "3.1.0",
   "info": {
     "title": "p4pa-workflow-hub",
     "version": "0.0.1",
@@ -129,6 +129,7 @@
             "format": "int64"
           },
           "paymentOptions": {
+            "title": "List",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PaymentOptionDTO"
@@ -286,6 +287,7 @@
         ]
       },
       "DebtPositionEventDTO": {
+        "title": "DebtPositionEventDTO",
         "type": "object",
         "examples": [
           {
@@ -416,6 +418,7 @@
         ]
       },
       "DebtPositionIoEventDTO": {
+        "title": "DebtPositionIoEventDTO",
         "type": "object",
         "examples": [
           {
@@ -465,6 +468,7 @@
             "format": "int64"
           },
           "messages": {
+            "title": "List",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/IoMessage"
@@ -510,6 +514,7 @@
         ]
       },
       "DebtPositionSendEventDTO": {
+        "title": "DebtPositionSendEventDTO",
         "type": "object",
         "examples": [
           {
@@ -556,6 +561,7 @@
             "type": "string"
           },
           "noticeCodes": {
+            "title": "List",
             "type": "array",
             "items": {
               "type": "string"
@@ -780,6 +786,7 @@
             "$ref": "#/components/schemas/InstallmentSyncStatus"
           },
           "transfers": {
+            "title": "List",
             "type": [
               "null",
               "array"
@@ -1064,6 +1071,7 @@
             ]
           },
           "installments": {
+            "title": "List",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/InstallmentDTO"
@@ -1364,6 +1372,7 @@
             "type": "string"
           },
           "legalFactIds": {
+            "title": "List",
             "type": "array",
             "items": {
               "type": "string"
@@ -1677,7 +1686,7 @@
           "$ref": "#/components/schemas/HeadersNotDocumented"
         },
         "payload": {
-          "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.1.0",
           "schema": {
             "$ref": "#/components/schemas/DataEventType"
           }
@@ -1693,8 +1702,9 @@
           "$ref": "#/components/schemas/HeadersNotDocumented"
         },
         "payload": {
-          "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.1.0",
           "schema": {
+            "type": [ ],
             "oneOf": [
               {
                 "$ref": "#/components/schemas/PaymentEventDTOObject"
@@ -1722,7 +1732,7 @@
           "$ref": "#/components/schemas/HeadersNotDocumented"
         },
         "payload": {
-          "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.0.0",
+          "schemaFormat": "application/vnd.aai.asyncapi+json;version=3.1.0",
           "schema": {
             "$ref": "#/components/schemas/RegistryEventSendTimelineDTO"
           }

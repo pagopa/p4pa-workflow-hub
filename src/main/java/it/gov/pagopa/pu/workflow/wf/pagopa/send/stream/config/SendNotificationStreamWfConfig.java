@@ -69,4 +69,8 @@ public class SendNotificationStreamWfConfig extends BaseWfConfig {
   public NotifySendNotificationStreamEventsActivity buildNotifySendNotificationStreamEventsActivityStub() {
     return Workflow.newActivityStub(NotifySendNotificationStreamEventsActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
   }
+
+  public UpdateNotificationRefusalReasonsActivity buildUpdateNotificationRefusalReasonsActivityStub() {
+    return Workflow.newActivityStub(UpdateNotificationRefusalReasonsActivity.class, TemporalWFImplementationCustomizer.baseWfConfig2ActivityOptions(this));
+  }
 }
