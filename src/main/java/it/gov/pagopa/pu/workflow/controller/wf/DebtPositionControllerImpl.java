@@ -7,7 +7,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.MassiveDebtPositionIbanUpdateRequ
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.service.wf.debtposition.DebtPositionService;
+import it.gov.pagopa.pu.workflow.service.wf.debtposition.DebtPositionWFService;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class DebtPositionControllerImpl implements DebtPositionApi {
 
-  private final DebtPositionService service;
+  private final DebtPositionWFService service;
 
-  public DebtPositionControllerImpl(DebtPositionService service) {
+  public DebtPositionControllerImpl(DebtPositionWFService service) {
     this.service = service;
   }
 

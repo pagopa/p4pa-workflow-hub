@@ -12,4 +12,6 @@ public interface PublishSendTimelineEventActivity {
   void publishSendTimelineEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, SendNotificationDTO sendNotificationDTO, String sendStreamId, String traceId);
   @ActivityMethod
   void publishSendTimelineErrorEvent(ProgressResponseElementV28DTO sendTimelineEventDTO, SendNotificationDTO sendNotificationDTO, String sendStreamId, String traceId);
+  @ActivityMethod
+  void publishPaymentTimelineEvent(SendNotificationDTO sendNotificationDTO, Long receiptId);
 }

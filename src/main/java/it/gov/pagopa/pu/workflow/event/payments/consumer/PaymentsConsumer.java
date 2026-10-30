@@ -12,6 +12,7 @@ import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsRegistryWFClien
 import it.gov.pagopa.pu.workflow.wf.assessments.CreateAssessmentsWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.IudClassificationWFClient;
 import it.gov.pagopa.pu.workflow.wf.classification.iud.dto.IudClassificationNotifyReceiptSignalDTO;
+import it.gov.pagopa.pu.workflow.wf.pagopa.send.payments.SendNotificationPaymentHandlerClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +31,20 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
   private final IudClassificationWFClient iudClassificationWFClient;
   private final CreateAssessmentsWFClient createAssessmentsWFClient;
   private final CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient;
+  private final SendNotificationPaymentHandlerClient sendNotificationPaymentHandlerClient;
   private final OrganizationService organizationService;
 
   public PaymentsConsumer(
     IudClassificationWFClient iudClassificationWFClient,
     CreateAssessmentsWFClient createAssessmentsWFClient,
     CreateAssessmentsRegistryWFClient createAssessmentsRegistryWFClient,
+    SendNotificationPaymentHandlerClient sendNotificationPaymentHandlerClient,
     OrganizationService organizationService
   ) {
     this.iudClassificationWFClient = iudClassificationWFClient;
     this.createAssessmentsWFClient = createAssessmentsWFClient;
     this.createAssessmentsRegistryWFClient = createAssessmentsRegistryWFClient;
+    this.sendNotificationPaymentHandlerClient = sendNotificationPaymentHandlerClient;
     this.organizationService = organizationService;
   }
 
@@ -88,12 +92,33 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
 
         handleCreateAssessments(receiptIds);
         handleCreateAssessmentsRegistry(paymentEventDTO, debtPosition, receiptIds);
+        handleSendNotificationPayment(debtPosition, receiptIds);
       } else {
         log.error("Unexpected payload related to RT_RECEIVED event: provided {} having payload type {}"
           , paymentEventDTO.getClass().getName(),
           Optional.ofNullable(paymentEventDTO.getPayload()).map(p -> p.getClass().getName()).orElse("null"));
       }
     }
+  }
+
+  private Set<Long> extractReceiptIdsFromEventDescription(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
+    Set<Long> receiptIds;
+    try {
+      receiptIds = Set.of(Long.valueOf(event.getEventDescription().replace("receiptId:", "")));
+    } catch (Exception e) {
+      log.error("It was not possible to retrieve the particular receiptId which originated the event, let's considering all installment's receiptIds");
+      receiptIds = debtPosition.getPaymentOptions().stream()
+        .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
+        .filter(installment -> Objects.nonNull(installment.getReceiptId()) && InstallmentStatus.PAID.equals(installment.getStatus()))
+        .map(InstallmentDTO::getReceiptId)
+        .collect(Collectors.toSet());
+    }
+
+    if (receiptIds.isEmpty()) {
+      log.error("Cannot retrieve a receiptId related to the input event: {}", event.getEventId());
+    }
+
+    return receiptIds;
   }
 
   private void handleCreateAssessments(Set<Long> receiptIds) {
@@ -118,24 +143,10 @@ public class PaymentsConsumer implements Consumer<PaymentEventDTO<?>> {
     }
   }
 
-  private Set<Long> extractReceiptIdsFromEventDescription(DebtPositionEventDTO event, DebtPositionDTO debtPosition) {
-    Set<Long> receiptIds;
-    try {
-      receiptIds = Set.of(Long.valueOf(event.getEventDescription().replace("receiptId:", "")));
-    } catch (Exception e) {
-      log.error("It was not possible to retrieve the particular receiptId which originated the event, let's considering all installment's receiptIds");
-      receiptIds = debtPosition.getPaymentOptions().stream()
-        .flatMap(paymentOptionDTO -> paymentOptionDTO.getInstallments().stream())
-        .filter(installment -> Objects.nonNull(installment.getReceiptId()) && InstallmentStatus.PAID.equals(installment.getStatus()))
-        .map(InstallmentDTO::getReceiptId)
-        .collect(Collectors.toSet());
+  private void handleSendNotificationPayment(DebtPositionDTO debtPosition, Set<Long> receiptIds) {
+    if (!receiptIds.isEmpty()) {
+      receiptIds.forEach(receiptId ->
+        sendNotificationPaymentHandlerClient.notifyPayment(debtPosition, receiptId));
     }
-
-    if (receiptIds.isEmpty()) {
-      log.error("Cannot retrieve a receiptId related to the input event: " + event.getEventId());
-    }
-
-    return receiptIds;
   }
-
 }

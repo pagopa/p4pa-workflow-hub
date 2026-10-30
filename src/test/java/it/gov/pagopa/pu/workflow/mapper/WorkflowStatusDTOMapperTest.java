@@ -28,8 +28,7 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WorkflowStatusDTOMapperTest {
@@ -75,12 +74,12 @@ class WorkflowStatusDTOMapperTest {
       .taskQueue("TASKQUEUE")
       .startDateTime(OffsetDateTime.now(Utilities.ZONEID))
       .executionDateTime(OffsetDateTime.now(Utilities.ZONEID).plusMinutes(1))
-      .endDateTime(OffsetDateTime.now(Utilities.ZONEID).plusDays(1))
+      .endDateTime(OffsetDateTime.now(Utilities.ZONEID).plusHours(1))
       .duration("PT0S")
       .status(status)
       .build();
 
-    WorkflowExecutionInfo workflowExecutionInfoMock = Mockito.mock(WorkflowExecutionInfo.class, RETURNS_DEEP_STUBS);
+    WorkflowExecutionInfo workflowExecutionInfoMock = mock(WorkflowExecutionInfo.class, RETURNS_DEEP_STUBS);
 
     when(workflowExecutionInfoMock.getType()).thenReturn(WorkflowType.newBuilder().setName(expectedResult.getWorkflowType()).build());
     when(workflowExecutionInfoMock.getStatus()).thenReturn(expectedResult.getStatus());
@@ -92,28 +91,28 @@ class WorkflowStatusDTOMapperTest {
     when(workflowExecutionInfoMock.getExecutionDuration()).thenReturn(com.google.protobuf.Duration.getDefaultInstance());
 
     if(WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED.equals(status)){
-      WorkflowStub mock = Mockito.mock(WorkflowStub.class);
+      WorkflowStub mock = mock(WorkflowStub.class);
       String result = "OK";
-      Mockito.when(mock.getResult(Object.class)).thenReturn(result);
+      when(mock.getResult(Object.class)).thenReturn(result);
 
-      Mockito.when(workflowClientMock.newUntypedWorkflowStub(workflowId))
+      when(workflowClientMock.newUntypedWorkflowStub(workflowId))
           .thenReturn(mock);
 
-      Mockito.when(objectMapperMock.writeValueAsString(result)).thenReturn(result);
+      when(objectMapperMock.writeValueAsString(result)).thenReturn(result);
       expectedResult.setResult(result);
     } else if (WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_FAILED.equals(status)) {
-      WorkflowStub mock = Mockito.mock(WorkflowStub.class);
+      WorkflowStub mock = mock(WorkflowStub.class);
       String activityType = "ACTIVITYTYPE";
       String activityFailureDescription = "failureDescription";
 
-      Mockito.when(mock.getResult(Object.class))
+      when(mock.getResult(Object.class))
         .thenAnswer(i -> {
-          throw new WorkflowFailedException(Mockito.mock(WorkflowExecution.class), "wf", EventType.EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_FAILED, 1L, null,
+          throw new WorkflowFailedException(mock(WorkflowExecution.class), "wf", EventType.EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_FAILED, 1L, null,
             new ActivityFailure("ActivityFailed", 1L, 1L, activityType, "ACITIVITYID", null, null,
               ApplicationFailure.newFailure(activityFailureDescription, activityType)));
         });
 
-      Mockito.when(workflowClientMock.newUntypedWorkflowStub(workflowId))
+      when(workflowClientMock.newUntypedWorkflowStub(workflowId))
         .thenReturn(mock);
 
       expectedResult.setResult("Failed Activity " + activityType + ": " + activityFailureDescription);

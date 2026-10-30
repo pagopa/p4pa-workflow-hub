@@ -12,7 +12,7 @@ import it.gov.pagopa.pu.workflow.dto.generated.MassiveDebtPositionIbanUpdateRequ
 import it.gov.pagopa.pu.workflow.dto.generated.PaymentEventType;
 import it.gov.pagopa.pu.workflow.dto.generated.SyncDebtPositionRequestDTO;
 import it.gov.pagopa.pu.workflow.dto.generated.WorkflowCreatedDTO;
-import it.gov.pagopa.pu.workflow.service.wf.debtposition.DebtPositionService;
+import it.gov.pagopa.pu.workflow.service.wf.debtposition.DebtPositionWFService;
 import it.gov.pagopa.pu.workflow.utilities.SecurityUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -44,7 +44,7 @@ class DebtPositionControllerTest {
   private ObjectMapper objectMapper;
 
   @MockitoBean
-  private DebtPositionService serviceMock;
+  private DebtPositionWFService serviceMock;
   @MockitoBean
   private Tracer tracerMock;
 

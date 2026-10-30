@@ -17,7 +17,7 @@ import static it.gov.pagopa.pu.workflow.wf.debtposition.iban.MassiveDebtPosition
 
 @Service
 @Slf4j
-public class DebtPositionServiceImpl implements DebtPositionService {
+public class DebtPositionWFServiceImpl implements DebtPositionWFService {
 
   private final DebtPositionSyncService debtPositionSyncService;
   private final CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient;
@@ -25,8 +25,8 @@ public class DebtPositionServiceImpl implements DebtPositionService {
   private final WorkflowCompletionService workflowCompletionService;
 
 
-  public DebtPositionServiceImpl(DebtPositionSyncService debtPositionSyncService, CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient,
-                                 MassiveDebtPositionWFClient massiveDPClient, WorkflowCompletionService workflowCompletionService) {
+  public DebtPositionWFServiceImpl(DebtPositionSyncService debtPositionSyncService, CheckDebtPositionExpirationWfClient checkDebtPositionExpirationWfClient,
+                                   MassiveDebtPositionWFClient massiveDPClient, WorkflowCompletionService workflowCompletionService) {
     this.debtPositionSyncService = debtPositionSyncService;
     this.checkDebtPositionExpirationWfClient = checkDebtPositionExpirationWfClient;
     this.massiveDPClient = massiveDPClient;

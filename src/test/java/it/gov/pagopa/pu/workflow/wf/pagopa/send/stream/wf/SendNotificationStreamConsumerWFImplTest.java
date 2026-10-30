@@ -246,7 +246,7 @@ class SendNotificationStreamConsumerWFImplTest {
 
     when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
-      .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE"));
+      .thenThrow(new RestInvokeNotFoundException("APPNAME", HttpStatus.NOT_FOUND, "ERROR", "ERRORCODE", "ERRORMESSAGE", "BODY"));
 
     when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(

@@ -1,5 +1,9 @@
 package it.gov.pagopa.pu.workflow.mapper;
 
+import it.gov.pagopa.payhub.activities.connector.debtposition.ReceiptService;
+import it.gov.pagopa.payhub.activities.util.Utilities;
+import it.gov.pagopa.pu.debtpositions.dto.generated.ReceiptDTO;
+import org.mockito.MockedStatic;
 import tools.jackson.databind.json.JsonMapper;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryEventSubType;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
@@ -18,9 +22,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static it.gov.pagopa.pu.workflow.mapper.SendTimelineRegistryEventMapper.*;
 import static it.gov.pagopa.pu.workflow.utilities.Utilities.generateWorkflowId;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,8 +40,11 @@ class SendTimelineRegistryEventMapperTest {
   private static final long ORGANIZATION_ID = 1L;
   private static final String CAMPAIGN_ID = "campaignId";
   private static final String SEND_NOTIFICATION_ID = "sendNotificationId";
+
   @Mock
   private JsonMapper jsonMapperMock;
+  @Mock
+  private ReceiptService receiptServiceMock;
 
   @InjectMocks
   private SendTimelineRegistryEventMapper sendTimelineRegistryEventMapper;
@@ -43,7 +52,8 @@ class SendTimelineRegistryEventMapperTest {
   @AfterEach
   void verifyNoMoreInteractions() {
     Mockito.verifyNoMoreInteractions(
-      jsonMapperMock
+      jsonMapperMock,
+      receiptServiceMock
     );
   }
 
@@ -336,5 +346,60 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(1, registryEvent.getRecipientIndex());
 
     TestUtils.checkNotNullFields(registryEvent, "body", "legalFactIds");
+  }
+
+
+  @Test
+  void testMapPayment() {
+    // GIVEN
+    SendNotificationDTO sendNotification = buildSendNotification();
+    sendNotification.setNotificationRequestId(NOTIFICATION_REQUEST_ID);
+    sendNotification.setIun(IUN);
+
+    Long receiptId = 1L;
+    OffsetDateTime paymentDate = OffsetDateTime.now();
+
+    ReceiptDTO receipt = new ReceiptDTO();
+    receipt.setPaymentDateTime(paymentDate);
+
+    String workflowId = generateWorkflowId(STREAM_ID, SendNotificationStreamConsumerWF.class);
+
+    when(receiptServiceMock.getByReceiptId(receiptId))
+      .thenReturn(receipt);
+
+    try (MockedStatic<Utilities> utilitiesMock = Mockito.mockStatic(Utilities.class)) {
+
+      utilitiesMock.when(Utilities::getTraceId)
+        .thenReturn("test-trace-id");
+
+      // WHEN
+      RegistryEventSendTimelineDTO registryEvent = sendTimelineRegistryEventMapper.mapPayment(sendNotification, receiptId, workflowId);
+
+      // THEN
+      Assertions.assertNotNull(registryEvent.getRegistryId());
+      Assertions.assertEquals(registryEvent.getRegistryId(), UUID.fromString(registryEvent.getRegistryId()).toString());
+      Assertions.assertEquals(REGISTRY_ORIGIN, registryEvent.getRegistryOrigin());
+      Assertions.assertEquals(REGISTRY_SEND, registryEvent.getRegistryType());
+      Assertions.assertNotNull(registryEvent.getDateTime());
+      Assertions.assertEquals("test-trace-id", registryEvent.getTraceId());
+      Assertions.assertEquals(RegistryEventSubType.RESP, registryEvent.getEventSubType());
+      Assertions.assertEquals(REQUESTOR_ID_PAYMENT, registryEvent.getRequestorId());
+      Assertions.assertEquals(workflowId, registryEvent.getGrantorId());
+      Assertions.assertEquals(ORGANIZATION_ID, registryEvent.getOrganizationId());
+      Assertions.assertEquals(String.valueOf(ORGANIZATION_ID), registryEvent.getStreamId());
+      Assertions.assertEquals(SEND_NOTIFICATION_ID, registryEvent.getEventId());
+      Assertions.assertEquals(TimelineElementCategoryV27DTO.PU_PAYMENT, registryEvent.getEventType());
+      Assertions.assertEquals(NOTIFICATION_REQUEST_ID, registryEvent.getNotificationRequestId());
+      Assertions.assertEquals(IUN, registryEvent.getIun());
+      Assertions.assertNull(registryEvent.getRecipientIndex());
+      Assertions.assertEquals(NotificationStatusV26DTO.PU_PAID.name(), registryEvent.getNewStatus());
+      Assertions.assertEquals(paymentDate, registryEvent.getEventTimestamp());
+      Assertions.assertNull(registryEvent.getLegalFactIds());
+      Assertions.assertEquals(RegistryOutcome.OK, registryEvent.getOutcome());
+      Assertions.assertEquals("INTERNAL_EVENT", registryEvent.getBody());
+      Assertions.assertEquals(sendNotification.getSendNotificationId(), registryEvent.getSendNotificationId());
+
+      verify(receiptServiceMock).getByReceiptId(receiptId);
+    }
   }
 }
