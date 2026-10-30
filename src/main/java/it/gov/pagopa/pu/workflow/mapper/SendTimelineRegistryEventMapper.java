@@ -87,6 +87,7 @@ public class SendTimelineRegistryEventMapper {
           .map(Utilities::extractPolishedLegalFactIds)
           .orElse(null)
       )
+      .errors(progressResponseElementV28DTO.getElement().getDetails()!=null? progressResponseElementV28DTO.getElement().getDetails().getRefusalReasons() : null)
       .outcome(outcome)
       .body(
         serializeObjectToJson(
