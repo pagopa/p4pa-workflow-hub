@@ -2,6 +2,7 @@ package it.gov.pagopa.pu.workflow.event.registries.dto;
 
 import it.gov.pagopa.pu.registries.dto.generated.RegistryEventSubType;
 import it.gov.pagopa.pu.registries.dto.generated.RegistryOutcome;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationRefusedErrorV27DTO;
 import it.gov.pagopa.pu.sendnotification.dto.generated.TimelineElementCategoryV27DTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -52,6 +53,7 @@ public class RegistryEventSendTimelineDTO {
   private String newStatus;
   private OffsetDateTime eventTimestamp;
   private List<String> legalFactIds;
+  private List<NotificationRefusedErrorV27DTO> errors;
 
   @NotNull
   private RegistryOutcome outcome;

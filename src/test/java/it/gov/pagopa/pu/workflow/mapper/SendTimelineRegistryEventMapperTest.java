@@ -75,9 +75,10 @@ class SendTimelineRegistryEventMapperTest {
     return timelineElement;
   }
 
-  private TimelineElementDetailsV27DTO buildTimelineElementDetails() {
+  private TimelineElementDetailsV27DTO buildTimelineElementDetails(List<NotificationRefusedErrorV27DTO> errors) {
     TimelineElementDetailsV27DTO timelineDetails = new TimelineElementDetailsV27DTO();
     timelineDetails.setRecIndex(1);
+    timelineDetails.setRefusalReasons(errors);
     return timelineDetails;
   }
 
@@ -101,7 +102,8 @@ class SendTimelineRegistryEventMapperTest {
   @Test
   void testMapSuccess() {
     //GIVEN
-    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails();
+    List<NotificationRefusedErrorV27DTO> errors = List.of(new NotificationRefusedErrorV27DTO("errCode", "detail", 0));
+    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails(errors);
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
     SendNotificationDTO sendNotification = buildSendNotification();
@@ -143,15 +145,19 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(RegistryOutcome.OK, registryEvent.getOutcome());
     Assertions.assertEquals("serialized", registryEvent.getBody());
 
+    Assertions.assertNotNull(registryEvent.getErrors());
+    Assertions.assertTrue(registryEvent.getErrors().contains(errors.getFirst()));
+
     Assertions.assertEquals(timelineDetails.getRecIndex(), registryEvent.getRecipientIndex());
 
-    TestUtils.checkNotNullFields(registryEvent, "legalFactIds");
+    TestUtils.checkNotNullFields(registryEvent, "legalFactIds", "errors");
   }
 
   @Test
   void testMapError() {
     //GIVEN
-    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails();
+    List<NotificationRefusedErrorV27DTO> errors = List.of(new NotificationRefusedErrorV27DTO("errCode", "detail", 0));
+    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails(errors);
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
     SendNotificationDTO sendNotification = buildSendNotification();
@@ -192,6 +198,9 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(event.getElement().getEventTimestamp(), registryEvent.getEventTimestamp());
     Assertions.assertEquals(RegistryOutcome.KO, registryEvent.getOutcome());
     Assertions.assertEquals("serialized", registryEvent.getBody());
+
+    Assertions.assertNotNull(registryEvent.getErrors());
+    Assertions.assertTrue(registryEvent.getErrors().contains(errors.getFirst()));
 
     Assertions.assertEquals(timelineDetails.getRecIndex(), registryEvent.getRecipientIndex());
 
@@ -244,13 +253,13 @@ class SendTimelineRegistryEventMapperTest {
 
     Assertions.assertEquals(0, registryEvent.getRecipientIndex());
 
-    TestUtils.checkNotNullFields(registryEvent, "body", "legalFactIds");
+    TestUtils.checkNotNullFields(registryEvent, "body", "legalFactIds", "errors");
   }
 
   @Test
   void testMapSuccessWithLegalFactIds() {
     //GIVEN
-    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails();
+    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails(null);
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     timelineElement.setLegalFactsIds(buildLegalFactsIds());
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
@@ -295,13 +304,13 @@ class SendTimelineRegistryEventMapperTest {
 
     Assertions.assertEquals(timelineDetails.getRecIndex(), registryEvent.getRecipientIndex());
 
-    TestUtils.checkNotNullFields(registryEvent);
+    TestUtils.checkNotNullFields(registryEvent, "errors");
   }
 
   @Test
   void testMapSuccessWithException() {
     //GIVEN
-    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails();
+    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails(null);
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
     SendNotificationDTO sendNotification = buildSendNotification();
@@ -345,9 +354,8 @@ class SendTimelineRegistryEventMapperTest {
 
     Assertions.assertEquals(1, registryEvent.getRecipientIndex());
 
-    TestUtils.checkNotNullFields(registryEvent, "body", "legalFactIds");
+    TestUtils.checkNotNullFields(registryEvent, "body", "legalFactIds", "errors");
   }
-
 
   @Test
   void testMapPayment() {
