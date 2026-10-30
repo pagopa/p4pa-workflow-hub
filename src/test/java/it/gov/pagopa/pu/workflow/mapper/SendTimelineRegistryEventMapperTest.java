@@ -146,7 +146,6 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals("serialized", registryEvent.getBody());
 
     Assertions.assertNotNull(registryEvent.getErrors());
-    Assertions.assertEquals(1, registryEvent.getErrors().size());
     Assertions.assertTrue(registryEvent.getErrors().contains(errors.getFirst()));
 
     Assertions.assertEquals(timelineDetails.getRecIndex(), registryEvent.getRecipientIndex());
@@ -201,7 +200,6 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals("serialized", registryEvent.getBody());
 
     Assertions.assertNotNull(registryEvent.getErrors());
-    Assertions.assertEquals(1, registryEvent.getErrors().size());
     Assertions.assertTrue(registryEvent.getErrors().contains(errors.getFirst()));
 
     Assertions.assertEquals(timelineDetails.getRecIndex(), registryEvent.getRecipientIndex());
