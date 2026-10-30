@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,7 +38,7 @@ public class SendTimelineRegistryEventMapper {
     String streamId,
     String workflowId,
     String traceId) {
-    return map(progressResponseElementV28DTO, sendNotificationDTO, streamId, workflowId, traceId, RegistryOutcome.OK, null);
+    return map(progressResponseElementV28DTO, sendNotificationDTO, streamId, workflowId, traceId, RegistryOutcome.OK);
   }
 
   public RegistryEventSendTimelineDTO mapError(
@@ -48,7 +47,7 @@ public class SendTimelineRegistryEventMapper {
     String streamId,
     String workflowId,
     String traceId) {
-    return map(progressResponseElementV28DTO, sendNotificationDTO, streamId, workflowId, traceId, RegistryOutcome.KO, progressResponseElementV28DTO.getElement().getDetails()!=null? progressResponseElementV28DTO.getElement().getDetails().getRefusalReasons() : null);
+    return map(progressResponseElementV28DTO, sendNotificationDTO, streamId, workflowId, traceId, RegistryOutcome.KO);
   }
 
   private RegistryEventSendTimelineDTO map(
@@ -57,8 +56,7 @@ public class SendTimelineRegistryEventMapper {
     String streamId,
     String workflowId,
     String traceId,
-    RegistryOutcome outcome,
-    List<NotificationRefusedErrorV27DTO> errors) {
+    RegistryOutcome outcome) {
     String registryId = String.join(
       "-",
       streamId,
@@ -89,7 +87,7 @@ public class SendTimelineRegistryEventMapper {
           .map(Utilities::extractPolishedLegalFactIds)
           .orElse(null)
       )
-      .errors(errors)
+      .errors(progressResponseElementV28DTO.getElement().getDetails()!=null? progressResponseElementV28DTO.getElement().getDetails().getRefusalReasons() : null)
       .outcome(outcome)
       .body(
         serializeObjectToJson(

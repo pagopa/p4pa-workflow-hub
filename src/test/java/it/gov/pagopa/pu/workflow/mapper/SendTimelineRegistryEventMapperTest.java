@@ -102,7 +102,8 @@ class SendTimelineRegistryEventMapperTest {
   @Test
   void testMapSuccess() {
     //GIVEN
-    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails(null);
+    List<NotificationRefusedErrorV27DTO> errors = List.of(new NotificationRefusedErrorV27DTO("errCode", "detail", 0));
+    TimelineElementDetailsV27DTO timelineDetails = buildTimelineElementDetails(errors);
     TimelineElementV27DTO timelineElement = buildTimelineElement(timelineDetails);
     ProgressResponseElementV28DTO event = buildTimelineEvent(timelineElement);
     SendNotificationDTO sendNotification = buildSendNotification();
@@ -143,6 +144,10 @@ class SendTimelineRegistryEventMapperTest {
     Assertions.assertEquals(event.getElement().getEventTimestamp(), registryEvent.getEventTimestamp());
     Assertions.assertEquals(RegistryOutcome.OK, registryEvent.getOutcome());
     Assertions.assertEquals("serialized", registryEvent.getBody());
+
+    Assertions.assertNotNull(registryEvent.getErrors());
+    Assertions.assertEquals(1, registryEvent.getErrors().size());
+    Assertions.assertTrue(registryEvent.getErrors().contains(errors.getFirst()));
 
     Assertions.assertEquals(timelineDetails.getRecIndex(), registryEvent.getRecipientIndex());
 
