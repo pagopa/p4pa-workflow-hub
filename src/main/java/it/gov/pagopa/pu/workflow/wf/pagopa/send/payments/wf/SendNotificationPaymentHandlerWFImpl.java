@@ -43,7 +43,7 @@ public class SendNotificationPaymentHandlerWFImpl implements SendNotificationPay
 
     SendNotificationDTO sendNotificationDTO = notifyPaymentActivity.notifyPayment(debtPosition, receiptId);
     if (sendNotificationDTO == null) {
-      log.debug("No SEND notification found for receiptId {}, skipping payment notification", receiptId);
+      log.debug("No SEND notification found or PU_PAID already emitted for receiptId {}, skipping payment notification", receiptId);
       return;
     }
 
