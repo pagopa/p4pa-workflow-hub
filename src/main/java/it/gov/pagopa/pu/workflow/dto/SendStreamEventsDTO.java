@@ -14,7 +14,6 @@ import java.util.List;
 @SuperBuilder
 @Data
 public class SendStreamEventsDTO implements Serializable {
-  Long organizationId;
-  String sendStreamId;
-  List<ProgressResponseElementV28DTO> streamEventBatch;
+  private String sendStreamId;
+  private List<ProgressResponseElementV28DTO> streamEventBatch;
 }
