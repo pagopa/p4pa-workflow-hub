@@ -86,7 +86,6 @@ class SendNotificationEventsConsumerWFImplTest {
     List<ProgressResponseElementV28DTO> streamEvents = new ArrayList<>();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -107,7 +106,6 @@ class SendNotificationEventsConsumerWFImplTest {
     );
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -133,7 +131,6 @@ class SendNotificationEventsConsumerWFImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -169,7 +166,6 @@ class SendNotificationEventsConsumerWFImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -219,7 +215,6 @@ class SendNotificationEventsConsumerWFImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -269,7 +264,6 @@ class SendNotificationEventsConsumerWFImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -319,7 +313,6 @@ class SendNotificationEventsConsumerWFImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -366,7 +359,6 @@ class SendNotificationEventsConsumerWFImplTest {
     );
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -405,7 +397,6 @@ class SendNotificationEventsConsumerWFImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -468,7 +459,6 @@ class SendNotificationEventsConsumerWFImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
@@ -516,7 +506,6 @@ class SendNotificationEventsConsumerWFImplTest {
     SendNotificationDTO sendNotificationDTO = buildSendNotification();
 
     SendStreamEventsDTO wfInput = new SendStreamEventsDTO(
-      ORGANIZATION_ID,
       SEND_STREAM_ID,
       streamEvents
     );
