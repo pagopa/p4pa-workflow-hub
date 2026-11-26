@@ -6,7 +6,9 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendN
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
-import it.gov.pagopa.pu.sendnotification.dto.generated.*;
+import it.gov.pagopa.pu.sendnotification.dto.generated.NotificationStatusV26DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.dto.SendStreamEventsDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
 import it.gov.pagopa.pu.workflow.utilities.ErrorCodeConstants;
@@ -24,11 +26,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationStreamConsumerWFImplTest {
@@ -37,6 +40,7 @@ class SendNotificationStreamConsumerWFImplTest {
   public static final String SEND_EVENT_ID = "sendEventId";
   public static final String INVALID_SEND_STREAM_ID = "invalidSendStreamId";
   public static final String SEND_STREAM_ID = "sendStreamId";
+  public static final String ORG_SUB_UNIT_CODE = "orgSubUnitCode";
 
   @Mock
   private GetSendStreamActivity getSendStreamActivityMock;
@@ -101,7 +105,7 @@ class SendNotificationStreamConsumerWFImplTest {
 
     doThrow(new RuntimeException())
       .when(getSendNotificationEventsFromStreamActivityMock)
-      .fetchSendNotificationEventsFromStream(ORGANIZATION_ID, SEND_STREAM_ID);
+      .fetchSendNotificationEventsFromStream(ORGANIZATION_ID, ORG_SUB_UNIT_CODE, SEND_STREAM_ID);
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -127,7 +131,7 @@ class SendNotificationStreamConsumerWFImplTest {
 
     doReturn(new ArrayList<>())
       .when(getSendNotificationEventsFromStreamActivityMock)
-      .fetchSendNotificationEventsFromStream(ORGANIZATION_ID, SEND_STREAM_ID);
+      .fetchSendNotificationEventsFromStream(ORGANIZATION_ID, ORG_SUB_UNIT_CODE, SEND_STREAM_ID);
 
     try (MockedStatic<Workflow> workflowMock = Mockito.mockStatic(Workflow.class)) {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
@@ -151,6 +155,10 @@ class SendNotificationStreamConsumerWFImplTest {
     List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
+    SendStreamEventsDTO sendStreamEventsDTO = SendStreamEventsDTO.builder()
+      .sendStreamId(SEND_STREAM_ID)
+      .streamEventBatch(streamEvents)
+      .build();
 
     when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
@@ -158,7 +166,7 @@ class SendNotificationStreamConsumerWFImplTest {
 
     when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
-        ORGANIZATION_ID, SEND_STREAM_ID
+        ORGANIZATION_ID, ORG_SUB_UNIT_CODE, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
@@ -166,7 +174,7 @@ class SendNotificationStreamConsumerWFImplTest {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
       SendNotificationEventsConsumerWF childWF = mock(SendNotificationEventsConsumerWFImpl.class);
-      when(childWF.processingStreamEvents(Mockito.any(SendStreamEventsDTO.class)))
+      when(childWF.processingStreamEvents(sendStreamEventsDTO))
         .thenReturn(sendEvent1.getEventId());
       workflowMock.when(() -> Workflow.newChildWorkflowStub(
           Mockito.eq(SendNotificationEventsConsumerWF.class),
@@ -194,6 +202,10 @@ class SendNotificationStreamConsumerWFImplTest {
     List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
+    SendStreamEventsDTO sendStreamEventsDTO = SendStreamEventsDTO.builder()
+      .sendStreamId(SEND_STREAM_ID)
+      .streamEventBatch(streamEvents)
+      .build();
 
     when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
@@ -201,7 +213,7 @@ class SendNotificationStreamConsumerWFImplTest {
 
     when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
-        ORGANIZATION_ID, SEND_STREAM_ID
+        ORGANIZATION_ID, ORG_SUB_UNIT_CODE, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
@@ -213,7 +225,7 @@ class SendNotificationStreamConsumerWFImplTest {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
       SendNotificationEventsConsumerWF childWF = mock(SendNotificationEventsConsumerWFImpl.class);
-      when(childWF.processingStreamEvents(Mockito.any(SendStreamEventsDTO.class)))
+      when(childWF.processingStreamEvents(sendStreamEventsDTO))
         .thenReturn(sendEvent1.getEventId());
       workflowMock.when(() -> Workflow.newChildWorkflowStub(
         Mockito.eq(SendNotificationEventsConsumerWF.class),
@@ -243,6 +255,10 @@ class SendNotificationStreamConsumerWFImplTest {
     List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
+    SendStreamEventsDTO sendStreamEventsDTO = SendStreamEventsDTO.builder()
+      .sendStreamId(SEND_STREAM_ID)
+      .streamEventBatch(streamEvents)
+      .build();
 
     when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
@@ -250,7 +266,7 @@ class SendNotificationStreamConsumerWFImplTest {
 
     when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
-        ORGANIZATION_ID, SEND_STREAM_ID
+        ORGANIZATION_ID, ORG_SUB_UNIT_CODE, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents);
 
@@ -258,7 +274,7 @@ class SendNotificationStreamConsumerWFImplTest {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
       SendNotificationEventsConsumerWF childWF = mock(SendNotificationEventsConsumerWFImpl.class);
-      when(childWF.processingStreamEvents(Mockito.any(SendStreamEventsDTO.class)))
+      when(childWF.processingStreamEvents(sendStreamEventsDTO))
         .thenReturn(sendEvent1.getEventId());
       workflowMock.when(() -> Workflow.newChildWorkflowStub(
         Mockito.eq(SendNotificationEventsConsumerWF.class),
@@ -293,6 +309,10 @@ class SendNotificationStreamConsumerWFImplTest {
     List<ProgressResponseElementV28DTO> streamEvents = List.of(
       sendEvent1
     );
+    SendStreamEventsDTO sendStreamEventsDTO = SendStreamEventsDTO.builder()
+      .sendStreamId(SEND_STREAM_ID)
+      .streamEventBatch(streamEvents)
+      .build();
 
     when(getSendStreamActivityMock.fetchSendStream(SEND_STREAM_ID))
       .thenReturn(streamDTO)
@@ -301,7 +321,7 @@ class SendNotificationStreamConsumerWFImplTest {
 
     when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
-        ORGANIZATION_ID, SEND_STREAM_ID
+        ORGANIZATION_ID, ORG_SUB_UNIT_CODE, SEND_STREAM_ID
       )
     ).thenReturn(streamEvents)
       .thenReturn(Collections.emptyList());
@@ -310,7 +330,7 @@ class SendNotificationStreamConsumerWFImplTest {
       workflowMock.when(() -> Workflow.sleep(Mockito.any(Duration.class)))
         .then(invocation -> null);
       SendNotificationEventsConsumerWF childWF = mock(SendNotificationEventsConsumerWFImpl.class);
-      when(childWF.processingStreamEvents(Mockito.any(SendStreamEventsDTO.class)))
+      when(childWF.processingStreamEvents(sendStreamEventsDTO))
         .thenReturn(sendEvent1.getEventId());
       workflowMock.when(() -> Workflow.newChildWorkflowStub(
         Mockito.eq(SendNotificationEventsConsumerWF.class),
@@ -344,7 +364,7 @@ class SendNotificationStreamConsumerWFImplTest {
 
     when(
       getSendNotificationEventsFromStreamActivityMock.fetchSendNotificationEventsFromStream(
-        ORGANIZATION_ID, SEND_STREAM_ID
+        ORGANIZATION_ID, ORG_SUB_UNIT_CODE, SEND_STREAM_ID
       )
     ).thenReturn(Collections.emptyList());
 
@@ -379,6 +399,7 @@ class SendNotificationStreamConsumerWFImplTest {
     SendStreamDTO streamDTO = new SendStreamDTO();
     streamDTO.setStreamId(SEND_STREAM_ID);
     streamDTO.setOrganizationId(ORGANIZATION_ID);
+    streamDTO.setOrgSubUnitCode(ORG_SUB_UNIT_CODE);
     return streamDTO;
   }
 

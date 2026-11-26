@@ -7,7 +7,8 @@ import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendN
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.GetSendStreamActivity;
 import it.gov.pagopa.payhub.activities.activity.sendnotification.stream.UpdateLastProcessedStreamEventIdActivity;
 import it.gov.pagopa.payhub.activities.exception.common.RestInvokeNotFoundException;
-import it.gov.pagopa.pu.sendnotification.dto.generated.*;
+import it.gov.pagopa.pu.sendnotification.dto.generated.ProgressResponseElementV28DTO;
+import it.gov.pagopa.pu.sendnotification.dto.generated.SendStreamDTO;
 import it.gov.pagopa.pu.workflow.config.temporal.TemporalWFImplementationCustomizer;
 import it.gov.pagopa.pu.workflow.dto.SendStreamEventsDTO;
 import it.gov.pagopa.pu.workflow.exception.custom.IllegalStateBusinessException;
@@ -70,11 +71,12 @@ public class SendNotificationStreamConsumerWFImpl implements SendNotificationStr
       try {
         List<ProgressResponseElementV28DTO> streamEvents = this.getSendNotificationEventsFromStreamActivity.fetchSendNotificationEventsFromStream(
           sendStreamDTO.getOrganizationId(),
+          sendStreamDTO.getOrgSubUnitCode(),
           sendStreamId
         );
         if (!CollectionUtils.isEmpty(streamEvents)) {
           SendNotificationEventsConsumerWF sendNotificationEventsConsumerWF = stubChildWorkflow(sendStreamId);
-          SendStreamEventsDTO childWorkflowInput = buildChildWorkflowInput(sendStreamDTO.getOrganizationId(), sendStreamId, streamEvents);
+          SendStreamEventsDTO childWorkflowInput = buildChildWorkflowInput(sendStreamId, streamEvents);
           lastProcessedEventId = sendNotificationEventsConsumerWF.processingStreamEvents(childWorkflowInput);
         }
       } catch(Exception e) {
@@ -100,9 +102,8 @@ public class SendNotificationStreamConsumerWFImpl implements SendNotificationStr
       childWorkflowOptions);
   }
 
-  private SendStreamEventsDTO buildChildWorkflowInput(Long organizationId, String sendStreamId, List<ProgressResponseElementV28DTO> streamEvents) {
+  private SendStreamEventsDTO buildChildWorkflowInput(String sendStreamId, List<ProgressResponseElementV28DTO> streamEvents) {
     return SendStreamEventsDTO.builder()
-      .organizationId(organizationId)
       .sendStreamId(sendStreamId)
       .streamEventBatch(streamEvents)
       .build();
